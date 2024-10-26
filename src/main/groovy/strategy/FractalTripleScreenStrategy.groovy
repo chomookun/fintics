@@ -325,19 +325,21 @@ class TripleScreenStrategy {
         StrategyResult strategyResult = null
 
         // tide 모멘텀 기준 포지션 산출
-        def position = this.getPosition(maxPosition, minPosition)
+//        def position = this.getPosition(maxPosition, minPosition)
+        def buyPosition = maxPosition
+        def sellPosition = minPosition
 
-        // 과매도 임계치 - 기본 50
+        // 과매도,과매수 임계치 - 기본 50
         def waveOversoldThreshold = 50
-        // tide 가 추세 상승 인 경우 wave 과매도 판단 임계치 내림
+        def waveOverboughtThreshold = 50
+        // tide 상승 추세 인 경우
         if (tideAnalyzer.getMomentumScore() > 75) {
             waveOversoldThreshold = 25
+            waveOverboughtThreshold = 75
         }
-
-        // 과매수 임계치 - 기본 50
-        def waveOverboughtThreshold = 50
-        // tide 가 추세 하락 인 경우 wave 과매수 판단 임계치 내림
+        // tide 하락 추세 인 경우
         if (tideAnalyzer.getMomentumScore() < 25) {
+            waveOversoldThreshold = 75
             waveOverboughtThreshold = 25
         }
 
@@ -348,8 +350,8 @@ class TripleScreenStrategy {
                 // ripple 상승 모멘텀
                 if (rippleAnalyzer.getMomentumScore() > 50) {
                     // wave 평균가 기준 매수 포지션
-                    def waveAveragePosition = waveAnalyzer.adjustAveragePosition(position)
-                    strategyResult = StrategyResult.of(Action.BUY, waveAveragePosition, "[Oversold Buy] ${this.toString()}")
+                    def waveAverageBuyPosition = waveAnalyzer.adjustAveragePosition(buyPosition)
+                    strategyResult = StrategyResult.of(Action.BUY, waveAverageBuyPosition, "[WAVE OVERSOLD BUY] ${this.toString()}")
                     // filter - tide 가 과매수 상태인 경우 매수 제한
                     if (tideAnalyzer.getOverboughtScore() > 50) {
                         strategyResult = null
@@ -361,8 +363,8 @@ class TripleScreenStrategy {
                 // ripple 하락 모멘텀
                 if (rippleAnalyzer.getMomentumScore() < 50) {
                     // wave 평균가 기준 매도 포지션
-                    def waveAveragePosition = waveAnalyzer.adjustAveragePosition(position)
-                    strategyResult = StrategyResult.of(Action.SELL, waveAveragePosition, "[Overbought Sell] ${this.toString()}")
+                    def waveAverageSellPosition = waveAnalyzer.adjustAveragePosition(sellPosition)
+                    strategyResult = StrategyResult.of(Action.SELL, waveAverageSellPosition, "[WAVE OVERBOUGHT SELL] ${this.toString()}")
                     // filter - tide 가 과매도 상태인 경우 매도 제한
                     if (tideAnalyzer.getOversoldScore() > 50) {
                         strategyResult = null
@@ -371,10 +373,32 @@ class TripleScreenStrategy {
             }
         }
 
+//        // tide 변동성 구간
+//        if (tideAnalyzer.getVolatilityScore() > 50) {
+//            // tide 과매도 시
+//            if (tideAnalyzer.getOversoldScore() > 50) {
+//                // wave 상승 모맨템
+//                if (waveAnalyzer.getMomentumScore() > 50) {
+//                    // tide 평균가 기준 매수 포지션
+//                    def tideAverageBuyPosition = tideAnalyzer.adjustAveragePosition(buyPosition)
+//                    strategyResult = StrategyResult.of(Action.BUY, tideAverageBuyPosition, "[TIDE OVERSOLD BUY] ${this.toString()}")
+//                }
+//            }
+//            // tide 과매수 시
+//            if (tideAnalyzer.getOverboughtScore() > 50) {
+//                // wave 하락 모멘텀
+//                if (waveAnalyzer.getMomentumScore() < 50) {
+//                    // tide 평균가 기준 매도 포지션
+//                    def tideAverageSellPosition = tideAnalyzer.adjustAveragePosition(minPosition)
+//                    strategyResult = StrategyResult.of(Action.SELL, tideAverageSellPosition, "[TIDE OVERBOUGHT SELL] ${this.toString()}")
+//                }
+//            }
+//        }
+
         // if all bearish momentum trailing stop
         if (tideAnalyzer.getMomentumScore() < 25 && waveAnalyzer.getMomentumScore() < 25 && rippleAnalyzer.getMomentumScore() < 25) {
             if (waveAnalyzer.getTrailingStopScore() > 50) {
-                strategyResult = StrategyResult.of(Action.SELL, position, "[Trailing Stop] ${this.toString()}")
+                strategyResult = StrategyResult.of(Action.SELL, sellPosition, "[TRAILING STOP] ${this.toString()}")
             }
         }
 
@@ -520,7 +544,12 @@ def profitPercentage = balanceAsset?.getProfitPercentage() ?: 0.0
 //===============================
 // position
 //===============================
-def maxPosition = 1.0
+//def maxPosition = 1.0
+def maxPosition = [
+        macroTripleScreenStrategy.tideAnalyzer.getMomentumScore().getAverage(),
+        mesoTripleScreenStrategy.tideAnalyzer.getMomentumScore().getAverage(),
+        microTripleScreenStrategy.tideAnalyzer.getMomentumScore().getAverage()
+].average() as BigDecimal
 def minPosition = basePosition
 
 //===============================
@@ -531,10 +560,10 @@ splitSize:${splitSize}, splitIndex:${splitIndex}
 splitLimits:${splitLimitPrices}
 splitLimitPrice:${splitLimitPrice}
 splitBuyLimited:${splitBuyLimited}
-positon:${microTripleScreenStrategy.getPosition(maxPosition, minPosition)}, ${mesoTripleScreenStrategy.getPosition(maxPosition, minPosition)}, ${macroTripleScreenStrategy.getPosition(maxPosition, minPosition)}
-- ${microTripleScreenStrategy}
-- ${mesoTripleScreenStrategy}
-- ${macroTripleScreenStrategy}
+maxPosition:${maxPosition}, minPosition:${minPosition}
+${microTripleScreenStrategy}
+${mesoTripleScreenStrategy}
+${macroTripleScreenStrategy}
 """
 log.info("message: {}", message)
 tradeAsset.setMessage(message)

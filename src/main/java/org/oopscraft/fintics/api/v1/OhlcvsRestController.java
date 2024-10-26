@@ -8,10 +8,13 @@ import org.oopscraft.arch4j.web.common.data.PageableAsQueryParam;
 import org.oopscraft.arch4j.web.common.data.PageableUtils;
 import org.oopscraft.fintics.api.v1.dto.OhlcvResponse;
 import org.oopscraft.fintics.service.OhlcvService;
+import org.springframework.cache.annotation.CacheEvict;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.data.domain.Pageable;
 import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.ResponseEntity;
+import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
@@ -39,6 +42,7 @@ public class OhlcvsRestController {
     @GetMapping("{assetId}/daily")
     @Operation(description = "gets daily ohlcvs")
     @PageableAsQueryParam
+    @Cacheable(cacheNames = "dailyOhlcvs", key = "#assetId")
     public ResponseEntity<List<OhlcvResponse>> getDailyOhlcvs(
             @PathVariable("assetId")
             @Parameter(description = "asset id")
@@ -69,6 +73,11 @@ public class OhlcvsRestController {
                 .body(ohlcvResponses);
     }
 
+    @Scheduled(fixedRate = 60_000)
+    @CacheEvict(cacheNames = "dailyOhlcvs", allEntries = true)
+    public void clearDailyOhlcvs() {
+    }
+
     /**
      * gets minute ohlcvs
      * @param assetId asset id
@@ -79,6 +88,7 @@ public class OhlcvsRestController {
      */
     @GetMapping("{assetId}/minute")
     @PageableAsQueryParam
+    @Cacheable(cacheNames = "minuteOhlcvs", key = "#assetId")
     public ResponseEntity<List<OhlcvResponse>> getMinuteOhlcvs(
             @PathVariable("assetId")
             @Parameter(description = "asset id")
@@ -107,6 +117,11 @@ public class OhlcvsRestController {
         return ResponseEntity.ok()
                 .header(HttpHeaders.CONTENT_RANGE, PageableUtils.toContentRange("ohlcvs", pageable))
                 .body(ohlcvResponses);
+    }
+
+    @Scheduled(fixedRate = 60_000)
+    @CacheEvict(cacheNames = "minuteOhlcvs", allEntries = true)
+    public void clearMinuteOhlcvs() {
     }
 
 }

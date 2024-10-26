@@ -33,17 +33,9 @@ public class AssetCollector extends AbstractCollector {
     private final AssetClient assetClient;
 
     /**
-     * initial run
-     */
-    @Scheduled(initialDelay = 10_000, fixedDelay = Long.MAX_VALUE)
-    public void onStartup() {
-        collect();
-    }
-
-    /**
      * schedule collect
      */
-    @Scheduled(cron = "0 0 18 * * *")
+    @Scheduled(initialDelay = 10_000, fixedDelay = 86_400_000)
     public void collect() {
         try {
             log.info("AssetCollector - Start collect asset.");
