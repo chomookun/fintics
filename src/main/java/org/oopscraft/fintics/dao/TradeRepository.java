@@ -39,4 +39,10 @@ public interface TradeRepository extends JpaRepository<TradeEntity,String>, JpaS
         }
     }
 
+    List<TradeEntity> findAllByBasketId(String basketId);
+
+    List<TradeEntity> findAllByStrategyId(String strategyId);
+
+    List<TradeEntity> findAllByBrokerId(String brokerId);
+
 }

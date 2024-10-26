@@ -6,9 +6,11 @@ import org.oopscraft.arch4j.core.common.pbe.PbePropertiesUtil;
 import org.oopscraft.fintics.dao.BasketAssetEntity;
 import org.oopscraft.fintics.dao.BasketEntity;
 import org.oopscraft.fintics.dao.BasketRepository;
+import org.oopscraft.fintics.dao.TradeRepository;
 import org.oopscraft.fintics.model.Basket;
 import org.oopscraft.fintics.model.BasketAsset;
 import org.oopscraft.fintics.model.BasketSearch;
+import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
@@ -26,6 +28,8 @@ import java.util.stream.Collectors;
 public class BasketService {
 
     private final BasketRepository basketRepository;
+
+    private final TradeRepository tradeRepository;
 
     @PersistenceContext
     private final EntityManager entityManager;
@@ -107,7 +111,15 @@ public class BasketService {
 
     @Transactional
     public void deleteBasket(String basketId) {
-        basketRepository.deleteById(basketId);
+        BasketEntity basketEntity = basketRepository.findById(basketId).orElseThrow();
+
+        // checks referenced by trade
+        if (!tradeRepository.findAllByBasketId(basketEntity.getBasketId()).isEmpty()) {
+            throw new DataIntegrityViolationException("Referenced by existing trade");
+        }
+
+        // deletes
+        basketRepository.delete(basketEntity);
         basketRepository.flush();
     }
 

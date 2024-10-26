@@ -5,8 +5,10 @@ import org.oopscraft.arch4j.core.common.data.IdGenerator;
 import org.oopscraft.arch4j.core.common.pbe.PbePropertiesUtil;
 import org.oopscraft.fintics.dao.BrokerEntity;
 import org.oopscraft.fintics.dao.BrokerRepository;
+import org.oopscraft.fintics.dao.TradeRepository;
 import org.oopscraft.fintics.model.Broker;
 import org.oopscraft.fintics.model.BrokerSearch;
+import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
@@ -21,6 +23,8 @@ import java.util.Optional;
 public class BrokerService {
 
     private final BrokerRepository brokerRepository;
+
+    private final TradeRepository tradeRepository;
 
     public Page<Broker> getBrokers(BrokerSearch brokerSearch, Pageable pageable) {
         Page<BrokerEntity> brokerEntityPage = brokerRepository.findAll(brokerSearch, pageable);
@@ -58,8 +62,14 @@ public class BrokerService {
 
     @Transactional
     public void deleteBroker(String brokerId) {
-        BrokerEntity brokerEntity = brokerRepository.findById(brokerId)
-                        .orElseThrow();
+        BrokerEntity brokerEntity = brokerRepository.findById(brokerId).orElseThrow();
+
+        // checks referenced by trade
+        if (!tradeRepository.findAllByBrokerId(brokerEntity.getBrokerId()).isEmpty()) {
+            throw new DataIntegrityViolationException("Referenced by existing trade");
+        }
+
+        // deletes
         brokerRepository.delete(brokerEntity);
         brokerRepository.flush();
     }

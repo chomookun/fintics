@@ -5,8 +5,10 @@ import org.oopscraft.arch4j.core.common.data.IdGenerator;
 import org.oopscraft.arch4j.core.common.pbe.PbePropertiesUtil;
 import org.oopscraft.fintics.dao.StrategyEntity;
 import org.oopscraft.fintics.dao.StrategyRepository;
+import org.oopscraft.fintics.dao.TradeRepository;
 import org.oopscraft.fintics.model.Strategy;
 import org.oopscraft.fintics.model.StrategySearch;
+import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
@@ -21,6 +23,8 @@ import java.util.Optional;
 public class StrategyService {
 
     private final StrategyRepository strategyRepository;
+
+    private final TradeRepository tradeRepository;
 
     /**
      * gets strategies
@@ -79,6 +83,13 @@ public class StrategyService {
     @Transactional
     public void deleteStrategy(String strategyId) {
         StrategyEntity strategyEntity = strategyRepository.findById(strategyId).orElseThrow();
+
+        // checks referenced by trade
+        if (!tradeRepository.findAllByStrategyId(strategyEntity.getStrategyId()).isEmpty()) {
+            throw new DataIntegrityViolationException("Referenced by existing trade");
+        }
+
+        // deletes
         strategyRepository.delete(strategyEntity);
         strategyRepository.flush();
     }
