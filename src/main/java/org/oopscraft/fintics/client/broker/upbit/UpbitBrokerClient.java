@@ -234,7 +234,7 @@ public class UpbitBrokerClient extends BrokerClient {
                 valuationAmount = valuationAmount.add(assetBalance);
             }else{
                 BigDecimal assetPurchaseAmount = assetAverageBuyPrice.multiply(assetBalance)
-                        .setScale(0, RoundingMode.HALF_UP);
+                        .setScale(0, RoundingMode.CEILING);
                 totalAmount = totalAmount.add(assetPurchaseAmount);
                 purchaseAmount = purchaseAmount.add(assetPurchaseAmount);
 
@@ -245,12 +245,12 @@ public class UpbitBrokerClient extends BrokerClient {
                         .build();
                 OrderBook orderBook = getOrderBook(asset);
                 BigDecimal assetValuationAmount = orderBook.getPrice().multiply(assetBalance)
-                        .setScale(2, RoundingMode.HALF_UP);
+                        .setScale(2, RoundingMode.CEILING);
                 valuationAmount = valuationAmount.add(assetValuationAmount);
 
                 // profit amount
                 BigDecimal assetProfitAmount = assetValuationAmount.subtract(assetPurchaseAmount)
-                        .setScale(2, RoundingMode.HALF_UP);
+                        .setScale(2, RoundingMode.CEILING);
                 profitAmount = profitAmount.add(assetProfitAmount);
 
                 // add
@@ -267,12 +267,12 @@ public class UpbitBrokerClient extends BrokerClient {
             }
         }
         return Balance.builder()
-                .totalAmount(totalAmount.setScale(0, RoundingMode.DOWN))
-                .cashAmount(cacheAmount.setScale(0, RoundingMode.DOWN))
-                .purchaseAmount(purchaseAmount.setScale(0, RoundingMode.DOWN))
-                .valuationAmount(valuationAmount.setScale(0, RoundingMode.DOWN))
-                .profitAmount(profitAmount.setScale(0,RoundingMode.DOWN))
-                .realizedProfitAmount(realizedProfitAmount.setScale(0, RoundingMode.DOWN))
+                .totalAmount(totalAmount.setScale(0, RoundingMode.CEILING))
+                .cashAmount(cacheAmount.setScale(0, RoundingMode.CEILING))
+                .purchaseAmount(purchaseAmount.setScale(0, RoundingMode.CEILING))
+                .valuationAmount(valuationAmount.setScale(0, RoundingMode.CEILING))
+                .profitAmount(profitAmount.setScale(0,RoundingMode.CEILING))
+                .realizedProfitAmount(realizedProfitAmount.setScale(0, RoundingMode.CEILING))
                 .balanceAssets(balanceAssets)
                 .build();
     }
