@@ -13,10 +13,7 @@ import org.springframework.transaction.PlatformTransactionManager;
 
 import java.time.Instant;
 import java.time.LocalDate;
-import java.util.ArrayList;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
 import java.util.stream.Collectors;
 
 @Component
@@ -53,17 +50,28 @@ public class AssetCollector extends AbstractCollector {
      * saves assets
      */
     void saveAssets() {
+        // merge (상장 폐지 등 삭제 종목 제외는 skip)
+        List<AssetEntity> assetEntities = assetRepository.findAll();
         List<Asset> assets = assetClient.getAssets();
-        List<AssetEntity> assetEntities = assets.stream()
-                .map(asset -> AssetEntity.builder()
+        for (Asset asset : assets) {
+            AssetEntity assetEntity = assetEntities.stream()
+                    .filter(it -> Objects.equals(it.getAssetId(), asset.getAssetId()))
+                    .findFirst()
+                    .orElse(null);
+            if (assetEntity == null) {
+                assetEntity = AssetEntity.builder()
                         .assetId(asset.getAssetId())
-                        .name(asset.getName())
-                        .market(asset.getMarket())
-                        .exchange(asset.getExchange())
-                        .type(asset.getType())
-                        .marketCap(asset.getMarketCap())
-                        .build())
-                .collect(Collectors.toList());
+                        .build();
+                assetEntities.add(assetEntity);     // add new
+            }
+            assetEntity.setName(asset.getName());
+            assetEntity.setMarket(asset.getMarket());
+            assetEntity.setExchange(asset.getExchange());
+            assetEntity.setType(asset.getType());
+            assetEntity.setMarketCap(asset.getMarketCap());
+        }
+
+        // saves
         log.info("AssetCollector - save assetEntities:{}", assetEntities.size());
         saveEntities("assetEntities", assetEntities, transactionManager, assetRepository);
     }
