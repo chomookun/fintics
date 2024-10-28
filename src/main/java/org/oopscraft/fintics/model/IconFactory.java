@@ -94,9 +94,10 @@ public class IconFactory {
         try {
             URL url = new URL(icon);
             HttpURLConnection connection = (HttpURLConnection) url.openConnection();
-            connection.setRequestMethod("HEAD");
+            connection.setRequestMethod("GET");
             connection.setConnectTimeout(3000);
             connection.setReadTimeout(3000);
+            connection.setInstanceFollowRedirects(true);
             if (connection.getResponseCode() == HttpURLConnection.HTTP_OK) {
                 return true;
             }
