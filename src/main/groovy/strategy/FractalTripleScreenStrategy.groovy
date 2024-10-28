@@ -177,20 +177,27 @@ class Analyzer {
         score.emaPriceOverValue = ohlcv.close > ema.value ? 100 : 0
         // macd
         score.macdValue = macd.value > 0 ? 100 : 0
+        score.macdValueOverSignal = macd.value > macd.signal ? 100 : 0
+        score.macdOscillator = macd.oscillator > 0 ? 100 : 0
         // bollinger band
         score.bollingerBandPriceOverMiddle = ohlcv.close > bollingerBand.middle ? 100 : 0
         // rsi
         score.rsiValue = rsi.value > 50 ? 100 : 0
+        score.rsiValueOverSignal = rsi.value > rsi.signal ? 100 : 0
         // cci
         score.cciValue = cci.value > 0 ? 100 : 0
+        score.cciValueOverSignal = cci.value > cci.signal ? 100 : 0
         // dmi
         score.dmiPdiOverMdi = dmi.pdi > dmi.mdi ? 100 : 0
         // chaikin oscillator
         score.chaikinOscillatorValue = chaikinOscillator.value > 0 ? 100 : 0
+        score.chaikinOscillatorValueOverSignal = chaikinOscillator.value > chaikinOscillator.signal ? 100 : 0
         // stochastic slow
         score.stochasticSlowK = stochasticSlow.slowK > 50 ? 100 : 0
+        score.stochasticSlowKOverD = stochasticSlow.slowK > stochasticSlow.slowD ? 100 : 0
         // williams r
         score.williamsRValue = williamsR.value > -50 ? 100 : 0
+        score.williamsRValueOverSignal = williamsR.value > williamsR.signal ? 100 : 0
         // return
         return score
     }
