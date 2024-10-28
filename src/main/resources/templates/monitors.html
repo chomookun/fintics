@@ -393,12 +393,26 @@
                         |
                         <span data-th-text="#{fintics.Balance.profitAmount}"></span>:
                         <span th:data-duice-bind="|monitorMap.get('${trade.tradeId}').balance|"
-                              th:data-duice-property="profitAmount" data-duice-format="number" class="number">
+                              th:data-duice-property="profitAmount"
+                              th:data-duice-execute="|
+                              let profitAmount = monitorMap.get('${trade.tradeId}').balance.profitAmount;
+                              if (profitAmount > 0) this.classList.add('color--green');
+                              if (profitAmount < 0) this.classList.add('color--red');
+                              |"
+                              data-duice-format="number"
+                              class="number font-weight--bold">
                         </span>
                         |
                         <span data-th-text="#{fintics.Balance.realizedProfitAmount}"></span>:
                         <span th:data-duice-bind="|monitorMap.get('${trade.tradeId}').balance|"
-                              th:data-duice-property="realizedProfitAmount" data-duice-format="number" class="number">
+                              th:data-duice-property="realizedProfitAmount"
+                              th:data-duice-execute="|
+                              let realizedProfitAmount = monitorMap.get('${trade.tradeId}').balance.realizedProfitAmount;
+                              if (realizedProfitAmount > 0) this.classList.add('color--green');
+                              if (realizedProfitAmount < 0) this.classList.add('color--red');
+                              |"
+                              data-duice-format="number"
+                              class="number font-weight--bold">
                         </span>
                         |
                         <span data-th-text="#{fintics.Balance.purchaseAmount}"></span>:
