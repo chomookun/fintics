@@ -3,13 +3,13 @@ package org.oopscraft.fintics.dao;
 import lombok.*;
 import lombok.experimental.SuperBuilder;
 import org.oopscraft.arch4j.core.common.data.BaseEntity;
-import org.oopscraft.arch4j.core.common.data.converter.BooleanConverter;
 
-import javax.persistence.*;
+import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.Id;
+import javax.persistence.Table;
 import java.math.BigDecimal;
 import java.time.LocalDate;
-import java.util.ArrayList;
-import java.util.List;
 
 @Entity
 @Table(name = "fintics_asset")
@@ -42,9 +42,6 @@ public class AssetEntity extends BaseEntity {
     @Column(name = "market_cap", precision = 32)
     private BigDecimal marketCap;
 
-    @Column(name = "per", scale = 2)
-    private BigDecimal per;
-
     @Column(name = "eps", scale = 2)
     private BigDecimal eps;
 
@@ -53,6 +50,9 @@ public class AssetEntity extends BaseEntity {
 
     @Column(name = "roa", scale = 2)
     private BigDecimal roa;
+
+    @Column(name = "per", scale = 2)
+    private BigDecimal per;
 
     @Column(name = "dividend_yield", scale = 2)
     private BigDecimal dividendYield;

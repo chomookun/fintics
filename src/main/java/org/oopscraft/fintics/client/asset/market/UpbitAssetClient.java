@@ -9,6 +9,7 @@ import org.springframework.http.RequestEntity;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.client.RestTemplate;
 
+import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
@@ -52,8 +53,9 @@ public class UpbitAssetClient extends AssetClient {
     }
 
     @Override
-    public void applyAssetDetail(Asset asset) {
-        // void
+    public Map<String, String> getAssetDetail(Asset asset) {
+        return Collections.emptyMap();
     }
+
 
 }

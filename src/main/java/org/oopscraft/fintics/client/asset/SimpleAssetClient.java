@@ -10,7 +10,9 @@ import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.stereotype.Component;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
+import java.util.Map;
 
 @Component
 @ConditionalOnProperty(prefix = "fintics", name = "asset-client.class-name", havingValue="org.oopscraft.fintics.client.asset.SimpleAssetClient")
@@ -50,13 +52,13 @@ public class SimpleAssetClient extends AssetClient {
     }
 
     @Override
-    public void applyAssetDetail(Asset asset) {
+    public Map<String,String> getAssetDetail(Asset asset) {
         for (AssetClient assetClient : assetClients) {
             if (assetClient.isSupportAssetDetail(asset)) {
-                assetClient.applyAssetDetail(asset);
-                break;
+                return assetClient.getAssetDetail(asset);
             }
         }
+        return Collections.emptyMap();
     }
 
 }

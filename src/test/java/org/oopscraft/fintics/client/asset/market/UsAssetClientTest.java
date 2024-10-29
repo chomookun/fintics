@@ -11,9 +11,9 @@ import org.oopscraft.fintics.model.Asset;
 import org.springframework.boot.test.context.SpringBootTest;
 
 import java.util.List;
+import java.util.Map;
 
-import static org.junit.jupiter.api.Assertions.assertFalse;
-import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.*;
 
 @SpringBootTest(classes= FinticsConfiguration.class)
 @RequiredArgsConstructor
@@ -29,15 +29,19 @@ class UsAssetClientTest extends CoreTestSupport {
     }
 
     @Test
-    void getAssets() {
+    void getStockAssets() {
         // given
         // when
         List<Asset> assets = getUsAssetClient().getAssets();
         // then
         log.info("assets: {}", assets);
         assertTrue(assets.size() > 0);
-        List<Asset> exchangeNullAssets = assets.stream().filter(it -> it.getExchange() == null).toList();
-        log.info("exchangeNullAssets: {}", exchangeNullAssets);
+        assertTrue(assets.stream().allMatch(asset ->
+                asset.getAssetId() != null &&
+                asset.getName() != null &&
+                asset.getMarket() != null &&
+                asset.getExchange() != null &&
+                asset.getType() != null));
     }
 
     @Test
@@ -48,12 +52,16 @@ class UsAssetClientTest extends CoreTestSupport {
         // then
         log.info("assets: {}", assets);
         assertTrue(assets.size() > 0);
-        List<Asset> exchangeNullAssets = assets.stream().filter(it -> it.getExchange() == null).toList();
-        log.info("exchangeNullAssets: {}", exchangeNullAssets);
+        assertTrue(assets.stream().allMatch(asset ->
+                asset.getAssetId() != null &&
+                asset.getName() != null &&
+                asset.getMarket() != null &&
+                asset.getExchange() != null &&
+                asset.getType() != null));
     }
 
     @Test
-    void applyAssetDetailStock() {
+    void getStockAssetDetail() {
         // given
         Asset asset = Asset.builder()
                 .assetId("US.MSFT")
@@ -62,13 +70,19 @@ class UsAssetClientTest extends CoreTestSupport {
                 .type("STOCK")
                 .build();
         // when
-        getUsAssetClient().applyAssetDetail(asset);
+        Map<String,String> assetDetail = getUsAssetClient().getStockAssetDetail(asset);
         // then
-        log.info("asset: {}", asset);
+        log.info("assetDetail: {}", assetDetail);
+        assertNotNull(assetDetail.get("marketCap"));
+        assertNotNull(assetDetail.get("eps"));
+        assertNotNull(assetDetail.get("roe"));
+        assertNotNull(assetDetail.get("roa"));
+        assertNotNull(assetDetail.get("per"));
+        assertNotNull(assetDetail.get("dividendYield"));
     }
 
     @Test
-    void applyAssetDetailEtf() {
+    void getEtfAssetDetail() {
         // given
         Asset asset = Asset.builder()
                 .assetId("US.SPY")
@@ -76,9 +90,11 @@ class UsAssetClientTest extends CoreTestSupport {
                 .type("ETF")
                 .build();
         // when
-        getUsAssetClient().applyAssetDetail(asset);
+        Map<String,String> assetDetail = getUsAssetClient().getEtfAssetDetail(asset);
         // then
-        log.info("asset: {}", asset);
+        log.info("assetDetail: {}", assetDetail);
+        assertNotNull(assetDetail.get("marketCap"));
+        assertNotNull(assetDetail.get("dividendYield"));
     }
 
 

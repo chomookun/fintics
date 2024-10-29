@@ -10,6 +10,7 @@ import org.oopscraft.fintics.model.Asset;
 import org.springframework.boot.test.context.SpringBootTest;
 
 import java.util.List;
+import java.util.Map;
 
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -37,7 +38,7 @@ class SimpleAssetClientTest extends CoreTestSupport {
     }
 
     @Test
-    void getUsAssetMetas() {
+    void getAssetDetailForUs() {
         // given
         Asset asset = Asset.builder()
                 .assetId("US.MSFT")
@@ -46,13 +47,13 @@ class SimpleAssetClientTest extends CoreTestSupport {
                 .type("STOCK")
                 .build();
         // when
-        getSimpleAssetClient().applyAssetDetail(asset);
+        Map<String,String> assetDetail = getSimpleAssetClient().getAssetDetail(asset);
         // then
-        log.info("asset: {}", asset);
+        log.info("assetDetail: {}", assetDetail);
     }
 
     @Test
-    void getKrAssetMetas() {
+    void getAssetDetailForKr() {
         // given
         Asset asset = Asset.builder()
                 .assetId("KR.005930")
@@ -61,9 +62,9 @@ class SimpleAssetClientTest extends CoreTestSupport {
                 .type("STOCK")
                 .build();
         // when
-        getSimpleAssetClient().applyAssetDetail(asset);
+        Map<String,String> assetDetail = getSimpleAssetClient().getAssetDetail(asset);
         // then
-        log.info("asset: {}", asset);
+        log.info("assetDetail: {}", assetDetail);
     }
 
 }

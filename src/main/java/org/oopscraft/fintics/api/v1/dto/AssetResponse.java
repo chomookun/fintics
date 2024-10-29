@@ -31,11 +31,11 @@ public class AssetResponse {
 
     private BigDecimal eps;
 
-    private BigDecimal per;
-
     private BigDecimal roe;
 
     private BigDecimal roa;
+
+    private BigDecimal per;
 
     private BigDecimal dividendYield;
 
@@ -53,10 +53,10 @@ public class AssetResponse {
                 .type(asset.getType())
                 .updatedDate(asset.getUpdatedDate())
                 .marketCap(asset.getMarketCap())
-                .per(asset.getPer())
                 .eps(asset.getEps())
                 .roe(asset.getRoe())
                 .roa(asset.getRoa())
+                .per(asset.getPer())
                 .dividendYield(asset.getDividendYield())
                 .icon(asset.getIcon())
                 .links(LinkResponse.from(asset.getLinks()))

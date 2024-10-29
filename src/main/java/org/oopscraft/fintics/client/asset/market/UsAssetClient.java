@@ -14,9 +14,13 @@ import org.springframework.http.HttpHeaders;
 import org.springframework.http.RequestEntity;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.client.RestTemplate;
+import org.springframework.web.util.UriComponentsBuilder;
 
 import java.math.BigDecimal;
 import java.math.RoundingMode;
+import java.time.Instant;
+import java.time.LocalDate;
+import java.time.ZoneOffset;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -51,20 +55,6 @@ public class UsAssetClient extends AssetClient {
         assets.addAll(getStockAssets("AMEX"));
         assets.addAll(getEtfAssets());
         return assets;
-    }
-
-    @Override
-    public boolean isSupportAssetDetail(Asset asset) {
-        return asset.getAssetId().startsWith("US.");
-    }
-
-    @Override
-    public void applyAssetDetail(Asset asset) {
-        if ("STOCK".equals(asset.getType())) {
-            applyStockAssetDetail(asset);
-        } else if ("ETF".equals(asset.getType())) {
-            applyEtfAssetDetail(asset);
-        }
     }
 
     /**
@@ -203,164 +193,179 @@ public class UsAssetClient extends AssetClient {
         return exchangeMicMap;
     }
 
+    @Override
+    public boolean isSupportAssetDetail(Asset asset) {
+        return asset.getAssetId().startsWith("US.");
+    }
+
+    @Override
+    public Map<String, String> getAssetDetail(Asset asset) {
+        return switch(Optional.ofNullable(asset.getType()).orElse("")) {
+            case "STOCK" -> getStockAssetDetail(asset);
+            case "ETF" -> getEtfAssetDetail(asset);
+            default -> Collections.emptyMap();
+        };
+    }
+
     /**
-     * applies stock asset details
+     * returns stock asset details
      * @param asset stock asset
+     * @return asset detail map
      */
-    void applyStockAssetDetail(Asset asset) {
+    Map<String,String> getStockAssetDetail(Asset asset) {
+        BigDecimal marketCap = null;
+        BigDecimal totalAssets = null;
+        BigDecimal totalEquity = null;
+        BigDecimal netIncome = null;
+        BigDecimal eps = null;
+        BigDecimal roe = null;
+        BigDecimal roa = null;
+        BigDecimal per = null;
+        BigDecimal dividendYield = null;
+
+        // calls summary api
+        HttpHeaders headers = createNasdaqHeaders();
+        String summaryUrl = String.format(
+                "https://api.nasdaq.com/api/quote/%s/summary?assetclass=stocks",
+                asset.getSymbol()
+        );
+        RequestEntity<Void> summaryRequestEntity = RequestEntity.get(summaryUrl)
+                .headers(headers)
+                .build();
+        ResponseEntity<String> summaryResponseEntity = restTemplate.exchange(summaryRequestEntity, String.class);
+        JsonNode summaryRootNode;
         try {
-            BigDecimal totalAssets = null;
-            BigDecimal totalEquity = null;
-            BigDecimal netIncome = null;
-            BigDecimal per = null;
-            BigDecimal eps = null;
-            BigDecimal roe = null;
-            BigDecimal roa = null;
-            BigDecimal dividendYield = null;
-
-            // calls summary api
-            HttpHeaders headers = createNasdaqHeaders();
-            String summaryUrl = String.format(
-                    "https://api.nasdaq.com/api/quote/%s/summary?assetclass=stocks",
-                    asset.getSymbol()
-            );
-            RequestEntity<Void> summaryRequestEntity = RequestEntity.get(summaryUrl)
-                    .headers(headers)
-                    .build();
-            ResponseEntity<String> summaryResponseEntity = restTemplate.exchange(summaryRequestEntity, String.class);
-            JsonNode summaryRootNode;
-            try {
-                summaryRootNode = objectMapper.readTree(summaryResponseEntity.getBody());
-            } catch (JsonProcessingException e) {
-                throw new RuntimeException(e);
-            }
-            JsonNode summaryDataNode = summaryRootNode.path("data").path("summaryData");
-            HashMap<String, Map<String,String>> summaryDataMap = objectMapper.convertValue(summaryDataNode, new TypeReference<>() {});
-
-            // price, market cap
-            for(String name : summaryDataMap.keySet()) {
-                Map<String, String> map = summaryDataMap.get(name);
-                String value = map.get("value");
-                if (name.equals("PERatio")) {
-                    per = convertStringToNumber(value);
-                }
-                if(name.equals("EarningsPerShare")) {
-                    eps = convertCurrencyToNumber(value);
-                }
-                if(name.equals("Yield")) {
-                    dividendYield = convertPercentageToNumber(value);
-                }
-            }
-
-            // calls financial api
-            String financialUrl = String.format(
-                    "https://api.nasdaq.com/api/company/%s/financials?frequency=1", // frequency 2 is quarterly
-                    asset.getSymbol()
-            );
-            RequestEntity<Void> financialRequestEntity = RequestEntity.get(financialUrl)
-                    .headers(headers)
-                    .build();
-            ResponseEntity<String> financialResponseEntity = restTemplate.exchange(financialRequestEntity, String.class);
-            JsonNode financialRootNode;
-            try {
-                financialRootNode = objectMapper.readTree(financialResponseEntity.getBody());
-            } catch (JsonProcessingException e) {
-                throw new RuntimeException(e);
-            }
-            JsonNode balanceSheetTableRowsNode = financialRootNode.path("data").path("balanceSheetTable").path("rows");
-            List<Map<String,String>> balanceSheetTableRows = objectMapper.convertValue(balanceSheetTableRowsNode, new TypeReference<>(){});
-            JsonNode incomeStatementTableRowsNode = financialRootNode.path("data").path("incomeStatementTable").path("rows");
-            List<Map<String,String>> incomeStatementTableRows = objectMapper.convertValue(incomeStatementTableRowsNode, new TypeReference<>(){});
-
-            for(Map<String,String> row : balanceSheetTableRows) {
-                String key = row.get("value1");
-                String value = row.get("value2");
-                if("Total Equity".equals(key)) {
-                    totalEquity = convertCurrencyToNumber(value);
-                }
-                if("Total Assets".equals(key)) {
-                    totalAssets = convertCurrencyToNumber(value);
-                }
-            }
-
-            for(Map<String,String> row : incomeStatementTableRows) {
-                String key = row.get("value1");
-                String value = row.get("value2");
-                if("Net Income".equals(key)) {
-                    netIncome = convertCurrencyToNumber(value);
-                }
-            }
-
-            // roe
-            if(netIncome != null && totalEquity != null) {
-                roe = netIncome.divide(totalEquity, 8, RoundingMode.HALF_UP)
-                        .multiply(BigDecimal.valueOf(100));
-            }
-
-            // roa
-            if(netIncome != null && totalAssets != null) {
-                roa = netIncome.divide(totalAssets, 8, RoundingMode.HALF_UP)
-                        .multiply(BigDecimal.valueOf(100));
-            }
-
-            // apply financial info
-            asset.setPer(per);
-            asset.setEps(eps);
-            asset.setRoe(roe);
-            asset.setRoa(roa);
-            asset.setDividendYield(dividendYield);
-        } catch (Throwable e) {
+            summaryRootNode = objectMapper.readTree(summaryResponseEntity.getBody());
+        } catch (JsonProcessingException e) {
             throw new RuntimeException(e);
         }
+        JsonNode summaryDataNode = summaryRootNode.path("data").path("summaryData");
+        HashMap<String, Map<String,String>> summaryDataMap = objectMapper.convertValue(summaryDataNode, new TypeReference<>() {});
+
+        // price, market cap
+        for(String name : summaryDataMap.keySet()) {
+            Map<String, String> map = summaryDataMap.get(name);
+            String value = map.get("value");
+            if (name.equals("MarketCap")) {
+                marketCap = convertStringToNumber(value);
+            }
+            if (name.equals("EarningsPerShare")) {
+                eps = convertCurrencyToNumber(value);
+            }
+            if (name.equals("PERatio")) {
+                per = convertStringToNumber(value);
+            }
+            if(name.equals("Yield")) {
+                dividendYield = convertPercentageToNumber(value);
+            }
+        }
+
+        // calls financial api
+        String financialUrl = String.format(
+                "https://api.nasdaq.com/api/company/%s/financials?frequency=1", // frequency 2 is quarterly
+                asset.getSymbol()
+        );
+        RequestEntity<Void> financialRequestEntity = RequestEntity.get(financialUrl)
+                .headers(headers)
+                .build();
+        ResponseEntity<String> financialResponseEntity = restTemplate.exchange(financialRequestEntity, String.class);
+        JsonNode financialRootNode;
+        try {
+            financialRootNode = objectMapper.readTree(financialResponseEntity.getBody());
+        } catch (JsonProcessingException e) {
+            throw new RuntimeException(e);
+        }
+        JsonNode balanceSheetTableRowsNode = financialRootNode.path("data").path("balanceSheetTable").path("rows");
+        List<Map<String,String>> balanceSheetTableRows = objectMapper.convertValue(balanceSheetTableRowsNode, new TypeReference<>(){});
+        JsonNode incomeStatementTableRowsNode = financialRootNode.path("data").path("incomeStatementTable").path("rows");
+        List<Map<String,String>> incomeStatementTableRows = objectMapper.convertValue(incomeStatementTableRowsNode, new TypeReference<>(){});
+
+        for(Map<String,String> row : balanceSheetTableRows) {
+            String key = row.get("value1");
+            String value = row.get("value2");
+            if("Total Equity".equals(key)) {
+                totalEquity = convertCurrencyToNumber(value);
+            }
+            if("Total Assets".equals(key)) {
+                totalAssets = convertCurrencyToNumber(value);
+            }
+        }
+
+        for(Map<String,String> row : incomeStatementTableRows) {
+            String key = row.get("value1");
+            String value = row.get("value2");
+            if("Net Income".equals(key)) {
+                netIncome = convertCurrencyToNumber(value);
+            }
+        }
+
+        // roe
+        if(netIncome != null && totalEquity != null) {
+            roe = netIncome.divide(totalEquity, 8, RoundingMode.HALF_UP)
+                    .multiply(BigDecimal.valueOf(100));
+        }
+
+        // roa
+        if(netIncome != null && totalAssets != null) {
+            roa = netIncome.divide(totalAssets, 8, RoundingMode.HALF_UP)
+                    .multiply(BigDecimal.valueOf(100));
+        }
+
+        // return
+        Map<String,String> assetDetail = new LinkedHashMap<>();
+        assetDetail.put("marketCap", Optional.ofNullable(marketCap).map(BigDecimal::toPlainString).orElse(null));
+        assetDetail.put("eps", Optional.ofNullable(eps).map(BigDecimal::toPlainString).orElse(null));
+        assetDetail.put("roe", Optional.ofNullable(roe).map(BigDecimal::toPlainString).orElse(null));
+        assetDetail.put("roa", Optional.ofNullable(roa).map(BigDecimal::toPlainString).orElse(null));
+        assetDetail.put("per", Optional.ofNullable(per).map(BigDecimal::toPlainString).orElse(null));
+        assetDetail.put("dividendYield", Optional.ofNullable(dividendYield).map(BigDecimal::toPlainString).orElse(null));
+        return assetDetail;
     }
 
     /**
      * applies etf asset detail
      * @param asset etf asset
      */
-    void applyEtfAssetDetail(Asset asset) {
+    Map<String,String> getEtfAssetDetail(Asset asset) {
+        BigDecimal marketCap = null;
+        BigDecimal dividendYield = null;
+
+        // calls summary api
+        HttpHeaders headers = createNasdaqHeaders();
+        String summaryUrl = String.format(
+                "https://api.nasdaq.com/api/quote/%s/summary?assetclass=etf",
+                asset.getSymbol()
+        );
+        RequestEntity<Void> summaryRequestEntity = RequestEntity.get(summaryUrl)
+                .headers(headers)
+                .build();
+        ResponseEntity<String> summaryResponseEntity = restTemplate.exchange(summaryRequestEntity, String.class);
+        JsonNode summaryRootNode;
         try {
-            BigDecimal marketCap = null;
-            BigDecimal dividendYield = null;
-
-            // calls summary api
-            HttpHeaders headers = createNasdaqHeaders();
-            String summaryUrl = String.format(
-                    "https://api.nasdaq.com/api/quote/%s/summary?assetclass=etf",
-                    asset.getSymbol()
-            );
-            RequestEntity<Void> summaryRequestEntity = RequestEntity.get(summaryUrl)
-                    .headers(headers)
-                    .build();
-            ResponseEntity<String> summaryResponseEntity = restTemplate.exchange(summaryRequestEntity, String.class);
-            JsonNode summaryRootNode;
-            try {
-                summaryRootNode = objectMapper.readTree(summaryResponseEntity.getBody());
-            } catch (JsonProcessingException e) {
-                throw new RuntimeException(e);
-            }
-            JsonNode summaryDataNode = summaryRootNode.path("data").path("summaryData");
-            HashMap<String, Map<String,String>> summaryDataMap = objectMapper.convertValue(summaryDataNode, new TypeReference<>() {});
-
-            // price, market cap
-            for(String name : summaryDataMap.keySet()) {
-                Map<String, String> map = summaryDataMap.get(name);
-                String value = map.get("value");
-                if (Objects.equals(name, "MarketCap")) {
-                    marketCap = convertStringToNumber(value);
-                }
-                if (Objects.equals(name, "Yield")) {
-                    dividendYield = convertPercentageToNumber(value);
-                }
-            }
-
-            // sets details
-            asset.setMarketCap(marketCap);
-            asset.setDividendYield(dividendYield);
-
-        } catch (Throwable e) {
+            summaryRootNode = objectMapper.readTree(summaryResponseEntity.getBody());
+        } catch (JsonProcessingException e) {
             throw new RuntimeException(e);
         }
+        JsonNode summaryDataNode = summaryRootNode.path("data").path("summaryData");
+        HashMap<String, Map<String,String>> summaryDataMap = objectMapper.convertValue(summaryDataNode, new TypeReference<>() {});
+
+        // price, market cap
+        for(String name : summaryDataMap.keySet()) {
+            Map<String, String> map = summaryDataMap.get(name);
+            String value = map.get("value");
+            if (Objects.equals(name, "MarketCap")) {
+                marketCap = convertStringToNumber(value);
+            }
+            if (Objects.equals(name, "Yield")) {
+                dividendYield = convertPercentageToNumber(value);
+            }
+        }
+
+        // return
+        Map<String,String> assetDetail = new LinkedHashMap<>();
+        assetDetail.put("marketCap", Optional.ofNullable(marketCap).map(BigDecimal::toPlainString).orElse(null));
+        assetDetail.put("dividendYield", Optional.ofNullable(dividendYield).map(BigDecimal::toPlainString).orElse(null));
+        return assetDetail;
     }
 
     /**

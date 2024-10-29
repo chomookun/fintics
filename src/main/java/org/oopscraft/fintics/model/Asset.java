@@ -29,13 +29,13 @@ public class Asset {
 
     private BigDecimal marketCap;
 
-    private BigDecimal per;
-
     private BigDecimal eps;
 
     private BigDecimal roe;
 
     private BigDecimal roa;
+
+    private BigDecimal per;
 
     private BigDecimal dividendYield;
 
@@ -81,10 +81,10 @@ public class Asset {
                 .type(assetEntity.getType())
                 .updatedDate(assetEntity.getUpdatedDate())
                 .marketCap(assetEntity.getMarketCap())
-                .per(assetEntity.getPer())
                 .eps(assetEntity.getEps())
                 .roe(assetEntity.getRoe())
                 .roa(assetEntity.getRoa())
+                .per(assetEntity.getPer())
                 .dividendYield(assetEntity.getDividendYield())
                 .build();
     }

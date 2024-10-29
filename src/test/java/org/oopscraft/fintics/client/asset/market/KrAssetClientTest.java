@@ -9,7 +9,10 @@ import org.oopscraft.fintics.client.asset.AssetClientProperties;
 import org.oopscraft.fintics.model.Asset;
 import org.springframework.boot.test.context.SpringBootTest;
 
+import java.math.BigDecimal;
+import java.time.LocalDate;
 import java.util.List;
+import java.util.Map;
 
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -32,36 +35,67 @@ class KrAssetClientTest extends CoreTestSupport {
         // then
         log.info("assets: {}", assets);
         assertTrue(assets.size() > 0);
+        assertTrue(assets.stream().allMatch(asset ->
+                asset.getAssetId() != null &&
+                        asset.getName() != null &&
+                        asset.getMarket() != null &&
+                        asset.getExchange() != null &&
+                        asset.getType() != null));
     }
 
     @Test
-    void applyAssetDetail() {
+    void getStockAssetDetail() {
         // given
         Asset asset = Asset.builder()
                 .assetId("KR.005930")
                 .name("Samsung Electronics")
                 .market("KR")
                 .type("STOCK")
+                .marketCap(BigDecimal.TEN)
                 .build();
         // when
-        getKrAssetClient().applyAssetDetail(asset);
+        Map<String,String> assetDetail = getKrAssetClient().getStockAssetDetail(asset);
         // then
-        log.info("asset: {}", asset);
+        log.info("assetDetail: {}", assetDetail);
+        assertNotNull(assetDetail.get("marketCap"));
+        assertNotNull(assetDetail.get("eps"));
+        assertNotNull(assetDetail.get("roe"));
+        assertNotNull(assetDetail.get("roa"));
+        assertNotNull(assetDetail.get("per"));
+        assertNotNull(assetDetail.get("dividendYield"));
     }
 
     @Test
-    void applyAssetDetailIfInvalidSymbol() {
+    void getEtfAssetDetail() {
         // given
         Asset asset = Asset.builder()
-                .assetId("KR.00Invalid")
-                .name("test")
+                .assetId("KR.069500")
+                .name("KODEX 200")
                 .market("KR")
-                .type("STOCK")
+                .type("ETF")
+                .marketCap(BigDecimal.TEN)
                 .build();
         // when
-        getKrAssetClient().applyAssetDetail(asset);
+        Map<String,String> assetDetail = getKrAssetClient().getEtfAssetDetail(asset);
         // then
-        log.info("asset: {}", asset);
+        log.info("assetDetail: {}", assetDetail);
+        assertNotNull(assetDetail.get("marketCap"));
+        assertNotNull(assetDetail.get("dividendYield"));
+    }
+
+    @Test
+    void getEtfDividendYield() {
+        // given
+        Asset asset = Asset.builder()
+                .assetId("KR.069500")
+                .name("KODEX 200")
+                .market("KR")
+                .type("ETF")
+                .build();
+        // when
+        BigDecimal dividendYield = getKrAssetClient().getEtfDividendYield(asset);
+        // then
+        log.info("dividendYield:{}", dividendYield);
     }
 
 }

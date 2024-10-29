@@ -11,6 +11,7 @@ import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.PlatformTransactionManager;
 
+import java.math.BigDecimal;
 import java.time.Instant;
 import java.time.LocalDate;
 import java.util.*;
@@ -37,7 +38,6 @@ public class AssetCollector extends AbstractCollector {
         try {
             log.info("AssetCollector - Start collect asset.");
             saveAssets();
-            updateAssetDetail();
             log.info("AssetCollector - End collect asset");
         } catch(Throwable e) {
             log.error(e.getMessage(), e);
@@ -50,91 +50,64 @@ public class AssetCollector extends AbstractCollector {
      * saves assets
      */
     void saveAssets() {
-        // merge (상장 폐지 등 삭제 종목 제외는 skip)
-        List<AssetEntity> assetEntities = assetRepository.findAll();
-        List<Asset> assets = assetClient.getAssets();
-        for (Asset asset : assets) {
-            AssetEntity assetEntity = assetEntities.stream()
-                    .filter(it -> Objects.equals(it.getAssetId(), asset.getAssetId()))
-                    .findFirst()
-                    .orElse(null);
-            if (assetEntity == null) {
-                assetEntity = AssetEntity.builder()
-                        .assetId(asset.getAssetId())
-                        .build();
-                assetEntities.add(assetEntity);     // add new
-            }
-            assetEntity.setName(asset.getName());
-            assetEntity.setMarket(asset.getMarket());
-            assetEntity.setExchange(asset.getExchange());
-            assetEntity.setType(asset.getType());
-            assetEntity.setMarketCap(asset.getMarketCap());
-        }
-
-        // saves
-        log.info("AssetCollector - save assetEntities:{}", assetEntities.size());
-        saveEntities("assetEntities", assetEntities, transactionManager, assetRepository);
-    }
-
-    /**
-     * updates asset detail
-     */
-    void updateAssetDetail() {
-        List<AssetEntity> assetEntities = assetRepository.findAll();
-
-        // 현재 Basket 에 등록된 종목 먼저 처리
-        Set<String> assetIds = new HashSet<>();
-        List<BasketEntity> basketEntities = basketRepository.findAll();
-        basketEntities.forEach(basketEntity -> {
-            basketEntity.getBasketAssets().forEach(basketAssetEntity -> {
-                assetIds.add(basketAssetEntity.getAssetId());
-            });
+        // basket 에 등록된 asset id 추출
+        List<String> basketAssetIds = new ArrayList<>();
+        basketRepository.findAll().forEach(basketEntity -> {
+            basketAssetIds.addAll(basketEntity.getBasketAssets().stream()
+                    .map(BasketAssetEntity::getAssetId)
+                    .toList());
         });
 
-        // 부하 문제로 정렬 하지 않고 그룹핑 후 결합
-        List<AssetEntity> inSetAssets = new ArrayList<>();
-        List<AssetEntity> notInSetAssets = new ArrayList<>();
-        for (AssetEntity assetEntity : assetEntities) {
-            if (assetIds.contains(assetEntity.getAssetId())) {
-                inSetAssets.add(assetEntity);
+        // AssetClient 로 부터 Assets 조회
+        List<Asset> assetsFromClient = assetClient.getAssets();
+
+        // basket 에 등록된 Asset 우선 처리 하도록 List 조합
+        List<Asset> assetsInBasket = new ArrayList<>();
+        List<Asset> assetsNotInBasket = new ArrayList<>();
+        assetsFromClient.forEach(it -> {
+            if (basketAssetIds.contains(it.getAssetId())) {
+                assetsInBasket.add(it);
             } else {
-                notInSetAssets.add(assetEntity);
+                assetsNotInBasket.add(it);
             }
-        }
+        });
+        List<Asset> assets = new ArrayList<>();
+        assets.addAll(assetsInBasket);
+        assets.addAll(assetsNotInBasket);
 
-        // inSetAssets 이 우선, 뒤에 notInSetAssets 을 concat
-        assetEntities.clear();
-        assetEntities.addAll(inSetAssets);
-        assetEntities.addAll(notInSetAssets);
-
-        // loop
-        for(AssetEntity assetEntity : assetEntities) {
-            LocalDate updatedDate = LocalDate.now();
-            // check updated date
-            if (assetEntity.getUpdatedDate() != null && assetEntity.getUpdatedDate().equals(updatedDate)) {
-                continue;
-            }
-            Asset asset = Asset.from(assetEntity);
+        // merge (상장 폐지 등 삭제 종목 제외는 skip)
+        for (Asset asset : assets) {
             try {
-                // applies asset detail
-                assetClient.applyAssetDetail(asset);
+                AssetEntity assetEntity = assetRepository.findById(asset.getAssetId()).orElse(null);
+                if (assetEntity == null) {
+                    assetEntity = AssetEntity.builder()
+                            .assetId(asset.getAssetId())
+                            .build();
+                }
+                assetEntity.setName(asset.getName());
+                assetEntity.setMarket(asset.getMarket());
+                assetEntity.setExchange(asset.getExchange());
+                assetEntity.setType(asset.getType());
 
-                // updates field
-                assetEntity.setUpdatedDate(updatedDate);
-                assetEntity.setMarketCap(asset.getMarketCap());
-                assetEntity.setPer(asset.getPer());
-                assetEntity.setEps(asset.getEps());
-                assetEntity.setRoe(asset.getRoe());
-                assetEntity.setRoa(asset.getRoa());
-                assetEntity.setDividendYield(asset.getDividendYield());
+                // gets asset details
+                Map<String, String> assetDetail = assetClient.getAssetDetail(asset);
+                assetEntity.setUpdatedDate(LocalDate.now());
+                assetEntity.setMarketCap(Optional.ofNullable(assetDetail.get("marketCap")).map(BigDecimal::new).orElse(null));
+                assetEntity.setEps(Optional.ofNullable(assetDetail.get("eps")).map(BigDecimal::new).orElse(null));
+                assetEntity.setRoe(Optional.ofNullable(assetDetail.get("roe")).map(BigDecimal::new).orElse(null));
+                assetEntity.setRoa(Optional.ofNullable(assetDetail.get("roa")).map(BigDecimal::new).orElse(null));
+                assetEntity.setPer(Optional.ofNullable(assetDetail.get("per")).map(BigDecimal::new).orElse(null));
+                assetEntity.setDividendYield(Optional.ofNullable(assetDetail.get("dividendYield")).map(BigDecimal::new).orElse(null));
 
-                // saves entity
-                saveEntities("updateAssetEntity", List.of(assetEntity), transactionManager, assetRepository);
-
-                // force sleep (Since it is crawling, you may be blocked, so adjust the flow rate)
-                Thread.sleep(1000);
-            } catch (Throwable e) {
-                log.warn(e.getMessage());
+                // saves
+                saveEntities("assetEntity", List.of(assetEntity), transactionManager, assetRepository);
+            } catch (Throwable t) {
+                log.warn(t.getMessage());
+            } finally {
+                // 블럭 당할수 있음 으로 유량 조절
+                try {
+                    Thread.sleep(3_000);
+                } catch(Throwable ignore){}
             }
         }
     }

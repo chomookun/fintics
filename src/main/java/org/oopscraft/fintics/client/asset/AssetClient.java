@@ -4,6 +4,7 @@ import lombok.Getter;
 import org.oopscraft.fintics.model.Asset;
 
 import java.util.List;
+import java.util.Map;
 
 public abstract class AssetClient {
 
@@ -32,10 +33,10 @@ public abstract class AssetClient {
     public abstract boolean isSupportAssetDetail(Asset asset);
 
     /**
-     * applies asset details
+     * return asset details
      * @param asset asset
      */
-    public abstract void applyAssetDetail(Asset asset);
+    public abstract Map<String,String> getAssetDetail(Asset asset);
 
     /**
      * convert to asset id

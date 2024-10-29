@@ -29,13 +29,11 @@ import java.io.StringWriter;
 import java.math.BigDecimal;
 import java.math.MathContext;
 import java.math.RoundingMode;
+import java.time.LocalDate;
 import java.time.ZoneId;
 import java.time.ZonedDateTime;
 import java.time.format.DateTimeFormatter;
-import java.util.ArrayList;
-import java.util.LinkedHashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.stream.Collectors;
 
 @Slf4j
@@ -67,23 +65,12 @@ public class KrAssetClient extends AssetClient {
         return assets;
     }
 
-    @Override
-    public boolean isSupportAssetDetail(Asset asset) {
-        return asset.getAssetId().startsWith("KR.");
-    }
-
-    @Override
-    public void applyAssetDetail(Asset asset) {
-        if ("STOCK".equals(asset.getType())) {
-            applyStockAssetDetail(asset);
-        }
-    }
-
     /**
      * returns asset list by exchange type
      * 코스피, 코스닥 여부에 따라 다른 부분이 존재 함.
      * @param exchangeType exchange type
      * @return assets
+     * @see "https://seibro.or.kr/websquare/control.jsp?w2xPath=/IPORTAL/user/stock/BIP_CNTS02004V.xml&menuNo=41"
      */
     List<Asset> getStockAssetsByExchangeType(String exchangeType) {
         String url = "https://seibro.or.kr/websquare/engine/proworks/callServletService.jsp";
@@ -109,7 +96,7 @@ public class KrAssetClient extends AssetClient {
             put("START_PAGE", "1");
             put("END_PAGE", "10000");
         }};
-        String payloadXml = createPayloadXml(action, task, payloadMap);
+        String payloadXml = createSeibroPayloadXml(action, task, payloadMap);
 
         RequestEntity<String> requestEntity = RequestEntity.post(url)
                 .headers(headers)
@@ -117,7 +104,7 @@ public class KrAssetClient extends AssetClient {
         ResponseEntity<String> responseEntity = restTemplate.exchange(requestEntity, String.class);
 
         String responseBody = responseEntity.getBody();
-        List<Map<String, String>> rows = convertXmlToList(responseBody);
+        List<Map<String, String>> rows = convertSeibroXmlToList(responseBody);
 
         // sort
         rows.sort((o1, o2) -> {
@@ -142,6 +129,7 @@ public class KrAssetClient extends AssetClient {
                             .market(MARKET_KR)
                             .exchange(exchange)
                             .type("STOCK")
+                            .updatedDate(LocalDate.now())
                             .marketCap(toNumber(row.get("MARTP_TOTAMT"), null))
                             .build();
                 })
@@ -176,7 +164,7 @@ public class KrAssetClient extends AssetClient {
             put("START_PAGE", "1");
             put("END_PAGE", "10000");
         }};
-        String payloadXml = createPayloadXml(action, task, payloadMap);
+        String payloadXml = createSeibroPayloadXml(action, task, payloadMap);
 
         RequestEntity<String> requestEntity = RequestEntity.post(url)
                 .headers(headers)
@@ -184,7 +172,7 @@ public class KrAssetClient extends AssetClient {
         ResponseEntity<String> responseEntity = restTemplate.exchange(requestEntity, String.class);
 
         String responseBody = responseEntity.getBody();
-        List<Map<String, String>> rows = convertXmlToList(responseBody);
+        List<Map<String, String>> rows = convertSeibroXmlToList(responseBody);
 
         // sort
         rows.sort((o1, o2) -> {
@@ -219,11 +207,26 @@ public class KrAssetClient extends AssetClient {
                 .collect(Collectors.toList());
     }
 
-    void applyStockAssetDetail(Asset asset) {
-        BigDecimal per = null;
+    @Override
+    public boolean isSupportAssetDetail(Asset asset) {
+        return asset.getAssetId().startsWith("KR.");
+    }
+
+    @Override
+    public Map<String, String> getAssetDetail(Asset asset) {
+        return switch(Optional.ofNullable(asset.getType()).orElse("")) {
+            case "STOCK" -> getStockAssetDetail(asset);
+            case "ETF" -> getEtfAssetDetail(asset);
+            default -> Collections.emptyMap();
+        };
+    }
+
+    Map<String, String> getStockAssetDetail(Asset asset) {
+        BigDecimal marketCap = asset.getMarketCap();    // default is input asset
         BigDecimal eps = null;
         BigDecimal roe = null;
         BigDecimal roa = null;
+        BigDecimal per = null;
         BigDecimal dividendYield = null;
 
         // request template
@@ -248,7 +251,7 @@ public class KrAssetClient extends AssetClient {
                 put("SHOTN_ISIN", shotnIsin);
                 put("ISSUCO_CUSTNO", issucoCustno);
             }};
-            String payloadXml = createPayloadXml(action, task, payloadMap);
+            String payloadXml = createSeibroPayloadXml(action, task, payloadMap);
             RequestEntity<String> requestEntity = RequestEntity.post(url)
                     .headers(headers)
                     .body(payloadXml);
@@ -256,7 +259,7 @@ public class KrAssetClient extends AssetClient {
             ResponseEntity<String> responseEntity = restTemplate.exchange(requestEntity, String.class);
             // response
             String responseBody = responseEntity.getBody();
-            List<Map<String,String>> responseList = convertXmlToList(responseBody);
+            List<Map<String,String>> responseList = convertSeibroXmlToList(responseBody);
             // find value
             for(Map<String,String> row : responseList) {
                 String name = row.get("HB");
@@ -294,7 +297,7 @@ public class KrAssetClient extends AssetClient {
                 put("STD_DT", now.format(DateTimeFormatter.ofPattern("yyyyMMdd")));
                 put("SETACC_YYMM3", now.minusYears(1).format(DateTimeFormatter.ofPattern("yyyy")));
             }};
-            String payloadXml = createPayloadXml(action, task, payloadMap);
+            String payloadXml = createSeibroPayloadXml(action, task, payloadMap);
             RequestEntity<String> requestEntity = RequestEntity.post(url)
                     .headers(headers)
                     .body(payloadXml);
@@ -302,7 +305,7 @@ public class KrAssetClient extends AssetClient {
             ResponseEntity<String> responseEntity = restTemplate.exchange(requestEntity, String.class);
             // response
             String responseBody = responseEntity.getBody();
-            List<Map<String,String>> responseList = convertXmlToList(responseBody);
+            List<Map<String,String>> responseList = convertSeibroXmlToList(responseBody);
             // find value
             for(Map<String,String> row : responseList) {
                 String name = row.get("HB");
@@ -316,11 +319,63 @@ public class KrAssetClient extends AssetClient {
         }
 
         // sets stock info
-        asset.setPer(per);
-        asset.setEps(eps);
-        asset.setRoe(roe);
-        asset.setRoa(roa);
-        asset.setDividendYield(dividendYield);
+        Map<String,String> assetDetail = new LinkedHashMap<>();
+        assetDetail.put("marketCap", Optional.ofNullable(marketCap).map(BigDecimal::toPlainString).orElse(null));
+        assetDetail.put("eps", Optional.ofNullable(eps).map(BigDecimal::toPlainString).orElse(null));
+        assetDetail.put("roe", Optional.ofNullable(roe).map(BigDecimal::toPlainString).orElse(null));
+        assetDetail.put("roa", Optional.ofNullable(roa).map(BigDecimal::toPlainString).orElse(null));
+        assetDetail.put("per", Optional.ofNullable(per).map(BigDecimal::toPlainString).orElse(null));
+        assetDetail.put("dividendYield", Optional.ofNullable(dividendYield).map(BigDecimal::toPlainString).orElse(null));
+
+        // returns
+        return assetDetail;
+    }
+
+    Map<String, String> getEtfAssetDetail(Asset asset) {
+        Map<String, String> assetDetail = new LinkedHashMap<>();
+        BigDecimal marketCap = asset.getMarketCap();
+        BigDecimal dividendYield = getEtfDividendYield(asset);
+        assetDetail.put("marketCap", Optional.ofNullable(marketCap)
+                .map(BigDecimal::toPlainString)
+                .orElse(null));
+        assetDetail.put("dividendYield", Optional.ofNullable(dividendYield)
+                .map(BigDecimal::toPlainString)
+                .orElse(null));
+        return assetDetail;
+    }
+
+    BigDecimal getEtfDividendYield(Asset asset) {
+        LocalDate dateFrom = LocalDate.now().minusYears(1);
+        LocalDate dateTo = LocalDate.now();
+        String url = "https://seibro.or.kr/websquare/engine/proworks/callServletService.jsp";
+        String w2xPath = "/IPORTAL/user/etf/BIP_CNTS06030V.xml";
+        HttpHeaders headers = createSeibroHeaders(w2xPath);
+        headers.setContentType(MediaType.APPLICATION_XML);
+        String action = "exerInfoDtramtPayStatPlist";
+        String task = "ksd.safe.bip.cnts.etf.process.EtfExerInfoPTask";
+        Map<String,String> secInfo = getSecInfo(asset.getSymbol());
+        String isin = secInfo.get("ISIN");
+        Map<String,String> payloadMap = new LinkedHashMap<>(){{
+            put("W2XPATH", w2xPath);
+            put("MENU_NO","179");
+            put("CMM_BTN_ABBR_NM","allview,allview,print,hwp,word,pdf,searchIcon,searchIcon,seach,searchIcon,seach,link,link,wide,wide,top,");
+            put("isin", isin);
+            put("RGT_RSN_DTAIL_SORT_CD", "11");
+            put("fromRGT_STD_DT", dateFrom.format(DateTimeFormatter.BASIC_ISO_DATE));
+            put("toRGT_STD_DT", dateTo.format(DateTimeFormatter.BASIC_ISO_DATE));
+            put("START_PAGE", String.valueOf(1));
+            put("END_PAGE", String.valueOf(30));
+        }};
+        String payloadXml = createSeibroPayloadXml(action, task, payloadMap);
+        RequestEntity<String> requestEntity = RequestEntity.post(url)
+                .headers(headers)
+                .body(payloadXml);
+        ResponseEntity<String> responseEntity = restTemplate.exchange(requestEntity, String.class);
+        String responseBody = responseEntity.getBody();
+        List<Map<String, String>> rows = convertSeibroXmlToList(responseBody);
+        return rows.stream()
+                .map(row -> new BigDecimal(row.get("BUNBE")))
+                .reduce(BigDecimal.ZERO, BigDecimal::add);
     }
 
     /**
@@ -339,13 +394,13 @@ public class KrAssetClient extends AssetClient {
             put("W2XPATH", w2xPath);
             put("SHOTN_ISIN", symbol);
         }};
-        String payloadXml = createPayloadXml(action, task, payloadMap);
+        String payloadXml = createSeibroPayloadXml(action, task, payloadMap);
         RequestEntity<String> requestEntity = RequestEntity.post(url)
                 .headers(headers)
                 .body(payloadXml);
         ResponseEntity<String> responseEntity = restTemplate.exchange(requestEntity, String.class);
         String responseBody = responseEntity.getBody();
-        return convertXmlToMap(responseBody);
+        return convertSeibroXmlToMap(responseBody);
     }
 
     /**
@@ -368,7 +423,7 @@ public class KrAssetClient extends AssetClient {
      * @param payloadMap payload map
      * @return payload XML string
      */
-    String createPayloadXml(String action, String task, Map<String,String> payloadMap) {
+    static String createSeibroPayloadXml(String action, String task, Map<String,String> payloadMap) {
         // Create a new Document
         DocumentBuilderFactory dbFactory = DocumentBuilderFactory.newInstance();
         DocumentBuilder dBuilder ;
@@ -420,7 +475,7 @@ public class KrAssetClient extends AssetClient {
      * @param responseXml response xml
      * @return map
      */
-    Map<String, String> convertXmlToMap(String responseXml) {
+    Map<String, String> convertSeibroXmlToMap(String responseXml) {
         Map<String, String> map  = new LinkedHashMap<>();
         InputSource inputSource;
         StringReader stringReader;
@@ -452,7 +507,7 @@ public class KrAssetClient extends AssetClient {
      * @param responseXml response XML
      * @return list of seibro response map
      */
-    public static List<Map<String, String>> convertXmlToList(String responseXml) {
+    static List<Map<String, String>> convertSeibroXmlToList(String responseXml) {
         List<Map<String,String>> list = new ArrayList<>();
         InputSource inputSource;
         StringReader stringReader;
