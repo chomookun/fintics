@@ -22,7 +22,7 @@ spring:
 
 # web
 web:
-  brand: <span><img src="/static/image/fintics-icon.svg"/><img src="/static/image/fintics-title.svg"/></span>
+  brand: <img src="/static/image/fintics-icon.svg"/><img src="/static/image/fintics-title.svg"/>
   favicon: /static/image/fintics-icon.svg
   title: Fintics
   index: monitors
