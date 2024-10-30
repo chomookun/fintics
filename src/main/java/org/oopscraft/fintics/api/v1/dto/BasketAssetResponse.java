@@ -31,6 +31,7 @@ public class BasketAssetResponse extends AssetResponse {
         return BasketAssetResponse.builder()
                 .basketId(basketAsset.getBasketId())
                 .assetId(basketAsset.getAssetId())
+                .symbol(basketAsset.getSymbol())
                 .name(basketAsset.getName())
                 .market(basketAsset.getMarket())
                 .type(basketAsset.getType())
@@ -47,8 +48,6 @@ public class BasketAssetResponse extends AssetResponse {
                 .holdingWeight(basketAsset.getHoldingWeight())
                 .variables(basketAsset.getVariables())
                 .sort(basketAsset.getSort())
-                .icon(basketAsset.getIcon())
-                .links(LinkResponse.from(basketAsset.getLinks()))
                 .build();
     }
 

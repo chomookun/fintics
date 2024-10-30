@@ -34,6 +34,7 @@ public class BalanceAssetResponse extends AssetResponse {
     public static BalanceAssetResponse from(BalanceAsset balanceAsset) {
         return BalanceAssetResponse.builder()
                 .assetId(balanceAsset.getAssetId())
+                .symbol(balanceAsset.getSymbol())
                 .name(balanceAsset.getName())
                 .accountNo(balanceAsset.getAccountNo())
                 .quantity(balanceAsset.getQuantity())
@@ -45,8 +46,6 @@ public class BalanceAssetResponse extends AssetResponse {
                 .profitAmount(balanceAsset.getProfitAmount())
                 .profitPercentage(balanceAsset.getProfitPercentage())
                 .type(balanceAsset.getType())
-                .icon(balanceAsset.getIcon())
-                .links(LinkResponse.from(balanceAsset.getLinks()))
                 .build();
     }
 }

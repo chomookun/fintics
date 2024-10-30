@@ -19,6 +19,8 @@ public class AssetResponse {
 
     private String name;
 
+    private String symbol;
+
     private String market;
 
     private String exchange;
@@ -39,7 +41,22 @@ public class AssetResponse {
 
     private BigDecimal dividendYield;
 
-    private String icon;
+    /**
+     * get asset icon
+     * @return icon url
+     */
+    public String getIcon() {
+        return IconFactory.getIcon(this);
+    }
+
+    /**
+     * gets asset link
+     * @return link url
+     */
+    public List<LinkResponse> getLinks() {
+        return LinkResponseFactory.getLinks(this);
+    }
+
 
     @Builder.Default
     private List<LinkResponse> links = new ArrayList<>();
@@ -47,6 +64,7 @@ public class AssetResponse {
     public static AssetResponse from(Asset asset) {
         return AssetResponse.builder()
                 .assetId(asset.getAssetId())
+                .symbol(asset.getSymbol())
                 .name(asset.getName())
                 .market(asset.getMarket())
                 .exchange(asset.getExchange())
@@ -58,8 +76,6 @@ public class AssetResponse {
                 .roa(asset.getRoa())
                 .per(asset.getPer())
                 .dividendYield(asset.getDividendYield())
-                .icon(asset.getIcon())
-                .links(LinkResponse.from(asset.getLinks()))
                 .build();
     }
 

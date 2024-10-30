@@ -11,7 +11,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 
 
 @Slf4j
-public class ProfileTest {
+public class TradeAssetTest {
 
     @Test
     void getOhlcvs() {
@@ -26,10 +26,10 @@ public class ProfileTest {
         }};
 
         // when
-        TradeAsset profile = TradeAsset.builder()
+        TradeAsset tradeAsset = TradeAsset.builder()
                 .minuteOhlcvs(minuteOhlcvs)
                 .build();
-        List<Ohlcv> resampleOhlcvs = profile.getOhlcvs(Ohlcv.Type.MINUTE, 3);
+        List<Ohlcv> resampleOhlcvs = tradeAsset.getOhlcvs(Ohlcv.Type.MINUTE, 3);
 
         // then
         log.info("resampleOhlcvs:{}", resampleOhlcvs);
@@ -54,10 +54,10 @@ public class ProfileTest {
         }};
 
         // when
-        TradeAsset profile = TradeAsset.builder()
+        TradeAsset tradeAsset = TradeAsset.builder()
                 .minuteOhlcvs(minuteOhlcvs)
                 .build();
-        List<Ohlcv> resampleOhlcvs = profile.getOhlcvs(Ohlcv.Type.MINUTE, 3);
+        List<Ohlcv> resampleOhlcvs = tradeAsset.getOhlcvs(Ohlcv.Type.MINUTE, 3);
 
         // then
         log.info("resampleOhlcvs:{}", resampleOhlcvs);
@@ -85,10 +85,10 @@ public class ProfileTest {
         }};
 
         // when
-        TradeAsset profile = TradeAsset.builder()
+        TradeAsset tradeAsset = TradeAsset.builder()
                 .minuteOhlcvs(minuteOhlcvs)
                 .build();
-        List<Ohlcv> resampleOhlcvs = profile.getOhlcvs(Ohlcv.Type.MINUTE, 3);
+        List<Ohlcv> resampleOhlcvs = tradeAsset.getOhlcvs(Ohlcv.Type.MINUTE, 3);
 
         // then
         log.info("resampleOhlcvs:{}", resampleOhlcvs);

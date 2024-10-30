@@ -4,7 +4,6 @@ import lombok.*;
 import lombok.experimental.SuperBuilder;
 import org.oopscraft.fintics.dao.AssetEntity;
 
-import java.io.Serializable;
 import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.util.*;
@@ -49,22 +48,6 @@ public class Asset {
                 .filter(array -> array.length > 1)
                 .map(array -> array[1])
                 .orElseThrow(() -> new RuntimeException(String.format("invalid assetId[%s]", getAssetId())));
-    }
-
-    /**
-     * get asset icon
-     * @return icon url
-     */
-    public String getIcon() {
-        return IconFactory.getIcon(this);
-    }
-
-    /**
-     * gets asset link
-     * @return link url
-     */
-    public List<Link> getLinks() {
-        return LinkFactory.getLinks(this);
     }
 
     /**

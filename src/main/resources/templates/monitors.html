@@ -9,7 +9,6 @@
         Chart.defaults.font.size = 8;
         Chart.defaults.animation = false;
         const trades = new duice.ArrayProxy(/*[[${trades}]]*/[]);
-        const baskets = /*[[${baskets}]]*/[];
 
         // creates monitor map
         const monitorMap = new Map();
@@ -18,9 +17,9 @@
                 trade: trade,
                 dailyOhlcvsChart: null,
                 minuteOhlcvsChart: null,
-                basket: JSON.parse(JSON.stringify(baskets.find(it => it.basketId === trade.basketId) || {
+                basket: new duice.ObjectProxy({
                     basketAssets: []
-                })),
+                }),
                 balance: {},
                 orders: [],
                 /**
@@ -55,12 +54,26 @@
                 /**
                  * refresh
                  */
-                refresh: function() {
+                refresh: async function () {
+                    await this.getBasket();
                     this.getDailyOhlcvsChart();
                     this.getMinuteOhlcvsChart();
                     this.getTradeAssets();
                     this.getBalance();
                     this.getOrders();
+                },
+                getBasket: async function() {
+                    let url = `${_apiUrl}/v1/baskets/${this.trade.basketId}`;
+                    duice.ObjectProxy.clear(this.basket);
+                    this.basket._status = 'loading';
+                    await _fetch(url)
+                        .then(response => response.json())
+                        .then(responseBody => {
+                            duice.ObjectProxy.assign(this.basket, responseBody);
+                        })
+                        .finally(() => {
+                            this.basket._status = 'completed';
+                        });
                 },
                 /**
                  * gets daily ohlcvs chart
@@ -243,15 +256,6 @@
         function initializeMonitors() {
             monitorMap.forEach((monitor, tradeId) => {
                   monitor.initialize();
-            });
-        }
-
-        /**
-         * gets all trade monitors
-         */
-        function refreshMonitors() {
-            monitorMap.forEach((monitor, tradeId) => {
-                monitor.refresh();
             });
         }
 
@@ -610,13 +614,20 @@
                                 </div>
                             </td>
                         </tr>
-                        <tr th:data-duice-bind="|monitorMap.get('${trade.tradeId}').basket.basketAssets|"
-                            th:data-duice-if="|return monitorMap.get('${trade.tradeId}').basket.basketAssets.length < 1|"
-                            hidden>
+                        <tr th:data-duice-bind="|monitorMap.get('${trade.tradeId}').basket|"
+                            th:data-duice-if="|return monitorMap.get('${trade.tradeId}').basket._status === 'loading'|" hidden>
+                            <td colspan="100%" class="text-align--center">
+                                <img class="icon font-size--larger" th:src="@{/static/image/loading.svg}" alt="loading"/>
+                            </td>
+                        </tr>
+                        <tr th:data-duice-bind="|monitorMap.get('${trade.tradeId}').basket|"
+                            th:data-duice-if="|return monitorMap.get('${trade.tradeId}').basket._status == 'completed' && monitorMap.get('${trade.tradeId}').basket.basketAssets.length < 1|" hidden>
                             <td colspan="100%" class="text-align--center">
                                 <span data-th-text="#{web.global.itemNotFound(#{fintics.BasketAsset})}"></span>
                             </td>
                         </tr>
+
+
                         </tbody>
                     </table>
                 </div>
