@@ -39,11 +39,6 @@ public class MonitorsController {
                 .collect(Collectors.toList());
         modelAndView.addObject("trades", trades);
 
-        // baskets
-        List<Basket> baskets =  basketService.getBaskets(BasketSearch.builder().build(), Pageable.unpaged())
-                .getContent();
-        modelAndView.addObject("baskets", baskets);
-
         // return
         return modelAndView;
     }
