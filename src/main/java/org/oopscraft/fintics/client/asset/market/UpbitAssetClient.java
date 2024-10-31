@@ -48,7 +48,7 @@ public class UpbitAssetClient extends AssetClient {
     }
 
     @Override
-    public boolean isSupportAssetDetail(Asset asset) {
+    public boolean isSupport(Asset asset) {
         return false;
     }
 
@@ -56,6 +56,5 @@ public class UpbitAssetClient extends AssetClient {
     public Map<String, String> getAssetDetail(Asset asset) {
         return Collections.emptyMap();
     }
-
 
 }

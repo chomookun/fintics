@@ -26,11 +26,11 @@ public abstract class AssetClient {
     public abstract List<Asset> getAssets();
 
     /**
-     * checks support asset detail
+     * checks support asset
      * @param asset asset
-     * @return support detail or not
+     * @return support or not
      */
-    public abstract boolean isSupportAssetDetail(Asset asset);
+    public abstract boolean isSupport(Asset asset);
 
     /**
      * return asset details

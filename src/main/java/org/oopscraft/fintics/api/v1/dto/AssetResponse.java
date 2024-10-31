@@ -41,6 +41,8 @@ public class AssetResponse {
 
     private BigDecimal dividendYield;
 
+    private Integer dividendFrequency;
+
     /**
      * get asset icon
      * @return icon url
@@ -76,6 +78,7 @@ public class AssetResponse {
                 .roa(asset.getRoa())
                 .per(asset.getPer())
                 .dividendYield(asset.getDividendYield())
+                .dividendFrequency(asset.getDividendFrequency())
                 .build();
     }
 

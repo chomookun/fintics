@@ -38,6 +38,8 @@ public class Asset {
 
     private BigDecimal dividendYield;
 
+    private Integer dividendFrequency;
+
     /**
      * gets symbol
      * @return symbol
@@ -69,6 +71,7 @@ public class Asset {
                 .roa(assetEntity.getRoa())
                 .per(assetEntity.getPer())
                 .dividendYield(assetEntity.getDividendYield())
+                .dividendFrequency(assetEntity.getDividendFrequency())
                 .build();
     }
 

@@ -89,7 +89,24 @@ class KrAssetClientTest extends CoreTestSupport {
 
     @Disabled
     @Test
-    void getEtfDividendYield() {
+    void getStockDividends() {
+        // given
+        Asset asset = Asset.builder()
+                .assetId("KR.005930")
+                .name("Samsung Electronics")
+                .market("KR")
+                .type("STOCK")
+                .marketCap(BigDecimal.TEN)
+                .build();
+        // when
+        List<Map<String,String>> dividends = getKrAssetClient().getStockDividends(asset);
+        // then
+        log.info("dividends:{}", dividends);
+    }
+
+    @Disabled
+    @Test
+    void getEtfDividends() {
         // given
         Asset asset = Asset.builder()
                 .assetId("KR.069500")
@@ -98,9 +115,9 @@ class KrAssetClientTest extends CoreTestSupport {
                 .type("ETF")
                 .build();
         // when
-        BigDecimal dividendYield = getKrAssetClient().getEtfDividendYield(asset);
+        List<Map<String,String>> dividends = getKrAssetClient().getEtfDividends(asset);
         // then
-        log.info("dividendYield:{}", dividendYield);
+        log.info("dividends:{}", dividends);
     }
 
 }

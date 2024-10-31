@@ -98,6 +98,7 @@ public class AssetCollector extends AbstractCollector {
                 assetEntity.setRoa(Optional.ofNullable(assetDetail.get("roa")).map(BigDecimal::new).orElse(null));
                 assetEntity.setPer(Optional.ofNullable(assetDetail.get("per")).map(BigDecimal::new).orElse(null));
                 assetEntity.setDividendYield(Optional.ofNullable(assetDetail.get("dividendYield")).map(BigDecimal::new).orElse(null));
+                assetEntity.setDividendFrequency(Optional.ofNullable(assetDetail.get("dividendFrequency")).map(Integer::parseInt).orElse(null));
 
                 // saves
                 saveEntities("assetEntity", List.of(assetEntity), transactionManager, assetRepository);

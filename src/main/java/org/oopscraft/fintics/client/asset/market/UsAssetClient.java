@@ -21,6 +21,7 @@ import java.math.RoundingMode;
 import java.time.Instant;
 import java.time.LocalDate;
 import java.time.ZoneOffset;
+import java.time.format.DateTimeFormatter;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -194,7 +195,7 @@ public class UsAssetClient extends AssetClient {
     }
 
     @Override
-    public boolean isSupportAssetDetail(Asset asset) {
+    public boolean isSupport(Asset asset) {
         return asset.getAssetId().startsWith("US.");
     }
 
@@ -222,6 +223,7 @@ public class UsAssetClient extends AssetClient {
         BigDecimal roa = null;
         BigDecimal per = null;
         BigDecimal dividendYield = null;
+        Integer dividendFrequency = null;
 
         // calls summary api
         HttpHeaders headers = createNasdaqHeaders();
@@ -311,6 +313,12 @@ public class UsAssetClient extends AssetClient {
                     .multiply(BigDecimal.valueOf(100));
         }
 
+        // dividend frequency
+        List<Map<String,String>> dividends = getDividends(asset);
+        if (dividends.size() > 0) {
+            dividendFrequency = dividends.size();
+        }
+
         // return
         Map<String,String> assetDetail = new LinkedHashMap<>();
         assetDetail.put("marketCap", Optional.ofNullable(marketCap).map(BigDecimal::toPlainString).orElse(null));
@@ -319,6 +327,7 @@ public class UsAssetClient extends AssetClient {
         assetDetail.put("roa", Optional.ofNullable(roa).map(BigDecimal::toPlainString).orElse(null));
         assetDetail.put("per", Optional.ofNullable(per).map(BigDecimal::toPlainString).orElse(null));
         assetDetail.put("dividendYield", Optional.ofNullable(dividendYield).map(BigDecimal::toPlainString).orElse(null));
+        assetDetail.put("dividendFrequency", Optional.ofNullable(dividendFrequency).map(String::valueOf).orElse(null));
         return assetDetail;
     }
 
@@ -329,6 +338,7 @@ public class UsAssetClient extends AssetClient {
     Map<String,String> getEtfAssetDetail(Asset asset) {
         BigDecimal marketCap = null;
         BigDecimal dividendYield = null;
+        Integer dividendFrequency = null;
 
         // calls summary api
         HttpHeaders headers = createNasdaqHeaders();
@@ -361,11 +371,64 @@ public class UsAssetClient extends AssetClient {
             }
         }
 
+        // dividend frequency
+        List<Map<String,String>> dividends = getDividends(asset);
+        if (dividends.size() > 0) {
+            dividendFrequency = dividends.size();
+        }
+
         // return
         Map<String,String> assetDetail = new LinkedHashMap<>();
         assetDetail.put("marketCap", Optional.ofNullable(marketCap).map(BigDecimal::toPlainString).orElse(null));
         assetDetail.put("dividendYield", Optional.ofNullable(dividendYield).map(BigDecimal::toPlainString).orElse(null));
+        assetDetail.put("dividendFrequency", Optional.ofNullable(dividendFrequency).map(String::valueOf).orElse(null));
         return assetDetail;
+    }
+
+
+    List<Map<String,String>> getDividends(Asset asset) {
+        LocalDate dateFrom = LocalDate.now().minusYears(1);
+        LocalDate dateTo = LocalDate.now().minusDays(1);
+
+        // url
+        HttpHeaders headers = createYahooHeader();
+        String url = String.format("https://query1.finance.yahoo.com/v8/finance/chart/%s", asset.getSymbol());
+        url = UriComponentsBuilder.fromUriString(url)
+                .queryParam("events", "events=capitalGain|div|split")
+                .queryParam("interval", "1d")
+                .queryParam("period1", dateFrom.atStartOfDay().atOffset(ZoneOffset.UTC).toEpochSecond())
+                .queryParam("period2", dateTo.atStartOfDay().atOffset(ZoneOffset.UTC).toEpochSecond())
+                .build()
+                .toUriString();
+        RequestEntity<Void> requestEntity = RequestEntity
+                .get(url)
+                .headers(headers)
+                .build();
+        ResponseEntity<String> responseEntity = restTemplate.exchange(requestEntity, String.class);
+        JsonNode rootNode;
+        try {
+            rootNode = objectMapper.readTree(responseEntity.getBody());
+        } catch (JsonProcessingException e) {
+            throw new RuntimeException(e);
+        }
+        JsonNode resultNode = rootNode.path("chart").path("result").get(0);
+        JsonNode eventsNode = resultNode.path("events").path("dividends");
+        Map<String,Map<String,Double>> dividendsMap = objectMapper.convertValue(eventsNode, new TypeReference<>(){});
+
+        List<Map<String,String>> dividends = new ArrayList<>();
+        for (Map.Entry<String, Map<String,Double>> entry : dividendsMap.entrySet()) {
+            Map<String,Double> value = entry.getValue();
+            LocalDate date = Instant.ofEpochSecond(value.get("date").longValue())
+                    .atOffset(ZoneOffset.UTC)
+                    .toLocalDate();
+            Map<String,String> dividend = new LinkedHashMap<>();
+            dividend.put("date", date.format(DateTimeFormatter.BASIC_ISO_DATE));
+            dividend.put("amount", String.valueOf(value.get("amount")));
+            dividends.add(dividend);
+        }
+
+        // returns
+        return dividends;
     }
 
     /**

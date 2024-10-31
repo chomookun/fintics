@@ -42,9 +42,9 @@ public class SimpleAssetClient extends AssetClient {
     }
 
     @Override
-    public boolean isSupportAssetDetail(Asset asset) {
+    public boolean isSupport(Asset asset) {
         for(AssetClient assetClient : assetClients) {
-            if (assetClient.isSupportAssetDetail(asset)) {
+            if (assetClient.isSupport(asset)) {
                 return true;
             }
         }
@@ -54,7 +54,7 @@ public class SimpleAssetClient extends AssetClient {
     @Override
     public Map<String,String> getAssetDetail(Asset asset) {
         for (AssetClient assetClient : assetClients) {
-            if (assetClient.isSupportAssetDetail(asset)) {
+            if (assetClient.isSupport(asset)) {
                 return assetClient.getAssetDetail(asset);
             }
         }
