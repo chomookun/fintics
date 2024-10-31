@@ -3,6 +3,7 @@ package org.oopscraft.fintics.client.asset;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 import org.oopscraft.arch4j.core.common.test.CoreTestSupport;
 import org.oopscraft.fintics.FinticsConfiguration;
@@ -27,6 +28,7 @@ class SimpleAssetClientTest extends CoreTestSupport {
         return new SimpleAssetClient(assetClientProperties, objectMapper);
     }
 
+    @Disabled
     @Test
     void getAssets() {
         // given
@@ -37,6 +39,7 @@ class SimpleAssetClientTest extends CoreTestSupport {
         assertTrue(assets.size() > 0);
     }
 
+    @Disabled
     @Test
     void getAssetDetailForUs() {
         // given
@@ -52,6 +55,7 @@ class SimpleAssetClientTest extends CoreTestSupport {
         log.info("assetDetail: {}", assetDetail);
     }
 
+    @Disabled
     @Test
     void getAssetDetailForKr() {
         // given

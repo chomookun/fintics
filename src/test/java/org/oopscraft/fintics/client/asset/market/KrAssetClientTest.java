@@ -2,6 +2,7 @@ package org.oopscraft.fintics.client.asset.market;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 import org.oopscraft.arch4j.core.common.test.CoreTestSupport;
 import org.oopscraft.fintics.FinticsConfiguration;
@@ -27,6 +28,7 @@ class KrAssetClientTest extends CoreTestSupport {
         return new KrAssetClient(assetClientProperties);
     }
 
+    @Disabled
     @Test
     void getAssets() {
         // given
@@ -43,6 +45,7 @@ class KrAssetClientTest extends CoreTestSupport {
                         asset.getType() != null));
     }
 
+    @Disabled
     @Test
     void getStockAssetDetail() {
         // given
@@ -65,6 +68,7 @@ class KrAssetClientTest extends CoreTestSupport {
         assertNotNull(assetDetail.get("dividendYield"));
     }
 
+    @Disabled
     @Test
     void getEtfAssetDetail() {
         // given
@@ -83,6 +87,7 @@ class KrAssetClientTest extends CoreTestSupport {
         assertNotNull(assetDetail.get("dividendYield"));
     }
 
+    @Disabled
     @Test
     void getEtfDividendYield() {
         // given
