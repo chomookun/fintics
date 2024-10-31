@@ -194,6 +194,7 @@
                     url.searchParams.append('orderAtFrom', orderAtFrom);
                     url.searchParams.append('orderAtTo', orderAtTo);
                     url.searchParams.append('tradeId', this.trade.tradeId);
+                    url.searchParams.append('_size', 1000);
                     _fetch(url, null, true).then(response => response.json()).then(orders => {
                         this.applyOrders(orders);
                     });
