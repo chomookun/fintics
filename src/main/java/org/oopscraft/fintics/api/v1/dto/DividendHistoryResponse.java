@@ -21,6 +21,8 @@ public class DividendHistoryResponse {
 
     private BigDecimal dividendAmount;
 
+    private LocalDate paymentDate;
+
     public static DividendHistoryResponse from(DividendHistory dividendHistory) {
         return DividendHistoryResponse.builder()
                 .date(dividendHistory.getDate())
@@ -28,6 +30,7 @@ public class DividendHistoryResponse {
                 .name(dividendHistory.getName())
                 .holdingQuantity(dividendHistory.getHoldingQuantity())
                 .dividendAmount(dividendHistory.getDividendAmount())
+                .paymentDate(dividendHistory.getPaymentDate())
                 .build();
     }
 

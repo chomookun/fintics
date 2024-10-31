@@ -934,13 +934,9 @@ public class KisBrokerClient extends BrokerClient {
             for (Map<String, String> periodRight : periodRights) {
                 String name = periodRight.get("isin_name");
                 LocalDate recordDate = LocalDate.parse(periodRight.get("record_date"), DateTimeFormatter.BASIC_ISO_DATE);
+
+                // dividend per unit
                 BigDecimal dividendPerUnit = new BigDecimal(periodRight.getOrDefault("per_sto_divi_amt", "0"));
-                // payment date 가 없으면 skip
-                String diviPayDt = periodRight.get("divi_pay_dt");
-                if (diviPayDt == null || diviPayDt.trim().length() < 1) {
-                    continue;
-                }
-                LocalDate paymentDate = LocalDate.parse(diviPayDt, DateTimeFormatter.ofPattern("yyyy/MM/dd"));
 
                 // 배당 기준일의 보유 잔고 확인
                 Map<String,String> periodOrder = periodOrders.stream()
@@ -958,13 +954,22 @@ public class KisBrokerClient extends BrokerClient {
                             .multiply(holdingQuantity)
                             .multiply(BigDecimal.valueOf(0.85))    // 배당소득세
                             .setScale(0, RoundingMode.DOWN);
+
+                    // payment date
+                    LocalDate paymentDate = null;
+                    String diviPayDt = periodRight.get("divi_pay_dt");
+                    if (diviPayDt != null || diviPayDt.trim().length() > 0) {
+                        paymentDate = LocalDate.parse(diviPayDt, DateTimeFormatter.ofPattern("yyyy/MM/dd"));
+                    }
+
                     if (holdingQuantity.compareTo(BigDecimal.ZERO) > 0) {
                         DividendHistory dividendHistory = DividendHistory.builder()
-                                .date(paymentDate)
+                                .date(recordDate)
                                 .symbol(symbol)
                                 .name(name)
                                 .holdingQuantity(holdingQuantity)
                                 .dividendAmount(dividendAmount)
+                                .paymentDate(paymentDate)
                                 .build();
                         dividendHistories.add(dividendHistory);
                     }

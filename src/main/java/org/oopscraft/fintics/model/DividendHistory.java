@@ -20,4 +20,6 @@ public class DividendHistory {
 
     private BigDecimal dividendAmount;
 
+    private LocalDate paymentDate;
+
 }

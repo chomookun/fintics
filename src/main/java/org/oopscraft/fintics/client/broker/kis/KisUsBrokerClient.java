@@ -22,7 +22,10 @@ import java.math.RoundingMode;
 import java.time.*;
 import java.time.format.DateTimeFormatter;
 import java.time.temporal.ChronoUnit;
+import java.time.temporal.Temporal;
+import java.time.temporal.TemporalAdjuster;
 import java.util.*;
+import java.util.function.UnaryOperator;
 import java.util.stream.Collectors;
 
 /**
@@ -870,24 +873,40 @@ public class KisUsBrokerClient extends BrokerClient {
             // 권리 내역
             List<Map<String, String>> periodRights = getPeriodRights(symobl, dateFrom, dateTo);
             for (Map<String,String> periodRight : periodRights) {
-                LocalDate date = LocalDate.parse(periodRight.get("bass_dt"), DateTimeFormatter.BASIC_ISO_DATE);
+                LocalDate recordDate = LocalDate.parse(periodRight.get("bass_dt"), DateTimeFormatter.BASIC_ISO_DATE);
                 String symbol = periodRight.get("pdno");
                 String name = periodRight.get("prdt_name");
                 BigDecimal dividendPerUnit = new BigDecimal(periodRight.get("alct_frcr_unpr"));
 
-                // 체결기준 보유잔고
-                Map<String,String> paymentBalanceAsset = getPaymentBalanceAsset(date, symbol);
+                // 체결 기준 보유 잔고
+                Map<String,String> paymentBalanceAsset = getPaymentBalanceAsset(recordDate, symbol);
                 if (paymentBalanceAsset != null) {
                     BigDecimal holdingQuantity = new BigDecimal(paymentBalanceAsset.get("cblc_qty13"));
                     BigDecimal dividendAmount = dividendPerUnit
                             .multiply(holdingQuantity)
                             .setScale(2, RoundingMode.DOWN);
+
+                    // payment date 는 record date 로 부터 3 영업일 후
+                    LocalDate paymentDate = recordDate.with(temporal -> {
+                        LocalDate date = LocalDate.from(temporal);
+                        int addedDays = 0;
+                        while (addedDays < 3) {
+                            date = date.plus(1, ChronoUnit.DAYS);
+                            if (date.getDayOfWeek() != DayOfWeek.SATURDAY && date.getDayOfWeek() != DayOfWeek.SUNDAY) {
+                                addedDays++;
+                            }
+                        }
+                        return date;
+                    });
+
+                    // dividend history
                     DividendHistory dividendHistory = DividendHistory.builder()
-                            .date(date)
+                            .date(recordDate)
                             .symbol(symbol)
                             .name(name)
                             .holdingQuantity(holdingQuantity)
                             .dividendAmount(dividendAmount)
+                            .paymentDate(paymentDate)
                             .build();
                     dividendHistories.add(dividendHistory);
                 }

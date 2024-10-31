@@ -312,6 +312,7 @@
                                 <col style="width:15em;"/>
                                 <col/>
                                 <col/>
+                                <col style="width:7em;"/>
                             </colgroup>
                             <thead>
                             <tr>
@@ -320,14 +321,15 @@
                                 <th data-th-text="#{fintics.DividendHistory.name}"></th>
                                 <th data-th-text="#{fintics.DividendHistory.dividendAmount}" class="text-align--right"></th>
                                 <th data-th-text="#{fintics.DividendHistory.holdingQuantity}" class="text-align--right"></th>
+                                <th data-th-text="#{fintics.DividendHistory.paymentDate}"></th>
                             </tr>
                             </thead>
                             <tbody>
                             <tr th:data-duice-bind="|profitMap.get('${broker.brokerId}').dividendHistories|" data-duice-loop="dividendHistory,status">
                                 <td>
-                        <span data-duice-bind="dividendHistory"
-                              data-duice-property="date"
-                              data-duice-format="date('yyyy-MM-dd')" class="date"></span>
+                                    <span data-duice-bind="dividendHistory"
+                                          data-duice-property="date"
+                                          data-duice-format="date('yyyy-MM-dd')" class="date"></span>
                                 </td>
                                 <td>
                                     <span data-duice-bind="dividendHistory" data-duice-property="symbol" class="code"></span>
@@ -347,6 +349,11 @@
                                 </td>
                                 <td class="text-align--right">
                                     <span data-duice-bind="dividendHistory" data-duice-property="holdingQuantity" data-duice-format="number" class="number"></span>
+                                </td>
+                                <td>
+                                    <span data-duice-bind="dividendHistory"
+                                          data-duice-property="paymentDate"
+                                          data-duice-format="date('yyyy-MM-dd')" class="date"></span>
                                 </td>
                             </tr>
                             <tr th:data-duice-bind="|profitSearchMap.get('${broker.brokerId}')|"
