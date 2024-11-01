@@ -43,6 +43,7 @@ public class BasketAssetResponse extends AssetResponse {
                 .roe(basketAsset.getRoe())
                 .roa(basketAsset.getRoa())
                 .dividendYield(basketAsset.getDividendYield())
+                .dividendFrequency(basketAsset.getDividendFrequency())
                 .fixed(basketAsset.isFixed())
                 .enabled(basketAsset.isEnabled())
                 .holdingWeight(basketAsset.getHoldingWeight())
