@@ -1,12 +1,14 @@
 package org.oopscraft.fintics.api.v1.dto;
 
-import lombok.*;
+import lombok.AccessLevel;
+import lombok.AllArgsConstructor;
+import lombok.Data;
+import lombok.NoArgsConstructor;
 import lombok.experimental.SuperBuilder;
 import org.oopscraft.fintics.model.Asset;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
-import java.util.ArrayList;
 import java.util.List;
 
 @Data
@@ -58,10 +60,6 @@ public class AssetResponse {
     public List<LinkResponse> getLinks() {
         return LinkResponseFactory.getLinks(this);
     }
-
-
-    @Builder.Default
-    private List<LinkResponse> links = new ArrayList<>();
 
     public static AssetResponse from(Asset asset) {
         return AssetResponse.builder()
