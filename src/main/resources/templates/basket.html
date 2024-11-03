@@ -253,8 +253,8 @@
                                         <img class="icon" th:src="@{/static/image/icon-add.svg}" alt="add"/>
                                     </button>
                                 </th>
-                                <th data-th-text="#{web.global.no}"></th>
-                                <th data-th-text="#{fintics.Asset.assetId}"></th>
+                                <th data-th-text="#{web.global.no}" class="text-align--center"></th>
+                                <th data-th-text="#{fintics.Asset.symbol}" class="text-align--center"></th>
                                 <th data-th-text="#{fintics.Asset.name}"></th>
                                 <th data-th-text="#{fintics.Asset.exchange}"></th>
                                 <th data-th-text="#{fintics.Asset.type}"></th>
@@ -277,12 +277,11 @@
                                         <img class="icon" th:src="@{/static/image/icon-remove.svg}" alt="remove"/>
                                     </button>
                                 </td>
-                                <td>
-                                <span data-duice-bind="status" data-duice-property="count"
-                                      class="text-align--center number"></span>
+                                <td class="text-align--center">
+                                    <span data-duice-bind="status" data-duice-property="count"></span>
                                 </td>
-                                <td>
-                                    <span data-duice-bind="basketAsset" data-duice-property="assetId" class="code font-weight--bold"></span>
+                                <td class="text-align--center">
+                                    <span data-duice-bind="basketAsset" data-duice-property="symbol" class="code font-weight--bold"></span>
                                 </td>
                                 <td class="text-align--left white-space--nowrap overflow--hidden text-overflow--ellipsis">
                                     <img class="icon icon--circle font-size--large" data-duice-bind="basketAsset" data-duice-property="icon" th:onerror="|null; this.src='@{/static/image/icon-asset.svg}';|" alt=""/>
@@ -615,11 +614,11 @@
                         </colgroup>
                         <thead>
                         <tr>
-                            <th>-</th>
-                            <th data-th-text="#{fintics.Asset.assetId}"></th>
+                            <th></th>
+                            <th data-th-text="#{fintics.Asset.assetId}" class="text-align--center"></th>
                             <th data-th-text="#{fintics.Asset.name}"></th>
-                            <th data-th-text="#{fintics.Asset.exchange}"></th>
-                            <th data-th-text="#{fintics.Asset.type}"></th>
+                            <th data-th-text="#{fintics.Asset.exchange}" class="text-align--center"></th>
+                            <th data-th-text="#{fintics.Asset.type}" class="text-align--center"></th>
                             <th></th>
                             <th data-th-text="#{fintics.Asset.links}" class="text-align--center"></th>
                         </tr>
@@ -638,18 +637,18 @@
                                     <img class="icon" th:src="@{/static/image/icon-add.svg}" alt="add"/>
                                 </button>
                             </td>
-                            <td class="text-align--left">
-                                <span data-duice-bind="asset" data-duice-property="assetId" class="font-weight--bold code"></span>
+                            <td class="text-align--center">
+                                <span data-duice-bind="asset" data-duice-property="symbol" class="font-weight--bold code"></span>
                             </td>
                             <td class="text-align--left" style="overflow-x: hidden;">
                                 <img class="icon" data-duice-bind="asset" data-duice-property="icon" th:onerror="|this.onerror=null; this.src='@{/static/image/icon-asset.svg}';|" alt=""/>
                                 &nbsp;
                                 <span data-duice-bind="asset" data-duice-property="name"></span>
                             </td>
-                            <td>
+                            <td class="text-align--center">
                                 <span data-duice-bind="asset" data-duice-property="exchange" class="badge"></span>
                             </td>
-                            <td>
+                            <td class="text-align--center">
                                 <span data-duice-bind="asset" data-duice-property="type" class="badge"></span>
                             </td>
                             <td>
@@ -720,7 +719,7 @@
                     <div class="grid-column--1 display--flex">
                         <span data-th-text="#{web.global.total}"></span>
                         &nbsp;
-                        <span data-duice-bind="assetSelectDialog.assetSearch" data-duice-property="_count" data-duice-format="number(0)"></span>
+                        <span data-duice-bind="assetSelectDialog.assetSearch" data-duice-property="_count" data-duice-format="number(0)" class="number"></span>
                         &nbsp;
                         <span data-th-text="#{web.global.rows}"></span>
                     </div>
@@ -730,7 +729,8 @@
                                 data-duice-size-property="_size"
                                 data-duice-page-property="_page"
                                 data-duice-count-property="_count"
-                                data-duice-onclick="assetSelectDialog.getAssets(this.dataset.page);">
+                                data-duice-onclick="assetSelectDialog.getAssets(this.dataset.page);"
+                                class="code">
                         </duice-pagination>
                     </div>
                     <div class="grid-column--1"></div>
@@ -749,10 +749,10 @@
                         <thead>
                         <tr>
                             <th>-</th>
-                            <th data-th-text="#{fintics.Asset.assetId}"></th>
+                            <th data-th-text="#{fintics.Asset.symbol}" class="text-align--center"></th>
                             <th data-th-text="#{fintics.Asset.name}"></th>
-                            <th data-th-text="#{fintics.Asset.exchange}"></th>
-                            <th data-th-text="#{fintics.Asset.type}"></th>
+                            <th data-th-text="#{fintics.Asset.exchange}" class="text-align--center"></th>
+                            <th data-th-text="#{fintics.Asset.type}" class="text-align--center"></th>
                             <th></th>
                             <th data-th-text="#{fintics.Asset.links}" class="text-align--center"></th>
                         </tr>
@@ -767,18 +767,18 @@
                                     <img class="icon" th:src="@{/static/image/icon-remove.svg}" alt="remove"/>
                                 </button>
                             </td>
-                            <td>
-                                <span data-duice-bind="asset" data-duice-property="assetId" class="font-weight--bold"></span>
+                            <td class="text-align--center">
+                                <span data-duice-bind="asset" data-duice-property="symbol" class="font-weight--bold code"></span>
                             </td>
                             <td>
                                 <img class="icon" data-duice-bind="asset" data-duice-property="icon" th:onerror="|this.onerror=null; this.src='@{/static/image/icon-asset.svg}';|" alt=""/>
                                 &nbsp;
                                 <span data-duice-bind="asset" data-duice-property="name"></span>
                             </td>
-                            <td>
+                            <td class="text-align--center">
                                 <span data-duice-bind="asset" data-duice-property="exchange" class="badge"></span>
                             </td>
-                            <td>
+                            <td class="text-align--center">
                                 <span data-duice-bind="asset" data-duice-property="type" class="badge"></span>
                             </td>
                             <td>

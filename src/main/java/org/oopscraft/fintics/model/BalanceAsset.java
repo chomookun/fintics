@@ -14,8 +14,6 @@ import java.math.RoundingMode;
 @AllArgsConstructor(access = AccessLevel.PRIVATE)
 public class BalanceAsset extends Asset {
 
-    private String assetId;
-
     private String accountNo;
 
     private BigDecimal quantity;

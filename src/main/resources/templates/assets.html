@@ -133,7 +133,7 @@
                     <thead>
                     <tr>
                         <th data-th-text="#{web.global.no}" class="text-align--center"></th>
-                        <th data-th-text="#{fintics.Asset.assetId}"></th>
+                        <th data-th-text="#{fintics.Asset.symbol}"></th>
                         <th data-th-text="#{fintics.Asset.name}"></th>
                         <th data-th-text="#{fintics.Asset.market}"></th>
                         <th data-th-text="#{fintics.Asset.exchange}"></th>
@@ -152,7 +152,7 @@
                         </span>
                         </td>
                         <td>
-                            <span data-duice-bind="asset" data-duice-property="assetId" class="code font-weight--bold"></span>
+                            <span data-duice-bind="asset" data-duice-property="symbol" class="code font-weight--bold"></span>
                         </td>
                         <td>
                             <img class="icon icon--circle font-size--large" data-duice-bind="asset" data-duice-property="icon" th:onerror="|this.onerror=null; this.src='@{/static/image/icon-asset.svg}';|" alt=""/>

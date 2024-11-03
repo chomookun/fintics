@@ -453,11 +453,11 @@
                         </colgroup>
                         <thead>
                         <tr>
-                            <th>
+                            <th class="text-align--center">
                                 <span data-th-text="#{web.global.no}"></span>
                             </th>
-                            <th>
-                                <span data-th-text="#{fintics.Asset.assetId}"></span>
+                            <th class="text-align--center">
+                                <span data-th-text="#{fintics.Asset.symbol}"></span>
                             </th>
                             <th>
                                 <span data-th-text="#{fintics.Asset.name}"></span>
@@ -491,11 +491,11 @@
                         </thead>
                         <tbody>
                         <tr th:data-duice-bind="|monitorMap.get('${trade.tradeId}').basket.basketAssets|" data-duice-loop="basketAsset,status">
-                            <td>
+                            <td class="text-align--center">
                                 <span data-duice-bind="status" data-duice-property="count" class="number"></span>
                             </td>
-                            <td>
-                                <span data-duice-bind="basketAsset" data-duice-property="assetId" class="code font-weight--bold"></span>
+                            <td class="text-align--center">
+                                <span data-duice-bind="basketAsset" data-duice-property="symbol" class="code font-weight--bold"></span>
                             </td>
                             <td>
                                 <div class="display--flex align-items--center">

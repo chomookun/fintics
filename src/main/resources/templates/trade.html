@@ -502,13 +502,13 @@
                             </colgroup>
                             <thead>
                             <tr>
-                                <th data-th-text="#{web.global.no}"></th>
-                                <th data-th-text="#{fintics.Asset.assetId}"></th>
+                                <th data-th-text="#{web.global.no}" class="text-align--center"></th>
+                                <th data-th-text="#{fintics.Asset.symbol}" class="text-align--center"></th>
                                 <th data-th-text="#{fintics.Asset.name}"></th>
-                                <th data-th-text="#{fintics.Asset.exchange}"></th>
-                                <th data-th-text="#{fintics.Asset.type}"></th>
+                                <th data-th-text="#{fintics.Asset.exchange}" class="text-align--center"></th>
+                                <th data-th-text="#{fintics.Asset.type}" class="text-align--center"></th>
                                 <th></th>
-                                <th data-th-text="#{fintics.Asset.links}"></th>
+                                <th data-th-text="#{fintics.Asset.links}" class="text-align--center"></th>
                                 <th data-th-text="#{fintics.BasketAsset.fixed}" class="text-align--center"></th>
                                 <th data-th-text="#{fintics.BasketAsset.enabled}" class="text-align--center"></th>
                                 <th data-th-text="#{fintics.BasketAsset.holdingWeight}" class="text-align--center"></th>
@@ -517,22 +517,21 @@
                             </thead>
                             <tbody>
                             <tr data-duice-bind="basket.basketAssets" data-duice-loop="basketAsset,status">
-                                <td>
-                                <span data-duice-bind="status" data-duice-property="count"
-                                      class="text-align--center number"></span>
+                                <td class="text-align--center">
+                                    <span data-duice-bind="status" data-duice-property="count" class="number"></span>
                                 </td>
-                                <td class="text-align--left">
-                                    <span data-duice-bind="basketAsset" data-duice-property="assetId" class="code font-weight--bold"></span>
+                                <td class="text-align--center">
+                                    <span data-duice-bind="basketAsset" data-duice-property="symbol" class="code font-weight--bold"></span>
                                 </td>
                                 <td class="text-align--left">
                                     <img class="icon icon--circle font-size--large" data-duice-bind="basketAsset" data-duice-property="icon" th:onerror="|null; this.src='@{/static/image/icon-asset.svg}';|" alt=""/>
                                     &nbsp;
                                     <span data-duice-bind="basketAsset" data-duice-property="name"></span>
                                 </td>
-                                <td>
+                                <td class="text-align--center">
                                     <span data-duice-bind="basketAsset" data-duice-property="exchange" class="badge"></span>
                                 </td>
-                                <td>
+                                <td class="text-align--center">
                                     <span data-duice-bind="basketAsset" data-duice-property="type" class="badge"></span>
                                 </td>
                                 <td>
@@ -575,7 +574,7 @@
                                         </table>
                                     </div>
                                 </td>
-                                <td>
+                                <td class="text-align--center">
                                     <select data-duice-bind="basketAsset"
                                             data-duice-option="basketAsset.links"
                                             data-duice-option-value-property="url"
