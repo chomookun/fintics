@@ -133,12 +133,12 @@
                     <thead>
                     <tr>
                         <th data-th-text="#{web.global.no}" class="text-align--center"></th>
-                        <th data-th-text="#{fintics.Asset.symbol}"></th>
+                        <th data-th-text="#{fintics.Asset.symbol}" class="text-align--center"></th>
                         <th data-th-text="#{fintics.Asset.name}"></th>
-                        <th data-th-text="#{fintics.Asset.market}"></th>
-                        <th data-th-text="#{fintics.Asset.exchange}"></th>
-                        <th data-th-text="#{fintics.Asset.type}"></th>
-                        <th data-th-text="#{fintics.Asset.updatedDate}"></th>
+                        <th data-th-text="#{fintics.Asset.market}" class="text-align--center"></th>
+                        <th data-th-text="#{fintics.Asset.exchange}" class="text-align--center"></th>
+                        <th data-th-text="#{fintics.Asset.type}" class="text-align--center"></th>
+                        <th data-th-text="#{fintics.Asset.updatedDate}" class="text-align--center"></th>
                         <th></th>
                         <th data-th-text="#{fintics.Asset.links}" class="text-align--center"></th>
                     </tr>
@@ -151,7 +151,7 @@
                               class="number">
                         </span>
                         </td>
-                        <td>
+                        <td class="text-align--center">
                             <span data-duice-bind="asset" data-duice-property="symbol" class="code font-weight--bold"></span>
                         </td>
                         <td>
@@ -159,16 +159,16 @@
                             &nbsp;
                             <span data-duice-bind="asset" data-duice-property="name"></span>
                         </td>
-                        <td>
+                        <td class="text-align--center">
                             <span data-duice-bind="asset" data-duice-property="market" class="badge"></span>
                         </td>
-                        <td>
+                        <td class="text-align--center">
                             <span data-duice-bind="asset" data-duice-property="exchange" class="badge"></span>
                         </td>
-                        <td>
+                        <td class="text-align--center">
                             <span data-duice-bind="asset" data-duice-property="type" class="badge"></span>
                         </td>
-                        <td>
+                        <td class="text-align--center">
                             <span data-duice-bind="asset" data-duice-property="updatedDate" class="date"></span>
                         </td>
                         <td>
@@ -249,7 +249,8 @@
                             data-duice-size-property="_size"
                             data-duice-page-property="_page"
                             data-duice-count-property="_count"
-                            data-duice-onclick="getAssets(this.dataset.page);">
+                            data-duice-onclick="getAssets(this.dataset.page);"
+                            class="number">
                     </duice-pagination>
                 </div>
                 <div>
