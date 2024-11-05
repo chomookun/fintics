@@ -955,7 +955,6 @@
                                     <col/>
                                     <col/>
                                     <col/>
-                                    <col/>
                                 </colgroup>
                                 <thead>
                                 <tr>
@@ -967,7 +966,6 @@
                                     <th data-th-text="#{fintics.BalanceAsset.valuationAmount}" class="text-align--right"></th>
                                     <th data-th-text="#{fintics.BalanceAsset.profitAmount}" class="text-align--right"></th>
                                     <th data-th-text="#{fintics.BalanceAsset.profitPercentage}" class="text-align--right"></th>
-                                    <th data-th-text="#{fintics.Asset.links}" class="text-align--right"></th>
                                     <th class="text-align--right">-</th>
                                 </tr>
                                 </thead>
@@ -1018,15 +1016,6 @@
                                 " class="text-align--right">
                                         <span data-duice-bind="balanceAsset" data-duice-property="profitPercentage" data-duice-format="number" class="number font-weight--bold"></span>
                                         <span class="code">%</span>
-                                    </td>
-                                    <td class="text-align--right">
-                                        <select data-duice-bind="balanceAsset"
-                                                data-duice-option="balanceAsset.links"
-                                                data-duice-option-value-property="url"
-                                                data-duice-option-text-property="name"
-                                                onchange="_openLink(this.value, '_blank'); this.value = '';">
-                                            <option value>- Link -</option>
-                                        </select>
                                     </td>
                                     <td class="text-align--right">
                                         <button class="small" type="button"
