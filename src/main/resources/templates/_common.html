@@ -16,6 +16,8 @@
                 dialog: new duice.dialog.Dialog(document.getElementById('_assetDialog')),
                 assetId: null,
                 asset: new duice.ObjectProxy({}),
+                minuteOhlcvs: null,
+                dailyOhlcvs: null,
                 chart: null,
                 candlestickSeries: null,
                 open: async function(assetId) {
@@ -58,8 +60,18 @@
                     // retrieves asset
                     this.getAsset();
 
-                    // retrieves default daily ohlcvs
-                    this.getDailyOhlcvs();
+                    // retrieves ohlcvs
+                    Promise.all([
+                        this.getOhlcvs('minute'),
+                        this.getOhlcvs('daily')
+                    ])
+                    .then(([minuteOhlcvs, dailyOhlcvs]) => {
+                       this.minuteOhlcvs = minuteOhlcvs;
+                       this.dailyOhlcvs = dailyOhlcvs;
+
+                       // draw default chart
+                        this.drawChart('minute', 1);
+                    });
 
                     // returns promise
                     return promise;
@@ -74,49 +86,92 @@
                 },
                 getOhlcvs: function(type) {
                     let url = new URL(`${_apiUrl}/v1/ohlcvs/${this.assetId}/${type}`, document.location.href);
-                    _fetch(url)
-                        .then(response => response.json())
-                        .then(responseBody => {
-                            let ohlcvSeries = responseBody.map(it => {
-                                return {
-                                    time: Math.floor(new Date(it.dateTime).getTime()/1000),
-                                    open: it.open,
-                                    high: it.high,
-                                    low: it.low,
-                                    close: it.close,
-                                    volume: it.volume
-                                };
-                            }).reverse();
+                    url.searchParams.append('_size', 10000);
+                    return _fetch(url).then(response => response.json());
+                },
+                drawChart: function(type, period) {
+                    let ohlcvs;
+                    if (type === 'minute') {
+                        ohlcvs = this.minuteOhlcvs;
+                    }
+                    if (type === 'daily') {
+                        ohlcvs = this.dailyOhlcvs;
+                    }
+                    let ohlcvSeries = ohlcvs.map(it => {
+                        return {
+                            time: Math.floor(new Date(it.dateTime).getTime()/1000),
+                            open: it.open,
+                            high: it.high,
+                            low: it.low,
+                            close: it.close,
+                            volume: it.volume
+                        };
+                    }).reverse();
 
-                            // chart options
-                            const chartOptions = {
-                                layout: {
-                                    textColor: 'black',
-                                    background: {
-                                        type: 'solid',
-                                        color: 'white'
-                                    }
-                                },
-                                timeScale: {
-                                    timeVisible: false,
-                                }
-                            };
-                            if (type === 'minute') {
-                                chartOptions.timeScale.timeVisible = true;
+                    // resample
+                    if (period> 1) {
+                        ohlcvSeries = this.resample(ohlcvSeries, period);
+                    }
+
+                    // chart options
+                    const chartOptions = {
+                        layout: {
+                            textColor: 'black',
+                            background: {
+                                type: 'solid',
+                                color: 'white'
                             }
-                            this.chart.applyOptions(chartOptions);
+                        },
+                        timeScale: {
+                            timeVisible: false,
+                        }
+                    };
+                    if (type === 'minute') {
+                        chartOptions.timeScale.timeVisible = true;
+                    }
+                    this.chart.applyOptions(chartOptions);
 
-                            // set chart data
-                            this.candlestickSeries.setData([]);
-                            this.candlestickSeries.setData(ohlcvSeries);
-                            this.chart.timeScale().fitContent();
-                        });
+                    // set chart data
+                    this.candlestickSeries.setData([]);
+                    this.candlestickSeries.setData(ohlcvSeries);
+                    this.chart.timeScale().fitContent();
                 },
-                getMinuteOhlcvs: function() {
-                    this.getOhlcvs('minute');
-                },
-                getDailyOhlcvs: function() {
-                    this.getOhlcvs('daily');
+                resample(ohlcvSeries, period) {
+                    const resampledData = [];
+                    let currentCandle = null;
+
+                    ohlcvSeries.forEach(item => {
+                        const date = new Date(item.time * 1000);
+                        const minutes = date.getMinutes();
+
+                        // interval 분 단위로 새로운 캔들 시작
+                        if (minutes % period === 0 || !currentCandle) {
+                            if (currentCandle) {
+                                resampledData.push(currentCandle);
+                            }
+                            currentCandle = {
+                                time: item.time,
+                                open: item.open,
+                                high: item.high,
+                                low: item.low,
+                                close: item.close,
+                                volume: item.volume
+                            };
+                        } else {
+                            // 현재 캔들을 업데이트
+                            currentCandle.high = Math.max(currentCandle.high, item.high);
+                            currentCandle.low = Math.min(currentCandle.low, item.low);
+                            currentCandle.close = item.close;
+                            currentCandle.volume += item.volume;
+                        }
+                    });
+
+                    // 마지막 캔들을 추가
+                    if (currentCandle) {
+                        resampledData.push(currentCandle);
+                    }
+
+                    return resampledData;
                 }
             }
         </script>
@@ -236,8 +291,14 @@
                         <span data-th-text="#{fintics.Ohlcv}" class="font-weight--bold"></span>
                     </div>
                     <div class="text-align--right code font-size--smaller">
-                        <button type="button" onclick="_assetDialog.getDailyOhlcvs();">daily</button>
-                        <button type="button" onclick="_assetDialog.getMinuteOhlcvs();">minute</button>
+                        <button type="button" onclick="_assetDialog.drawChart('minute', 1);">1m</button>
+                        <button type="button" onclick="_assetDialog.drawChart('minute', 3);">3m</button>
+                        <button type="button" onclick="_assetDialog.drawChart('minute', 5);">5m</button>
+                        <button type="button" onclick="_assetDialog.drawChart('minute', 10);">10m</button>
+                        <button type="button" onclick="_assetDialog.drawChart('minute', 30);">30m</button>
+                        <button type="button" onclick="_assetDialog.drawChart('minute', 60);">60m</button>
+                        <button type="button" onclick="_assetDialog.drawChart('daily', 1);">1d</button>
+                        <button type="button" onclick="_assetDialog.drawChart('daily', 5);">1w</button>
                     </div>
                 </div>
                 <div id="_assetDialogChart" class="width--100"></div>
