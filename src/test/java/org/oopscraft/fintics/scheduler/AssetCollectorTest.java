@@ -1,4 +1,4 @@
-package org.oopscraft.fintics.collector;
+package org.oopscraft.fintics.scheduler;
 
 import lombok.RequiredArgsConstructor;
 import org.junit.jupiter.api.Disabled;
@@ -7,6 +7,7 @@ import org.oopscraft.arch4j.core.common.test.CoreTestSupport;
 import org.oopscraft.fintics.FinticsConfiguration;
 import org.oopscraft.fintics.dao.AssetEntity;
 import org.oopscraft.fintics.dao.TradeEntity;
+import org.oopscraft.fintics.scheduler.AssetCollector;
 import org.springframework.boot.test.context.SpringBootTest;
 
 import javax.persistence.EntityManager;

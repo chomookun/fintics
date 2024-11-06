@@ -4,6 +4,8 @@
       xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
       layout:decorate="_web.html">
 <th:block layout:fragment="_content">
+    <script th:src="@{/static/lightweight-charts/lightweight-charts.js?version={version}(version=${_scriptVersion})}"></script>
+    <script th:src="@{/static/fintics.js?version={version}(version=${_scriptVersion})}"></script>
     <script th:inline="javascript">
         // defines
         const orderSearch = new duice.ObjectProxy({
@@ -211,7 +213,10 @@
                             <span data-duice-bind="order" data-duice-property="tradeName"></span>
                         </td>
                         <td>
-                            <span data-duice-bind="order" data-duice-property="assetName"></span>
+                            <span data-duice-bind="order" data-duice-property="assetName"
+                                data-duice-execute="this.dataset.assetId=order.assetId;"
+                                onclick="_assetDialog.open(this.dataset.assetId);"
+                                class="link"></span>
                         </td>
                         <td class="text-align--right">
                             <span data-duice-bind="order" data-duice-property="quantity" data-duice-format="number" class="number"></span>
@@ -284,5 +289,7 @@
     <!-- ================================== -->
     <!-- end: order                       -->
     <!-- ================================== -->
+
+    <th:block th:insert="_common.html :: _assetDialog"/>
 
 </th:block>

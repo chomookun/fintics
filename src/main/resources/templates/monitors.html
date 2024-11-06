@@ -4,6 +4,7 @@
       xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
       layout:decorate="_web.html">
 <th:block layout:fragment="_content">
+    <script th:src="@{/static/lightweight-charts/lightweight-charts.js?version={version}(version=${_scriptVersion})}"></script>
     <script th:src="@{/static/fintics.js?version={version}(version=${_scriptVersion})}"></script>
     <script th:inline="javascript">
         Chart.defaults.font.size = 8;
@@ -505,6 +506,7 @@
                                     <span data-duice-bind="basketAsset"
                                           data-duice-property="name"
                                           data-duice-execute="
+                                          this.dataset.assetId = basketAsset.assetId;
                                         if (basketAsset.quantity > 0) {
                                             this.classList.add('font-weight--bold');
                                         }
@@ -512,7 +514,8 @@
                                             this.style.fontStyle = 'italic';
                                             this.style.textDecoration = 'line-through';
                                         }
-                                        "></span>
+                                        "
+                                        onclick="_assetDialog.open(this.dataset.assetId);" class="link"></span>
                                         (<span data-duice-bind="basketAsset" data-duice-property="holdingWeight" class="number"></span><span class="code">%</span>)
                                         <img class="icon font-size--smaller"
                                              th:src="@{/static/image/icon-pin.svg}"
@@ -640,6 +643,7 @@
     <!-- end: trade                         -->
     <!-- ================================== -->
 
+    <th:block th:insert="_common.html :: _assetDialog"/>
     <th:block th:insert="trade.html :: submitOrderDialog"/>
 
 </th:block>

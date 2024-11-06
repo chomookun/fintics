@@ -1,4 +1,4 @@
-package org.oopscraft.fintics.collector;
+package org.oopscraft.fintics.scheduler;
 
 import lombok.extern.slf4j.Slf4j;
 import org.oopscraft.arch4j.core.alarm.service.AlarmService;
@@ -9,11 +9,13 @@ import org.springframework.transaction.PlatformTransactionManager;
 import org.springframework.transaction.TransactionDefinition;
 import org.springframework.transaction.TransactionStatus;
 import org.springframework.transaction.support.DefaultTransactionDefinition;
+import org.springframework.transaction.support.TransactionTemplate;
 
 import java.util.List;
+import java.util.function.Consumer;
 
 @Slf4j
-public abstract class AbstractCollector {
+public abstract class AbstractScheduler {
 
     @Autowired
     private FinticsProperties finticsProperties;
@@ -55,6 +57,25 @@ public abstract class AbstractCollector {
             log.info("- {} saved[{}]", unitName, count);
         } catch (Exception e) {
             log.error(e.getMessage(), e);
+            transactionManager.rollback(status);
+        } finally {
+            if (!status.isCompleted()) {
+                transactionManager.rollback(status);
+            }
+        }
+    }
+
+    protected void runWithTransaction(PlatformTransactionManager transactionManager, Runnable runnable) {
+        DefaultTransactionDefinition definition = new DefaultTransactionDefinition(TransactionDefinition.PROPAGATION_REQUIRED);
+        definition.setIsolationLevel(TransactionDefinition.ISOLATION_READ_UNCOMMITTED);
+        TransactionStatus status = transactionManager.getTransaction(definition);
+        try {
+            // execute
+            runnable.run();
+            // commit
+            transactionManager.commit(status);
+        } catch (Throwable t) {
+            log.error(t.getMessage(), t);
             transactionManager.rollback(status);
         } finally {
             if (!status.isCompleted()) {

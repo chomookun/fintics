@@ -1,26 +1,22 @@
-package org.oopscraft.fintics.collector;
+package org.oopscraft.fintics.scheduler;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.oopscraft.fintics.client.asset.AssetClient;
 import org.oopscraft.fintics.dao.*;
 import org.oopscraft.fintics.model.Asset;
-import org.oopscraft.fintics.model.BasketAsset;
-import org.springframework.data.domain.Sort;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.PlatformTransactionManager;
 
 import java.math.BigDecimal;
-import java.time.Instant;
 import java.time.LocalDate;
 import java.util.*;
-import java.util.stream.Collectors;
 
 @Component
 @RequiredArgsConstructor
 @Slf4j
-public class AssetCollector extends AbstractCollector {
+public class AssetCollector extends AbstractScheduler {
 
     private final AssetRepository assetRepository;
 

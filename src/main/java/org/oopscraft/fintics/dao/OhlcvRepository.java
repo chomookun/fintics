@@ -4,6 +4,7 @@ import org.oopscraft.fintics.model.Ohlcv;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.JpaSpecificationExecutor;
+import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
@@ -27,5 +28,12 @@ public interface OhlcvRepository extends JpaRepository<OhlcvEntity, OhlcvEntity.
             @Param("dateTimeTo") LocalDateTime dateTimeTo,
             Pageable pageable
     );
+
+    @Query("select distinct a.assetId from OhlcvEntity a")
+    List<String> findDistinctAssetIds();
+
+    @Modifying
+    @Query("delete from OhlcvEntity a where a.assetId = :assetId")
+    void deleteByAssetId(@Param("assetId") String assetId);
 
 }

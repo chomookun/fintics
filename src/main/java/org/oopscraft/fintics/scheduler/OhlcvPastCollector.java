@@ -1,4 +1,4 @@
-package org.oopscraft.fintics.collector;
+package org.oopscraft.fintics.scheduler;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -23,7 +23,7 @@ import java.util.stream.Collectors;
 @Component
 @RequiredArgsConstructor
 @Slf4j
-public class OhlcvPastCollector extends AbstractCollector {
+public class OhlcvPastCollector extends AbstractScheduler {
 
     private final FinticsProperties finticsProperties;
 

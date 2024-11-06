@@ -1,4 +1,4 @@
-package org.oopscraft.fintics.collector;
+package org.oopscraft.fintics.scheduler;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -11,6 +11,7 @@ import org.oopscraft.arch4j.core.common.test.CoreTestSupport;
 import org.oopscraft.fintics.FinticsConfiguration;
 import org.oopscraft.fintics.dao.OhlcvEntity;
 import org.oopscraft.fintics.model.Asset;
+import org.oopscraft.fintics.scheduler.OhlcvPastCollector;
 import org.springframework.boot.test.context.SpringBootTest;
 
 import javax.persistence.EntityManager;

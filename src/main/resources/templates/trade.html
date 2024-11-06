@@ -4,6 +4,7 @@
       xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
       layout:decorate="_web.html">
 <th:block layout:fragment="_content">
+    <script th:src="@{/static/lightweight-charts/lightweight-charts.js?version={version}(version=${_scriptVersion})}"></script>
     <script th:src="@{/static/fintics.js?version={version}(version=${_scriptVersion})}"></script>
     <script th:inline="javascript">
         const tradeId = /*[[${tradeId}]]*/'';
@@ -526,7 +527,10 @@
                                 <td class="text-align--left">
                                     <img class="icon icon--circle font-size--large" data-duice-bind="basketAsset" data-duice-property="icon" th:onerror="|null; this.src='@{/static/image/icon-asset.svg}';|" alt=""/>
                                     &nbsp;
-                                    <span data-duice-bind="basketAsset" data-duice-property="name"></span>
+                                    <span data-duice-bind="basketAsset" data-duice-property="name"
+                                          data-duice-execute="this.dataset.assetId = basketAsset.assetId;"
+                                          onclick="_assetDialog.open(this.dataset.assetId);"
+                                          class="link"></span>
                                 </td>
                                 <td class="text-align--center">
                                     <span data-duice-bind="basketAsset" data-duice-property="exchange" class="badge"></span>
@@ -1151,5 +1155,7 @@
         <!-- submit order dialog                -->
         <!-- ================================== -->
     </th:block>
+
+    <th:block th:insert="_common.html :: _assetDialog"/>
 
 </th:block>
