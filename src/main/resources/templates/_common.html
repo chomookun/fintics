@@ -7,7 +7,7 @@
             #_assetDialog {
             }
             #_assetDialogChart {
-                width: 800px;
+                width: 1000px;
                 height: 300px;
             }
         </style>
@@ -16,8 +16,8 @@
                 dialog: new duice.dialog.Dialog(document.getElementById('_assetDialog')),
                 assetId: null,
                 asset: new duice.ObjectProxy({}),
-                minuteOhlcvs: null,
-                dailyOhlcvs: null,
+                minuteOhlcvs: [],
+                dailyOhlcvs: [],
                 chart: null,
                 candlestickSeries: null,
                 open: async function(assetId) {
@@ -27,26 +27,24 @@
                     let promise = this.dialog.open();
 
                     // creates chart
-                    // this.chart = document.getElementById('_assetDialogChart');
-                    const chartOptions = {
-                        layout: {
-                            textColor: 'black',
-                            background: {
-                                type: 'solid',
-                                color: 'white'
-                            },
-                            fontFamily: 'Nanum Gothic Coding',
-                            attributionLogo: false
-                        },
-                        timeScale: {
-                            timeVisible: true,
-                        },
-                        priceScale: {
-                            autoScale: true,
-                        },
-                    };
-
                     if (!this.chart) {
+                        const chartOptions = {
+                            layout: {
+                                textColor: 'black',
+                                background: {
+                                    type: 'solid',
+                                    color: 'white'
+                                },
+                                fontFamily: 'Nanum Gothic Coding',
+                                attributionLogo: false
+                            },
+                            timeScale: {
+                                timeVisible: true,
+                            },
+                            priceScale: {
+                                autoScale: true,
+                            },
+                        };
                         this.chart = LightweightCharts.createChart(document.getElementById('_assetDialogChart'), chartOptions);
                         this.candlestickSeries = this.chart.addCandlestickSeries({
                             upColor: '#26a69a',
@@ -57,6 +55,13 @@
                         });
                     }
 
+                    // clears data
+                    duice.ObjectProxy.clear(this.asset);
+                    this.minuteOhlcvs = [];
+                    this.dailyOhlcvs = [];
+                    this.candlestickSeries.setData([]);
+                    document.getElementsByName('_assetDialogChartPeriod').forEach(it => it.checked = false);
+
                     // retrieves asset
                     this.getAsset();
 
@@ -66,10 +71,11 @@
                         this.getOhlcvs('daily')
                     ])
                     .then(([minuteOhlcvs, dailyOhlcvs]) => {
-                       this.minuteOhlcvs = minuteOhlcvs;
-                       this.dailyOhlcvs = dailyOhlcvs;
+                        this.minuteOhlcvs = minuteOhlcvs;
+                        this.dailyOhlcvs = dailyOhlcvs;
 
-                       // draw default chart
+                        // draw default chart
+                        document.getElementsByName('_assetDialogChartPeriod')[0].checked = true;
                         this.drawChart('minute', 1);
                     });
 
@@ -171,6 +177,7 @@
                         resampledData.push(currentCandle);
                     }
 
+                    // returns
                     return resampledData;
                 }
             }
@@ -204,9 +211,9 @@
                                     <span data-th-text="#{fintics.Asset.name}" class="font-weight--bold"></span>
                                 </td>
                                 <td>
-                                    <img class="icon icon--circle font-size--large" data-duice-bind="_assetDialog.asset" data-duice-property="icon" th:onerror="|this.onerror=null; this.src='@{/static/image/icon-asset.svg}';|" alt=""/>
+                                    <img class="icon icon--circle font-size--large vertical-align--middle" data-duice-bind="_assetDialog.asset" data-duice-property="icon" th:onerror="|this.onerror=null; this.src='@{/static/image/icon-asset.svg}';|" alt=""/>
                                     &nbsp;
-                                    <span data-duice-bind="_assetDialog.asset" data-duice-property="name"></span>
+                                    <span class="vertical-align--middle" data-duice-bind="_assetDialog.asset" data-duice-property="name"></span>
                                 </td>
                             </tr>
                             <tr>
@@ -291,14 +298,40 @@
                         <span data-th-text="#{fintics.Ohlcv}" class="font-weight--bold"></span>
                     </div>
                     <div class="text-align--right code font-size--smaller">
-                        <button type="button" onclick="_assetDialog.drawChart('minute', 1);">1m</button>
-                        <button type="button" onclick="_assetDialog.drawChart('minute', 3);">3m</button>
-                        <button type="button" onclick="_assetDialog.drawChart('minute', 5);">5m</button>
-                        <button type="button" onclick="_assetDialog.drawChart('minute', 10);">10m</button>
-                        <button type="button" onclick="_assetDialog.drawChart('minute', 30);">30m</button>
-                        <button type="button" onclick="_assetDialog.drawChart('minute', 60);">60m</button>
-                        <button type="button" onclick="_assetDialog.drawChart('daily', 1);">1d</button>
-                        <button type="button" onclick="_assetDialog.drawChart('daily', 5);">1w</button>
+                        <div class="display--flex gap--1em code">
+                            <label>
+                                <input name="_assetDialogChartPeriod" type="radio" onclick="_assetDialog.drawChart('minute', 1);"/>
+                                1m
+                            </label>
+                            <label>
+                                <input name="_assetDialogChartPeriod" type="radio" onclick="_assetDialog.drawChart('minute', 3);"/>
+                                3m
+                            </label>
+                            <label>
+                                <input name="_assetDialogChartPeriod" type="radio" onclick="_assetDialog.drawChart('minute', 5);"/>
+                                5m
+                            </label>
+                            <label>
+                                <input name="_assetDialogChartPeriod" type="radio" onclick="_assetDialog.drawChart('minute', 10);"/>
+                                10m
+                            </label>
+                            <label>
+                                <input name="_assetDialogChartPeriod" type="radio" onclick="_assetDialog.drawChart('minute', 30);"/>
+                                30m
+                            </label>
+                            <label>
+                                <input name="_assetDialogChartPeriod" type="radio" onclick="_assetDialog.drawChart('minute', 60);"/>
+                                1H
+                            </label>
+                            <label>
+                                <input name="_assetDialogChartPeriod" type="radio" onclick="_assetDialog.drawChart('daily', 1);"/>
+                                1D
+                            </label>
+                            <label>
+                                <input name="_assetDialogChartPeriod" type="radio" onclick="_assetDialog.drawChart('daily', 5);"/>
+                                1W
+                            </label>
+                        </div>
                     </div>
                 </div>
                 <div id="_assetDialogChart" class="width--100"></div>
