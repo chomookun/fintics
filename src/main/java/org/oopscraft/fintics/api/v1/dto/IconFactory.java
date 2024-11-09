@@ -29,6 +29,7 @@ public class IconFactory {
         icon = switch (Optional.ofNullable(asset.getMarket()).orElse("")) {
             case "US" -> getUsIcon(asset);
             case "KR" -> getKrIcon(asset);
+            case "UPBIT" -> getUpbitIcon(asset);
             default -> null;
         };
 
@@ -99,6 +100,15 @@ public class IconFactory {
         }
         // return default
         return null;
+    }
+
+    static String getUpbitIcon(AssetResponse asset) {
+        String symbol = asset.getSymbol();
+        String symbolSuffix = Optional.of(symbol.split("-"))
+                .filter(it -> it.length > 1)
+                .map(it -> it[1])
+                .orElse(null);
+        return String.format("https://static.upbit.com/logos/%s.png", symbolSuffix);
     }
 
     static boolean isIconAvailable(String icon) {
