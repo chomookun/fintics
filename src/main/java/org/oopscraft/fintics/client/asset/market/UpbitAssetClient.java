@@ -35,6 +35,7 @@ public class UpbitAssetClient extends AssetClient {
         ResponseEntity<List<Map<String, String>>> responseEntity = restTemplate.exchange(requestEntity, new ParameterizedTypeReference<>() {
         });
         return responseEntity.getBody().stream()
+                .filter(map -> map.get("market").startsWith("KRW-"))
                 .map(map -> {
                     return Asset.builder()
                             .assetId(toAssetId("UPBIT", map.get("market")))

@@ -231,11 +231,9 @@ public class UpbitBrokerClient extends BrokerClient {
             if("KRW".equals(currency) && "KRW".equals(unitCurrency)) {
                 totalAmount = totalAmount.add(assetBalance);
                 cacheAmount = cacheAmount.add(assetBalance);
-                valuationAmount = valuationAmount.add(assetBalance);
             }else{
                 BigDecimal assetPurchaseAmount = assetAverageBuyPrice.multiply(assetBalance)
                         .setScale(0, RoundingMode.CEILING);
-                totalAmount = totalAmount.add(assetPurchaseAmount);
                 purchaseAmount = purchaseAmount.add(assetPurchaseAmount);
 
                 // upbit 의 경우 평가 금액 확인 불가로 order book 재조회 후 산출
@@ -247,6 +245,7 @@ public class UpbitBrokerClient extends BrokerClient {
                 BigDecimal assetValuationAmount = orderBook.getPrice().multiply(assetBalance)
                         .setScale(2, RoundingMode.CEILING);
                 valuationAmount = valuationAmount.add(assetValuationAmount);
+                totalAmount = totalAmount.add(assetValuationAmount);
 
                 // profit amount
                 BigDecimal assetProfitAmount = assetValuationAmount.subtract(assetPurchaseAmount)
