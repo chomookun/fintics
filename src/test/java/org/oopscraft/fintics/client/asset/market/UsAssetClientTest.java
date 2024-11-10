@@ -102,5 +102,36 @@ class UsAssetClientTest extends CoreTestSupport {
         assertNotNull(assetDetail.get("dividendYield"));
     }
 
+    @Disabled
+    @Test
+    void getStockOhlcvs() {
+        // given
+        Asset asset = Asset.builder()
+                .assetId("US.MSFT")
+                .name("Microsoft Corporation Common Stock")
+                .market("US")
+                .type("STOCK")
+                .build();
+        // when
+        List<Map<String,String>> stockOhlcvs = getUsAssetClient().getOhlcvs(asset);
+        // then
+        log.info("stockOhlcvs:{}", stockOhlcvs);
+    }
+
+    @Disabled
+    @Test
+    void getEtfOhlcvs() {
+        // given
+        Asset asset = Asset.builder()
+                .assetId("US.SPY")
+                .market("US")
+                .type("ETF")
+                .build();
+        // when
+        List<Map<String,String>> etfOhlcvs = getUsAssetClient().getOhlcvs(asset);
+        // then
+        log.info("etfOhlcvs:{}", etfOhlcvs);
+    }
+
 
 }

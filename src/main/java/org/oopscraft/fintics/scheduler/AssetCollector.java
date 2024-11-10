@@ -93,8 +93,10 @@ public class AssetCollector extends AbstractScheduler {
                 assetEntity.setRoe(Optional.ofNullable(assetDetail.get("roe")).map(BigDecimal::new).orElse(null));
                 assetEntity.setRoa(Optional.ofNullable(assetDetail.get("roa")).map(BigDecimal::new).orElse(null));
                 assetEntity.setPer(Optional.ofNullable(assetDetail.get("per")).map(BigDecimal::new).orElse(null));
-                assetEntity.setDividendYield(Optional.ofNullable(assetDetail.get("dividendYield")).map(BigDecimal::new).orElse(null));
                 assetEntity.setDividendFrequency(Optional.ofNullable(assetDetail.get("dividendFrequency")).map(Integer::parseInt).orElse(null));
+                assetEntity.setDividendYield(Optional.ofNullable(assetDetail.get("dividendYield")).map(BigDecimal::new).orElse(null));
+                assetEntity.setCapitalGain(Optional.ofNullable(assetDetail.get("capitalGain")).map(BigDecimal::new).orElse(null));
+                assetEntity.setTotalReturn(Optional.ofNullable(assetDetail.get("totalReturn")).map(BigDecimal::new).orElse(null));
 
                 // saves
                 saveEntities("assetEntity", List.of(assetEntity), transactionManager, assetRepository);

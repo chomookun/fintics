@@ -41,9 +41,13 @@ public class AssetResponse {
 
     private BigDecimal per;
 
+    private Integer dividendFrequency;
+
     private BigDecimal dividendYield;
 
-    private Integer dividendFrequency;
+    private BigDecimal capitalGain;
+
+    private BigDecimal totalReturn;
 
     /**
      * get asset icon
@@ -75,8 +79,10 @@ public class AssetResponse {
                 .roe(asset.getRoe())
                 .roa(asset.getRoa())
                 .per(asset.getPer())
-                .dividendYield(asset.getDividendYield())
                 .dividendFrequency(asset.getDividendFrequency())
+                .dividendYield(asset.getDividendYield())
+                .capitalGain(asset.getCapitalGain())
+                .totalReturn(asset.getTotalReturn())
                 .build();
     }
 

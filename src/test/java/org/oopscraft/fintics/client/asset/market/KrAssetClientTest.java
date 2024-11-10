@@ -66,6 +66,8 @@ class KrAssetClientTest extends CoreTestSupport {
         assertNotNull(assetDetail.get("roa"));
         assertNotNull(assetDetail.get("per"));
         assertNotNull(assetDetail.get("dividendYield"));
+        assertNotNull(assetDetail.get("capitalGain"));
+        assertNotNull(assetDetail.get("totalReturn"));
     }
 
     @Disabled
@@ -106,6 +108,23 @@ class KrAssetClientTest extends CoreTestSupport {
 
     @Disabled
     @Test
+    void getStockOhlcvs() {
+        // given
+        Asset asset = Asset.builder()
+                .assetId("KR.005930")
+                .name("Samsung Electronics")
+                .market("KR")
+                .type("STOCK")
+                .marketCap(BigDecimal.TEN)
+                .build();
+        // when
+        List<Map<String,String>> ohlcvs = getKrAssetClient().getStockOhlcvs(asset);
+        // then
+        log.info("ohlcvs:{}", ohlcvs);
+    }
+
+    @Disabled
+    @Test
     void getEtfDividends() {
         // given
         Asset asset = Asset.builder()
@@ -118,6 +137,22 @@ class KrAssetClientTest extends CoreTestSupport {
         List<Map<String,String>> dividends = getKrAssetClient().getEtfDividends(asset);
         // then
         log.info("dividends:{}", dividends);
+    }
+
+    @Disabled
+    @Test
+    void getEtfOhlcvs() {
+        // given
+        Asset asset = Asset.builder()
+                .assetId("KR.069500")
+                .name("KODEX 200")
+                .market("KR")
+                .type("ETF")
+                .build();
+        // when
+        List<Map<String,String>> ohlcvs = getKrAssetClient().getEtfOhlcvs(asset);
+        // then
+        log.info("ohlcvs:{}", ohlcvs);
     }
 
 }

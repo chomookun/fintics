@@ -222,13 +222,14 @@ public class KrAssetClient extends AssetClient {
     }
 
     Map<String, String> getStockAssetDetail(Asset asset) {
+        Map<String,String> assetDetail = new LinkedHashMap<>();
         BigDecimal marketCap = asset.getMarketCap();    // default is input asset
         BigDecimal eps = null;
         BigDecimal roe = null;
         BigDecimal roa = null;
         BigDecimal per = null;
-        BigDecimal dividendYield = null;
-        Integer dividendFrequency = null;
+        BigDecimal dividendYield = BigDecimal.ZERO;
+        Integer dividendFrequency = 0;
 
         // request template
         String url = "https://seibro.or.kr/websquare/engine/proworks/callServletService.jsp";
@@ -326,7 +327,6 @@ public class KrAssetClient extends AssetClient {
         }
 
         // sets stock info
-        Map<String,String> assetDetail = new LinkedHashMap<>();
         assetDetail.put("marketCap", Optional.ofNullable(marketCap).map(BigDecimal::toPlainString).orElse(null));
         assetDetail.put("eps", Optional.ofNullable(eps).map(BigDecimal::toPlainString).orElse(null));
         assetDetail.put("roe", Optional.ofNullable(roe).map(BigDecimal::toPlainString).orElse(null));
@@ -334,6 +334,21 @@ public class KrAssetClient extends AssetClient {
         assetDetail.put("per", Optional.ofNullable(per).map(BigDecimal::toPlainString).orElse(null));
         assetDetail.put("dividendYield", Optional.ofNullable(dividendYield).map(BigDecimal::toPlainString).orElse(null));
         assetDetail.put("dividendFrequency", Optional.ofNullable(dividendFrequency).map(String::valueOf).orElse(null));
+
+        // capital gain
+        List<Map<String,String>> ohlcvs = getStockOhlcvs(asset);
+        BigDecimal startClose = new BigDecimal(ohlcvs.get(ohlcvs.size()-1).get("CURDAY_CPRI"));
+        BigDecimal endClose = new BigDecimal(ohlcvs.get(0).get("CURDAY_CPRI"));
+        BigDecimal capitalGain = endClose.subtract(startClose)
+                .divide(startClose, MathContext.DECIMAL32)
+                .multiply(BigDecimal.valueOf(100))
+                .setScale(2, RoundingMode.FLOOR);
+        assetDetail.put("capitalGain", capitalGain.toPlainString());
+
+        // total return
+        BigDecimal totalReturn = capitalGain.add(dividendYield)
+                .setScale(2, RoundingMode.FLOOR);
+        assetDetail.put("totalReturn", totalReturn.toPlainString());
 
         // returns
         return assetDetail;
@@ -379,6 +394,60 @@ public class KrAssetClient extends AssetClient {
                 .collect(Collectors.toList());
     }
 
+    List<Map<String,String>> getStockOhlcvs(Asset asset) {
+        LocalDate dateFrom = LocalDate.now().minusYears(1);
+        LocalDate dateTo = LocalDate.now().minusDays(1);
+        String url = "https://seibro.or.kr/websquare/engine/proworks/callServletService.jsp";
+        String w2xPath = "/IPORTAL/user/etf/BIP_CNTS06033V.xml";
+        HttpHeaders headers = createSeibroHeaders(w2xPath);
+        headers.setContentType(MediaType.APPLICATION_XML);
+        String action = "secnInfoDDPList";
+        String task = "ksd.safe.bip.cnts.Stock.process.SecnInfoPTask";
+        Map<String,String> secInfo = getSecInfo(asset.getSymbol());
+        String isin = secInfo.get("ISIN");
+        List<Map<String,String>> ohlcvs = new ArrayList<>();
+        int startPage = 1;
+        int endPage = 100;
+        for (int i = 0; i < 100; i ++) {
+            int finalStartPage = startPage;
+            int finalEndPage = endPage;
+            Map<String,String> payloadMap = new LinkedHashMap<>(){{
+                put("W2XPATH", w2xPath);
+                put("MENU_NO","45");
+                put("ISIN", isin);
+                put("START_DATE", dateFrom.format(DateTimeFormatter.BASIC_ISO_DATE));
+                put("END_DATE", dateTo.format(DateTimeFormatter.BASIC_ISO_DATE));
+                put("START_PAGE", String.valueOf(finalStartPage));
+                put("END_PAGE", String.valueOf(finalEndPage));
+            }};
+            String payloadXml = createSeibroPayloadXml(action, task, payloadMap);
+            RequestEntity<String> requestEntity = RequestEntity.post(url)
+                    .headers(headers)
+                    .body(payloadXml);
+            ResponseEntity<String> responseEntity = restTemplate.exchange(requestEntity, String.class);
+            String responseBody = responseEntity.getBody();
+            List<Map<String, String>> rows = convertSeibroXmlToList(responseBody);
+            ohlcvs.addAll(rows);
+
+            // check next page
+            if (rows.size() < 100) {
+                break;
+            } else {
+                startPage += 100;
+                endPage += 100;
+            }
+        }
+
+        // sort date descending
+        ohlcvs.sort(Comparator
+                .comparing((Map<String, String> it) -> LocalDate.parse(it.get("SECN_PRICE_STD_DT"), DateTimeFormatter.BASIC_ISO_DATE))
+                .reversed());
+
+        // returns
+        return ohlcvs;
+    }
+
+
     Map<String, String> getEtfAssetDetail(Asset asset) {
         Map<String, String> assetDetail = new LinkedHashMap<>();
         // market cap
@@ -388,10 +457,12 @@ public class KrAssetClient extends AssetClient {
                 .orElse(null));
 
         // dividends
+        BigDecimal dividendYield = BigDecimal.ZERO;
+        int dividendFrequency = 0;
         List<Map<String,String>> dividends = getEtfDividends(asset);
         if (dividends.size() > 0) {
             // dividend yield
-            BigDecimal dividendYield = dividends.stream()
+            dividendYield = dividends.stream()
                     .map(row -> {
                         String bunbe = row.get("BUNBE");
                         if (bunbe != null && bunbe.trim().length() > 0) {
@@ -402,10 +473,25 @@ public class KrAssetClient extends AssetClient {
                     })
                     .reduce(BigDecimal.ZERO, BigDecimal::add)
                     .setScale(2, RoundingMode.DOWN);
-            assetDetail.put("dividendYield", dividendYield.toPlainString());
-            // dividend frequency
-            assetDetail.put("dividendFrequency", String.valueOf(dividends.size()));
+            dividendFrequency = dividends.size();
         }
+        assetDetail.put("dividendYield", dividendYield.toPlainString());
+        assetDetail.put("dividendFrequency", String.valueOf(dividendFrequency));
+
+        // capital gain
+        List<Map<String,String>> ohlcvs = getEtfOhlcvs(asset);
+        BigDecimal startClose = new BigDecimal(ohlcvs.get(ohlcvs.size()-1).get("CPRI"));
+        BigDecimal endClose = new BigDecimal(ohlcvs.get(0).get("CPRI"));
+        BigDecimal capitalGain = endClose.subtract(startClose)
+                .divide(startClose, MathContext.DECIMAL32)
+                .multiply(BigDecimal.valueOf(100))
+                .setScale(2, RoundingMode.FLOOR);
+        assetDetail.put("capitalGain", capitalGain.toPlainString());
+
+        // total return
+        BigDecimal totalReturn = capitalGain.add(dividendYield)
+                .setScale(2, RoundingMode.FLOOR);
+        assetDetail.put("totalReturn", totalReturn.toPlainString());
 
         // returns
         return assetDetail;
@@ -445,6 +531,62 @@ public class KrAssetClient extends AssetClient {
         ResponseEntity<String> responseEntity = restTemplate.exchange(requestEntity, String.class);
         String responseBody = responseEntity.getBody();
         return convertSeibroXmlToList(responseBody);
+    }
+
+    List<Map<String,String>> getEtfOhlcvs(Asset asset) {
+        LocalDate dateFrom = LocalDate.now().minusYears(1);
+        LocalDate dateTo = LocalDate.now().minusDays(1);
+        String url = "https://seibro.or.kr/websquare/engine/proworks/callServletService.jsp";
+        String w2xPath = "/IPORTAL/user/etf/BIP_CNTS06033V.xml";
+        HttpHeaders headers = createSeibroHeaders(w2xPath);
+        headers.setContentType(MediaType.APPLICATION_XML);
+        String action = "compstInfoStkDayprcList";
+        String task = "ksd.safe.bip.cnts.etf.process.EtfCompstInfoPTask";
+        Map<String,String> secInfo = getSecInfo(asset.getSymbol());
+        String isin = secInfo.get("ISIN");
+        List<Map<String,String>> ohlcvs = new ArrayList<>();
+        int startPage = 1;
+        int endPage = 100;
+        for (int i = 0; i < 100; i ++) {
+            int finalStartPage = startPage;
+            int finalEndPage = endPage;
+            Map<String,String> payloadMap = new LinkedHashMap<>(){{
+                put("W2XPATH", w2xPath);
+                put("MENU_NO","182");
+                put("CMM_BTN_ABBR_NM","allview,allview,print,hwp,word,pdf,searchIcon,seach,favorites float_left,search02,search02,link,link,wide,wide,top,");
+                put("isin", isin);
+                put("RGT_RSN_DTAIL_SORT_CD", "11");
+                put("fromDt", dateFrom.format(DateTimeFormatter.BASIC_ISO_DATE));
+                put("toDt", dateTo.format(DateTimeFormatter.BASIC_ISO_DATE));
+                put("START_PAGE", String.valueOf(finalStartPage));
+                put("END_PAGE", String.valueOf(finalEndPage));
+            }};
+            String payloadXml = createSeibroPayloadXml(action, task, payloadMap);
+
+            RequestEntity<String> requestEntity = RequestEntity.post(url)
+                    .headers(headers)
+                    .body(payloadXml);
+            ResponseEntity<String> responseEntity = restTemplate.exchange(requestEntity, String.class);
+            String responseBody = responseEntity.getBody();
+            List<Map<String, String>> rows = convertSeibroXmlToList(responseBody);
+            ohlcvs.addAll(rows);
+
+            // check next page
+            if (rows.size() < 100) {
+                break;
+            } else {
+                startPage += 100;
+                endPage += 100;
+            }
+        }
+
+        // sort date descending
+        ohlcvs.sort(Comparator
+                .comparing((Map<String, String> it) -> LocalDate.parse(it.get("STD_DT"), DateTimeFormatter.BASIC_ISO_DATE))
+                .reversed());
+
+        // returns
+        return ohlcvs;
     }
 
     /**
