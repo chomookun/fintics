@@ -286,7 +286,7 @@
                                     <span data-duice-bind="basketAsset" data-duice-property="symbol" class="code font-weight--bold"></span>
                                 </td>
                                 <td class="text-align--left white-space--nowrap overflow--hidden text-overflow--ellipsis">
-                                    <img class="icon icon--circle font-size--large" data-duice-bind="basketAsset" data-duice-property="icon" th:onerror="|null; this.src='@{/static/image/icon-asset.svg}';|" alt=""/>
+                                    <img class="icon icon--circle font-size--large" data-duice-bind="basketAsset" data-duice-property="icon" th:onerror="|this.src='@{/static/image/icon-asset.svg}';|" alt=""/>
                                     &nbsp;
                                     <span data-duice-bind="basketAsset" data-duice-property="name"
                                         data-duice-execute="
@@ -669,7 +669,7 @@
                                 <span data-duice-bind="asset" data-duice-property="symbol" class="font-weight--bold code"></span>
                             </td>
                             <td class="text-align--left" style="overflow-x: hidden;">
-                                <img class="icon" data-duice-bind="asset" data-duice-property="icon" th:onerror="|this.onerror=null; this.src='@{/static/image/icon-asset.svg}';|" alt=""/>
+                                <img class="icon" data-duice-bind="asset" data-duice-property="icon" th:onerror="|this.src='@{/static/image/icon-asset.svg}';|" alt=""/>
                                 &nbsp;
                                 <span data-duice-bind="asset" data-duice-property="name"></span>
                             </td>
@@ -807,7 +807,7 @@
                                 <span data-duice-bind="asset" data-duice-property="symbol" class="font-weight--bold code"></span>
                             </td>
                             <td>
-                                <img class="icon" data-duice-bind="asset" data-duice-property="icon" th:onerror="|this.onerror=null; this.src='@{/static/image/icon-asset.svg}';|" alt=""/>
+                                <img class="icon" data-duice-bind="asset" data-duice-property="icon" th:onerror="|this.src='@{/static/image/icon-asset.svg}';|" alt=""/>
                                 &nbsp;
                                 <span data-duice-bind="asset" data-duice-property="name"></span>
                             </td>
