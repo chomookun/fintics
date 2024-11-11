@@ -289,9 +289,24 @@
                                     <img class="icon icon--circle font-size--large" data-duice-bind="basketAsset" data-duice-property="icon" th:onerror="|null; this.src='@{/static/image/icon-asset.svg}';|" alt=""/>
                                     &nbsp;
                                     <span data-duice-bind="basketAsset" data-duice-property="name"
-                                        data-duice-execute="this.dataset.assetId=basketAsset.assetId;"
+                                        data-duice-execute="
+                                        this.dataset.assetId=basketAsset.assetId;
+                                         if (basketAsset.holdingWeight === 0 && basketAsset.enabled) {
+                                            this.style.fontStyle = 'italic';
+                                            this.style.textDecoration = 'line-through';
+                                        }
+                                        "
                                         onclick="_assetDialog.open(this.dataset.assetId);"
                                         class="link"></span>
+                                    &nbsp;
+                                    <img class="icon font-size--smaller"
+                                         th:src="@{/static/image/icon-pin.svg}"
+                                         data-duice-bind="basketAsset"
+                                         data-duice-if="return basketAsset.fixed" alt="fixed"/>
+                                    <img class="icon font-size--smaller"
+                                         th:src="@{/static/image/icon-disabled.svg}"
+                                         data-duice-bind="basketAsset"
+                                         data-duice-if="return !basketAsset.enabled" alt="disabled"/>
                                 </td>
                                 <td>
                                     <span data-duice-bind="basketAsset" data-duice-property="exchange" class="badge"></span>
