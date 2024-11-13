@@ -78,7 +78,7 @@ public class KisBrokerClient extends BrokerClient {
      */
     RestTemplate createRestTemplate() {
         return RestTemplateBuilder.create()
-                .retryCount(3)
+                .httpRequestRetryHandler(new KisHttpRequestRetryHandler(3))
                 .insecure(insecure)
                 .build();
     }

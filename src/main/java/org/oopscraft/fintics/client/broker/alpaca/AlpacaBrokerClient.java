@@ -3,6 +3,7 @@ package org.oopscraft.fintics.client.broker.alpaca;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import org.apache.http.impl.client.StandardHttpRequestRetryHandler;
 import org.oopscraft.arch4j.core.common.support.RestTemplateBuilder;
 import org.oopscraft.fintics.client.broker.BrokerClient;
 import org.oopscraft.fintics.client.broker.BrokerClientDefinition;
@@ -61,7 +62,7 @@ public class AlpacaBrokerClient extends BrokerClient {
      */
     RestTemplate createRestTemplate() {
         return RestTemplateBuilder.create()
-                .retryCount(3)
+                .httpRequestRetryHandler(new StandardHttpRequestRetryHandler())
                 .insecure(insecure)
                 .build();
     }

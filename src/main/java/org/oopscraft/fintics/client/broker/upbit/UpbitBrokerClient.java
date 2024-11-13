@@ -7,6 +7,7 @@ import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.http.impl.client.StandardHttpRequestRetryHandler;
 import org.oopscraft.arch4j.core.common.data.IdGenerator;
 import org.oopscraft.arch4j.core.common.support.RestTemplateBuilder;
 import org.oopscraft.fintics.client.broker.BrokerClient;
@@ -70,7 +71,7 @@ public class UpbitBrokerClient extends BrokerClient {
      */
     RestTemplate createRestTemplate() {
         return RestTemplateBuilder.create()
-                .retryCount(3)
+                .httpRequestRetryHandler(new StandardHttpRequestRetryHandler())
                 .insecure(insecure)
                 .build();
     }

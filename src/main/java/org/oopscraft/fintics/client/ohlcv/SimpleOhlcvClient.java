@@ -5,6 +5,7 @@ import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.http.impl.client.StandardHttpRequestRetryHandler;
 import org.oopscraft.arch4j.core.common.support.RestTemplateBuilder;
 import org.oopscraft.fintics.model.Asset;
 import org.oopscraft.fintics.model.Ohlcv;
@@ -47,7 +48,7 @@ public class SimpleOhlcvClient extends OhlcvClient {
 
         // rest template
         this.restTemplate = RestTemplateBuilder.create()
-                .retryCount(3)
+                .httpRequestRetryHandler(new StandardHttpRequestRetryHandler())
                 .build();
 
         // object mapper

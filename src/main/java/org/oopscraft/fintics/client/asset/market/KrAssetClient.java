@@ -1,6 +1,7 @@
 package org.oopscraft.fintics.client.asset.market;
 
 import lombok.extern.slf4j.Slf4j;
+import org.apache.http.impl.client.StandardHttpRequestRetryHandler;
 import org.oopscraft.arch4j.core.common.support.RestTemplateBuilder;
 import org.oopscraft.fintics.client.asset.AssetClient;
 import org.oopscraft.fintics.client.asset.AssetClientProperties;
@@ -48,7 +49,7 @@ public class KrAssetClient extends AssetClient {
 
         // rest template
         this.restTemplate = RestTemplateBuilder.create()
-                .retryCount(3)
+                .httpRequestRetryHandler(new StandardHttpRequestRetryHandler())
                 .build();
     }
 
