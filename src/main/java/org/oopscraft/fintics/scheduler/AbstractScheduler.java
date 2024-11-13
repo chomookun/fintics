@@ -54,7 +54,7 @@ public abstract class AbstractScheduler {
             // final commit
             log.debug("- {} final commit[{}]", unitName, count);
             transactionManager.commit(status);
-            log.info("- {} saved[{}]", unitName, count);
+            log.debug("- {} saved[{}]", unitName, count);
         } catch (Exception e) {
             log.error(e.getMessage(), e);
             transactionManager.rollback(status);
