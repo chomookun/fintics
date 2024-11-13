@@ -98,7 +98,7 @@ public class OhlcvCollector extends AbstractScheduler {
         // save new or changed
         List<OhlcvEntity> newOrChangedMinuteOhlcvEntities = extractNewOrChangedOhlcvEntities(minuteOhlcvEntities, previousMinuteEntities);
         String unitName = String.format("minuteOhlcvEntities[%s]", basketAsset.getName());
-        log.info("OhlcvCollector - save {}:{}", unitName, newOrChangedMinuteOhlcvEntities.size());
+        log.debug("OhlcvCollector - save {}:{}", unitName, newOrChangedMinuteOhlcvEntities.size());
         saveEntities(unitName, newOrChangedMinuteOhlcvEntities, transactionManager, ohlcvRepository);
     }
 
@@ -130,7 +130,7 @@ public class OhlcvCollector extends AbstractScheduler {
         // save new or changed
         List<OhlcvEntity> newOrChangedDailyOhlcvEntities = extractNewOrChangedOhlcvEntities(dailyOhlcvEntities, previousDailyOhlcvEntities);
         String unitName = String.format("dailyOhlcvEntities[%s]", basketAsset.getName());
-        log.info("OhlcvCollector - save {}:{}", unitName, newOrChangedDailyOhlcvEntities.size());
+        log.debug("OhlcvCollector - save {}:{}", unitName, newOrChangedDailyOhlcvEntities.size());
         saveEntities(unitName, newOrChangedDailyOhlcvEntities, transactionManager, ohlcvRepository);
     }
 

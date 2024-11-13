@@ -106,7 +106,7 @@ public class OhlcvPastCollector extends AbstractScheduler {
                         .build())
                 .collect(Collectors.toList());
         String unitName = String.format("pastAssetDailyOhlcvEntities[%s]", asset.getName());
-        log.info("OhlcvPastCollector - save {}:{}", unitName, dailyOhlcvEntities.size());
+        log.debug("OhlcvPastCollector - save {}:{}", unitName, dailyOhlcvEntities.size());
         saveEntities(unitName, dailyOhlcvEntities, transactionManager, assetOhlcvRepository);
     }
 
@@ -148,7 +148,7 @@ public class OhlcvPastCollector extends AbstractScheduler {
                         .build())
                 .collect(Collectors.toList());
         String unitName = String.format("pastMinuteOhlcvEntities[%s]", asset.getName());
-        log.info("PastOhlcvCollector - save {}:{}", unitName, minuteOhlcvEntities.size());
+        log.debug("PastOhlcvCollector - save {}:{}", unitName, minuteOhlcvEntities.size());
         saveEntities(unitName, minuteOhlcvEntities, transactionManager, assetOhlcvRepository);
     }
 
