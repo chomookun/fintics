@@ -57,10 +57,11 @@ public class LinkResponseFactory {
         links.add(LinkResponse.of("Alphasquare", String.format("https://alphasquare.co.kr/home/market-summary?code=%s", asset.getSymbol())));
         // naver
         links.add(LinkResponse.of("Naver", String.format("https://finance.naver.com/item/main.naver?code=%s", asset.getSymbol())));
-        // k-etf
-        links.add(LinkResponse.of("K-ETF", String.format("https://www.k-etf.com/etf/%s",asset.getSymbol())));
-        // etfcheck
+        // etf
         if (Objects.equals(asset.getType(),"ETF")) {
+            // k-etf
+            links.add(LinkResponse.of("K-ETF", String.format("https://www.k-etf.com/etf/%s",asset.getSymbol())));
+            // etfcheck
             links.add(LinkResponse.of("ETFCheck", String.format("https://www.etfcheck.co.kr/mobile/etpitem/%s", asset.getSymbol())));
         }
         // return
