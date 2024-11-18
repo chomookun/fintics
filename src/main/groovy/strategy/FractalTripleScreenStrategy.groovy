@@ -549,18 +549,22 @@ tradeAsset.setMessage(message)
 //===============================
 // execute strategy
 //===============================
-// hourly
-microTripleScreenStrategy.getResult(maxPosition, minPosition).ifPresent(it -> {
-    strategyResult = it
-})
-// daily
-mesoTripleScreenStrategy.getResult(maxPosition, minPosition).ifPresent(it -> {
-    strategyResult = it
-})
-// weekly
+// macro
 macroTripleScreenStrategy.getResult(maxPosition, minPosition).ifPresent(it -> {
+    log.info("macroStrategyResult: {}", it)
     strategyResult = it
 })
+// meso
+mesoTripleScreenStrategy.getResult(maxPosition, minPosition).ifPresent(it -> {
+    log.info("mesoStrategyResult: {}", it)
+    strategyResult = it
+})
+// micro
+microTripleScreenStrategy.getResult(maxPosition, minPosition).ifPresent(it -> {
+    log.info("macroStrategyResult: {}", it)
+    strategyResult = it
+})
+
 
 //===============================
 // check split limit
@@ -586,4 +590,6 @@ if (strategyResult != null && strategyResult.action == Action.SELL) {
 //================================
 // return
 //================================
+log.info("strategyResult: {}", strategyResult)
+tradeAsset.setMessage(tradeAsset.getMessage() + "strategyResult:${strategyResult}")
 return strategyResult
