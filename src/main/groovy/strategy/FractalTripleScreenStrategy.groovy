@@ -271,7 +271,8 @@ class Analyzer {
                 momentumScore: "${this.getMomentumScore()}",
                 volatilityScore: "${this.getVolatilityScore()}",
                 oversoldScore: "${this.getOversoldScore()}",
-                overboughtScore: "${this.getOverboughtScore()}"
+                overboughtScore: "${this.getOverboughtScore()}",
+                trailingStopScore: "${this.getTrailingStopScore()}"
         ].toString()
     }
 }
@@ -379,9 +380,10 @@ class TripleScreenStrategy {
         }
 
         // if all bearish momentum trailing stop
-        if (tideAnalyzer.getMomentumScore() < 25 && waveAnalyzer.getMomentumScore() < 25 && rippleAnalyzer.getMomentumScore() < 25) {
+        if (tideAnalyzer.getMomentumScore() < 25) {
             if (waveAnalyzer.getTrailingStopScore() > 50) {
-                strategyResult = StrategyResult.of(Action.SELL, position, "[TRAILING STOP] ${this.toString()}")
+                def tideAveragePosition = tideAnalyzer.adjustAveragePosition(position)
+                strategyResult = StrategyResult.of(Action.SELL, tideAveragePosition, "[TRAILING STOP] ${this.toString()}")
             }
         }
 
