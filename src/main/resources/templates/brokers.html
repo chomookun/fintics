@@ -231,9 +231,10 @@
                             </thead>
                             <tbody>
                             <tr data-duice-bind="brokers" data-duice-loop="broker,status"
-                                data-duice-selected-item-class="selected" data-duice-execute="
-                        this.dataset.brokerId=broker.brokerId;
-                        " onclick="getBroker(this.dataset.brokerId);" class="link">
+                                data-duice-selected-item-class="selected"
+                                data-duice-execute="this.dataset.brokerId=broker.brokerId;"
+                                onclick="getBroker(this.dataset.brokerId);"
+                                class="cursor--pointer">
                                 <td class="text-align--center">
                                     <span data-duice-bind="status" data-duice-property="count" class="number"></span>
                                 </td>

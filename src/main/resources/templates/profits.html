@@ -169,7 +169,7 @@
                                 this.classList.add('color--red');
                             }
                           |"
-                          data-duice-format="number" class="number">
+                          data-duice-format="number()" class="number">
                         </span>
                 </div>
             </div>
@@ -189,7 +189,7 @@
                                     this.classList.add('color--red');
                                 }
                                 |"
-                              data-duice-format="number"
+                              data-duice-format="number()"
                               class="font-weight--bold number"></span>
                     </div>
                     <div class="overflow-x--scroll overflow-y--scroll border-top--1" style="max-height:200px;">
@@ -236,14 +236,14 @@
                                     <span data-duice-bind="realizedProfit" data-duice-property="name"></span>
                                 </td>
                                 <td class="text-align--right">
-                                    <span data-duice-bind="realizedProfit" data-duice-property="profitAmount" data-duice-format="number"
+                                    <span data-duice-bind="realizedProfit" data-duice-property="profitAmount" data-duice-format="number()"
                                           data-duice-execute="
                                     if (realizedProfit.profitAmount > 0) this.classList.add('color--green');
                                     if (realizedProfit.profitAmount < 0) this.classList.add('color--red')
                                     " class="font-weight--bold number"></span>
                                 </td>
                                 <td class="text-align--right">
-                                    <span data-duice-bind="realizedProfit" data-duice-property="profitPercentage" data-duice-format="number"
+                                    <span data-duice-bind="realizedProfit" data-duice-property="profitPercentage" data-duice-format="number()"
                                           data-duice-execute="
                                     if (realizedProfit.profitPercentage > 0) this.classList.add('color--green');
                                     if (realizedProfit.profitPercentage < 0) this.classList.add('color--red');
@@ -251,22 +251,22 @@
                                     <span class="code">%</span>
                                 </td>
                                 <td class="text-align--right">
-                                    <span data-duice-bind="realizedProfit" data-duice-property="quantity" data-duice-format="number" class="number"></span>
+                                    <span data-duice-bind="realizedProfit" data-duice-property="quantity" data-duice-format="number()" class="number"></span>
                                 </td>
                                 <td class="text-align--right">
-                                    <span data-duice-bind="realizedProfit" data-duice-property="purchasePrice" data-duice-format="number" class="number"></span>
+                                    <span data-duice-bind="realizedProfit" data-duice-property="purchasePrice" data-duice-format="number()" class="number"></span>
                                 </td>
                                 <td class="text-align--right">
-                                    <span data-duice-bind="realizedProfit" data-duice-property="purchaseAmount" data-duice-format="number" class="number"></span>
+                                    <span data-duice-bind="realizedProfit" data-duice-property="purchaseAmount" data-duice-format="number()" class="number"></span>
                                 </td>
                                 <td class="text-align--right">
-                                    <span data-duice-bind="realizedProfit" data-duice-property="disposePrice" data-duice-format="number" class="number"></span>
+                                    <span data-duice-bind="realizedProfit" data-duice-property="disposePrice" data-duice-format="number()" class="number"></span>
                                 </td>
                                 <td class="text-align--right">
-                                    <span data-duice-bind="realizedProfit" data-duice-property="disposeAmount" data-duice-format="number" class="number"></span>
+                                    <span data-duice-bind="realizedProfit" data-duice-property="disposeAmount" data-duice-format="number()" class="number"></span>
                                 </td>
                                 <td class="text-align--right">
-                                    <span data-duice-bind="realizedProfit" data-duice-property="feeAmount" data-duice-format="number" class="number"></span>
+                                    <span data-duice-bind="realizedProfit" data-duice-property="feeAmount" data-duice-format="number()" class="number"></span>
                                 </td>
                             </tr>
                             <tr th:data-duice-bind="|profitSearchMap.get('${broker.brokerId}')|"
@@ -292,7 +292,7 @@
                         <span data-th-text="#{fintics.Profit.dividendAmount}" class="font-weight--bold"></span>:
                         <span th:data-duice-bind="|profitMap.get('${broker.brokerId}')|"
                               data-duice-property="dividendAmount"
-                              data-duice-format="number"
+                              data-duice-format="number()"
                               th:data-duice-execute="|
                               let dividendAmount = profitMap.get('${broker.brokerId}').dividendAmount;
                               if (dividendAmount > 0) {
@@ -344,11 +344,11 @@
                                           if (dividendHistory.dividendAmount > 0) this.classList.add('color--green');
                                           if (dividendHistory.dividendAmount < 0) this.classList.add('color--red');
                                           "
-                                          data-duice-format="number"
+                                          data-duice-format="number()"
                                           class="font-weight--bold number"></span>
                                 </td>
                                 <td class="text-align--right">
-                                    <span data-duice-bind="dividendHistory" data-duice-property="holdingQuantity" data-duice-format="number" class="number"></span>
+                                    <span data-duice-bind="dividendHistory" data-duice-property="holdingQuantity" data-duice-format="number()" class="number"></span>
                                 </td>
                                 <td>
                                     <span data-duice-bind="dividendHistory"

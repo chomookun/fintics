@@ -324,7 +324,7 @@
                                             <tbody>
                                             <tr>
                                                 <td data-th-text="#{fintics.Asset.marketCap}"></td>
-                                                <td data-duice-bind="basketAsset" data-duice-property="marketCap" data-duice-format="number" class="text-align--right"></td>
+                                                <td data-duice-bind="basketAsset" data-duice-property="marketCap" data-duice-format="number()" class="text-align--right"></td>
                                             </tr>
                                             <tr data-duice-bind="basketAsset" data-duice-if="return basketAsset.type==='STOCK'">
                                                 <td data-th-text="#{fintics.Asset.eps}"></td>
@@ -499,7 +499,7 @@
         </style>
         <script th:inline="javascript">
             const assetSelectDialog = {
-                dialog: new duice.dialog.Dialog(document.getElementById('assetSelectDialog')),
+                dialog: new duice.Dialog(document.getElementById('assetSelectDialog')),
                 market: null,
                 alreadySelectedAssetIds : null,
                 assetSearch: new duice.ObjectProxy({
@@ -689,7 +689,7 @@
                                         <tbody>
                                         <tr>
                                             <td data-th-text="#{fintics.Asset.marketCap}"></td>
-                                            <td data-duice-bind="asset" data-duice-property="marketCap" data-duice-format="number" class="text-align--right"></td>
+                                            <td data-duice-bind="asset" data-duice-property="marketCap" data-duice-format="number()" class="text-align--right"></td>
                                         </tr>
                                         <tr data-duice-bind="asset" data-duice-if="return asset.type==='STOCK'">
                                             <td data-th-text="#{fintics.Asset.eps}"></td>
@@ -827,7 +827,7 @@
                                         <tbody>
                                         <tr>
                                             <td data-th-text="#{fintics.Asset.marketCap}"></td>
-                                            <td data-duice-bind="asset" data-duice-property="marketCap" data-duice-format="number" class="text-align--right"></td>
+                                            <td data-duice-bind="asset" data-duice-property="marketCap" data-duice-format="number()" class="text-align--right"></td>
                                         </tr>
                                         <tr data-duice-bind="asset" data-duice-if="return asset.type==='STOCK'">
                                             <td data-th-text="#{fintics.Asset.eps}"></td>
@@ -912,7 +912,7 @@
         </style>
         <script th:inline="javascript">
             const testBasketDialog = {
-                dialog: new duice.dialog.Dialog(document.getElementById('test-basket-dialog')),
+                dialog: new duice.Dialog(document.getElementById('test-basket-dialog')),
                 abortController: null,
                 signal: null,
                 test: function(basket) {

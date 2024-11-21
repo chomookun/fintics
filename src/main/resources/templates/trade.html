@@ -310,18 +310,19 @@
         }
 
         document.addEventListener('DOMContentLoaded', () => {
-            let tabFolder = duice.tabFolder(
-                duice.tabItem(
-                    document.getElementById('tradeTabButton'),
-                    document.getElementById('tradeTabContent'),
-                    () => {}),
-                duice.tabItem(
-                    document.getElementById('tradeBalanceTabButton'),
-                    document.getElementById('tradeBalanceTabContent'),
-                    () => {
-                        getTradeBalance();
-                    })
-            );
+            let tabFolder = new duice.TabFolder();
+            tabFolder.addItem(new duice.TabItem(
+                document.getElementById('tradeTabButton'),
+                document.getElementById('tradeTabContent'),
+                () => {}
+            ));
+            tabFolder.addItem(new duice.TabItem(
+                document.getElementById('tradeBalanceTabButton'),
+                document.getElementById('tradeBalanceTabContent'),
+                () => {
+                    getTradeBalance();
+                }
+            ));
             tabFolder.setActive(0);
             if(tradeId) {
                 getTrade();
@@ -428,7 +429,7 @@
                     </div>
                     <label class="grid-column--6">
                         <span data-th-text="#{fintics.Trade.investAmount}" class="font-weight--bold tag-required"></span>
-                        <input type="number" data-duice-bind="trade" data-duice-property="investAmount" data-duice-format="number" class="width--100 font-weight--bold color--red number"/>
+                        <input type="number" data-duice-bind="trade" data-duice-property="investAmount" data-duice-format="number()" class="width--100 font-weight--bold color--red number"/>
                     </label>
                     <label class="grid-column--6">
                         <span data-th-text="#{fintics.Trade.orderKind}" class="font-weight--bold tag-required"></span>
@@ -453,7 +454,7 @@
                     <label class="grid-column--6">
                         <span data-th-text="#{fintics.Trade.cashBufferWeight}" class="font-weight--bold"></span>
                         <div class="width--100">
-                            <input type="number" data-duice-bind="trade" data-duice-property="cashBufferWeight" data-duice-format="number" class="width--50 number"/>
+                            <input type="number" data-duice-bind="trade" data-duice-property="cashBufferWeight" data-duice-format="number()" class="width--50 number"/>
                             <span class="code">%</span>
                         </div>
                     </label>
@@ -548,7 +549,7 @@
                                             <tbody>
                                             <tr>
                                                 <td data-th-text="#{fintics.Asset.marketCap}"></td>
-                                                <td data-duice-bind="basketAsset" data-duice-property="marketCap" data-duice-format="number" class="text-align--right"></td>
+                                                <td data-duice-bind="basketAsset" data-duice-property="marketCap" data-duice-format="number()" class="text-align--right"></td>
                                             </tr>
                                             <tr data-duice-bind="basketAsset" data-duice-if="return basketAsset.type==='STOCK'">
                                                 <td data-th-text="#{fintics.Asset.eps}"></td>
@@ -717,7 +718,7 @@
             </style>
             <script th:inline="javascript">
                 const cashAssetDialog = {
-                    dialog: new duice.dialog.Dialog(document.getElementById('cashAssetDialog')),
+                    dialog: new duice.Dialog(document.getElementById('cashAssetDialog')),
                     assetSearch: new duice.ObjectProxy({
                         market: null,
                         type: null,
@@ -855,7 +856,7 @@
                                     <span data-duice-bind="asset" data-duice-property="type" class="code badge"></span>
                                 </td>
                                 <td class="text-align--right">
-                                    <span data-duice-bind="asset" data-duice-property="marketCap" data-duice-format="number" class="number"></span>
+                                    <span data-duice-bind="asset" data-duice-property="marketCap" data-duice-format="number()" class="number"></span>
                                 </td>
                                 <td class="text-align--right font-size--smaller code">
                                     <select data-duice-bind="asset"
@@ -878,7 +879,7 @@
                         <div class="grid-column--1 display--flex">
                             <span data-th-text="#{web.global.total}"></span>
                             &nbsp;
-                            <span data-duice-bind="cashAssetDialog.assetSearch" data-duice-property="_count" data-duice-format="number" class="number"></span>
+                            <span data-duice-bind="cashAssetDialog.assetSearch" data-duice-property="_count" data-duice-format="number()" class="number()"></span>
                             &nbsp;
                             <span data-th-text="#{web.global.rows}"></span>
                         </div>
@@ -915,26 +916,26 @@
                 <div class="display--grid grid-template-columns--12 grid-gap--1em">
                     <label class="grid-column--6 s__grid-column--12">
                         <span data-th-text="#{fintics.Balance.totalAmount}" class="font-weight--bold"></span>
-                        <input type="number" data-duice-bind="balance" data-duice-property="totalAmount" data-duice-format="number" class="width--100 font-weight--bold number"/>
+                        <input type="number" data-duice-bind="balance" data-duice-property="totalAmount" data-duice-format="number()" class="width--100 font-weight--bold number"/>
                     </label>
                     <label class="grid-column--6 s__grid-column--12">
                         <span data-th-text="#{fintics.Balance.cashAmount}" class="font-weight--bold"></span>
-                        <input type="number" data-duice-bind="balance" data-duice-property="cashAmount" data-duice-format="number" class="width--100 number"/>
+                        <input type="number" data-duice-bind="balance" data-duice-property="cashAmount" data-duice-format="number()" class="width--100 number"/>
                     </label>
                     <label class="grid-column--6 s__grid-column--12">
                         <span data-th-text="#{fintics.Balance.purchaseAmount}" class="font-weight--bold"></span>
-                        <input type="number" data-duice-bind="balance" data-duice-property="purchaseAmount" data-duice-format="number" class="width--100 number"/>
+                        <input type="number" data-duice-bind="balance" data-duice-property="purchaseAmount" data-duice-format="number()" class="width--100 number"/>
                     </label>
                     <label class="grid-column--6 s__grid-column--12">
                         <span data-th-text="#{fintics.Balance.valuationAmount}" class="font-weight--bold width--100"></span>
-                        <input type="number" data-duice-bind="balance" data-duice-property="valuationAmount" data-duice-format="number" class="width--100 number"/>
+                        <input type="number" data-duice-bind="balance" data-duice-property="valuationAmount" data-duice-format="number()" class="width--100 number"/>
                     </label>
                     <label class="grid-column--6 s__grid-column--12">
                         <span data-th-text="#{fintics.Balance.profitAmount}" class="font-weight--bold"></span>
                         <input type="number"
                                data-duice-bind="balance"
                                data-duice-property="profitAmount"
-                               data-duice-format="number"
+                               data-duice-format="number()"
                                data-duice-execute="
                            if(balance.profitAmount > 0) this.classList.add('color--green');
                            if(balance.profitAmount < 0) this.classList.add('color--red');
@@ -946,7 +947,7 @@
                         <input type="number"
                                data-duice-bind="balance"
                                data-duice-property="realizedProfitAmount"
-                               data-duice-format="number"
+                               data-duice-format="number()"
                                data-duice-execute="
                            if(balance.realizedProfitAmount > 0) this.classList.add('color--green');
                            if(balance.realizedProfitAmount < 0) this.classList.add('color--red');
@@ -1003,19 +1004,19 @@
                                         <span data-duice-bind="balanceAsset" data-duice-property="name"></span>
                                     </td>
                                     <td>
-                                        <span data-duice-bind="balanceAsset" data-duice-property="quantity" data-duice-format="number" class="number"></span>
-                                        (<span data-duice-bind="balanceAsset" data-duice-property="orderableQuantity" data-duice-format="number" class="number"></span>)
+                                        <span data-duice-bind="balanceAsset" data-duice-property="quantity" data-duice-format="number()" class="number"></span>
+                                        (<span data-duice-bind="balanceAsset" data-duice-property="orderableQuantity" data-duice-format="number()" class="number"></span>)
                                     </td>
                                     <td class="text-align--right">
-                                        <span data-duice-bind="balanceAsset" data-duice-property="purchaseAmount" data-duice-format="number" class="number"></span>
+                                        <span data-duice-bind="balanceAsset" data-duice-property="purchaseAmount" data-duice-format="number()" class="number"></span>
                                     </td>
                                     <td class="text-align--right">
-                                        <span data-duice-bind="balanceAsset" data-duice-property="valuationAmount" data-duice-format="number" class="number"></span>
+                                        <span data-duice-bind="balanceAsset" data-duice-property="valuationAmount" data-duice-format="number()" class="number"></span>
                                     </td>
                                     <td class="text-align--right">
                                     <span data-duice-bind="balanceAsset"
                                           data-duice-property="profitAmount"
-                                          data-duice-format="number"
+                                          data-duice-format="number()"
                                           data-duice-execute="
                                           if(balanceAsset.profitAmount > 0) this.classList.add('color--green');
                                           if(balanceAsset.profitAmount < 0) this.classList.add('color--red');
@@ -1026,7 +1027,7 @@
                                 if(balanceAsset.profitPercentage > 0) this.classList.add('color--green');
                                 if(balanceAsset.profitPercentage < 0) this.classList.add('color--red');
                                 " class="text-align--right">
-                                        <span data-duice-bind="balanceAsset" data-duice-property="profitPercentage" data-duice-format="number" class="number font-weight--bold"></span>
+                                        <span data-duice-bind="balanceAsset" data-duice-property="profitPercentage" data-duice-format="number()" class="number font-weight--bold"></span>
                                         <span class="code">%</span>
                                     </td>
                                     <td class="text-align--right">
@@ -1067,7 +1068,7 @@
             </style>
             <script th:inline="javascript">
                 const submitOrderDialog = {
-                    dialog: new duice.dialog.Dialog(document.getElementById('submitOrderDialog')),
+                    dialog: new duice.Dialog(document.getElementById('submitOrderDialog')),
                     order: new duice.ObjectProxy({
                         tradeId: null,
                         tradeName: null,

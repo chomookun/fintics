@@ -13,7 +13,7 @@
         </style>
         <script th:inline="javascript">
             const _assetDialog = {
-                dialog: new duice.dialog.Dialog(document.getElementById('_assetDialog')),
+                dialog: new duice.Dialog(document.getElementById('_assetDialog')),
                 assetId: null,
                 asset: new duice.ObjectProxy({}),
                 minuteOhlcvs: [],
@@ -261,7 +261,7 @@
                                 <tbody>
                                 <tr>
                                     <td data-th-text="#{fintics.Asset.marketCap}"></td>
-                                    <td data-duice-bind="_assetDialog.asset" data-duice-property="marketCap" data-duice-format="number" class="text-align--right"></td>
+                                    <td data-duice-bind="_assetDialog.asset" data-duice-property="marketCap" data-duice-format="number()" class="text-align--right"></td>
                                 </tr>
                                 <tr>
                                     <td data-th-text="#{fintics.Asset.eps}"></td>
