@@ -82,19 +82,23 @@
     <!-- ================================== -->
     <!-- start: strategy                       -->
     <!-- ================================== -->
-    <div class="display--flex flex-direction--column border--1 padding--1em">
-        <div class="display--flex flex-direction--column gap--1em padding--1em s__padding-y--0">
-            <form onsubmit="return false;" class="display--grid grid-template-columns--12 grid-gap--1em ">
-                <label class="grid-column--2 s__grid-column--12">
-                    <select class="width--100" data-duice-bind="strategySearch" data-duice-property="key">
-                        <option value="name" data-th-text="#{fintics.Strategy.name}"></option>
-                    </select>
-                </label>
-                <label class="grid-column--2 s__grid-column--12">
-                    <input class="width--100" type="text" data-duice-bind="strategySearch" data-duice-property="value"
-                           th:placeholder="#{web.global.keyword}"/>
-                </label>
-                <div class="grid-column--8 s__grid-column--12 justify-self--end">
+    <div class="panel">
+        <div class="panel-content">
+            <form onsubmit="return false;" class="display--flex justify-content--space-between">
+                <div>
+                    <div class="white-space--nowrap">
+                        <label>
+                            <select data-duice-bind="strategySearch" data-duice-property="key">
+                                <option value="name" data-th-text="#{fintics.Strategy.name}"></option>
+                            </select>
+                        </label>
+                        <label>
+                            <input type="text" data-duice-bind="strategySearch" data-duice-property="value"
+                                   th:placeholder="#{web.global.keyword}"/>
+                        </label>
+                    </div>
+                </div>
+                <div class="text-align--right">
                     <button type="submit" onclick="getStrategies();">
                         <img class="icon" th:src="@{/static/image/icon-search.svg}" alt="reset"/>
                         <span data-th-text="#{web.global.search}"></span>
@@ -105,12 +109,12 @@
                     </button>
                 </div>
             </form>
-            <div class="overflow-x--scroll">
-                <table class="width--100 text-align--center">
+            <div class="box overflow-auto">
+                <table class="table width--100 border--none">
                     <colgroup>
+                        <col style="width:5rem;"/>
                         <col/>
-                        <col/>
-                        <col/>
+                        <col style="width:20rem;"/>
                     </colgroup>
                     <thead>
                     <tr>
@@ -149,23 +153,21 @@
                     </tbody>
                 </table>
             </div>
-            <div class="display--grid grid-template-columns--12">
-                <div class="grid-column--4">
+            <div class="display--flex justify-content--space-between">
+                <div>
                     <span data-th-text="#{web.global.total}"></span>
                     <span data-duice-bind="strategySearch" data-duice-property="_count" data-duice-format="number(0)" class="number"></span>
                     <span data-th-text="#{web.global.rows}"></span>
                 </div>
-                <div class="grid-column--4 justify-self--center">
-                    <duice-pagination
-                            data-duice-bind="strategySearch"
-                            data-duice-size-property="_size"
-                            data-duice-page-property="_page"
-                            data-duice-count-property="_count"
-                            data-duice-onclick="getStrategies(this.dataset.page);">
-                    </duice-pagination>
-                </div>
-                <div class="grid-column--4 justify-self--end">
-                    <button type="button" onclick="createStrategy();">
+                <duice-pagination
+                        data-duice-bind="strategySearch"
+                        data-duice-size-property="_size"
+                        data-duice-page-property="_page"
+                        data-duice-count-property="_count"
+                        data-duice-onclick="getStrategies(this.dataset.page);">
+                </duice-pagination>
+                <div class="text-align--right">
+                    <button class="button" type="button" onclick="createStrategy();">
                         <img class="icon" th:src="@{/static/image/icon-create.svg}" alt="create"/>
                         <span data-th-text="#{web.global.create}"></span>
                     </button>

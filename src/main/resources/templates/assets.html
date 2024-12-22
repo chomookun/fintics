@@ -81,46 +81,54 @@
     <!-- ================================== -->
     <!-- start: assets                      -->
     <!-- ================================== -->
-    <div class="display--flex flex-direction--column border--1 padding--1em">
-        <div class="display--flex flex-direction--column gap--1em padding--1em s__padding-y--0">
-            <form onsubmit="return false;" class="display--grid grid-template-columns--12 grid-gap--1em">
-                <label class="grid-column--2 s__grid-column--12">
-                    <select data-duice-bind="assetSearch" data-duice-property="market" class="width--100">
-                        <option value="" data-th-text="'- ' + #{fintics.Asset.market} + ' -'"></option>
-                        <option th:each="market : ${markets}" th:value="${market}" th:text="${market}"></option>
-                    </select>
-                </label>
-                <label class="grid-column--2 s__grid-column--12">
-                    <select data-duice-bind="assetSearch" data-duice-property="type" class="width--100">
-                        <option value="" data-th-text="'- ' + #{fintics.Asset.type} + ' -'"></option>
-                        <option value="STOCK">STOCK</option>
-                        <option value="ETF">ETF</option>
-                    </select>
-                </label>
-                <label class="grid-column--2 s__grid-column--6">
-                    <select class="width--100" data-duice-bind="assetSearch" data-duice-property="key">
-                        <option value="name" th:text="#{fintics.Asset.name}"></option>
-                        <option value="assetId" th:text="#{fintics.Asset.assetId}"></option>
-                    </select>
-                </label>
-                <label class="grid-column--2 s__grid-column--6">
-                    <input class="width--100" type="text" data-duice-bind="assetSearch" data-duice-property="value"/>
-                </label>
-                <div class="grid-column--4 s__grid-column--12 justify-self--end">
-                    <button type="submit" onclick="getAssets();">
+    <div class="panel">
+        <div class="panel-content">
+            <form onsubmit="return false;" class="display--flex justify-content--space-between">
+                <div class="display--flex gap--1rem">
+                    <div>
+                        <label>
+                            <select data-duice-bind="assetSearch" data-duice-property="market">
+                                <option value="" data-th-text="'- ' + #{fintics.Asset.market} + ' -'"></option>
+                                <option th:each="market : ${markets}" th:value="${market}" th:text="${market}"></option>
+                            </select>
+                        </label>
+                    </div>
+                    <div>
+                        <label>
+                            <select data-duice-bind="assetSearch" data-duice-property="type">
+                                <option value="" data-th-text="'- ' + #{fintics.Asset.type} + ' -'"></option>
+                                <option value="STOCK">STOCK</option>
+                                <option value="ETF">ETF</option>
+                            </select>
+                        </label>
+                    </div>
+                    <div>
+                        <label>
+                            <select data-duice-bind="assetSearch" data-duice-property="key">
+                                <option value="name" th:text="#{fintics.Asset.name}"></option>
+                                <option value="assetId" th:text="#{fintics.Asset.assetId}"></option>
+                            </select>
+                        </label>
+                        <label>
+                            <input type="text" data-duice-bind="assetSearch" data-duice-property="value"/>
+                        </label>
+                    </div>
+                </div>
+                <div>
+                    <button class="button" type="submit" onclick="getAssets();">
                         <img class="icon" th:src="@{/static/image/icon-search.svg}" alt="search"/>
                         <span data-th-text="#{web.global.search}"></span>
                     </button>
-                    <button type="button" onclick="resetAssets();">
+                    <button class="button" type="button" onclick="resetAssets();">
                         <img class="icon" th:src="@{/static/image/icon-reset.svg}" alt="reset"/>
                         <span data-th-text="#{web.global.reset}"></span>
                     </button>
                 </div>
             </form>
-            <div class="overflow-x--scroll">
-                <table class="width--100">
+            <div class="overflow--auto">
+                <table class="table width--100">
                     <colgroup>
-                        <col style="width:3em;"/>
+                        <col style="width:5rem;"/>
                         <col/>
                         <col/>
                         <col/>
@@ -220,14 +228,16 @@
                             </div>
                         </td>
                         <td class="text-align--center">
-                            <select data-duice-bind="asset"
-                                    data-duice-option="asset.links"
-                                    data-duice-option-value-property="url"
-                                    data-duice-option-text-property="name"
-                                    onchange="_openLink(this.value, '_blank'); this.value = '';"
-                                    class="code font-size--smaller">
-                                <option value>Link...</option>
-                            </select>
+                            <label>
+                                <select data-duice-bind="asset"
+                                        data-duice-option="asset.links"
+                                        data-duice-option-value-property="url"
+                                        data-duice-option-text-property="name"
+                                        onchange="_openLink(this.value, '_blank'); this.value = '';"
+                                        class="code font-size--smaller">
+                                    <option value>Link...</option>
+                                </select>
+                            </label>
                         </td>
                     </tr>
                     <tr data-duice-bind="assetSearch"
@@ -245,13 +255,13 @@
                     </tbody>
                 </table>
             </div>
-            <div class="display--grid grid-template-columns--3">
+            <div class="display--flex justify-content--space-between">
                 <div>
                     <span data-th-text="#{web.global.total}"></span>
                     <span data-duice-bind="assetSearch" data-duice-property="_count" data-duice-format="number(0)" class="number"></span>
                     <span data-th-text="#{web.global.rows}"></span>
                 </div>
-                <div class="justify-self--center">
+                <div>
                     <duice-pagination
                             data-duice-bind="assetSearch"
                             data-duice-size-property="_size"

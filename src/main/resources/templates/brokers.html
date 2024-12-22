@@ -182,31 +182,34 @@
     <!-- ====================================== -->
     <!-- start: broker content                  -->
     <!-- ====================================== -->
-    <div id="brokerContent" class="display--grid grid-template-columns--12 grid-gap--1em">
-
-        <!-- ====================================== -->
-        <!-- start: broker list                     -->
-        <!-- ====================================== -->
-        <div id="brokerList" class="grid-column--5 s__grid-column--12">
-            <div class="display--flex flex-direction--column border--1 padding--1em">
-                <div>
+    <div id="brokerContent" class="display--grid grid-template-columns--12fr gap--1rem">
+        <div class="grid-column--span-5 s__grid-column--span-12">
+            <!-- ====================================== -->
+            <!-- start: broker list                     -->
+            <!-- ====================================== -->
+            <div id="brokerListe" class="panel">
+                <div class="panel-title">
                     <h2>
                         <img class="icon" th:src="@{/static/image/icon-list.svg}" alt="list"/>
                         <span data-th-text="#{fintics.Broker}+' '+#{web.global.list}"></span>
                     </h2>
                 </div>
-                <div class="display--flex flex-direction--column gap--1em padding--1em s__padding-y--0">
-                    <form onsubmit="return false;" class="display--grid grid-template-columns--12 grid-gap--1em">
-                        <label class="grid-column--4">
-                            <select class="width--100" data-duice-bind="brokerSearch" data-duice-property="key">
-                                <option value="name" th:text="#{fintics.Broker.name}"></option>
-                            </select>
-                        </label>
-                        <label class="grid-column--8">
-                            <input class="width--100" type="text" data-duice-bind="brokerSearch" data-duice-property="value"
-                                   th:placeholder="#{web.global.keyword}"/>
-                        </label>
-                        <div class="grid-column--12 justify-self--end">
+                <div class="panel-content">
+                    <form onsubmit="return false;" class="display--flex justify-content--space-between">
+                        <div class="display--flex flex-wrap--wrap gap--1rem">
+                            <div class="white-space--nowrap">
+                                <label>
+                                    <select data-duice-bind="brokerSearch" data-duice-property="key">
+                                        <option value="name" th:text="#{fintics.Broker.name}"></option>
+                                    </select>
+                                </label>
+                                <label>
+                                    <input type="text" data-duice-bind="brokerSearch" data-duice-property="value"
+                                           th:placeholder="#{web.global.keyword}"/>
+                                </label>
+                            </div>
+                        </div>
+                        <div>
                             <button type="submit" onclick="getBrokers();">
                                 <img class="icon" th:src="@{/static/image/icon-search.svg}" alt="reset"/>
                                 <span data-th-text="#{web.global.search}"></span>
@@ -217,10 +220,10 @@
                             </button>
                         </div>
                     </form>
-                    <div class="overflow-x--auto">
-                        <table class="width--100">
+                    <div class="box overflow--auto">
+                        <table class="table width--100 border--none">
                             <colgroup>
-                                <col/>
+                                <col style="width:5rem;"/>
                                 <col/>
                             </colgroup>
                             <thead>
@@ -257,25 +260,23 @@
                             </tbody>
                         </table>
                     </div>
-                    <div class="display--grid grid-template-columns--3 grid-gap--1em">
-                        <div class="grid-column--1">
+                    <div class="display--flex justify-content--space-between">
+                        <div>
                             <span data-th-text="#{web.global.total}"></span>
                             <span data-duice-bind="brokerSearch" data-duice-property="_count"
                                   data-duice-format="number(0)"
                                   class="number"></span>
                             <span data-th-text="#{web.global.rows}"></span>
                         </div>
-                        <div class="grid-column--1 justify-self--center">
-                            <duice-pagination class="code"
-                                              data-duice-bind="brokerSearch"
-                                              data-duice-size-property="_size"
-                                              data-duice-page-property="_page"
-                                              data-duice-count-property="_count"
-                                              data-duice-onclick="getBrokers(this.dataset.page);">
-                            </duice-pagination>
-                        </div>
-                        <div class="grid-column--1 justify-self--end">
-                            <button type="button" onclick="createBroker();">
+                        <duice-pagination class="code"
+                                          data-duice-bind="brokerSearch"
+                                          data-duice-size-property="_size"
+                                          data-duice-page-property="_page"
+                                          data-duice-count-property="_count"
+                                          data-duice-onclick="getBrokers(this.dataset.page);">
+                        </duice-pagination>
+                        <div class="text-align--right">
+                            <button class="button" type="button" onclick="createBroker();">
                                 <img class="icon" th:src="@{/static/image/icon-create.svg}" alt="create"/>
                                 <span data-th-text="#{web.global.create}"></span>
                             </button>
@@ -283,60 +284,64 @@
                     </div>
                 </div>
             </div>
+            <!-- ====================================== -->
+            <!-- end: broker list                       -->
+            <!-- ====================================== -->
         </div>
-        <!-- ====================================== -->
-        <!-- end: broker list                       -->
-        <!-- ====================================== -->
-
-        <!-- ====================================== -->
-        <!-- start: broker detail                   -->
-        <!-- ====================================== -->
-        <div id="brokerDetail" class="grid-column--7 s__grid-column--12">
-            <div class="display--flex flex-direction--column border--1 padding--1em">
-                <div>
+        <div class="grid-column--span-7 s__grid-column--span-12">
+            <!-- ====================================== -->
+            <!-- start: broker detail                   -->
+            <!-- ====================================== -->
+            <div id="brokerDetail" class="panel">
+                <div class="panel-title">
                     <h2>
                         <img class="icon" th:src="@{/static/image/icon-detail.svg}" alt="detail"/>
                         <span data-th-text="#{fintics.Broker}+' '+#{web.global.detail}"></span>
                     </h2>
                 </div>
-                <div class="display--flex flex-direction--column gap--1em padding--1em s__padding-y--0">
-                    <form onsubmit="return false;" class="display--grid grid-template-columns--12 grid-gap--1em">
-                        <label class="grid-column--12">
-                        <span data-th-text="#{fintics.Broker.name}"
-                              class="font-weight--bold tag-required"></span>
-                            <input type="text" data-duice-bind="broker" data-duice-property="name"
-                                   class="width--100"/>
-                        </label>
-                        <label class="grid-column--12">
-                            <span data-th-text="#{fintics.Broker.brokerClientId}" class="font-weight--bold"></span>
-                            <select data-duice-bind="broker" data-duice-property="brokerClientId"
-                                    data-duice-option="brokerClientDefinitions"
-                                    data-duice-option-value-property="brokerClientId"
-                                    data-duice-option-text-property="brokerClientName"
-                                    class="width--100">
-                                <option data-th-text="'- ' + #{web.global.select} + ' -'"></option>
-                            </select>
-                        </label>
-                        <label class="grid-column--12">
-                            <span data-th-text="#{fintics.Broker.brokerClientProperties}" class="font-weight--bold"></span>
-                            <duice-codemirror class="border--1 code"
-                                              data-duice-bind="broker"
-                                              data-duice-property="brokerClientProperties">
-                            </duice-codemirror>
-                        </label>
-                    </form>
-                    <div class="display--grid grid-template-columns--2 grid-gap--1em">
-                        <div>
+                <div class="panel-content">
+                    <form onsubmit="return false;" class="display--grid grid-template-columns--12fr gap--1rem">
+                        <div class="grid-column--span-6 s__grid-column--span-12">
+                            <label>
+                                <span class="font-weight--bold tag-required" data-th-text="#{fintics.Broker.name}"></span>
+                                <input class="width--100" type="text" data-duice-bind="broker" data-duice-property="name"/>
+                            </label>
                         </div>
-                        <div class="justify-self--end">
-                            <button type="button" onclick="deleteBroker();"
+                        <div class="grid-column--span-6 s__grid-column--span-12">
+                            <label>
+                                <span class="font-weight--bold" data-th-text="#{fintics.Broker.brokerClientId}"></span>
+                                <select class="width--100"
+                                        data-duice-bind="broker" data-duice-property="brokerClientId"
+                                        data-duice-option="brokerClientDefinitions"
+                                        data-duice-option-value-property="brokerClientId"
+                                        data-duice-option-text-property="brokerClientName">
+                                    <option data-th-text="'- ' + #{web.global.select} + ' -'"></option>
+                                </select>
+                            </label>
+                        </div>
+                        <div class="grid-column--span-12">
+                            <label>
+                                <span class="font-weight--bold" data-th-text="#{fintics.Broker.brokerClientProperties}"></span>
+                                <duice-codemirror class="box code"
+                                                  data-duice-bind="broker"
+                                                  data-duice-property="brokerClientProperties">
+                                </duice-codemirror>
+                            </label>
+                        </div>
+                    </form>
+                    <div class="display--flex justify-content--space-between">
+                        <div></div>
+                        <div class="text-align--right">
+                            <button class="button"
+                                    type="button" onclick="deleteBroker();"
                                     th:classappend="!${#authorization.expression('hasAuthority(''brokers.edit'')')}?'locked'"
                                     data-duice-bind="broker"
                                     data-duice-execute="(broker.brokerId && !broker._new) ? this.disabled=false : this.disabled=true;">
                                 <img class="icon" th:src="@{/static/image/icon-delete.svg}" alt="delete"/>
                                 <span data-th-text="#{web.global.delete}"></span>
                             </button>
-                            <button type="button" onclick="saveBroker();"
+                            <button class="button"
+                                    type="button" onclick="saveBroker();"
                                     th:classappend="!${#authorization.expression('hasAuthority(''brokers.edit'')')}?'locked'"
                                     data-duice-bind="broker"
                                     data-duice-execute="(broker.brokerId || broker._new) ? this.disabled=false : this.disabled=true;">
@@ -347,11 +352,10 @@
                     </div>
                 </div>
             </div>
+            <!-- ====================================== -->
+            <!-- end: broker detail                     -->
+            <!-- ====================================== -->
         </div>
-        <!-- ====================================== -->
-        <!-- end: broker detail                     -->
-        <!-- ====================================== -->
-
     </div>
     <!-- ====================================== -->
     <!-- end: broker content                  -->

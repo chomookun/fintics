@@ -84,33 +84,37 @@
     <!-- ================================== -->
     <!-- start: baskets                     -->
     <!-- ================================== -->
-    <div class="display--flex flex-direction--column border--1 padding--1em">
-        <div class="display--flex flex-direction--column gap--1em padding--1em s__padding-y--0">
-            <form onsubmit="return false;" class="display--grid grid-template-columns--12 gap--1em">
-                <label class="grid-column--2 s__grid-column--12">
-                    <select class="width--100" data-duice-bind="basketSearch" data-duice-property="key">
-                        <option value="name" data-th-text="#{fintics.Basket.name}"></option>
-                    </select>
-                </label>
-                <label class="grid-column--2 s__grid-column--12">
-                    <input class="width--100" type="text" data-duice-bind="basketSearch" data-duice-property="value"
-                           th:placeholder="#{web.global.keyword}"/>
-                </label>
-                <div class="grid-column--8 s__grid-column--12 justify-self--end">
-                    <button type="submit" onclick="getBaskets();">
+    <div class="panel">
+        <div class="panel-content">
+            <form onsubmit="return false;" class="display--flex justify-content--space-between">
+                <div>
+                    <div class="white-space--nowrap">
+                        <label>
+                            <select data-duice-bind="basketSearch" data-duice-property="key">
+                                <option value="name" data-th-text="#{fintics.Basket.name}"></option>
+                            </select>
+                        </label>
+                        <label>
+                            <input type="text" data-duice-bind="basketSearch" data-duice-property="value"
+                                   th:placeholder="#{web.global.keyword}"/>
+                        </label>
+                    </div>
+                </div>
+                <div class="text-align--right">
+                    <button class="button" type="submit" onclick="getBaskets();">
                         <img class="icon" th:src="@{/static/image/icon-search.svg}" alt="reset"/>
                         <span data-th-text="#{web.global.search}"></span>
                     </button>
-                    <button type="button" onclick="resetBaskets();">
+                    <button class="button" type="button" onclick="resetBaskets();">
                         <img class="icon" th:src="@{/static/image/icon-reset.svg}" alt="reset"/>
                         <span data-th-text="#{web.global.reset}"></span>
                     </button>
                 </div>
             </form>
-            <div class="overflow-x--scroll">
-                <table class="width--100 text-align--center">
+            <div class="box overflow--auto">
+                <table class="table width--100 border--none">
                     <colgroup>
-                        <col/>
+                        <col style="width:5rem;"/>
                         <col/>
                         <col/>
                         <col/>
@@ -120,11 +124,11 @@
                     </colgroup>
                     <thead>
                     <tr>
-                        <th data-th-text="#{web.global.no}" class="text-align--center"></th>
+                        <th data-th-text="#{web.global.no}"></th>
                         <th data-th-text="#{fintics.Basket.name}"></th>
-                        <th data-th-text="#{fintics.Basket.market}" class="text-align--center"></th>
-                        <th data-th-text="#{fintics.Basket.basketAssets}" class="text-align--center"></th>
-                        <th data-th-text="#{fintics.Basket.rebalanceEnabled}" class="text-align--center"></th>
+                        <th data-th-text="#{fintics.Basket.market}"></th>
+                        <th data-th-text="#{fintics.Basket.basketAssets}"></th>
+                        <th data-th-text="#{fintics.Basket.rebalanceEnabled}"></th>
                         <th data-th-text="#{fintics.Basket.rebalanceSchedule}"></th>
                         <th data-th-text="#{fintics.Basket.language}"></th>
                     </tr>
@@ -132,10 +136,10 @@
                     <tbody>
                     <tr data-duice-bind="baskets" data-duice-loop="basket,status">
                         <td class="text-align--center">
-                        <span data-duice-bind="status"
-                              data-duice-execute="this.innerHTML=basketSearch._size*basketSearch._page + status.count;"
-                              class="number">
-                        </span>
+                    <span data-duice-bind="status"
+                          data-duice-execute="this.innerHTML=basketSearch._size*basketSearch._page + status.count;"
+                          class="number">
+                    </span>
                         </td>
                         <td>
                             <a href="" data-duice-bind="basket" data-duice-execute="this.href=`${_rootUrl}/basket?basketId=${basket.basketId}`;">
@@ -154,7 +158,7 @@
                         <td>
                             <span data-duice-bind="basket" data-duice-property="rebalanceSchedule" class="code"></span>
                         </td>
-                        <td>
+                        <td class="text-align--center">
                             <span data-duice-bind="basket" data-duice-property="language" class="badge"></span>
                         </td>
                     </tr>
@@ -171,23 +175,21 @@
                     </tbody>
                 </table>
             </div>
-            <div class="display--grid grid-template-columns--3">
+            <div class="display--flex justify-content--space-between">
                 <div>
                     <span data-th-text="#{web.global.total}"></span>
                     <span data-duice-bind="basketSearch" data-duice-property="_count" data-duice-format="number(0)" class="number"></span>
                     <span data-th-text="#{web.global.rows}"></span>
                 </div>
-                <div class="justify-self--center">
-                    <duice-pagination
-                            data-duice-bind="basketSearch"
-                            data-duice-size-property="_size"
-                            data-duice-page-property="_page"
-                            data-duice-count-property="_count"
-                            data-duice-onclick="getStrategies(this.dataset.page);">
-                    </duice-pagination>
-                </div>
-                <div class="justify-self--end">
-                    <button type="button" onclick="createBasket();">
+                <duice-pagination
+                        data-duice-bind="basketSearch"
+                        data-duice-size-property="_size"
+                        data-duice-page-property="_page"
+                        data-duice-count-property="_count"
+                        data-duice-onclick="getStrategies(this.dataset.page);">
+                </duice-pagination>
+                <div class="text-align--right">
+                    <button class="button" type="button" onclick="createBasket();">
                         <img class="icon" th:src="@{/static/image/icon-create.svg}" alt="create"/>
                         <span data-th-text="#{web.global.create}"></span>
                     </button>

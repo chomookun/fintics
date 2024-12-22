@@ -322,11 +322,11 @@
     <!-- ====================================== -->
     <!-- start: tab index                       -->
     <!-- ====================================== -->
-    <div id="tabIndex" class="display--flex flex-wrap--nowrap overflow-x--scroll gap--1px margin-bottom--1px margin-top--1em">
-        <button th:each="trade : ${trades}" th:id="|monitorTabButton-${trade.tradeId}|" type="button" class="tab" style="flex-shrink:0;">
+    <div id="tabIndex" class="tab">
+        <span class="tab-item"  th:each="trade : ${trades}" th:id="|monitorTabButton-${trade.tradeId}|">
             <img class="icon" th:src="@{/static/image/icon-trade.svg}" alt="simulate"/>
             <span data-th-text="${trade.name}"></span>
-        </button>
+        </span>
     </div>
     <!-- ====================================== -->
     <!-- end: tab index                         -->
@@ -337,8 +337,8 @@
     <!-- ================================== -->
     <div th:each="trade,status : ${trades}" th:id="|monitorTabContent-${trade.tradeId}|"
          th:attr="hidden=${status.index > 0}"
-         class="display--flex flex-direction--column border--1 padding--1em">
-        <div>
+         class="panel">
+        <div class="panel-title">
             <h2>
                 <img class="icon" th:src="@{/static/image/icon-trade.svg}" alt="trade"/>
                 <span data-th-text="${trade.name}"></span>
@@ -349,16 +349,16 @@
                 </a>
             </h2>
         </div>
-        <div class="display--flex flex-direction--column gap--1em padding--1em s__padding-y--0">
-            <div class="display--grid grid-template-columns--12">
-                <div class="grid-column--6 s__grid-column--12" style="height:150px;">
+        <div class="panel-content">
+            <div class="display--grid grid-template-columns--12fr">
+                <div class="grid-column--span-6 s__grid-column--span-12" style="height:150px;">
                     <div class="font-weight--bold">
                         <img class="icon" src="/static/image/icon-ohlcv.svg" alt="ohlcv">
                         <span>Daily</span>
                     </div>
                     <canvas th:id="'tradeDailyOhlcvsChart-' + ${trade.tradeId}"></canvas>
                 </div>
-                <div class="grid-column--6 s__grid-column--12" style="height:150px;">
+                <div class="grid-column--span-6 s__grid-column--span-12" style="height:150px;">
                     <div class="font-weight--bold">
                         <img class="icon" src="/static/image/icon-ohlcv.svg" alt="ohlcv">
                         <span>Minute</span>
@@ -366,7 +366,7 @@
                     <canvas th:id="'tradeMinuteOhlcvsChart-' + ${trade.tradeId}"></canvas>
                 </div>
             </div>
-            <div class="grid-column--12">
+            <div class="grid-column--span-12">
                 <div>
                     <img class="icon" data-th-src="@{/static/image/icon-log.svg}" alt="log"/>
                     <span class="font-weight--bold" data-th-text="#{web.global.log}"></span>
@@ -375,7 +375,7 @@
                     <textarea th:id="'tradeLog-' + ${trade.tradeId}" class="tradeLog width--100 height--100 code font-size--smaller"></textarea>
                 </div>
             </div>
-            <div class="grid-column--12">
+            <div class="grid-column--span-12">
                 <div class="display--flex justify-content--space-between flex-wrap--wrap">
                     <div>
                         <img class="icon" data-th-src="@{/static/image/icon-basket.svg}" alt="basket"/>
@@ -441,7 +441,7 @@
                 <div class="overflow-x--scroll">
                     <table class="width--100">
                         <colgroup>
-                            <col style="width:3em;"/>
+                            <col style="width:5rem;"/>
                             <col/>
                             <col/>
                             <col/>
@@ -502,7 +502,7 @@
                                 <div class="display--flex align-items--center">
                                     <img class="icon icon--circle font-size--large" data-duice-bind="basketAsset" data-duice-property="icon" th:onerror="|this.src='@{/static/image/icon-asset.svg}';|" alt=""/>
                                     &nbsp;
-                                    <div class="margin-y--1em">
+                                    <div class="margin-left--1rem">
                                     <span data-duice-bind="basketAsset"
                                           data-duice-property="name"
                                           data-duice-execute="
@@ -602,7 +602,7 @@
                             </td>
                             <td class="text-align--center">
                                 <div class="display--flex flex-direction--column gap--1px">
-                                    <button class="small" type="button"
+                                    <button class="button small" type="button"
                                             data-duice-bind="basketAsset"
                                             data-duice-execute="this.dataset.assetId=basketAsset.assetId"
                                             th:attr="onclick=|monitorMap.get('${trade.tradeId}').buyTradeAsset(this.dataset.assetId);|"
@@ -610,7 +610,7 @@
                                         <img class="icon" th:src="@{/static/image/icon-order-buy.svg}" alt="buy"/>
                                         <span data-th-text="#{fintics.Order.Type.BUY}"></span>
                                     </button>
-                                    <button class="small" type="button"
+                                    <button class="button small" type="button"
                                             data-duice-bind="basketAsset"
                                             data-duice-execute="this.dataset.assetId=basketAsset.assetId;"
                                             th:attr="onclick=|monitorMap.get('${trade.tradeId}').sellTradeAsset(this.dataset.assetId);|"

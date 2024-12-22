@@ -173,35 +173,36 @@
     <!-- ====================================== -->
     <!-- start: strategy                        -->
     <!-- ====================================== -->
-    <div class="display--flex flex-direction--column border--1 padding--1em">
-        <div class="display--flex flex-direction--column gap--1em padding--1em s__padding-y--0">
-            <form class="display--grid grid-template-columns--12 grid-gap--1em grid-column-gap--2em">
-                <label class="grid-column--6 s__grid-column--12">
-                    <span data-th-text="#{fintics.Strategy.name}" class="font-weight--bold tag-required"></span>
-                    <input type="text" data-duice-bind="strategy" data-duice-property="name"
-                           class="width--100 font-weight--bold"/>
-                </label>
-                <label class="grid-column--6 s__grid-column--12">
-                    <span data-th-text="#{fintics.Strategy.language}" class="font-weight--bold tag-required"></span>
-                    <select data-duice-bind="strategy" data-duice-property="language" class="width--100">
-                        <option data-th-text="'- ' + #{web.global.select} + ' -'"></option>
-                        <option th:each="language : ${languages}" th:value="${language}" th:text="${language}"></option>
-                    </select>
-                </label>
-                <div class="grid-column--12">
+    <div class="panel">
+        <div class="panel-content">
+            <form class="display--grid grid-template-columns--12fr gap--1rem">
+                <div class="grid-column--span-6 s__grid-column--span-12">
+                    <label>
+                        <span class="font-weight--bold tag-required" data-th-text="#{fintics.Strategy.name}"></span>
+                        <input class="width--100" type="text" data-duice-bind="strategy" data-duice-property="name"/>
+                    </label>
+                </div>
+                <div class="grid-column--span-6 s__grid-column--span-12">
+                    <label>
+                        <span class="font-weight--bold tag-required" data-th-text="#{fintics.Strategy.language}"></span>
+                        <select class="width--100" data-duice-bind="strategy" data-duice-property="language">
+                            <option data-th-text="'- ' + #{web.global.select} + ' -'"></option>
+                            <option th:each="language : ${languages}" th:value="${language}" th:text="${language}"></option>
+                        </select>
+                    </label>
+                </div>
+                <div class="grid-column--span-12">
                     <div>
-                        <span data-th-text="#{fintics.Strategy.variables}" class="font-weight--bold width--100"></span>
+                        <span class="font-weight--bold" data-th-text="#{fintics.Strategy.variables}"></span>
                     </div>
-                    <duice-codemirror class="border--1 code"
+                    <duice-codemirror class="box code"
                                       data-duice-bind="strategy"
                                       data-duice-property="variables">
                     </duice-codemirror>
                 </div>
-                <div class="grid-column--12">
-                    <div class="display--flex justify-content--space-between margin--1px padding--1px">
-                        <div>
-                            <span data-th-text="#{fintics.Strategy.script}" class="font-weight--bold width--100"></span>
-                        </div>
+                <div class="grid-column--span-12">
+                    <div>
+                        <span class="font-weight--bold" data-th-text="#{fintics.Strategy.script}"></span>
                     </div>
                     <duice-codemirror class="code" style="height:100vh;"
                                       data-duice-bind="strategy"
@@ -213,13 +214,13 @@
             </form>
             <div class="display--flex justify-content--space-between">
                 <div>
-                    <button type="button"
+                    <button class="button" type="button"
                             th:classappend="!${#authorization.expression('hasAuthority(''strategy.edit'')')}?'locked'"
                             onclick="exportStrategy();">
                         <img class="icon" th:src="@{/static/image/icon-export.svg}" alt="export"/>
                         <span>Export</span>
                     </button>
-                    <button type="button"
+                    <button class="button" type="button"
                             th:classappend="!${#authorization.expression('hasAuthority(''strategy.edit'')')}?'locked'"
                             onclick="importStrategy();">
                         <img class="icon" th:src="@{/static/image/icon-import.svg}" alt="import"/>
@@ -227,14 +228,14 @@
                     </button>
                 </div>
                 <div>
-                    <button type="button"
+                    <button class="button" type="button"
                             data-duice-bind="strategy"
                             th:classappend="!${#authorization.expression('hasAuthority(''strategy.edit'')')}?'locked'"
                             onclick="deleteStrategy();">
                         <img class="icon" th:src="@{/static/image/icon-delete.svg}" alt="save"/>
                         <span data-th-text="#{web.global.delete}"></span>
                     </button>
-                    <button type="button"
+                    <button class="button" type="button"
                             data-duice-bind="strategy"
                             th:classappend="!${#authorization.expression('hasAuthority(''strategy.edit'')')}?'locked'"
                             onclick="saveStrategy();">

@@ -379,13 +379,14 @@ class TripleScreenStrategy {
             }
         }
 
-        // if all bearish momentum trailing stop
-        if (tideAnalyzer.getMomentumScore() < 25) {
-            if (waveAnalyzer.getTrailingStopScore() > 50) {
-                def tideAveragePosition = tideAnalyzer.adjustAveragePosition(position)
-                strategyResult = StrategyResult.of(Action.SELL, tideAveragePosition, "[TRAILING STOP] ${this.toString()}")
-            }
-        }
+        // 무한 매수/매도 빠지는 경우 발생 으로 일단 제외 (생각 좀 해보자)
+//        // if all bearish momentum trailing stop
+//        if (tideAnalyzer.getMomentumScore() < 25) {
+//            if (waveAnalyzer.getTrailingStopScore() > 50) {
+//                def tideAveragePosition = tideAnalyzer.adjustAveragePosition(position)
+//                strategyResult = StrategyResult.of(Action.SELL, tideAveragePosition, "[TRAILING STOP] ${this.toString()}")
+//            }
+//        }
 
         // returns
         return Optional.ofNullable(strategyResult)

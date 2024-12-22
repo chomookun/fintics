@@ -102,59 +102,71 @@
     <!-- ================================== -->
     <!-- start: order                       -->
     <!-- ================================== -->
-    <div class="display--flex flex-direction--column border--1 padding--1em">
-        <div class="display--flex flex-direction--column gap--1em padding--1em s__padding-y--0">
-            <form onsubmit="return false;" class="display--grid grid-template-columns--12 grid-gap--1em">
-                <div class="grid-column--12 s__grid-column--12 display--grid grid-template-columns--12 grid-gap--1em">
-                    <label class="grid-column--1 s__grid-column--12">
-                        <input class="width--100" type="datetime-local" data-duice-bind="orderSearch" data-duice-property="orderAtFrom"/>
-                    </label>
-                    <label class="grid-column--1 s__grid-column--12">
-                        <input class="width--100" type="datetime-local" data-duice-bind="orderSearch" data-duice-property="orderAtTo"/>
-                    </label>
-                    <label class="grid-column--2 s__grid-column--12">
-                        <select class="width--100"
-                                data-duice-bind="orderSearch"
-                                data-duice-property="tradeId"
-                                data-duice-option="trades"
-                                data-duice-option-value-property="tradeId"
-                                data-duice-option-text-property="name">
-                            <option value="" data-th-text="'- ' + #{fintics.Trade} + ' -'"></option>
-                        </select>
-                    </label>
-                    <label class="grid-column--1 s__grid-column--12">
-                        <select class="width--100" data-duice-bind="orderSearch" data-duice-property="type">
-                            <option value="" data-th-text="'- ' + #{fintics.Order.type} + ' -'"></option>
-                            <option value="BUY">BUY</option>
-                            <option value="SELL">SELL</option>
-                        </select>
-                    </label>
-                    <label class="grid-column--1 s__grid-column--12">
-                        <select class="width--100" data-duice-bind="orderSearch" data-duice-property="result">
-                            <option value="" data-th-text="'- ' + #{fintics.Order.result} + ' -'"></option>
-                            <option value="COMPLETED">COMPLETED</option>
-                            <option value="FAILED">FAILED</option>
-                        </select>
-                    </label>
-                    <label class="grid-column--1 s__grid-column--4">
-                        <select class="width--100" data-duice-bind="orderSearch" data-duice-property="key">
-                            <option value="assetName" th:text="#{fintics.Order.assetName}"></option>
-                            <option value="assetId" th:text="#{fintics.Order.assetId}"></option>
-                        </select>
-                    </label>
-                    <label class="grid-column--2 s__grid-column--8">
-                        <input class="width--100" type="text" data-duice-bind="orderSearch" data-duice-property="value"/>
-                    </label>
-                    <div class="grid-column--3 s__grid-column--12 justify-self--end">
-                        <button type="submit" onclick="getOrders();">
-                            <img class="icon" th:src="@{/static/image/icon-search.svg}" alt="search"/>
-                            <span data-th-text="#{web.global.search}"></span>
-                        </button>
-                        <button type="button" onclick="resetOrders();">
-                            <img class="icon" th:src="@{/static/image/icon-reset.svg}" alt="reset"/>
-                            <span data-th-text="#{web.global.reset}"></span>
-                        </button>
+    <div class="panel">
+        <div class="panel-content">
+            <form onsubmit="return false;" class="display--flex justify-content--space-between">
+                <div class="display--flex gap--1rem">
+                    <div>
+                        <label>
+                            <input type="datetime-local" data-duice-bind="orderSearch" data-duice-property="orderAtFrom"/>
+                        </label>
+                        <label class="grid-column--1 s__grid-column--12">
+                            <input type="datetime-local" data-duice-bind="orderSearch" data-duice-property="orderAtTo"/>
+                        </label>
                     </div>
+                    <div>
+                        <label>
+                            <select class="width--100"
+                                    data-duice-bind="orderSearch"
+                                    data-duice-property="tradeId"
+                                    data-duice-option="trades"
+                                    data-duice-option-value-property="tradeId"
+                                    data-duice-option-text-property="name">
+                                <option value="" data-th-text="'- ' + #{fintics.Trade} + ' -'"></option>
+                            </select>
+                        </label>
+                    </div>
+                    <div>
+                        <label class="grid-column--1 s__grid-column--12">
+                            <select data-duice-bind="orderSearch" data-duice-property="type">
+                                <option value="" data-th-text="'- ' + #{fintics.Order.type} + ' -'"></option>
+                                <option value="BUY">BUY</option>
+                                <option value="SELL">SELL</option>
+                            </select>
+                        </label>
+                    </div>
+                    <div>
+                        <label>
+                            <select data-duice-bind="orderSearch" data-duice-property="result">
+                                <option value="" data-th-text="'- ' + #{fintics.Order.result} + ' -'"></option>
+                                <option value="COMPLETED">COMPLETED</option>
+                                <option value="FAILED">FAILED</option>
+                            </select>
+                        </label>
+                    </div>
+                    <div>
+                        <label>
+                            <select class="width--100" data-duice-bind="orderSearch" data-duice-property="key">
+                                <option value="assetName" th:text="#{fintics.Order.assetName}"></option>
+                                <option value="assetId" th:text="#{fintics.Order.assetId}"></option>
+                            </select>
+                        </label>
+                    </div>
+                    <div>
+                        <label>
+                            <input type="text" data-duice-bind="orderSearch" data-duice-property="value"/>
+                        </label>
+                    </div>
+                </div>
+                <div class="text-align--right">
+                    <button class="button" type="submit" onclick="getOrders();">
+                        <img class="icon" th:src="@{/static/image/icon-search.svg}" alt="search"/>
+                        <span data-th-text="#{web.global.search}"></span>
+                    </button>
+                    <button class="button" type="button" onclick="resetOrders();">
+                        <img class="icon" th:src="@{/static/image/icon-reset.svg}" alt="reset"/>
+                        <span data-th-text="#{web.global.reset}"></span>
+                    </button>
                 </div>
             </form>
             <div class="overflow-x--scroll">
@@ -265,22 +277,20 @@
                     </tbody>
                 </table>
             </div>
-            <div class="display--grid grid-template-columns--3">
+            <div class="display--flex justify-content--space-between">
                 <div>
                     <span data-th-text="#{web.global.total}"></span>
                     <span data-duice-bind="orderSearch" data-duice-property="_count" data-duice-format="number(0)" class="number"></span>
                     <span data-th-text="#{web.global.rows}"></span>
                 </div>
-                <div class="justify-self--center">
-                    <duice-pagination
-                            data-duice-bind="orderSearch"
-                            data-duice-size-property="_size"
-                            data-duice-page-property="_page"
-                            data-duice-count-property="_count"
-                            data-duice-onclick="getOrders(this.dataset.page);"
-                            class="number">
-                    </duice-pagination>
-                </div>
+                <duice-pagination
+                        data-duice-bind="orderSearch"
+                        data-duice-size-property="_size"
+                        data-duice-page-property="_page"
+                        data-duice-count-property="_count"
+                        data-duice-onclick="getOrders(this.dataset.page);"
+                        class="number">
+                </duice-pagination>
                 <div>
                 </div>
             </div>
