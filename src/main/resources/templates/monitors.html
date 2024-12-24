@@ -389,7 +389,6 @@
                     </div>
                     <div>
                         <img class="icon" data-th-src="@{/static/image/icon-balance.svg}" alt="balance"/>
-                        <span>
                         <span class="font-weight--bold">
                             <span data-th-text="#{fintics.Balance.totalAmount}"></span>:
                             <span th:data-duice-bind="|monitorMap.get('${trade.tradeId}').balance|"
@@ -435,7 +434,16 @@
                         <span th:data-duice-bind="|monitorMap.get('${trade.tradeId}').balance|"
                               th:data-duice-property="cashAmount" data-duice-format="number()" class="number">
                         </span>
-                    </span>
+                        <span class="font-size--smaller" style="font-style:italic;" th:data-duice-bind="|monitorMap.get('${trade.tradeId}').trade|"
+                              th:data-duice-execute="|
+                              let trade = monitorMap.get('${trade.tradeId}').trade;
+                              let cashAssetId = trade.cashAssetId;
+                              let cashBufferWeight = trade.cashBufferWeight;
+                              if (cashAssetId && cashBufferWeight) {
+                                  this.innerHTML += ' (#{fintics.Trade.cashAssetId}: ' + cashAssetId + ' - ' + cashBufferWeight + '%)' ;
+                              }
+                              |">
+                        </span>
                     </div>
                 </div>
                 <div class="overflow-x--scroll">
@@ -633,8 +641,6 @@
                                 <span data-th-text="#{web.global.itemNotFound(#{fintics.BasketAsset})}"></span>
                             </td>
                         </tr>
-
-
                         </tbody>
                     </table>
                 </div>
