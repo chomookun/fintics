@@ -50,31 +50,10 @@ List<Item> candidateItems = []
 //=======================================
 // ETF list
 def etfSymbols = [
-        // index ETF
-        '069500',   // KODEX 200
-        '229200',   // KODEX 코스닥150
-        '310970',   // TIGER MSCI Korea TR
-        // strategy ETF
-        '385720',   // TIMEFOLIO 코스피액티브
         '441800',   // TIMEFOLIO Korea플러스배당액티브
         '161510',   // PLUS 고배당주
+        '279530',   // KODEX 고배당
         '104530',   // KOSEF 고배당
-        '211560',   // TIGER 배당성장
-        '139280',   // TIGER 경기방어
-        '417630',   // TIGER KEDI혁신기업ESG30
-        '280920',   // PLUS 주도업종
-        '147970',   // TIGER 모멘텀
-        '373490',   // KODEX K-이노베이션액티브
-        '410870',   // TIMEFOLIO K컬처액티브
-        // sector ETF
-        '396500',   // TIGER Fn반도체TOP10
-        '157490',   // TIGER 소프트웨어
-        '228790',   // TIGER 화장품
-        '463050',   // TIMEFOLIO K바이오액티브
-        '462900',   // KoAct 바이오헬스케어액티브
-        '449450',   // PLUS K방산
-        '139230',   // TIGER 200 중공업
-        '434730',   // HANARO 원자력iSelect
 ]
 etfSymbols.each{
     def etfItems = getEtfItems(it)

@@ -123,6 +123,7 @@
                         <col/>
                         <col/>
                         <col/>
+                        <col/>
                     </colgroup>
                     <thead>
                     <tr>
@@ -135,6 +136,7 @@
                         <th data-th-text="#{fintics.Trade.interval}" class="text-align--right"></th>
                         <th data-th-text="#{fintics.Trade.threshold}" class="text-align--right"></th>
                         <th data-th-text="#{fintics.Trade.enabled}" class="text-align--center"></th>
+                        <th data-th-text="#{fintics.Trade.cashAssetId}" class="text-align--center"></th>
                     </tr>
                     </thead>
                     <tbody>
@@ -184,6 +186,17 @@
                             <label>
                                 <input type="checkbox" data-duice-bind="trade" data-duice-property="enabled"/>
                             </label>
+                        </td>
+                        <td class="text-align--center">
+                            <span class="code" data-duice-bind="trade" data-duice-property="cashAssetId"></span>
+                            <span class="number"
+                                  data-duice-bind="trade"
+                                  data-duice-execute="
+                                  if (trade.cashBufferWeight) {
+                                    this.innerHTML = ' (' + trade.cashBufferWeight + '%)';
+                                  }
+                                  ">
+                            </span>
                         </td>
                     </tr>
                     <tr data-duice-bind="tradeSearch"

@@ -51,42 +51,12 @@ List<Item> candidateItems = []
 //=======================================
 // ETF list
 def etfSymbols = [
-        // index ETF
-        'SPY',      // SPDR S&P 500 ETF Trust
-        'QQQ',      // Invesco QQQ Trust
-        'DIA',      // SPDR Dow Jones Industrial Average ETF Trust
-        'VTI',      // Vanguard Total Stock Market Index Fund ETF Shares
-        // strategy ETF
-        'JEPI',     // JPMorgan Equity Premium Income ETF
-        'JEPQ',     // JPMorgan Nasdaq Equity Premium Income ETF
         'DGRW',     // WisdomTree U.S. Quality Dividend Growth Fund
+        'BALI',     // iShares Advantage Large Cap Income ETF
+        'JEPI',     // JPMorgan Equity Premium Income ETF
         'DIVO',     // Amplify CWP Enhanced Dividend Income ETF
-        'MOAT',     // VanEck Morningstar Wide Moat ETF
         'SCHD',     // Schwab U.S. Dividend Equity ETF
-        'QUAL',     // iShares MSCI USA Quality Factor ETF
-        'SPHQ',     // Invesco S&P 500 Quality ETF
-        'VIG',      // Vanguard Dividend Appreciation Index Fund ETF Shares
-        'VTV',      // Vanguard Value Index Fund ETF Shares
-        'MTUM',     // iShares MSCI USA Momentum Factor ETF
-        'VUG',      // Vanguard Growth ETF
-        'IWF',      // iShares Russell 1000 Growth ETF
-        'COWZ',     // Pacer US Cash Cows 100 ETF
-        // sector ETF
-        'XLK',      // The Technology Select Sector SPDR Fund
-        'VGT',      // Vanguard Information Technology Index Fund ETF Shares
-        'IYW',      // iShares U.S. Technology ETF
-        'SOXX',     // iShares Semiconductor ETF
-        'SMH',      // VanEck Semiconductor ETF
-        'XLV',      // SPDR Select Sector Fund - Health Care
-        'XBI',      // SPDR Series Trust SPDR S&P Biotech ETF
-        'GRID',     // First Trust NASDAQ Clean Edge Smart Grid Infrastructure Index Fund
-        'XLI',      // The Industrial Select Sector SPDR Fund
-        'XAR',      // SPDR S&P Aerospace & Defense ETF
-        'ITA',      // iShares U.S. Aerospace & Defense ETF
-        'XLF',      // SPDR Select Sector Fund - Financial
-        'XLU',      // SPDR Select Sector Fund - Utilities
-        'XLY',      // SPDR Select Sector Fund - Consumer Discretionary
-        'XLB',      // The Materials Select Sector SPDR Fund
+        'MOAT',     // VanEck Morningstar Wide Moat ETF
 ]
 etfSymbols.each{
     def etfItems = getEtfItems(it)
