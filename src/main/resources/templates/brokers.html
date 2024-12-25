@@ -187,7 +187,7 @@
             <!-- ====================================== -->
             <!-- start: broker list                     -->
             <!-- ====================================== -->
-            <div id="brokerListe" class="panel">
+            <div id="brokerList" class="panel">
                 <div class="panel-title">
                     <h2>
                         <img class="icon" th:src="@{/static/image/icon-list.svg}" alt="list"/>
@@ -196,25 +196,25 @@
                 </div>
                 <div class="panel-content">
                     <form onsubmit="return false;" class="display--flex justify-content--space-between">
-                        <div class="display--flex flex-wrap--wrap gap--1rem">
-                            <div class="white-space--nowrap">
-                                <label>
+                        <div class="display--flex flex-wrap--wrap gap--1px">
+                            <div class="display--flex flex-wrap--nowrap gap--1px">
+                                <label class="flex--1">
                                     <select data-duice-bind="brokerSearch" data-duice-property="key">
                                         <option value="name" th:text="#{fintics.Broker.name}"></option>
                                     </select>
                                 </label>
-                                <label>
+                                <label class="flex--2">
                                     <input type="text" data-duice-bind="brokerSearch" data-duice-property="value"
                                            th:placeholder="#{web.global.keyword}"/>
                                 </label>
                             </div>
                         </div>
-                        <div>
-                            <button type="submit" onclick="getBrokers();">
+                        <div class="display--flex justify-content--end gap--1px">
+                            <button class="button" type="submit" onclick="getBrokers();">
                                 <img class="icon" th:src="@{/static/image/icon-search.svg}" alt="reset"/>
                                 <span data-th-text="#{web.global.search}"></span>
                             </button>
-                            <button type="button" onclick="resetBrokers();">
+                            <button class="button" type="button" onclick="resetBrokers();">
                                 <img class="icon" th:src="@{/static/image/icon-reset.svg}" alt="reset"/>
                                 <span data-th-text="#{web.global.reset}"></span>
                             </button>
@@ -261,21 +261,23 @@
                         </table>
                     </div>
                     <div class="display--flex justify-content--space-between">
-                        <div>
+                        <div class="flex--1">
                             <span data-th-text="#{web.global.total}"></span>
                             <span data-duice-bind="brokerSearch" data-duice-property="_count"
                                   data-duice-format="number(0)"
                                   class="number"></span>
                             <span data-th-text="#{web.global.rows}"></span>
                         </div>
-                        <duice-pagination class="code"
-                                          data-duice-bind="brokerSearch"
-                                          data-duice-size-property="_size"
-                                          data-duice-page-property="_page"
-                                          data-duice-count-property="_count"
-                                          data-duice-onclick="getBrokers(this.dataset.page);">
-                        </duice-pagination>
-                        <div class="text-align--right">
+                        <div class="flex--1 display--flex justify-content--center">
+                            <duice-pagination class="number"
+                                              data-duice-bind="brokerSearch"
+                                              data-duice-size-property="_size"
+                                              data-duice-page-property="_page"
+                                              data-duice-count-property="_count"
+                                              data-duice-onclick="getBrokers(this.dataset.page);">
+                            </duice-pagination>
+                        </div>
+                        <div class="flex--1 display--flex justify-content--end gap--1px">
                             <button class="button" type="button" onclick="createBroker();">
                                 <img class="icon" th:src="@{/static/image/icon-create.svg}" alt="create"/>
                                 <span data-th-text="#{web.global.create}"></span>

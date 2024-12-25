@@ -86,10 +86,16 @@
     <!-- start: trades                      -->
     <!-- ================================== -->
     <div class="panel">
+        <div class="panel-title">
+            <h2>
+                <img class="icon" th:src="@{/static/image/icon-list.svg}" alt="list"/>
+                <span data-th-text="|#{fintics.Trade} #{web.global.list}|"></span>
+            </h2>
+        </div>
         <div class="panel-content">
             <form onsubmit="return false;" class="display--flex justify-content--space-between">
-                <div>
-                    <div class="white-space--nowrap">
+                <div class="display--flex gap--1px">
+                    <div class="display--flex flex-wrap--nowrap gap--1px">
                         <label>
                             <select data-duice-bind="tradeSearch" data-duice-property="key">
                                 <option value="name" data-th-text="#{fintics.Trade.name}"></option>
@@ -100,7 +106,7 @@
                         </label>
                     </div>
                 </div>
-                <div class="text-align--right">
+                <div class="flex--1 display--flex gap--1px justify-content--end s__justify-content--start">
                     <button class="button" type="submit" onclick="getTrades();">
                         <img class="icon" th:src="@{/static/image/icon-search.svg}" alt="reset"/>
                         <span data-th-text="#{web.global.search}"></span>
@@ -215,19 +221,22 @@
                 </table>
             </div>
             <div class="display--flex justify-content--space-between">
-                <div>
+                <div class="flex--1">
                     <span data-th-text="#{web.global.total}"></span>
                     <span data-duice-bind="tradeSearch" data-duice-property="_count" data-duice-format="number(0)" class="number"></span>
                     <span data-th-text="#{web.global.rows}"></span>
                 </div>
-                <duice-pagination
-                        data-duice-bind="tradeSearch"
-                        data-duice-size-property="_size"
-                        data-duice-page-property="_page"
-                        data-duice-count-property="_count"
-                        data-duice-onclick="getTrades(this.dataset.page);">
-                </duice-pagination>
-                <div class="text-align--right">
+                <div class="flex--1 display--flex justify-content--center">
+                    <duice-pagination
+                            class="number"
+                            data-duice-bind="tradeSearch"
+                            data-duice-size-property="_size"
+                            data-duice-page-property="_page"
+                            data-duice-count-property="_count"
+                            data-duice-onclick="getTrades(this.dataset.page);">
+                    </duice-pagination>
+                </div>
+                <div class="flex--1 display--flex justify-content--end">
                     <button class="button" type="button" onclick="createTrade();">
                         <img class="icon" th:src="@{/static/image/icon-create.svg}" alt="create"/>
                         <span data-th-text="#{web.global.create}"></span>

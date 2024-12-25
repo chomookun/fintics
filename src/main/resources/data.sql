@@ -65,13 +65,13 @@ insert into `core_menu`
     (`menu_id`,`system_required`,`parent_menu_id`,`name`,`link`,`target`,`sort`,`icon`)
 values
     ('monitors','Y',null,'Monitors','/monitors',null,1,'/static/image/icon-monitor.svg'),
-    ('profits','Y',null,'Profits','/profits',null,2,'/static/image/icon-profit.svg'),
-    ('baskets','Y',null,'Basket','/baskets',null,3,'/static/image/icon-basket.svg'),
-    ('strategies','Y',null,'Strategies','/strategies',null,4,'/static/image/icon-strategy.svg'),
-    ('brokers','Y',null,'Brokers','/brokers',null,5,'/static/image/icon-broker.svg'),
-    ('trades','Y',null,'Trades','/trades',null,6,'/static/image/icon-trade.svg'),
-    ('assets','Y',null,'Assets','/assets',null,7,'/static/image/icon-asset.svg'),
-    ('orders','Y',null,'Orders','/orders',null,8,'/static/image/icon-order.svg'),
+    ('baskets','Y',null,'Basket','/baskets',null,2,'/static/image/icon-basket.svg'),
+    ('strategies','Y',null,'Strategies','/strategies',null,3,'/static/image/icon-strategy.svg'),
+    ('brokers','Y',null,'Brokers','/brokers',null,4,'/static/image/icon-broker.svg'),
+    ('trades','Y',null,'Trades','/trades',null,5,'/static/image/icon-trade.svg'),
+    ('assets','Y',null,'Assets','/assets',null,6,'/static/image/icon-asset.svg'),
+    ('orders','Y',null,'Orders','/orders',null,7,'/static/image/icon-order.svg'),
+    ('profits','Y',null,'Profits','/profits',null,8,'/static/image/icon-profit.svg'),
     ('admin','N',null,'Admin','/admin','_blank',99,'/static/image/icon-admin.svg');
 
 -- core_menu_i18n
@@ -79,13 +79,13 @@ insert into `core_menu_i18n`
     (`menu_id`,`language`,`name`)
 values
     ('monitors','ko','모니터'),
-    ('profits','ko','수익현황'),
     ('baskets','ko','바스켓'),
     ('strategies','ko','매매전략'),
     ('brokers','ko','브로커'),
     ('trades','ko','트레이드'),
     ('assets','ko','종목'),
     ('orders','ko','거래'),
+    ('profits','ko','수익현황'),
     ('admin','ko','관리자');
 
 -- core_menu_role

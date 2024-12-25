@@ -83,27 +83,33 @@
     <!-- start: strategy                       -->
     <!-- ================================== -->
     <div class="panel">
+        <div class="panel-title">
+            <h2>
+                <img class="icon" th:src="@{/static/image/icon-list.svg}" alt="list"/>
+                <span data-th-text="|#{fintics.Strategy} #{web.global.list}|"></span>
+            </h2>
+        </div>
         <div class="panel-content">
             <form onsubmit="return false;" class="display--flex justify-content--space-between">
                 <div>
-                    <div class="white-space--nowrap">
-                        <label>
+                    <div class="display--flex flex-wrap--nowrap gap--1px">
+                        <label class="flex--1">
                             <select data-duice-bind="strategySearch" data-duice-property="key">
                                 <option value="name" data-th-text="#{fintics.Strategy.name}"></option>
                             </select>
                         </label>
-                        <label>
+                        <label class="flex--2">
                             <input type="text" data-duice-bind="strategySearch" data-duice-property="value"
                                    th:placeholder="#{web.global.keyword}"/>
                         </label>
                     </div>
                 </div>
-                <div class="text-align--right">
-                    <button type="submit" onclick="getStrategies();">
+                <div class="flex--1 display--flex justify-content--end gap--1px">
+                    <button class="button" type="submit" onclick="getStrategies();">
                         <img class="icon" th:src="@{/static/image/icon-search.svg}" alt="reset"/>
                         <span data-th-text="#{web.global.search}"></span>
                     </button>
-                    <button type="button" onclick="resetStrategies();">
+                    <button class="button" type="button" onclick="resetStrategies();">
                         <img class="icon" th:src="@{/static/image/icon-reset.svg}" alt="reset"/>
                         <span data-th-text="#{web.global.reset}"></span>
                     </button>
@@ -137,7 +143,7 @@
                             </a>
                         </td>
                         <td class="text-align--center">
-                            <span data-duice-bind="strategy" data-duice-property="language" class="badge"></span>
+                            <span data-duice-bind="strategy" data-duice-property="language" class="badge code"></span>
                         </td>
                     </tr>
                     <tr data-duice-bind="strategySearch" data-duice-if="return strategySearch._status === 'loading';">
@@ -154,19 +160,22 @@
                 </table>
             </div>
             <div class="display--flex justify-content--space-between">
-                <div>
+                <div class="flex--1">
                     <span data-th-text="#{web.global.total}"></span>
                     <span data-duice-bind="strategySearch" data-duice-property="_count" data-duice-format="number(0)" class="number"></span>
                     <span data-th-text="#{web.global.rows}"></span>
                 </div>
-                <duice-pagination
-                        data-duice-bind="strategySearch"
-                        data-duice-size-property="_size"
-                        data-duice-page-property="_page"
-                        data-duice-count-property="_count"
-                        data-duice-onclick="getStrategies(this.dataset.page);">
-                </duice-pagination>
-                <div class="text-align--right">
+                <div class="flex--1 display--flex justify-content--center">
+                    <duice-pagination
+                            class="number"
+                            data-duice-bind="strategySearch"
+                            data-duice-size-property="_size"
+                            data-duice-page-property="_page"
+                            data-duice-count-property="_count"
+                            data-duice-onclick="getStrategies(this.dataset.page);">
+                    </duice-pagination>
+                </div>
+                <div class="flex--1 display--flex justify-content--end">
                     <button class="button" type="button" onclick="createStrategy();">
                         <img class="icon" th:src="@{/static/image/icon-create.svg}" alt="create"/>
                         <span data-th-text="#{web.global.create}"></span>

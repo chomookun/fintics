@@ -202,8 +202,8 @@
     <h1 id="title">
         <img class="icon" th:src="@{/static/image/icon-basket.svg}" alt="basket"/>
         <span data-th-text="#{fintics.Basket}"></span>
-        <small>|</small>
-        <span data-duice-bind="basket" data-duice-property="name"></span>
+        <small>&gt;</small>
+        <small data-duice-bind="basket" data-duice-property="name"></small>
     </h1>
     <!-- ====================================== -->
     <!-- end: title                             -->
@@ -213,6 +213,12 @@
     <!-- start: basket                          -->
     <!-- ====================================== -->
     <div class="panel">
+        <div class="panel-title">
+            <h2>
+                <img class="icon" th:src="@{/static/image/icon-detail.svg}" alt="list"/>
+                <span data-th-text="|#{fintics.Basket} #{web.global.detail}|"></span>
+            </h2>
+        </div>
         <div class="panel-content">
             <form class="display--grid grid-template-columns--12fr gap--1rem">
                 <div class="grid-column--span-6 s__grid-column--span-12">
@@ -254,7 +260,7 @@
                             <thead>
                             <tr>
                                 <th class="text-align--center">
-                                    <button class="button small" type="button" onclick="addBasketAsset();">
+                                    <button class="button font-size--smaller" type="button" onclick="addBasketAsset();">
                                         <img class="icon" th:src="@{/static/image/icon-add.svg}" alt="add"/>
                                     </button>
                                 </th>
@@ -275,7 +281,7 @@
                             <tr data-duice-bind="basket.basketAssets" data-duice-loop="basketAsset,status" data-duice-editable="true"
                                 data-duice-execute="if(basketAsset._new) this.classList.add('background-color--yellow');">
                                 <td class="text-align--center">
-                                    <button class="button small" type="button"
+                                    <button class="button font-size--smaller" type="button"
                                             data-duice-bind="basketAsset"
                                             data-duice-execute="this.dataset.index=status.index;"
                                             onclick="removeBasketAsset(this.dataset.index);">
@@ -609,40 +615,42 @@
                 </h2>
             </div>
             <div class="panel-content">
-                <form onsubmit="return false;" class="display--flex justify-content--space-between flex-wrap--wrap gap--1rem">
-                    <div class="display--flex gap--1rem">
-                        <label>
-                            <select data-duice-bind="assetSelectDialog.assetSearch" data-duice-property="type">
-                                <option value="" data-th-text="'- ' + #{fintics.Asset.type} + ' -'"></option>
-                                <option value="STOCK">STOCK</option>
-                                <option value="ETF">ETF</option>
-                            </select>
-                        </label>
+                <form onsubmit="return false;" class="display--flex flex-wrap--wrap justify-content--space-between gap--1rem">
+                    <div class="display--flex flex-wrap--wrap gap--1px">
                         <div>
                             <label>
+                                <select class="width--100" data-duice-bind="assetSelectDialog.assetSearch" data-duice-property="type">
+                                    <option value="" data-th-text="|#{fintics.Asset.type}...|"></option>
+                                    <option value="STOCK">STOCK</option>
+                                    <option value="ETF">ETF</option>
+                                </select>
+                            </label>
+                        </div>
+                        <div class="display--flex flex-wrap--nowrap gap--1px">
+                            <label class="flex--1">
                                 <select data-duice-bind="assetSelectDialog.assetSearch" data-duice-property="key">
                                     <option value="name" th:text="#{fintics.Asset.name}"></option>
                                     <option value="assetId" th:text="#{fintics.Asset.assetId}"></option>
                                 </select>
                             </label>
-                            <label>
+                            <label class="flex--2">
                                 <input type="text" data-duice-bind="assetSelectDialog.assetSearch" data-duice-property="value"/>
                             </label>
                         </div>
                     </div>
-                    <div>
-                        <button onclick="assetSelectDialog.getAssets();">
+                    <div class="flex--1 display--flex justify-content--end gap--1px">
+                        <button class="button" onclick="assetSelectDialog.getAssets();">
                             <img class="icon" th:src="@{/static/image/icon-search.svg}" alt="search"/>
                             <span data-th-text="#{web.global.search}">Search</span>
                         </button>
-                        <button onclick="assetSelectDialog.resetAssets();">
+                        <button class="button" onclick="assetSelectDialog.resetAssets();">
                             <img class="icon" th:src="@{/static/image/icon-reset.svg}" alt="reset"/>
                             <span data-th-text="#{web.global.reset}">Reset</span>
                         </button>
                     </div>
                 </form>
-                <div class="overflow-auto">
-                    <table class="table width--100">
+                <div class="overflow--auto box">
+                    <table class="table width--100 border--none">
                         <colgroup>
                             <col style="width:3em;"/>
                             <col/>
@@ -666,7 +674,7 @@
                         <tbody>
                         <tr data-duice-bind="assetSelectDialog.assets" data-duice-loop="asset,status">
                             <td class="text-align--center">
-                                <button class="small" type="button"
+                                <button class="button font-size--smaller" type="button"
                                         data-duice-bind="asset"
                                         data-duice-execute="
                         this.dataset.index = status.index;
@@ -686,10 +694,10 @@
                                 <span data-duice-bind="asset" data-duice-property="name"></span>
                             </td>
                             <td class="text-align--center">
-                                <span data-duice-bind="asset" data-duice-property="exchange" class="badge"></span>
+                                <span class="badge code" data-duice-bind="asset" data-duice-property="exchange"></span>
                             </td>
                             <td class="text-align--center">
-                                <span data-duice-bind="asset" data-duice-property="type" class="badge"></span>
+                                <span class="badge code" data-duice-bind="asset" data-duice-property="type"></span>
                             </td>
                             <td>
                                 <div class="overflow-y--scroll border--1 padding--1px" style="line-height:1.5em; height:5em;">
@@ -763,15 +771,13 @@
                         </tbody>
                     </table>
                 </div>
-                <div class="display--grid grid-template-columns--3">
-                    <div class="grid-column--1 display--flex">
+                <div class="display--flex justify-content--space-between">
+                    <div class="flex--1">
                         <span data-th-text="#{web.global.total}"></span>
-                        &nbsp;
                         <span data-duice-bind="assetSelectDialog.assetSearch" data-duice-property="_count" data-duice-format="number(0)" class="number"></span>
-                        &nbsp;
                         <span data-th-text="#{web.global.rows}"></span>
                     </div>
-                    <div class="grid-column--1 display--flex justify-content--center">
+                    <div class="flex--1 display--flex justify-content--center">
                         <duice-pagination
                                 data-duice-bind="assetSelectDialog.assetSearch"
                                 data-duice-size-property="_size"
@@ -781,10 +787,10 @@
                                 class="code">
                         </duice-pagination>
                     </div>
-                    <div class="grid-column--1"></div>
+                    <div class="flex--1"></div>
                 </div>
-                <div class="overflow-x--scroll">
-                    <table class="width--100">
+                <div class="overflow--auto box">
+                    <table class="table width--100 border--none">
                         <colgroup>
                             <col style="width:3em;"/>
                             <col/>
@@ -808,7 +814,7 @@
                         <tbody>
                         <tr data-duice-bind="assetSelectDialog.selectedAssets" data-duice-loop="asset,status">
                             <td class="text-align--center">
-                                <button class="small" type="button"
+                                <button class="button font-size--smaller" type="button"
                                         data-duice-bind="asset"
                                         data-duice-execute="this.dataset.index = status.index;"
                                         onclick="assetSelectDialog.deselectAsset(this.dataset.index);">
@@ -824,10 +830,10 @@
                                 <span data-duice-bind="asset" data-duice-property="name"></span>
                             </td>
                             <td class="text-align--center">
-                                <span data-duice-bind="asset" data-duice-property="exchange" class="badge"></span>
+                                <span class="badge code" data-duice-bind="asset" data-duice-property="exchange"></span>
                             </td>
                             <td class="text-align--center">
-                                <span data-duice-bind="asset" data-duice-property="type" class="badge"></span>
+                                <span class="badge code" data-duice-bind="asset" data-duice-property="type"></span>
                             </td>
                             <td>
                                 <div class="overflow-y--scroll border--1 padding--1px" style="line-height:1.5em; height:5em;">
@@ -895,8 +901,8 @@
                         </tbody>
                     </table>
                 </div>
-                <div class="text-align--right">
-                    <button onclick="assetSelectDialog.confirm();">
+                <div class="display--flex justify-content--end">
+                    <button class="button" onclick="assetSelectDialog.confirm();">
                         <img class="icon" th:src="@{/static/image/icon-confirm.svg}" alt="confirm"/>
                         <span data-th-text="#{web.global.confirm}"></span>
                     </button>

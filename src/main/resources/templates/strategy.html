@@ -163,8 +163,8 @@
     <h1 id="title">
         <img class="icon" th:src="@{/static/image/icon-strategy.svg}" alt="variable"/>
         <span data-th-text="#{fintics.Strategy}"></span>
-        <small>|</small>
-        <span data-duice-bind="strategy" data-duice-property="name"></span>
+        <small>&gt;</small>
+        <small data-duice-bind="strategy" data-duice-property="name"></small>
     </h1>
     <!-- ====================================== -->
     <!-- end: title                             -->
@@ -174,6 +174,12 @@
     <!-- start: strategy                        -->
     <!-- ====================================== -->
     <div class="panel">
+        <div class="panel-title">
+            <h2>
+                <img class="icon" th:src="@{/static/image/icon-detail.svg}" alt="detail"/>
+                <span data-th-text="|#{fintics.Strategy} #{web.global.detail}|"></span>
+            </h2>
+        </div>
         <div class="panel-content">
             <form class="display--grid grid-template-columns--12fr gap--1rem">
                 <div class="grid-column--span-6 s__grid-column--span-12">
@@ -213,7 +219,7 @@
                 </div>
             </form>
             <div class="display--flex justify-content--space-between">
-                <div>
+                <div class="display--flex gap--1px">
                     <button class="button" type="button"
                             th:classappend="!${#authorization.expression('hasAuthority(''strategy.edit'')')}?'locked'"
                             onclick="exportStrategy();">
@@ -227,7 +233,7 @@
                         <span>Import</span>
                     </button>
                 </div>
-                <div>
+                <div class="display--flex justify-content--space-between gap--1px">
                     <button class="button" type="button"
                             data-duice-bind="strategy"
                             th:classappend="!${#authorization.expression('hasAuthority(''strategy.edit'')')}?'locked'"

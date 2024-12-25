@@ -446,8 +446,8 @@
                         </span>
                     </div>
                 </div>
-                <div class="overflow-x--scroll">
-                    <table class="width--100">
+                <div class="overflow--scroll box">
+                    <table class="table width--100 border--none">
                         <colgroup>
                             <col style="width:5rem;"/>
                             <col/>
@@ -566,12 +566,12 @@
                                 </div>
                             </td>
                             <td class="text-align--center">
-                                <select data-duice-bind="basketAsset"
+                                <select class="code font-size--smaller"
+                                        data-duice-bind="basketAsset"
                                         data-duice-option="basketAsset.links"
                                         data-duice-option-value-property="url"
                                         data-duice-option-text-property="name"
-                                        onchange="_openLink(this.value, '_blank'); this.value = '';"
-                                        class="code font-size--smaller">
+                                        onchange="_openLink(this.value, '_blank'); this.value = '';">
                                     <option value>Link...</option>
                                 </select>
                             </td>
@@ -610,7 +610,7 @@
                             </td>
                             <td class="text-align--center">
                                 <div class="display--flex flex-direction--column gap--1px">
-                                    <button class="button small" type="button"
+                                    <button class="button font-size--smaller" type="button"
                                             data-duice-bind="basketAsset"
                                             data-duice-execute="this.dataset.assetId=basketAsset.assetId"
                                             th:attr="onclick=|monitorMap.get('${trade.tradeId}').buyTradeAsset(this.dataset.assetId);|"
@@ -618,7 +618,7 @@
                                         <img class="icon" th:src="@{/static/image/icon-order-buy.svg}" alt="buy"/>
                                         <span data-th-text="#{fintics.Order.Type.BUY}"></span>
                                     </button>
-                                    <button class="button small" type="button"
+                                    <button class="button font-size--smaller" type="button"
                                             data-duice-bind="basketAsset"
                                             data-duice-execute="this.dataset.assetId=basketAsset.assetId;"
                                             th:attr="onclick=|monitorMap.get('${trade.tradeId}').sellTradeAsset(this.dataset.assetId);|"

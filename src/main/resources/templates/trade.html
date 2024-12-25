@@ -342,8 +342,8 @@
     <h1 id="title">
         <img class="icon" th:src="@{/static/image/icon-trade.svg}" alt="variable"/>
         <span data-th-text="#{fintics.Trade}"></span>
-        <small>|</small>
-        <span data-duice-bind="trade" data-duice-property="name"></span>
+        <small>&gt;</small>
+        <small data-duice-bind="trade" data-duice-property="name"></small>
     </h1>
     <!-- ====================================== -->
     <!-- end: title                             -->
@@ -354,8 +354,8 @@
     <!-- ====================================== -->
     <div id="tabIndex" class="tab">
         <span id="tradeTabButton" class="tab-item">
-            <img class="icon" th:src="@{/static/image/icon-detail.svg}" alt="trade"/>
-            <span data-th-text="#{fintics.Trade}"></span>
+            <img class="icon" th:src="@{/static/image/icon-detail.svg}" alt="detail"/>
+            <span data-th-text="|#{fintics.Trade} #{web.global.detail}|"></span>
         </span>
         <span id="tradeBalanceTabButton" class="tab-item">
             <img class="icon" th:src="@{/static/image/icon-balance.svg}" alt="balance"/>
@@ -373,7 +373,7 @@
         <div class="panel-title">
             <h2>
                 <img class="icon" th:src="@{/static/image/icon-detail.svg}" alt="detail"/>
-                <span data-th-text="#{fintics.Trade}"></span>
+                <span data-th-text="|#{fintics.Trade} #{web.global.detail}|"></span>
             </h2>
         </div>
         <div class="panel-content">
