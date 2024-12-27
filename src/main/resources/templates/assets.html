@@ -82,9 +82,15 @@
     <!-- start: assets                      -->
     <!-- ================================== -->
     <div class="panel">
+        <div class="panel-title">
+            <h2>
+                <img class="icon" th:src="@{/static/image/icon-list.svg}" alt="list"/>
+                <span data-th-text="|#{fintics.Asset} #{web.global.list}|"></span>
+            </h2>
+        </div>
         <div class="panel-content">
-            <form onsubmit="return false;" class="display--flex justify-content--space-between">
-                <div class="display--flex gap--1rem">
+            <form onsubmit="return false;" class="display--flex justify-content--space-between gap--1px flex-wrap--wrap">
+                <div class="display--flex flex-wrap--wrap gap--1px">
                     <div>
                         <label>
                             <select data-duice-bind="assetSearch" data-duice-property="market">
@@ -114,7 +120,7 @@
                         </label>
                     </div>
                 </div>
-                <div>
+                <div class="flex--1 display--flex gap--1px justify-content--end s__justify-content--start">
                     <button class="button" type="submit" onclick="getAssets();">
                         <img class="icon" th:src="@{/static/image/icon-search.svg}" alt="search"/>
                         <span data-th-text="#{web.global.search}"></span>
@@ -125,8 +131,8 @@
                     </button>
                 </div>
             </form>
-            <div class="overflow--auto">
-                <table class="table width--100">
+            <div class="overflow--auto box">
+                <table class="table width--100 border--none">
                     <colgroup>
                         <col style="width:5rem;"/>
                         <col/>
@@ -256,12 +262,12 @@
                 </table>
             </div>
             <div class="display--flex justify-content--space-between">
-                <div>
+                <div class="flex--1">
                     <span data-th-text="#{web.global.total}"></span>
                     <span data-duice-bind="assetSearch" data-duice-property="_count" data-duice-format="number(0)" class="number"></span>
                     <span data-th-text="#{web.global.rows}"></span>
                 </div>
-                <div>
+                <div class="flex--1 display--flex justify-content--center">
                     <duice-pagination
                             data-duice-bind="assetSearch"
                             data-duice-size-property="_size"
@@ -271,7 +277,7 @@
                             class="number">
                     </duice-pagination>
                 </div>
-                <div>
+                <div class="flex--1">
                 </div>
             </div>
         </div>
