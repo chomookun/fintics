@@ -235,14 +235,14 @@
                 },
                 buyTradeAsset: function(assetId) {
                     let asset = this.basket.basketAssets.find(it => it.assetId === assetId);
-                    submitOrderDialog.open(this.trade, asset, 'BUY')
+                    _submitOrderDialog.open(this.trade, asset, 'BUY')
                     .then(() => {
                         this.getBalance();
                     });
                 },
                 sellTradeAsset: function(assetId) {
                     let asset = this.basket.basketAssets.find(it => it.assetId === assetId);
-                    submitOrderDialog.open(this.trade, asset, 'SELL')
+                    _submitOrderDialog.open(this.trade, asset, 'SELL')
                     .then(() => {
                         this.getBalance();
                     });
@@ -524,7 +524,7 @@
                                         }
                                         "
                                         onclick="_assetDialog.open(this.dataset.assetId);"
-                                        class="cursor--pointer"></span>
+                                        class="link"></span>
                                         (<span data-duice-bind="basketAsset" data-duice-property="holdingWeight" class="number"></span><span class="code">%</span>)
                                         <img class="icon font-size--smaller"
                                              th:src="@{/static/image/icon-pin.svg}"
@@ -610,7 +610,7 @@
                             </td>
                             <td class="text-align--center">
                                 <div class="display--flex flex-direction--column gap--1px">
-                                    <button class="button font-size--smaller" type="button"
+                                    <button class="button" type="button"
                                             data-duice-bind="basketAsset"
                                             data-duice-execute="this.dataset.assetId=basketAsset.assetId"
                                             th:attr="onclick=|monitorMap.get('${trade.tradeId}').buyTradeAsset(this.dataset.assetId);|"
@@ -618,7 +618,7 @@
                                         <img class="icon" th:src="@{/static/image/icon-order-buy.svg}" alt="buy"/>
                                         <span data-th-text="#{fintics.Order.Type.BUY}"></span>
                                     </button>
-                                    <button class="button font-size--smaller" type="button"
+                                    <button class="button" type="button"
                                             data-duice-bind="basketAsset"
                                             data-duice-execute="this.dataset.assetId=basketAsset.assetId;"
                                             th:attr="onclick=|monitorMap.get('${trade.tradeId}').sellTradeAsset(this.dataset.assetId);|"
@@ -652,6 +652,7 @@
     <!-- ================================== -->
 
     <th:block th:insert="_common.html :: _assetDialog"/>
-    <th:block th:insert="trade.html :: submitOrderDialog"/>
+    <th:block th:insert="_common.html :: _submitOrderDialog"/>
+<!--    <th:block th:insert="trade.html :: submitOrderDialog"/>-->
 
 </th:block>

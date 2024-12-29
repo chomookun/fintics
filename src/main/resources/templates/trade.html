@@ -249,7 +249,7 @@
          */
         function sellBalanceAsset(assetId) {
             let balanceAsset = balance.balanceAssets.find(it => it.assetId === assetId);
-            submitOrderDialog.open(trade, balanceAsset, 'SELL');
+            _submitOrderDialog.open(trade, balanceAsset, 'SELL');
         }
 
         /**
@@ -872,8 +872,8 @@
                                     <span data-duice-bind="balanceAsset" data-duice-property="profitPercentage" data-duice-format="number()" class="number font-weight--bold"></span>
                                     <span class="code">%</span>
                                 </td>
-                                <td class="text-align--right">
-                                    <button class="small" type="button"
+                                <td class="text-align--center">
+                                    <button class="button" type="button"
                                             data-duice-bind="balanceAsset"
                                             data-duice-execute="this.dataset.assetId=balanceAsset.assetId;"
                                             onclick="sellBalanceAsset(this.dataset.assetId);"
@@ -1092,115 +1092,7 @@
     <!-- end: cash asset dialog                 -->
     <!-- ====================================== -->
 
-    <th:block th:fragment="submitOrderDialog">
-        <!-- ================================== -->
-        <!-- submit order dialog                -->
-        <!-- ================================== -->
-        <dialog id="submitOrderDialog">
-            <style th:inline="css">
-                #submitOrderDialog {
-                    width: 600px;
-                }
-            </style>
-            <script th:inline="javascript">
-                const submitOrderDialog = {
-                    dialog: new duice.Dialog(document.getElementById('submitOrderDialog')),
-                    order: new duice.ObjectProxy({
-                        tradeId: null,
-                        tradeName: null,
-                        assetId: null,
-                        assetName: null,
-                        type: null,
-                        kind: 'MARKET',
-                        quantity: 1
-                    }),
-                    open: async function(trade, asset, type) {
-                        duice.ObjectProxy.reset(this.order);
-                        this.order.tradeId = trade.tradeId;
-                        this.order.tradeName = trade.name;
-                        this.order.assetId = asset.assetId;
-                        this.order.assetName = asset.name;
-                        this.order.type = type;
-                        return this.dialog.open();
-                    },
-                    confirm: async function() {
-                        if(!this.order.quantity) {
-                            await _alert(/*[[#{web.global.itemEmpty(#{fintics.Order.quantity})}]]*/'');
-                            duice.ObjectProxy.focus(this.order, 'quantity');
-                            return false;
-                        }
-                        _confirm(/*[[#{web.global.requestItemConfirm(#{fintics.Order})}]]*/'')
-                            .then(result => {
-                                let url = new URL(`${_apiUrl}/v1/trades/${this.order.tradeId}/orders`, document.location.origin);
-                                if (result) {
-                                    _fetch(url, {
-                                        method: 'POST',
-                                        headers: {
-                                            'Content-Type': 'application/json'
-                                        },
-                                        body: JSON.stringify(this.order)
-                                    }).then(response => response.json())
-                                        .then(data => {
-                                            _alert(/*[[#{web.global.requestItemComplete(#{fintics.Order})}]]*/'')
-                                                .then(() => {
-                                                    this.dialog.close();
-                                                });
-                                        });
-                                }
-                            });
-                    }
-                }
-            </script>
-            <div class="display--flex flex-direction--column padding--1em">
-                <div>
-                    <h2>
-                        <img class="icon" th:src="@{/static/image/icon-order.svg}" alt="asset"/>
-                        <span data-th-text="#{fintics.Order}"></span>
-                    </h2>
-                </div>
-                <div class="display--flex flex-direction--column gap--1em padding--1em">
-                    <form onsubmit="return false;" class="display--grid grid-template-columns--12 grid-gap--1em">
-                        <label class="grid-column--6">
-                            <span data-th-text="#{fintics.Trade}" class="font-weight--bold"></span>
-                            <input type="text" data-duice-bind="submitOrderDialog.order" data-duice-property="tradeName" class="width--100"/>
-                        </label>
-                        <label class="grid-column--6">
-                            <span data-th-text="#{fintics.Asset}" class="font-weight--bold"></span>
-                            <input type="text" data-duice-bind="submitOrderDialog.order" data-duice-property="assetName" class="width--100"/>
-                        </label>
-                        <label class="grid-column--6">
-                            <span data-th-text="#{fintics.Order.type}" class="font-weight--bold"></span>
-                            <select data-duice-bind="submitOrderDialog.order" data-duice-property="type" class="width--100">
-                                <option value="BUY" data-th-text="#{fintics.Order.Type.BUY}"></option>
-                                <option value="SELL" data-th-text="#{fintics.Order.Type.SELL}"></option>
-                            </select>
-                        </label>
-                        <label class="grid-column--6">
-                            <span data-th-text="#{fintics.Order.kind}" class="font-weight--bold"></span>
-                            <select data-duice-bind="submitOrderDialog.order" data-duice-property="kind" class="width--100">
-                                <option value="MARKET" data-th-text="#{fintics.Order.Kind.MARKET}"></option>
-                                <option value="LIMIT" data-th-text="#{fintics.Order.Kind.LIMIT}"></option>
-                            </select>
-                        </label>
-                        <label class="grid-column--6">
-                            <span data-th-text="#{fintics.Order.quantity}" class="font-weight--bold"></span>
-                            <input type="number" data-duice-bind="submitOrderDialog.order" data-duice-property="quantity" class="width--100"/>
-                        </label>
-                    </form>
-                    <div class="display--flex justify-content--flex-end">
-                        <button onclick="submitOrderDialog.confirm();">
-                            <img class="icon" th:src="@{/static/image/icon-confirm.svg}" alt="confirm"/>
-                            <span data-th-text="#{web.global.confirm}"></span>
-                        </button>
-                    </div>
-                </div>
-            </div>
-        </dialog>
-        <!-- ================================== -->
-        <!-- submit order dialog                -->
-        <!-- ================================== -->
-    </th:block>
-
     <th:block th:insert="_common.html :: _assetDialog"/>
+    <th:block th:insert="_common.html :: _submitOrderDialog"/>
 
 </th:block>
