@@ -172,28 +172,16 @@ class Analyzer {
     Score getMomentumScore() {
         def score = new Score()
         // macd
-        // score.macdValue = macd.value > 0 ? 100 : 0
         score.macdValueOverSignal = macd.value > macd.signal ? 100 : 0
         score.macdOscillator = macd.oscillator > 0 ? 100 : 0
         // dmi
         score.dmiPdiOverMdi = dmi.pdi > dmi.mdi ? 100 : 0
         // rsi
-        // score.rsiValue = rsi.value > 50 ? 100 : 0
         score.rsiValueOverSignal = rsi.value > rsi.signal ? 100 : 0
         // cci
-//        score.cciValue = cci.value > 0 ? 100 : 0
         score.cciValueOverSignal = cci.value > cci.signal ? 100 : 0
         // chaikin oscillator
-        // score.chaikinOscillatorValue = chaikinOscillator.value > 0 ? 100 : 0
         score.chaikinOscillatorValueOverSignal = chaikinOscillator.value > chaikinOscillator.signal ? 100 : 0
-        // bollinger band
-//        score.bollingerBandPriceOverMiddle = ohlcv.close > bollingerBand.middle ? 100 : 0
-        // stochastic slow
-        // score.stochasticSlowK = stochasticSlow.slowK > 50 ? 100 : 0
-//        score.stochasticSlowKOverD = stochasticSlow.slowK > stochasticSlow.slowD ? 100 : 0
-        // williams r
-//        score.williamsRValue = williamsR.value > -50 ? 100 : 0
-//        score.williamsRValueOverSignal = williamsR.value > williamsR.signal ? 100 : 0
         // return
         return score
     }
@@ -335,40 +323,40 @@ class TripleScreenStrategy {
         def waveOversoldThreshold = 50
         def waveOverboughtThreshold = 50
         // tide 상승 추세 인 경우 과매도 판정 민감도 추가
-        if (tideAnalyzer.getMomentumScore() > 75) {
+        if (tideAnalyzer.getMomentumScore() >= 75) {
             waveOversoldThreshold = 25
             waveOverboughtThreshold = 75
         }
         // tide 하락 추세 인 경우 과매수 판정 민감도 증가
-        if (tideAnalyzer.getMomentumScore() < 25) {
+        if (tideAnalyzer.getMomentumScore() <= 25) {
             waveOverboughtThreshold = 25
             waveOversoldThreshold = 75
         }
 
         // wave 변동성 구간
-        if (waveAnalyzer.getVolatilityScore() > 50) {
+        if (waveAnalyzer.getVolatilityScore() >= 50) {
             // wave 과매도 시
-            if (waveAnalyzer.getOversoldScore() > waveOversoldThreshold) {
+            if (waveAnalyzer.getOversoldScore() >= waveOversoldThreshold) {
                 // ripple 상승 모멘텀
-                if (rippleAnalyzer.getMomentumScore() > 50) {
+                if (rippleAnalyzer.getMomentumScore() >= 50) {
                     // wave 평균가 기준 매수 포지션
                     def waveAveragePosition = waveAnalyzer.adjustAveragePosition(position)
                     strategyResult = StrategyResult.of(Action.BUY, waveAveragePosition, "[WAVE OVERSOLD BUY] ${this.toString()}")
                     // filter - tide 가 과매수 상태인 경우 매수 제한
-                    if (tideAnalyzer.getOverboughtScore() > 50) {
+                    if (tideAnalyzer.getOverboughtScore() >= 50) {
                         strategyResult = null
                     }
                 }
             }
             // wave 과매수 시
-            if (waveAnalyzer.getOverboughtScore() > waveOverboughtThreshold) {
+            if (waveAnalyzer.getOverboughtScore() >= waveOverboughtThreshold) {
                 // ripple 하락 모멘텀
-                if (rippleAnalyzer.getMomentumScore() < 50) {
+                if (rippleAnalyzer.getMomentumScore() <= 50) {
                     // wave 평균가 기준 매도 포지션
                     def waveAveragePosition = waveAnalyzer.adjustAveragePosition(position)
                     strategyResult = StrategyResult.of(Action.SELL, waveAveragePosition, "[WAVE OVERBOUGHT SELL] ${this.toString()}")
                     // filter - tide 가 과매도 상태인 경우 매도 제한
-                    if (tideAnalyzer.getOversoldScore() > 50) {
+                    if (tideAnalyzer.getOversoldScore() >= 50) {
                         strategyResult = null
                     }
                 }
@@ -548,8 +536,8 @@ tradeAsset.setMessage(message)
 //===============================
 // execute strategy
 //===============================
-// macro
-macroTripleScreenStrategy.getResult(maxPosition, minPosition).ifPresent(it -> {
+// micro
+microTripleScreenStrategy.getResult(maxPosition, minPosition).ifPresent(it -> {
     log.info("macroStrategyResult: {}", it)
     strategyResult = it
 })
@@ -558,12 +546,11 @@ mesoTripleScreenStrategy.getResult(maxPosition, minPosition).ifPresent(it -> {
     log.info("mesoStrategyResult: {}", it)
     strategyResult = it
 })
-// micro
-microTripleScreenStrategy.getResult(maxPosition, minPosition).ifPresent(it -> {
+// macro
+macroTripleScreenStrategy.getResult(maxPosition, minPosition).ifPresent(it -> {
     log.info("macroStrategyResult: {}", it)
     strategyResult = it
 })
-
 
 //===============================
 // check split limit

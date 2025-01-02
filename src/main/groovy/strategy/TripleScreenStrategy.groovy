@@ -334,29 +334,29 @@ class TripleScreenStrategy {
         }
 
         // wave 변동성 구간
-        if (waveAnalyzer.getVolatilityScore() > 50) {
+        if (waveAnalyzer.getVolatilityScore() >= 50) {
             // wave 과매도 시
-            if (waveAnalyzer.getOversoldScore() > waveOversoldThreshold) {
+            if (waveAnalyzer.getOversoldScore() >= waveOversoldThreshold) {
                 // ripple 상승 모멘텀
-                if (rippleAnalyzer.getMomentumScore() > 50) {
+                if (rippleAnalyzer.getMomentumScore() >= 50) {
                     // wave 평균가 기준 매수 포지션
                     def buyPosition = this.adjustAveragePosition(position)
                     strategyResult = StrategyResult.of(Action.BUY, buyPosition, "[WAVE OVERSOLD BUY] ${this.toString()}")
                     // filter - tide 가 과매수 상태인 경우 매수 제한
-                    if (tideAnalyzer.getOverboughtScore() > 50) {
+                    if (tideAnalyzer.getOverboughtScore() >= 50) {
                         strategyResult = null
                     }
                 }
             }
             // wave 과매수 시
-            if (waveAnalyzer.getOverboughtScore() > waveOverboughtThreshold) {
+            if (waveAnalyzer.getOverboughtScore() >= waveOverboughtThreshold) {
                 // ripple 하락 모멘텀
-                if (rippleAnalyzer.getMomentumScore() < 50) {
+                if (rippleAnalyzer.getMomentumScore() <= 50) {
                     // wave 평균가 기준 매도 포지션
                     def sellPosition = this.adjustAveragePosition(position)
                     strategyResult = StrategyResult.of(Action.SELL, sellPosition, "[WAVE OVERBOUGHT SELL] ${this.toString()}")
                     // filter - tide 가 과매도 상태인 경우 매도 제한
-                    if (tideAnalyzer.getOversoldScore() > 50) {
+                    if (tideAnalyzer.getOversoldScore() >= 50) {
                         strategyResult = null
                     }
                 }
