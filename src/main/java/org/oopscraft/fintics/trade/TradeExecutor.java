@@ -547,8 +547,8 @@ public class TradeExecutor {
         // 계좌 정보 조회
         Balance balance = brokerClient.getBalance();
 
-        // 증거금 50% 로 가정 후 추가 (일부 파상 상품의 경우 증거금 부족 으로 매수 안되는 경우 있음)
-        buyAmount = buyAmount.multiply(BigDecimal.valueOf(1.5));
+        // 증거금 10% 로 가정 후 추가 (일부 파상 상품의 경우 증거금 부족 으로 매수 안되는 경우 있음)
+        buyAmount = buyAmount.multiply(BigDecimal.valueOf(1.1));
 
         // 매수 미체결 주문 금액 추가 (예수금 에서 아직 차감 되지 않은 상태)
         BigDecimal waitingBuyAmount = brokerClient.getWaitingOrders().stream()
