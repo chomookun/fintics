@@ -537,12 +537,25 @@ public class TradeExecutor {
         }
     }
 
+    /**
+     * withdraw buy amount from cash asset
+     * @param brokerClient broker client
+     * @param trade trade
+     * @param buyAmount buy amount
+     */
     void withdrawBuyAmountFromCash(BrokerClient brokerClient, Trade trade, BigDecimal buyAmount) throws InterruptedException {
+        // 계좌 정보 조회
+        Balance balance = brokerClient.getBalance();
+
         // 증거금 50% 로 가정 후 추가 (일부 파상 상품의 경우 증거금 부족 으로 매수 안되는 경우 있음)
         buyAmount = buyAmount.multiply(BigDecimal.valueOf(1.5));
 
-        // 계좌 정보 조회
-        Balance balance = brokerClient.getBalance();
+        // 매수 미체결 주문 금액 추가 (예수금 에서 아직 차감 되지 않은 상태)
+        BigDecimal waitingBuyAmount = brokerClient.getWaitingOrders().stream()
+                .filter(order -> order.getType() == Order.Type.BUY && order.getKind() == Order.Kind.LIMIT)
+                .map(order -> order.getPrice().multiply(order.getQuantity()))
+                .reduce(BigDecimal.ZERO, BigDecimal::add);
+        buyAmount = buyAmount.add(waitingBuyAmount);
 
         // 매수 금액 이상 현금이 남아 있는 경우 제외
         if (balance.getCashAmount().compareTo(buyAmount) > 0) {
@@ -582,6 +595,12 @@ public class TradeExecutor {
         }
     }
 
+    /**
+     * deposit sell amount to cash asset
+     * @param brokerClient broker client
+     * @param trade trade
+     * @param sellAmount sell amount
+     */
     void depositSellAmountToCash(BrokerClient brokerClient, Trade trade, BigDecimal sellAmount) throws InterruptedException {
         // 설정 된 현금 대기 비중 계산
         BigDecimal cashBufferWeight = trade.getCashBufferWeight();
