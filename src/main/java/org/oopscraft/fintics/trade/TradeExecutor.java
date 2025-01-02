@@ -538,8 +538,13 @@ public class TradeExecutor {
     }
 
     void withdrawBuyAmountFromCash(BrokerClient brokerClient, Trade trade, BigDecimal buyAmount) throws InterruptedException {
-        // 매수 금액 이상 현금이 남아 있는 경우 제외
+        // 증거금 50% 로 가정 후 추가 (일부 파상 상품의 경우 증거금 부족 으로 매수 안되는 경우 있음)
+        buyAmount = buyAmount.multiply(BigDecimal.valueOf(1.5));
+
+        // 계좌 정보 조회
         Balance balance = brokerClient.getBalance();
+
+        // 매수 금액 이상 현금이 남아 있는 경우 제외
         if (balance.getCashAmount().compareTo(buyAmount) > 0) {
             return;
         }
@@ -557,19 +562,23 @@ public class TradeExecutor {
 
         // 현재 보유 수량 체크 후 필요한 수량 이상인 경우 매도
         BalanceAsset cashBalanceAsset = balance.getBalanceAsset(cashAsset.getAssetId()).orElse(null);
-        if (cashBalanceAsset != null && cashBalanceAsset.getOrderableQuantity().compareTo(cashAssetSellQuantity) > 0) {
-            Order order = Order.builder()
-                    .orderAt(Instant.now())
-                    .type(Order.Type.SELL)
-                    .kind(Order.Kind.MARKET)
-                    .assetId(cashAsset.getAssetId())
-                    .quantity(cashAssetSellQuantity)
-                    .price(cashAssetAskPrice)
-                    .build();
-            brokerClient.submitOrder(cashAsset, order);
+        if (cashBalanceAsset != null) {
+            // 주문 가능 수량 으로 조정 후 매도
+            cashAssetSellQuantity = cashAssetSellQuantity.min(cashBalanceAsset.getOrderableQuantity());
+            if (cashAssetSellQuantity.compareTo(BigDecimal.ZERO) > 0) {
+                Order order = Order.builder()
+                        .orderAt(Instant.now())
+                        .type(Order.Type.SELL)
+                        .kind(Order.Kind.LIMIT)
+                        .assetId(cashAsset.getAssetId())
+                        .quantity(cashAssetSellQuantity)
+                        .price(cashAssetAskPrice)
+                        .build();
+                brokerClient.submitOrder(cashAsset, order);
 
-            // 일정 시간 매수 완료 시 까지 대기
-            Thread.sleep(5_000);
+                // 일정 시간 매수 완료 시 까지 대기
+                Thread.sleep(5_000);
+            }
         }
     }
 
@@ -602,7 +611,7 @@ public class TradeExecutor {
             Order order = Order.builder()
                     .orderAt(Instant.now())
                     .type(Order.Type.BUY)
-                    .kind(Order.Kind.MARKET)
+                    .kind(Order.Kind.LIMIT)
                     .assetId(cashAsset.getAssetId())
                     .quantity(cashAssetBuyQuantity)
                     .price(cashAssetBuyPrice)

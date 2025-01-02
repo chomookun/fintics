@@ -120,6 +120,7 @@ values
 insert into `fintics_asset`
     (`asset_id`,`name`,`market`,`exchange`,`type`)
 values
+    ('KR.488770','KODEX 머니마켓액티브','KR','XKRX','ETF'),
     ('KR.122630','KODEX 레버리지','KR','XKRX','ETF'),
     ('KR.229200','KODEX 코스닥150','KR','XKRX','ETF'),
     ('KR.252670','KODEX 200선물인버스2X','KR','XKRX','ETF'),
@@ -152,6 +153,7 @@ values
 insert into `fintics_basket_asset`
     (`basket_id`,`asset_id`,`enabled`, `holding_weight`)
 values
+    ('e5b2dda4ede54176b5e01eed7c4b9ed8','KR.488770','N','0'),
     ('e5b2dda4ede54176b5e01eed7c4b9ed8','KR.122630','Y','20'),
     ('e5b2dda4ede54176b5e01eed7c4b9ed8','KR.229200','Y','20'),
     ('e5b2dda4ede54176b5e01eed7c4b9ed8','KR.005930','Y','20'),
@@ -171,11 +173,11 @@ values
 
 -- fintics_trade
 insert into `fintics_trade`
-    (`trade_id`,`name`,`enabled`,`interval`,`threshold`,`start_at`,`end_at`,`invest_amount`,`broker_id`,`basket_id`,`strategy_id`,`strategy_variables`,`alarm_id`,`order_kind`)
+    (`trade_id`,`name`,`enabled`,`interval`,`threshold`,`start_at`,`end_at`,`invest_amount`,`broker_id`,`basket_id`,`strategy_id`,`strategy_variables`,`alarm_id`,`order_kind`, cash_asset_id, cash_buffer_weight)
 values
-    ('06c228451ce0400fa57bb36f0568d7cb','한국투자증권 모의투자 - 국내','Y','60','2','09:00','15:30','1000000','ca5f55cd88694715bcb4c478710d9a68','e5b2dda4ede54176b5e01eed7c4b9ed8','7c94187b346f4727a0f2478fdc53064f', null, null, 'LIMIT'),
-    ('7af6bc641eef4254b12dd9fa1d43384d','한국투자증권 모의투자 - 미국','Y','60','2','09:30','16:00','1000','961eb9c68c9547ce9ae61bbe3be7f037','a920f8813c6f46fda2947cee1c8cfb1d','7c94187b346f4727a0f2478fdc53064f', null, null, 'LIMIT'),
-    ('81c6a451d6da49449faa2b5b7e66041b','코인놀이방(24시간 테스트용)','N','30','3','00:00','23:59','100000','a135ee9a276f4edf81d6e1b6b9d31e39','7818b580e3f340498b97f50e0e801ff8','7c94187b346f4727a0f2478fdc53064f', null, null, 'LIMIT');
+    ('06c228451ce0400fa57bb36f0568d7cb','한국투자증권 모의투자 - 국내','Y','60','2','09:00','15:30','1000000','ca5f55cd88694715bcb4c478710d9a68','e5b2dda4ede54176b5e01eed7c4b9ed8','7c94187b346f4727a0f2478fdc53064f', null, null, 'LIMIT', 'KR.488770','1'),
+    ('7af6bc641eef4254b12dd9fa1d43384d','한국투자증권 모의투자 - 미국','Y','60','2','09:30','16:00','1000','961eb9c68c9547ce9ae61bbe3be7f037','a920f8813c6f46fda2947cee1c8cfb1d','7c94187b346f4727a0f2478fdc53064f', null, null, 'LIMIT', null, null),
+    ('81c6a451d6da49449faa2b5b7e66041b','코인놀이방(24시간 테스트용)','N','30','3','00:00','23:59','100000','a135ee9a276f4edf81d6e1b6b9d31e39','7818b580e3f340498b97f50e0e801ff8','7c94187b346f4727a0f2478fdc53064f', null, null, 'LIMIT', null, null);
 
 -- fintics_order
 insert into fintics_order
@@ -195,9 +197,10 @@ values
 update fintics_broker set broker_client_properties='
 production=false
 apiUrl=https://openapivts.koreainvestment.com:29443
-appKey=PSDPVFEuoxLEd7BUvKtEMRBsDNsuWAJV51i8
-appSecret=s347ElrcHIU9ZbR76YcwC8Jpjw2Xze9mHTsPQlj5ckAQqNvRbBT37WlUKjllCGwp/+v0eaDLQKw+r2jW1qlmJEmdx4YdL4we9bYIEjaO5+MT0CQrj6MUW36lswGN6ocll1wz2dbDnIzkC+qT7WyPoRkczsfRoGQtVaWFGs/xHDglKFDu8sc=
-accountNo=50115174-01
+appKey=PSg7ehKitLfwdHzjVIHz11ZhVEcpZyrWj9L7
+appSecret=dQ2ExOQZioQyBovsE0bHtFuWuluzrghcfTiWwwpsGSeEeVvIW7ruZCU5aD+m0os1SPU9PbmB9mQM39SL65sani9F1u/svgvnytwnudRDV+QQYjtImXVTfheHixZ5o/WEPHT6BUTDyqPvprcJV22n/DSmvivfnOV4XP7CaMuDNA4rmuG9XME=
+accountNo=50123223-01
+insecure=true
 '
 where broker_id in ('ca5f55cd88694715bcb4c478710d9a68','961eb9c68c9547ce9ae61bbe3be7f037');
 
