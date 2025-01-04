@@ -219,7 +219,6 @@ class Analyzer {
  */
 class TripleScreenStrategy {
 
-    String name
     Analyzer tideAnalyzer
     Analyzer waveAnalyzer
     Analyzer rippleAnalyzer
@@ -238,8 +237,7 @@ class TripleScreenStrategy {
      * @param rippleOhlcvPeriod ripple ohlcv period
      */
     @Builder
-    TripleScreenStrategy(String name, TradeAsset tradeAsset, Ohlcv.Type tideOhlcvType, int tideOhlcvPeriod, Ohlcv.Type waveOhlcvType, int waveOhlcvPeriod, Ohlcv.Type rippleOhlcvType, int rippleOhlcvPeriod) {
-        this.name = name
+    TripleScreenStrategy(TradeAsset tradeAsset, Ohlcv.Type tideOhlcvType, int tideOhlcvPeriod, Ohlcv.Type waveOhlcvType, int waveOhlcvPeriod, Ohlcv.Type rippleOhlcvType, int rippleOhlcvPeriod) {
         this.tideAnalyzer = new Analyzer(tradeAsset, tideOhlcvType, tideOhlcvPeriod)
         this.waveAnalyzer = new Analyzer(tradeAsset, waveOhlcvType, waveOhlcvPeriod)
         this.rippleAnalyzer = new Analyzer(tradeAsset, rippleOhlcvType, rippleOhlcvPeriod)
@@ -334,7 +332,7 @@ class TripleScreenStrategy {
         }
 
         // wave 변동성 구간
-        if (waveAnalyzer.getVolatilityScore() >= 50) {
+//        if (waveAnalyzer.getVolatilityScore() >= 50) {
             // wave 과매도 시
             if (waveAnalyzer.getOversoldScore() >= waveOversoldThreshold) {
                 // ripple 상승 모멘텀
@@ -361,7 +359,7 @@ class TripleScreenStrategy {
                     }
                 }
             }
-        }
+//        }
 
         // returns
         return strategyResult
@@ -369,17 +367,11 @@ class TripleScreenStrategy {
 
     @Override
     String toString() {
-        return  "${this.name}:[" +
-                "tide.momentum:${tideAnalyzer.getMomentumScore().getAverage()}," +
-                "wave.oversold:${waveAnalyzer.getOversoldScore().getAverage()}," +
-                "wave.overbought:${waveAnalyzer.getOverboughtScore().getAverage()}," +
-                "ripple.momentum:${rippleAnalyzer.getMomentumScore().getAverage()}" +
-                "(" +
-                "tide.oversold:${tideAnalyzer.getOversoldScore().getAverage()}," +
-                "tide.overbought:${tideAnalyzer.getOverboughtScore().getAverage()}," +
-                "wave.momentum:${waveAnalyzer.getMomentumScore().getAverage()}" +
-                ")" +
-                "]"
+        return "tide.momentum:${tideAnalyzer.getMomentumScore().getAverage()}," +
+               "wave.volatility:${waveAnalyzer.getVolatilityScore().getAverage()}," +
+               "wave.oversold:${waveAnalyzer.getOversoldScore().getAverage()}," +
+               "wave.overbought:${waveAnalyzer.getOverboughtScore().getAverage()}," +
+               "ripple.momentum:${rippleAnalyzer.getMomentumScore().getAverage()}";
     }
 }
 
@@ -426,7 +418,6 @@ if (basketAsset.getVariable('splitIndex')) {
 // strategy
 //===============================
 def tripleScreenStrategy = TripleScreenStrategy.builder()
-        .name("micro")
         .tradeAsset(tradeAsset)
         .tideOhlcvType(tideOhlcvType)
         .tideOhlcvPeriod(tideOhlcvPeriod)
