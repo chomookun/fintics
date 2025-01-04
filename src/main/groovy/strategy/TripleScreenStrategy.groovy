@@ -322,13 +322,13 @@ class TripleScreenStrategy {
         def waveOverboughtThreshold = 50
         // tide 상승 추세 인 경우 과매도 판정 민감도 추가
         if (tideAnalyzer.getMomentumScore() > 75) {
-            waveOversoldThreshold = 25
-            waveOverboughtThreshold = 75
+            waveOversoldThreshold = 0
+            waveOverboughtThreshold = 100
         }
         // tide 하락 추세 인 경우 과매수 판정 민감도 증가
         if (tideAnalyzer.getMomentumScore() < 25) {
-            waveOverboughtThreshold = 25
-            waveOversoldThreshold = 75
+            waveOverboughtThreshold = 0
+            waveOversoldThreshold = 100
         }
 
         // wave 변동성 구간

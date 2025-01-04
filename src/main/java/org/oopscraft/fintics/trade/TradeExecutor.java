@@ -206,6 +206,9 @@ public class TradeExecutor {
                 BigDecimal currentOwnedAmount = balance.getBalanceAsset(basketAsset.getAssetId())
                         .map(BalanceAsset::getValuationAmount)
                         .orElse(BigDecimal.ZERO);
+                BigDecimal currentOwnedQuantity = balance.getBalanceAsset(basketAsset.getAssetId())
+                        .map(BalanceAsset::getQuantity)
+                        .orElse(BigDecimal.ZERO);
 
                 // buy
                 if (action == StrategyResult.Action.BUY) {
@@ -232,6 +235,10 @@ public class TradeExecutor {
                         BigDecimal sellQuantity = sellAmount
                                 .divide(sellPrice, MathContext.DECIMAL64)
                                 .setScale(brokerClient.getQuantityScale(), RoundingMode.HALF_UP);
+                        // if sell quantity exceed current owned quantity, sell current owned quantity
+                        if (sellQuantity.compareTo(currentOwnedQuantity) > 0) {
+                            sellQuantity = currentOwnedQuantity;
+                        }
                         // check minimum order amount
                         boolean canSell = brokerClient.isAvailablePriceAndQuantity(sellPrice, sellQuantity);
                         if (canSell) {
