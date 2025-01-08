@@ -9,6 +9,7 @@ import org.oopscraft.fintics.strategy.StrategyResult.Action
 import org.oopscraft.fintics.trade.Tools
 
 import java.math.RoundingMode
+
 /**
  * score
  */
@@ -27,17 +28,6 @@ class Score extends LinkedHashMap<String, BigDecimal> implements Comparable<Scor
     String toString() {
         return this.getAverage() + ' ' + super.toString()
     }
-}
-
-/**
- * channel
- */
-@ToString
-class Channel {
-    BigDecimal upper
-    BigDecimal lower
-    BigDecimal middle
-    LinkedHashMap<String, Object> source = new LinkedHashMap<>()
 }
 
 /**
@@ -244,39 +234,6 @@ class TripleScreenStrategy {
     }
 
     /**
-     * gets channel
-     * @param period period
-     * @return channel
-     */
-    Channel getChannel(int period) {
-        def channel = new Channel()
-        def uppers = []
-        def lowers = []
-
-        // price channel
-        List<PriceChannel> priceChannels = Tools.indicators(tideAnalyzer.ohlcvs, PriceChannelContext.of(period))
-        def priceChannel = priceChannels.first()
-        channel.source.priceChannel = priceChannel
-        uppers.add(priceChannel.upper)
-        lowers.add(priceChannel.lower)
-
-        // bollinger band
-        List<BollingerBand> bollingerBands = Tools.indicators(tideAnalyzer.ohlcvs, BollingerBandContext.of(period, 2))
-        def bollingerBand = bollingerBands.first()
-        channel.source.bollingerBand = bollingerBand
-        uppers.add(bollingerBand.upper)
-        lowers.add(bollingerBand.lower)
-
-        // set channel value
-        channel.upper = (uppers.average() as BigDecimal).setScale(4, RoundingMode.HALF_UP)
-        channel.lower = (lowers.average() as BigDecimal).setScale(4, RoundingMode.HALF_UP)
-        channel.middle = ((channel.upper + channel.lower) / 2).setScale(4, RoundingMode.HALF_UP)
-
-        // return
-        return channel
-    }
-
-    /**
      * 모멘텀 Score 기준 position 산출
      * @return
      */
@@ -321,18 +278,26 @@ class TripleScreenStrategy {
         def waveOversoldThreshold = 50
         def waveOverboughtThreshold = 50
         // tide 상승 추세 인 경우 과매도 판정 민감도 추가
-        if (tideAnalyzer.getMomentumScore() > 75) {
+        if (tideAnalyzer.getMomentumScore() >= 75) {
+            waveOversoldThreshold = 25
+            waveOverboughtThreshold = 75
+        }
+        if (tideAnalyzer.getMomentumScore() >= 100) {
             waveOversoldThreshold = 0
             waveOverboughtThreshold = 100
         }
         // tide 하락 추세 인 경우 과매수 판정 민감도 증가
-        if (tideAnalyzer.getMomentumScore() < 25) {
+        if (tideAnalyzer.getMomentumScore() <= 25) {
+            waveOverboughtThreshold = 25
+            waveOversoldThreshold = 75
+        }
+        if (tideAnalyzer.getMomentumScore() <= 0) {
             waveOverboughtThreshold = 0
             waveOversoldThreshold = 100
         }
 
         // wave 변동성 구간
-//        if (waveAnalyzer.getVolatilityScore() >= 50) {
+        if (waveAnalyzer.getVolatilityScore() >= 50) {
             // wave 과매도 시
             if (waveAnalyzer.getOversoldScore() >= waveOversoldThreshold) {
                 // ripple 상승 모멘텀
@@ -340,10 +305,6 @@ class TripleScreenStrategy {
                     // wave 평균가 기준 매수 포지션
                     def buyPosition = this.adjustAveragePosition(position)
                     strategyResult = StrategyResult.of(Action.BUY, buyPosition, "[WAVE OVERSOLD BUY] ${this.toString()}")
-                    // filter - tide 가 과매수 상태인 경우 매수 제한
-                    if (tideAnalyzer.getOverboughtScore() >= 50) {
-                        strategyResult = null
-                    }
                 }
             }
             // wave 과매수 시
@@ -353,13 +314,9 @@ class TripleScreenStrategy {
                     // wave 평균가 기준 매도 포지션
                     def sellPosition = this.adjustAveragePosition(position)
                     strategyResult = StrategyResult.of(Action.SELL, sellPosition, "[WAVE OVERBOUGHT SELL] ${this.toString()}")
-                    // filter - tide 가 과매도 상태인 경우 매도 제한
-                    if (tideAnalyzer.getOversoldScore() >= 50) {
-                        strategyResult = null
-                    }
                 }
             }
-//        }
+        }
 
         // returns
         return strategyResult
@@ -368,12 +325,58 @@ class TripleScreenStrategy {
     @Override
     String toString() {
         return "tide.momentum:${tideAnalyzer.getMomentumScore().getAverage()}," +
-               "wave.volatility:${waveAnalyzer.getVolatilityScore().getAverage()}," +
-               "wave.oversold:${waveAnalyzer.getOversoldScore().getAverage()}," +
-               "wave.overbought:${waveAnalyzer.getOverboughtScore().getAverage()}," +
-               "ripple.momentum:${rippleAnalyzer.getMomentumScore().getAverage()}";
+                "wave.volatility:${waveAnalyzer.getVolatilityScore().getAverage()}," +
+                "wave.oversold:${waveAnalyzer.getOversoldScore().getAverage()}," +
+                "wave.overbought:${waveAnalyzer.getOverboughtScore().getAverage()}," +
+                "ripple.momentum:${rippleAnalyzer.getMomentumScore().getAverage()}"
     }
 }
+
+/**
+ * channel
+ */
+@ToString
+class Channel {
+    BigDecimal upper
+    BigDecimal lower
+    BigDecimal middle
+    LinkedHashMap<String, Object> source = new LinkedHashMap<>()
+}
+
+/**
+ * calculate channel
+ * @param ohlcvs
+ * @param period
+ * @return channel
+ */
+static def calculateChannel(List<Ohlcv> ohlcvs, int period) {
+    def channel = new Channel()
+    def uppers = []
+    def lowers = []
+
+    // price channel
+    List<PriceChannel> priceChannels = Tools.indicators(ohlcvs, PriceChannelContext.of(period))
+    def priceChannel = priceChannels.first()
+    channel.source.priceChannel = priceChannel
+    uppers.add(priceChannel.upper)
+    lowers.add(priceChannel.lower)
+
+    // bollinger band
+    List<BollingerBand> bollingerBands = Tools.indicators(ohlcvs, BollingerBandContext.of(period, 2))
+    def bollingerBand = bollingerBands.first()
+    channel.source.bollingerBand = bollingerBand
+    uppers.add(bollingerBand.upper)
+    lowers.add(bollingerBand.lower)
+
+    // set channel value
+    channel.upper = (uppers.average() as BigDecimal).setScale(4, RoundingMode.HALF_UP)
+    channel.lower = (lowers.average() as BigDecimal).setScale(4, RoundingMode.HALF_UP)
+    channel.middle = ((channel.upper + channel.lower) / 2).setScale(4, RoundingMode.HALF_UP)
+
+    // return
+    return channel
+}
+
 
 //===============================
 // config
@@ -430,7 +433,7 @@ def tripleScreenStrategy = TripleScreenStrategy.builder()
 //===============================
 // split limit
 //===============================
-def channel =  tripleScreenStrategy.getChannel(splitPeriod)
+def channel =  calculateChannel(tradeAsset.getOhlcvs(Ohlcv.Type.DAILY, 1), splitPeriod)
 def splitMaxPrice = channel.upper
 def splitMinPrice = channel.lower
 def splitInterval = ((splitMaxPrice - splitMinPrice)/splitSize as BigDecimal).setScale(4, RoundingMode.HALF_UP)
