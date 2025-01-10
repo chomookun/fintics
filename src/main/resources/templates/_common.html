@@ -76,7 +76,7 @@
 
                         // draw default chart
                         document.getElementsByName('_assetDialogChartPeriod')[0].checked = true;
-                        this.drawChart('minute', 1);
+                        this.drawChart('daily', 1);
                     });
 
                     // returns promise
@@ -189,13 +189,12 @@
             </h2>
         </div>
         <div class="dialog-content">
-            <h3>
-                <img class="icon" th:src="@{/static/image/icon-detail.svg}" alt="detail"/>
-                <span data-th-text="|#{fintics.Asset} #{web.global.detail}|" class="font-weight--bold"></span>
-            </h3>
-            <div class="display--grid grid-template-columns--12fr gap--1rem">
-                <div class="grid-column--span-12">
-                    <table class="table width--100">
+            <div>
+                <div>
+                    <img class="icon" th:src="@{/static/image/icon-detail.svg}" alt="detail"/>
+                    <span data-th-text="|#{fintics.Asset} #{web.global.detail}|" class="font-weight--bold"></span>
+                </div>
+                <table class="table width--100">
                     <colgroup>
                         <col class="width--20"/>
                         <col class="width--30"/>
@@ -203,135 +202,118 @@
                         <col class="width--30"/>
                     </colgroup>
                     <tbody>
-                        <tr>
-                            <td>
-                                <span data-th-text="#{fintics.Asset.symbol}" class="font-weight--bold"></span>
-                            </td>
-                            <td>
-                                <span data-duice-bind="_assetDialog.asset" data-duice-property="symbol" class="code font-weight--bold"></span>
-                            </td>
-                            <td>
-                                <span data-th-text="#{fintics.Asset.name}" class="font-weight--bold"></span>
-                            </td>
-                            <td>
-                                <img class="icon icon--circle font-size--large vertical-align--middle" data-duice-bind="_assetDialog.asset" data-duice-property="icon" th:onerror="|this.src='@{/static/image/icon-asset.svg}';|" alt=""/>
-                                &nbsp;
-                                <span class="vertical-align--middle" data-duice-bind="_assetDialog.asset" data-duice-property="name"></span>
-                            </td>
-                        </tr>
-                        <tr>
-                            <td>
-                                <span data-th-text="#{fintics.Asset.market}" class="font-weight--bold"></span>
-                            </td>
-                            <td>
-                                <span data-duice-bind="_assetDialog.asset" data-duice-property="market" class="code badge"></span>
-                            </td>
-                            <td>
-                                <span data-th-text="#{fintics.Asset.exchange}" class="font-weight--bold"></span>
-                            </td>
-                            <td>
-                                <span data-duice-bind="_assetDialog.asset" data-duice-property="exchange" class="code badge"></span>
-                            </td>
-                        </tr>
-                        <tr>
-                            <td>
-                                <span data-th-text="#{fintics.Asset.type}" class="font-weight--bold"></span>
-                            </td>
-                            <td>
-                                <span data-duice-bind="_assetDialog.asset" data-duice-property="type" class="code badge"></span>
-                            </td>
-                            <td>
-                                <span data-th-text="#{fintics.Asset.updatedDate}" class="font-weight--bold"></span>
-                            </td>
-                            <td>
-                                <span data-duice-bind="_assetDialog.asset" data-duice-property="updatedDate" class="date"></span>
-                            </td>
-                        </tr>
-                        </tbody>
-                    </table>
-                </div>
-                <div class="grid-column--span-12">
-                    <div class="overflow--auto box">
-                        <table class="table width--100 border--none font-size--smaller code">
-                            <colgroup>
-                                <col class="width--20"/>
-                                <col class="width--30"/>
-                                <col class="width--20">
-                                <col class="width--30">
-                            </colgroup>
-                            <tbody>
-                            <tr>
-                                <th data-th-text="#{fintics.Asset.marketCap}"></th>
-                                <td data-duice-bind="_assetDialog.asset" data-duice-property="marketCap" data-duice-format="number()" class="text-align--right"></td>
-                                <th data-th-text="#{fintics.Asset.eps}"></th>
-                                <td data-duice-bind="_assetDialog.asset" data-duice-property="eps" class="text-align--right"></td>
-                            </tr>
-                            <tr>
-                                <th data-th-text="#{fintics.Asset.roe}"></th>
-                                <td data-duice-bind="_assetDialog.asset" data-duice-property="roe" class="text-align--right"></td>
-                                <th data-th-text="#{fintics.Asset.roa}"></th>
-                                <td data-duice-bind="_assetDialog.asset" data-duice-property="roa" class="text-align--right"></td>
-                            </tr>
-                            <tr>
-                                <th data-th-text="#{fintics.Asset.per}"></th>
-                                <td data-duice-bind="_assetDialog.asset" data-duice-property="per" class="text-align--right"></td>
-                                <th data-th-text="#{fintics.Asset.dividendYield}"></th>
-                                <td data-duice-bind="_assetDialog.asset" data-duice-property="dividendYield" class="text-align--right"></td>
-                            </tr>
-                            <tr>
-                                <th data-th-text="#{fintics.Asset.dividendFrequency}"></th>
-                                <td data-duice-bind="_assetDialog.asset" data-duice-property="dividendFrequency" class="text-align--right"></td>
-                                <th></th>
-                                <td></td>
-                            </tr>
-                            </tbody>
-                        </table>
+                    <tr>
+                        <td data-th-text="#{fintics.Asset.symbol}" class="font-weight--bold"></td>
+                        <td data-duice-bind="_assetDialog.asset" data-duice-property="symbol" class="code font-weight--bold"></td>
+                        <td data-th-text="#{fintics.Asset.name}" class="font-weight--bold"></td>
+                        <td>
+                            <img class="icon icon--circle font-size--large vertical-align--middle" data-duice-bind="_assetDialog.asset" data-duice-property="icon" th:onerror="|this.src='@{/static/image/icon-asset.svg}';|" alt=""/>
+                            &nbsp;
+                            <span class="vertical-align--middle" data-duice-bind="_assetDialog.asset" data-duice-property="name"></span>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td data-th-text="#{fintics.Asset.market}" class="font-weight--bold"></td>
+                        <td>
+                            <span data-duice-bind="_assetDialog.asset" data-duice-property="market" class="code badge"></span>
+                        </td>
+                        <td data-th-text="#{fintics.Asset.exchange}" class="font-weight--bold"></td>
+                        <td>
+                            <span data-duice-bind="_assetDialog.asset" data-duice-property="exchange" class="code badge"></span>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td data-th-text="#{fintics.Asset.type}" class="font-weight--bold"></td>
+                        <td>
+                            <span data-duice-bind="_assetDialog.asset" data-duice-property="type" class="code badge"></span>
+                        </td>
+                        <td data-th-text="#{fintics.Asset.updatedDate}" class="font-weight--bold"></td>
+                        <td>
+                            <span data-duice-bind="_assetDialog.asset" data-duice-property="updatedDate" class="date"></span>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td data-th-text="#{fintics.Asset.marketCap}" class="font-weight--bold"></td>
+                        <td class="text-align--right">
+                            <span data-duice-bind="_assetDialog.asset" data-duice-property="marketCap" data-duice-format="number()" class="number"></span>
+                        </td>
+                        <td data-th-text="#{fintics.Asset.eps}" class="font-weight--bold"></td>
+                        <td class="text-align--right">
+                            <span data-duice-bind="_assetDialog.asset" data-duice-property="eps" class="number"></span>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td data-th-text="#{fintics.Asset.roe}" class="font-weight--bold"></td>
+                        <td class="text-align--right">
+                            <span data-duice-bind="_assetDialog.asset" data-duice-property="roe" class="number"></span>
+                        </td>
+                        <td data-th-text="#{fintics.Asset.roa}" class="font-weight--bold"></td>
+                        <td class="text-align--right">
+                            <span data-duice-bind="_assetDialog.asset" data-duice-property="roa" class="number"></span>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td data-th-text="#{fintics.Asset.per}" class="font-weight--bold"></td>
+                        <td class="text-align--right">
+                            <span data-duice-bind="_assetDialog.asset" data-duice-property="per" class="number"></span>
+                        </td>
+                        <td data-th-text="#{fintics.Asset.dividendYield}" class="font-weight--bold"></td>
+                        <td class="text-align--right">
+                            <span data-duice-bind="_assetDialog.asset" data-duice-property="dividendYield" class="number"></span>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td data-th-text="#{fintics.Asset.dividendFrequency}" class="font-weight--bold"></td>
+                        <td class="text-align--right">
+                            <span data-duice-bind="_assetDialog.asset" data-duice-property="dividendFrequency" class="number"></span>
+                        </td>
+                        <td></td>
+                        <td></td>
+                    </tr>
+                    </tbody>
+                </table>
+            </div>
+            <div>
+                <div class="display--flex justify-content--space-between align-items--center">
+                    <div>
+                        <img class="icon" th:src="@{/static/image/icon-ohlcv.svg}" alt="ohlcv"/>
+                        <span data-th-text="#{fintics.Ohlcv}" class="font-weight--bold"></span>
+                    </div>
+                    <div class="text-align--right code font-size--smaller">
+                        <div class="display--flex gap--1em code">
+                            <label>
+                                <input name="_assetDialogChartPeriod" type="radio" onclick="_assetDialog.drawChart('daily', 1);"/>
+                                1D
+                            </label>
+                            <label>
+                                <input name="_assetDialogChartPeriod" type="radio" onclick="_assetDialog.drawChart('minute', 60);"/>
+                                1H
+                            </label>
+                            <label>
+                                <input name="_assetDialogChartPeriod" type="radio" onclick="_assetDialog.drawChart('minute', 30);"/>
+                                30m
+                            </label>
+                            <label>
+                                <input name="_assetDialogChartPeriod" type="radio" onclick="_assetDialog.drawChart('minute', 10);"/>
+                                10m
+                            </label>
+                            <label>
+                                <input name="_assetDialogChartPeriod" type="radio" onclick="_assetDialog.drawChart('minute', 5);"/>
+                                5m
+                            </label>
+                            <label>
+                                <input name="_assetDialogChartPeriod" type="radio" onclick="_assetDialog.drawChart('minute', 3);"/>
+                                3m
+                            </label>
+                            <label>
+                                <input name="_assetDialogChartPeriod" type="radio" onclick="_assetDialog.drawChart('minute', 1);"/>
+                                1m
+                            </label>
+                        </div>
                     </div>
                 </div>
+                <div id="_assetDialogChart" class="width--100"></div>
             </div>
-            <div class="display--flex justify-content--space-between align-items--center">
-                <h3>
-                    <img class="icon" th:src="@{/static/image/icon-ohlcv.svg}" alt="ohlcv"/>
-                    <span data-th-text="#{fintics.Ohlcv}" class="font-weight--bold"></span>
-                </h3>
-                <div class="text-align--right code font-size--smaller">
-                    <div class="display--flex gap--1em code">
-                        <label>
-                            <input name="_assetDialogChartPeriod" type="radio" onclick="_assetDialog.drawChart('minute', 1);"/>
-                            1m
-                        </label>
-                        <label>
-                            <input name="_assetDialogChartPeriod" type="radio" onclick="_assetDialog.drawChart('minute', 3);"/>
-                            3m
-                        </label>
-                        <label>
-                            <input name="_assetDialogChartPeriod" type="radio" onclick="_assetDialog.drawChart('minute', 5);"/>
-                            5m
-                        </label>
-                        <label>
-                            <input name="_assetDialogChartPeriod" type="radio" onclick="_assetDialog.drawChart('minute', 10);"/>
-                            10m
-                        </label>
-                        <label>
-                            <input name="_assetDialogChartPeriod" type="radio" onclick="_assetDialog.drawChart('minute', 30);"/>
-                            30m
-                        </label>
-                        <label>
-                            <input name="_assetDialogChartPeriod" type="radio" onclick="_assetDialog.drawChart('minute', 60);"/>
-                            1H
-                        </label>
-                        <label>
-                            <input name="_assetDialogChartPeriod" type="radio" onclick="_assetDialog.drawChart('daily', 1);"/>
-                            1D
-                        </label>
-                        <label>
-                            <input name="_assetDialogChartPeriod" type="radio" onclick="_assetDialog.drawChart('daily', 5);"/>
-                            1W
-                        </label>
-                    </div>
-                </div>
-            </div>
-            <div id="_assetDialogChart" class="width--100"></div>
        </div>
     </dialog>
     <!-- ====================================== -->

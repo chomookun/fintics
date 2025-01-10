@@ -900,10 +900,10 @@
     <!-- ====================================== -->
     <!-- start: cash asset dialog               -->
     <!-- ====================================== -->
-    <dialog id="cashAssetDialog">
+    <dialog id="cashAssetDialog" class="dialog">
         <style th:inline="css">
             #cashAssetDialog {
-                width: 1024px;
+                width: 800px;
             }
         </style>
         <script th:inline="javascript">
@@ -953,138 +953,137 @@
                 }
             }
         </script>
-        <div class="display--flex flex-direction--column padding--1em">
-            <div>
-                <h2>
-                    <img class="icon" th:src="@{/static/image/icon-asset.svg}" alt="asset"/>
-                    <span data-th-text="#{fintics.Trade.cashAssetId} + ' ' + #{web.global.select}"></span>
-                </h2>
+        <div class="dialog-title">
+            <h2>
+                <img class="icon" th:src="@{/static/image/icon-asset.svg}" alt="asset"/>
+                <span data-th-text="#{fintics.Trade.cashAssetId} + ' ' + #{web.global.select}"></span>
+            </h2>
+        </div>
+        <div class="dialog-content">
+            <form onsubmit="return false;" class="display--flex flex-wrap--wrap justify-content--space-between gap--1rem">
+                <div class="display--flex flex-wrap--wrap gap--1px">
+                    <div>
+                        <label>
+                           <select data-duice-bind="cashAssetDialog.assetSearch" data-duice-property="market" class="width--100">
+                               <option value="" data-th-text="|#{fintics.Asset.market}...|"></option>
+                               <option th:each="market : ${markets}" th:value="${market}" th:text="${market}"></option>
+                           </select>
+                        </label>
+                    </div>
+                    <div>
+                        <label>
+                            <select data-duice-bind="cashAssetDialog.assetSearch" data-duice-property="type" class="width--100">
+                                <option value="" data-th-text="|#{fintics.Asset.type}...|"></option>
+                                <option value="STOCK">STOCK</option>
+                                <option value="ETF">ETF</option>
+                            </select>
+                        </label>
+                    </div>
+                    <div class="display--flex flex-wrap--nowrap gap--1px">
+                        <label>
+                            <select class="width--100" data-duice-bind="cashAssetDialog.assetSearch" data-duice-property="key">
+                                <option value="name" th:text="#{fintics.Asset.name}"></option>
+                                <option value="assetId" th:text="#{fintics.Asset.assetId}"></option>
+                            </select>
+                        </label>
+                        <label>
+                            <input class="width--100" type="text" data-duice-bind="cashAssetDialog.assetSearch" data-duice-property="value"/>
+                        </label>
+                    </div>
+                </div>
+                <div class="display--flex justify-content--end gap--1px">
+                    <button class="button" onclick="cashAssetDialog.getAssets();">
+                        <img class="icon" th:src="@{/static/image/icon-search.svg}" alt="search"/>
+                        <span data-th-text="#{web.global.search}">Search</span>
+                    </button>
+                    <button class="button" onclick="cashAssetDialog.resetAssets();">
+                        <img class="icon" th:src="@{/static/image/icon-reset.svg}" alt="reset"/>
+                        <span data-th-text="#{web.global.reset}">Reset</span>
+                    </button>
+                </div>
+            </form>
+            <div class="overflow-x--scroll">
+                <table class="width--100">
+                    <colgroup>
+                        <col style="width:3em;"/>
+                        <col/>
+                        <col/>
+                        <col/>
+                        <col/>
+                        <col/>
+                    </colgroup>
+                    <thead>
+                    <tr>
+                        <th></th>
+                        <th data-th-text="#{fintics.Asset.symbol}" class="text-align--center"></th>
+                        <th data-th-text="#{fintics.Asset.name}"></th>
+                        <th data-th-text="#{fintics.Asset.exchange}" class="text-align--center"></th>
+                        <th data-th-text="#{fintics.Asset.type}" class="text-align--center"></th>
+                        <th data-th-text="#{fintics.Asset.links}" class="text-align--center"></th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    <tr data-duice-bind="cashAssetDialog.assets" data-duice-loop="asset,status">
+                        <td class="text-align--center">
+                            <button class="button font-size--smaller" type="button"
+                                    data-duice-bind="asset"
+                                    data-duice-execute="
+                    this.dataset.index = status.index;
+                    if(asset._selected) {
+                        this.disabled = true;
+                    }"
+                                    onclick="cashAssetDialog.selectAsset(this.dataset.index);">
+                                <img class="icon" th:src="@{/static/image/icon-add.svg}" alt="add"/>
+                            </button>
+                        </td>
+                        <td class="text-align--center">
+                            <span data-duice-bind="asset" data-duice-property="symbol" class="code font-weight--bold"></span>
+                        </td>
+                        <td class="text-align--left" style="overflow-x: hidden;">
+                            <img class="icon" data-duice-bind="asset" data-duice-property="icon" th:onerror="|this.src='@{/static/image/icon-asset.svg}';|" alt=""/>
+                            &nbsp;
+                            <span data-duice-bind="asset" data-duice-property="name"></span>
+                        </td>
+                        <td class="text-align--center">
+                            <span data-duice-bind="asset" data-duice-property="exchange" class="code badge"></span>
+                        </td>
+                        <td class="text-align--center">
+                            <span data-duice-bind="asset" data-duice-property="type" class="code badge"></span>
+                        </td>
+                        <td class="text-align--center">
+                            <select data-duice-bind="asset"
+                                    data-duice-option="asset.links"
+                                    data-duice-option-value-property="url"
+                                    data-duice-option-text-property="name"
+                                    onchange="_openLink(this.value, '_blank'); this.value = '';">
+                                <option value>Link...</option>
+                            </select>
+                        </td>
+                    </tr>
+                    <tr data-duice-bind="cashAssetDialog.assets"
+                        data-duice-execute="if(cashAssetDialog.assets.length === 0) this.hidden=false;" hidden>
+                        <td colspan="100%" class="text-align--center font-size--smaller">No Data</td>
+                    </tr>
+                    </tbody>
+                </table>
             </div>
-            <div class="display--flex flex-direction--column gap--1em padding--1em">
-                <form onsubmit="return false;" class="display--grid grid-template-columns--12 grid-gap--1em">
-                    <label class="grid-column--2 s__grid-column--12">
-                        <select data-duice-bind="cashAssetDialog.assetSearch" data-duice-property="market" class="width--100">
-                            <option value="" data-th-text="'- ' + #{fintics.Asset.market} + ' -'"></option>
-                            <option th:each="market : ${markets}" th:value="${market}" th:text="${market}"></option>
-                        </select>
-                    </label>
-                    <label class="grid-column--2 s__grid-column--12">
-                        <select data-duice-bind="cashAssetDialog.assetSearch" data-duice-property="type" class="width--100">
-                            <option value="" data-th-text="'- ' + #{fintics.Asset.type} + ' -'"></option>
-                            <option value="STOCK">STOCK</option>
-                            <option value="ETF">ETF</option>
-                        </select>
-                    </label>
-                    <label class="grid-column--2 s-grid-column-4">
-                        <select class="width--100" data-duice-bind="cashAssetDialog.assetSearch" data-duice-property="key">
-                            <option value="name" th:text="#{fintics.Asset.name}"></option>
-                            <option value="assetId" th:text="#{fintics.Asset.assetId}"></option>
-                        </select>
-                    </label>
-                    <label class="grid-column--2 s-grid-column--8">
-                        <input class="width--100" type="text" data-duice-bind="cashAssetDialog.assetSearch" data-duice-property="value"/>
-                    </label>
-                    <div class="grid-column--4 s-grid-column--12 justify-self--end">
-                        <button onclick="cashAssetDialog.getAssets();">
-                            <img class="icon" th:src="@{/static/image/icon-search.svg}" alt="search"/>
-                            <span data-th-text="#{web.global.search}">Search</span>
-                        </button>
-                        <button onclick="cashAssetDialog.resetAssets();">
-                            <img class="icon" th:src="@{/static/image/icon-reset.svg}" alt="reset"/>
-                            <span data-th-text="#{web.global.reset}">Reset</span>
-                        </button>
-                    </div>
-                </form>
-                <div class="overflow-x--scroll">
-                    <table class="width--100">
-                        <colgroup>
-                            <col style="width:3em;"/>
-                            <col/>
-                            <col/>
-                            <col/>
-                            <col/>
-                            <col/>
-                            <col/>
-                        </colgroup>
-                        <thead>
-                        <tr>
-                            <th></th>
-                            <th data-th-text="#{fintics.Asset.symbol}" class="text-align--center"></th>
-                            <th data-th-text="#{fintics.Asset.name}"></th>
-                            <th data-th-text="#{fintics.Asset.exchange}" class="text-align--center"></th>
-                            <th data-th-text="#{fintics.Asset.type}" class="text-align--center"></th>
-                            <th data-th-text="#{fintics.Asset.marketCap}" class="text-align--right"></th>
-                            <th data-th-text="#{fintics.Asset.links}" class="text-align--center"></th>
-                        </tr>
-                        </thead>
-                        <tbody>
-                        <tr data-duice-bind="cashAssetDialog.assets" data-duice-loop="asset,status">
-                            <td class="text-align--center">
-                                <button class="small" type="button"
-                                        data-duice-bind="asset"
-                                        data-duice-execute="
-                        this.dataset.index = status.index;
-                        if(asset._selected) {
-                            this.disabled = true;
-                        }"
-                                        onclick="cashAssetDialog.selectAsset(this.dataset.index);">
-                                    <img class="icon" th:src="@{/static/image/icon-add.svg}" alt="add"/>
-                                </button>
-                            </td>
-                            <td class="text-align--center">
-                                <span data-duice-bind="asset" data-duice-property="symbol" class="code font-weight--bold"></span>
-                            </td>
-                            <td class="text-align--left" style="overflow-x: hidden;">
-                                <img class="icon" data-duice-bind="asset" data-duice-property="icon" th:onerror="|this.src='@{/static/image/icon-asset.svg}';|" alt=""/>
-                                &nbsp;
-                                <span data-duice-bind="asset" data-duice-property="name"></span>
-                            </td>
-                            <td class="text-align--center">
-                                <span data-duice-bind="asset" data-duice-property="exchange" class="code badge"></span>
-                            </td>
-                            <td class="text-align--center">
-                                <span data-duice-bind="asset" data-duice-property="type" class="code badge"></span>
-                            </td>
-                            <td class="text-align--right">
-                                <span data-duice-bind="asset" data-duice-property="marketCap" data-duice-format="number()" class="number"></span>
-                            </td>
-                            <td class="text-align--right font-size--smaller code">
-                                <select data-duice-bind="asset"
-                                        data-duice-option="asset.links"
-                                        data-duice-option-value-property="url"
-                                        data-duice-option-text-property="name"
-                                        onchange="_openLink(this.value, '_blank'); this.value = '';">
-                                    <option value>- Link -</option>
-                                </select>
-                            </td>
-                        </tr>
-                        <tr data-duice-bind="cashAssetDialog.assets"
-                            data-duice-execute="if(cashAssetDialog.assets.length === 0) this.hidden=false;" hidden>
-                            <td colspan="100%" class="text-align--center font-size--smaller">No Data</td>
-                        </tr>
-                        </tbody>
-                    </table>
+            <div class="display--flex justify-content--space-between">
+                <div class="flex--1">
+                    <span data-th-text="#{web.global.total}"></span>
+                    <span data-duice-bind="cashAssetDialog.assetSearch" data-duice-property="_count" data-duice-format="number()" class="number()"></span>
+                    <span data-th-text="#{web.global.rows}"></span>
                 </div>
-                <div class="display--grid grid-template-columns--3">
-                    <div class="grid-column--1 display--flex">
-                        <span data-th-text="#{web.global.total}"></span>
-                        &nbsp;
-                        <span data-duice-bind="cashAssetDialog.assetSearch" data-duice-property="_count" data-duice-format="number()" class="number()"></span>
-                        &nbsp;
-                        <span data-th-text="#{web.global.rows}"></span>
-                    </div>
-                    <div class="grid-column--1 display--flex justify-content--center">
-                        <duice-pagination
-                                data-duice-bind="cashAssetDialog.assetSearch"
-                                data-duice-size-property="_size"
-                                data-duice-page-property="_page"
-                                data-duice-count-property="_count"
-                                data-duice-onclick="cashAssetDialog.getAssets(this.dataset.page);"
-                                class="number">
-                        </duice-pagination>
-                    </div>
-                    <div class="grid-column--1"></div>
+                <div class="flex--1 display--flex justify-content--center">
+                    <duice-pagination
+                            data-duice-bind="cashAssetDialog.assetSearch"
+                            data-duice-size-property="_size"
+                            data-duice-page-property="_page"
+                            data-duice-count-property="_count"
+                            data-duice-onclick="cashAssetDialog.getAssets(this.dataset.page);"
+                            class="number">
+                    </duice-pagination>
                 </div>
+                <div class="flex--1"></div>
             </div>
         </div>
     </dialog>

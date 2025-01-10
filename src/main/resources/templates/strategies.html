@@ -132,14 +132,14 @@
                     <tbody>
                     <tr data-duice-bind="strategies" data-duice-loop="strategy,status">
                         <td class="text-align--center">
-                        <span data-duice-bind="status"
-                              data-duice-execute="this.innerHTML=(strategySearch._size*strategySearch._page + status.count);"
-                              class="number">
-                        </span>
+                            <span data-duice-bind="status"
+                                  data-duice-execute="this.innerHTML=(strategySearch._size*strategySearch._page + status.count);"
+                                  class="number">
+                            </span>
                         </td>
                         <td>
                             <a href="" data-duice-bind="strategy" data-duice-execute="this.href=`${_rootUrl}/strategy?strategyId=${strategy.strategyId}`;">
-                                <span data-duice-bind="strategy" data-duice-property="name"></span>
+                                <span class="font-weight--bold" data-duice-bind="strategy" data-duice-property="name"></span>
                             </a>
                         </td>
                         <td class="text-align--center">

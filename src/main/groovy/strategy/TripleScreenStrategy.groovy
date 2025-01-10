@@ -282,18 +282,10 @@ class TripleScreenStrategy {
             waveOversoldThreshold = 25
             waveOverboughtThreshold = 75
         }
-        if (tideAnalyzer.getMomentumScore() >= 100) {
-            waveOversoldThreshold = 0
-            waveOverboughtThreshold = 100
-        }
         // tide 하락 추세 인 경우 과매수 판정 민감도 증가
         if (tideAnalyzer.getMomentumScore() <= 25) {
-            waveOverboughtThreshold = 25
             waveOversoldThreshold = 75
-        }
-        if (tideAnalyzer.getMomentumScore() <= 0) {
-            waveOverboughtThreshold = 0
-            waveOversoldThreshold = 100
+            waveOverboughtThreshold = 25
         }
 
         // wave 변동성 구간
@@ -301,7 +293,7 @@ class TripleScreenStrategy {
             // wave 과매도 시
             if (waveAnalyzer.getOversoldScore() >= waveOversoldThreshold) {
                 // ripple 상승 모멘텀
-                if (rippleAnalyzer.getMomentumScore() >= 50) {
+                if (rippleAnalyzer.getMomentumScore() > 50) {
                     // wave 평균가 기준 매수 포지션
                     def buyPosition = this.adjustAveragePosition(position)
                     strategyResult = StrategyResult.of(Action.BUY, buyPosition, "[WAVE OVERSOLD BUY] ${this.toString()}")
@@ -310,7 +302,7 @@ class TripleScreenStrategy {
             // wave 과매수 시
             if (waveAnalyzer.getOverboughtScore() >= waveOverboughtThreshold) {
                 // ripple 하락 모멘텀
-                if (rippleAnalyzer.getMomentumScore() <= 50) {
+                if (rippleAnalyzer.getMomentumScore() < 50) {
                     // wave 평균가 기준 매도 포지션
                     def sellPosition = this.adjustAveragePosition(position)
                     strategyResult = StrategyResult.of(Action.SELL, sellPosition, "[WAVE OVERBOUGHT SELL] ${this.toString()}")
@@ -398,7 +390,7 @@ StrategyResult strategyResult = null
 List<Ohlcv> ohlcvs = tradeAsset.getOhlcvs(Ohlcv.Type.MINUTE, 1)
 def ohlcv = ohlcvs.first()
 def splitPeriod = 100
-def splitSize = 5
+def splitSize = 4
 def splitIndex = -1
 if (variables['splitIndex']) {
     splitIndex = variables['splitIndex'] as Integer

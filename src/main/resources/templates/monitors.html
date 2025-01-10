@@ -381,11 +381,11 @@
                         <img class="icon" data-th-src="@{/static/image/icon-basket.svg}" alt="basket"/>
                         <span class="font-weight--bold" data-th-text="#{fintics.BasketAsset}"></span>
                         <span class="font-weight--bold">
-                        (
-                        <span data-th-text="#{fintics.Trade.investAmount}"></span>:
-                        <span data-th-text="${#numbers.formatDecimal(trade.investAmount,3,'COMMA',2,'POINT')}" class="number()"></span>
-                        )
-                    </span>
+                            (
+                            <span data-th-text="#{fintics.Trade.investAmount}"></span>:
+                            <span data-th-text="${#numbers.formatDecimal(trade.investAmount,3,'COMMA',2,'POINT')}" class="number"></span>
+                            )
+                        </span>
                     </div>
                     <div>
                         <img class="icon" data-th-src="@{/static/image/icon-balance.svg}" alt="balance"/>

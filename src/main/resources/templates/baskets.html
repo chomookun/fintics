@@ -142,14 +142,14 @@
                     <tbody>
                     <tr data-duice-bind="baskets" data-duice-loop="basket,status">
                         <td class="text-align--center">
-                    <span data-duice-bind="status"
-                          data-duice-execute="this.innerHTML=basketSearch._size*basketSearch._page + status.count;"
-                          class="number">
-                    </span>
+                            <span data-duice-bind="status"
+                                  data-duice-execute="this.innerHTML=basketSearch._size*basketSearch._page + status.count;"
+                                  class="number">
+                            </span>
                         </td>
                         <td>
                             <a href="" data-duice-bind="basket" data-duice-execute="this.href=`${_rootUrl}/basket?basketId=${basket.basketId}`;">
-                                <span data-duice-bind="basket" data-duice-property="name"></span>
+                                <span class="font-weight--bold" data-duice-bind="basket" data-duice-property="name"></span>
                             </a>
                         </td>
                         <td class="text-align--center">
