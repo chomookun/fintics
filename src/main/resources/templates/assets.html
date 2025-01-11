@@ -94,7 +94,7 @@
                     <div>
                         <label>
                             <select data-duice-bind="assetSearch" data-duice-property="market">
-                                <option value="" data-th-text="'- ' + #{fintics.Asset.market} + ' -'"></option>
+                                <option value="" data-th-text="|#{fintics.Asset.market}...|"></option>
                                 <option th:each="market : ${markets}" th:value="${market}" th:text="${market}"></option>
                             </select>
                         </label>
@@ -102,7 +102,7 @@
                     <div>
                         <label>
                             <select data-duice-bind="assetSearch" data-duice-property="type">
-                                <option value="" data-th-text="'- ' + #{fintics.Asset.type} + ' -'"></option>
+                                <option value="" data-th-text="|#{fintics.Asset.type}...|"></option>
                                 <option value="STOCK">STOCK</option>
                                 <option value="ETF">ETF</option>
                             </select>
@@ -186,8 +186,8 @@
                             <span data-duice-bind="asset" data-duice-property="updatedDate" class="date"></span>
                         </td>
                         <td>
-                            <div class="overflow-y--scroll border--1 padding--1px" style="line-height:1em; height:5em;">
-                                <table class="width--100 border--0 font-size--smaller code">
+                            <div class="overflow-y--scroll box" style="line-height:1em; height:5em;">
+                                <table class="width--100 border--none font-size--smaller code">
                                     <colgroup>
                                         <col class="width--50"/>
                                         <col class="width--50"/>
