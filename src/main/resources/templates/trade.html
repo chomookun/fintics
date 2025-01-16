@@ -424,7 +424,7 @@
                                 data-duice-option="alarms"
                                 data-duice-option-value-property="alarmId"
                                 data-duice-option-text-property="name">
-                            <option data-th-text="'- '+#{web.global.select}+' -'"></option>
+                            <option data-th-text="|#{web.global.select}...|"></option>
                         </select>
                     </label>
                 </div>
@@ -449,7 +449,7 @@
                     <label>
                         <span class="font-weight--bold tag-required" data-th-text="#{fintics.Trade.orderKind}"></span>
                         <select class="width--100" data-duice-bind="trade" data-duice-property="orderKind">
-                            <option data-th-text="'- ' + #{web.global.select} + ' -'"></option>
+                            <option data-th-text="|#{web.global.select}...|"></option>
                             <option th:each="orderKind : ${orderKinds}" th:value="${orderKind}" th:text="#{'fintics.Order.Kind.'+${orderKind}}"></option>
                         </select>
                     </label>
@@ -490,7 +490,7 @@
                                 data-duice-option-value-property="brokerId"
                                 data-duice-option-text-property="name"
                                 class="width--100">
-                            <option data-th-text="'- '+#{web.global.select}+' -'"></option>
+                            <option data-th-text="|#{web.global.select}...|"></option>
                         </select>
                     </label>
                 </div>
@@ -506,7 +506,7 @@
                                 data-duice-option-value-property="basketId"
                                 data-duice-option-text-property="name"
                                 class="width--100">
-                            <option data-th-text="'- '+#{web.global.select}+' -'"></option>
+                            <option data-th-text="|#{web.global.select}...|"></option>
                         </select>
                     </label>
                 </div>
@@ -666,7 +666,7 @@
                                 data-duice-option-value-property="strategyId"
                                 data-duice-option-text-property="name"
                                 class="width--100">
-                            <option data-th-text="'- '+#{web.global.select}+' -'" value></option>
+                            <option data-th-text="|#{web.global.select}...|" value></option>
                         </select>
                     </label>
                 </div>

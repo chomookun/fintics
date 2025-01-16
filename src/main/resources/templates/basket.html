@@ -231,7 +231,7 @@
                     <label>
                         <span data-th-text="#{fintics.Basket.market}" class="font-weight--bold tag-required"></span>
                         <select data-duice-bind="basket" data-duice-property="market" class="width--100 code">
-                            <option value="" data-th-text="'- ' + #{fintics.Basket.market} + ' -'"></option>
+                            <option value="" data-th-text="|#{web.global.select}...|"></option>
                             <option th:each="market : ${markets}" th:value="${market}" th:text="${market}"></option>
                         </select>
                     </label>
@@ -430,7 +430,7 @@
                         <span data-th-text="#{fintics.Basket.language}" class="font-weight--bold"></span>
                         <br>
                         <select class="width--100 code" data-duice-bind="basket" data-duice-property="language">
-                            <option data-th-text="'- ' + #{web.global.select} + ' -'"></option>
+                            <option data-th-text="|#{web.global.select}...|"></option>
                             <option th:each="language : ${languages}" th:value="${language}" th:text="${language}"></option>
                         </select>
                     </label>

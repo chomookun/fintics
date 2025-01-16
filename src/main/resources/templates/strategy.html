@@ -192,7 +192,7 @@
                     <label>
                         <span class="font-weight--bold tag-required" data-th-text="#{fintics.Strategy.language}"></span>
                         <select class="width--100" data-duice-bind="strategy" data-duice-property="language">
-                            <option data-th-text="'- ' + #{web.global.select} + ' -'"></option>
+                            <option data-th-text="|#{web.global.select}...|"></option>
                             <option th:each="language : ${languages}" th:value="${language}" th:text="${language}"></option>
                         </select>
                     </label>
