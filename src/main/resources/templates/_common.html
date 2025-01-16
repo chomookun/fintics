@@ -19,6 +19,23 @@
                 minuteOhlcvs: [],
                 dailyOhlcvs: [],
                 chart: null,
+                chartOptions: {
+                    layout: {
+                        background: { color: '#222' },
+                        textColor: '#ddd',
+                        attributionLogo: false
+                    },
+                    grid: {
+                        vertLines: { color: '#444' },
+                        horzLines: { color: '#444' },
+                    },
+                    timeScale: {
+                        timeVisible: true,
+                    },
+                    priceScale: {
+                        autoScale: true,
+                    },
+                },
                 candlestickSeries: null,
                 open: async function(assetId) {
                     this.assetId = assetId;
@@ -28,24 +45,7 @@
 
                     // creates chart
                     if (!this.chart) {
-                        const chartOptions = {
-                            layout: {
-                                textColor: 'black',
-                                background: {
-                                    type: 'solid',
-                                    color: 'white'
-                                },
-                                fontFamily: 'Nanum Gothic Coding',
-                                attributionLogo: false
-                            },
-                            timeScale: {
-                                timeVisible: true,
-                            },
-                            priceScale: {
-                                autoScale: true,
-                            },
-                        };
-                        this.chart = LightweightCharts.createChart(document.getElementById('_assetDialogChart'), chartOptions);
+                        this.chart = LightweightCharts.createChart(document.getElementById('_assetDialogChart'), this.chartOptions);
                         this.candlestickSeries = this.chart.addCandlestickSeries({
                             upColor: '#26a69a',
                             downColor: '#ef5350',
@@ -118,24 +118,10 @@
                     if (period> 1) {
                         ohlcvSeries = this.resample(ohlcvSeries, period);
                     }
-
-                    // chart options
-                    const chartOptions = {
-                        layout: {
-                            textColor: 'black',
-                            background: {
-                                type: 'solid',
-                                color: 'white'
-                            }
-                        },
-                        timeScale: {
-                            timeVisible: false,
-                        }
-                    };
                     if (type === 'minute') {
-                        chartOptions.timeScale.timeVisible = true;
+                        this.chartOptions.timeScale.timeVisible = true;
                     }
-                    this.chart.applyOptions(chartOptions);
+                    this.chart.applyOptions(this.chartOptions);
 
                     // set chart data
                     this.candlestickSeries.setData([]);
@@ -312,7 +298,7 @@
                         </div>
                     </div>
                 </div>
-                <div id="_assetDialogChart" class="width--100"></div>
+                <div id="_assetDialogChart"></div>
             </div>
        </div>
     </dialog>

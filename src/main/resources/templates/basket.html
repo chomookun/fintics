@@ -441,7 +441,9 @@
                     </div>
                     <duice-codemirror class="box code"
                                       data-duice-bind="basket"
-                                      data-duice-property="variables">
+                                      data-duice-property="variables"
+                                      data-duice-mode="properties"
+                                      data-duice-theme="dracula">
                     </duice-codemirror>
                 </div>
                 <div class="grid-column--span-12">
@@ -456,7 +458,7 @@
                             </button>
                         </div>
                     </div>
-                    <duice-codemirror class="code" style="height:100vh;"
+                    <duice-codemirror class="code box" style="height:100vh;"
                                       data-duice-bind="basket"
                                       data-duice-property="script"
                                       data-duice-mode="groovy"

@@ -676,7 +676,9 @@
                     </div>
                     <duice-codemirror class="box code"
                                       data-duice-bind="trade"
-                                      data-duice-property="strategyVariables">
+                                      data-duice-property="strategyVariables"
+                                      data-duice-mode="properties"
+                                      data-duice-theme="dracula">
                     </duice-codemirror>
                 </div>
                 <div class="grid-column--span-12">
@@ -685,7 +687,7 @@
                             <span data-th-text="#{fintics.Strategy.script}" class="font-weight--bold width--100"></span>
                         </div>
                     </div>
-                    <duice-codemirror class="code" style="height:100vh;"
+                    <duice-codemirror class="code box" style="height:100vh;"
                                       data-duice-bind="strategy"
                                       data-duice-property="script"
                                       data-duice-mode="groovy"
