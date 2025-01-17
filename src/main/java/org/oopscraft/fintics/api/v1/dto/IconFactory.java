@@ -67,6 +67,8 @@ public class IconFactory {
                     case "j.p." -> "https://www.jpmorgan.com/etc.clientlibs/cws/clientlibs/clientlib-base/resources/jpm/images/jpm-favicon.ico";
                     case "neos" -> "https://neosfunds.com/wp-content/uploads/cropped-NEOS-N-32x32.png";
                     case "ft" -> "https://www.ftportfolios.com/favicon.ico";
+                    case "strategy" -> "https://ssetfs.wpengine.com/wp-content/uploads/2021/03/favicon_SS_2.png";
+                    case "sp" -> "https://www.sp-funds.com/wp-content/uploads/cropped-sp-funds-logo-32x32.png";
                     default -> String.format("https://s3-symbol-logo.tradingview.com/%s.svg", etfBrand);
                 };
             }

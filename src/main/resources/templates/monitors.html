@@ -538,13 +538,13 @@
                                         <span class="number font-weight--bold"
                                               data-duice-bind="basketAsset"
                                               data-duice-execute="
-                                        let close = basketAsset.close;
-                                        let netChange = basketAsset.netChange || 0;
-                                        let netChangePercentage = basketAsset.netChangePercentage || 0;
-                                        if (netChange > 0) this.classList.add('color--green');
-                                        if (netChange < 0) this.classList.add('color--red');
-                                        this.innerHTML = `${close?.toLocaleString()||''} (${netChange} <small>/</small> ${netChangePercentage}%)`;
-                                        "></span>
+                                              let close = basketAsset.close;
+                                              let netChange = basketAsset.netChange || 0;
+                                              let netChangePercentage = basketAsset.netChangePercentage || 0;
+                                              this.classList.toggle('color--green', netChange > 0);
+                                              this.classList.toggle('color--red', netChange < 0);
+                                              this.innerHTML = `${close?.toLocaleString()||''} (${netChange} <small>/</small> ${netChangePercentage}%)`;
+                                              "></span>
                                         &nbsp;
                                         <span class="cursor--pointer"
                                               data-duice-bind="basketAsset"
@@ -598,15 +598,15 @@
                             <td class="text-align--right padding-right--1em font-weight--bold">
                                 <div data-duice-bind="basketAsset" data-duice-property="profitAmount" data-duice-format="number()"
                                      data-duice-execute="
-                                if(basketAsset.profitAmount > 0) this.classList.add('color--green');
-                                if(basketAsset.profitAmount < 0) this.classList.add('color--red');
-                                " class="number"></div>
+                                     this.classList.toggle('color--green', basketAsset.profitAmount > 0);
+                                     this.classList.toggle('color--red', basketAsset.profitAmount < 0);
+                                     " class="number"></div>
                                 <div data-duice-bind="basketAsset" data-duice-execute="
-                                if (basketAsset.profitPercentage == null) return;
-                                if (basketAsset.profitPercentage > 0) this.classList.add('color--green');
-                                if (basketAsset.profitPercentage < 0) this.classList.add('color--red');
-                                this.innerHTML = `${basketAsset.profitPercentage} %`;
-                                " class="number"></div>
+                                     if (basketAsset.profitPercentage == null) return;
+                                     this.classList.toggle('color--green', basketAsset.profitPercentage > 0);
+                                     this.classList.toggle('color--red', basketAsset.profitPercentage < 0);
+                                     this.innerHTML = `${basketAsset.profitPercentage} %`;
+                                     " class="number"></div>
                             </td>
                             <td class="text-align--center">
                                 <div class="display--flex flex-direction--column gap--1px">

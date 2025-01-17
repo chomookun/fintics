@@ -779,9 +779,9 @@
                                data-duice-property="profitAmount"
                                data-duice-format="number()"
                                data-duice-execute="
-                            if(balance.profitAmount > 0) this.classList.add('color--green');
-                            if(balance.profitAmount < 0) this.classList.add('color--red');
-                           "/>
+                               this.classList.toggle('color--green', balance.profitAmount > 0);
+                               this.classList.toggle('color--red', balance.profitAmount < 0);
+                               "/>
                     </label>
                 </div>
                 <div class="grid-column--span-6 s__grid-column--span-12">
@@ -793,9 +793,9 @@
                                data-duice-property="realizedProfitAmount"
                                data-duice-format="number()"
                                data-duice-execute="
-                            if(balance.realizedProfitAmount > 0) this.classList.add('color--green');
-                            if(balance.realizedProfitAmount < 0) this.classList.add('color--red');
-                            "/>
+                               this.classList.toggle('color--green', balance.realizedProfitAmount > 0);
+                               this.classList.toggle('color--red', balance.realizedProfitAmount < 0);
+                               "/>
                     </label>
                 </div>
                 <div class="grid-column--span-12">
@@ -862,15 +862,15 @@
                                       data-duice-property="profitAmount"
                                       data-duice-format="number()"
                                       data-duice-execute="
-                                      if(balanceAsset.profitAmount > 0) this.classList.add('color--green');
-                                      if(balanceAsset.profitAmount < 0) this.classList.add('color--red');
+                                      this.classList.toggle('color--green', balanceAsset.profitAmount > 0);
+                                      this.classList.toggle('color--red', balanceAsset.profitAmount < 0);
                                       " class="number font-weight--bold">
                                 </span>
                                 </td>
                                 <td data-duice-bind="balanceAsset" data-duice-execute="
-                            if(balanceAsset.profitPercentage > 0) this.classList.add('color--green');
-                            if(balanceAsset.profitPercentage < 0) this.classList.add('color--red');
-                            " class="text-align--right">
+                                this.classList.toggle('color--green', balanceAsset.profitPercentage > 0);
+                                this.classList.toggle('color--red', balanceAsset.profitPercentage < 0);
+                                " class="text-align--right">
                                     <span data-duice-bind="balanceAsset" data-duice-property="profitPercentage" data-duice-format="number()" class="number font-weight--bold"></span>
                                     <span class="code">%</span>
                                 </td>

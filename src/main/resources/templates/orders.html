@@ -220,12 +220,12 @@
                               data-duice-format="date('yyyy-MM-dd HH:mm:ss')"
                               class="date"></span>
                         </td>
-                        <td>
+                        <td class="text-align--center">
                         <span data-duice-bind="order" data-duice-property="type" class="badge"
                               data-duice-execute="
-                        if(order.type === 'BUY') this.classList.add('background-color--green');
-                        if(order.type === 'SELL') this.classList.add('background-color--blue');
-                        "></span>
+                              this.classList.toggle('background-color--green', order.type === 'BUY');
+                              this.classList.toggle('background-color--blue', order.type === 'SELL');
+                              "></span>
                         </td>
                         <td>
                             <span data-duice-bind="order" data-duice-property="tradeName"></span>
@@ -253,12 +253,12 @@
                         <td class="text-align--right">
                             <span data-duice-bind="order" data-duice-property="realizedProfitAmount" data-duice-format="number()" class="number"></span>
                         </td>
-                        <td>
+                        <td class="text-align--center">
                         <span data-duice-bind="order" data-duice-property="result" class="badge"
                               data-duice-execute="
-                        if(order.result === 'COMPLETED') this.classList.add('background-color--green');
-                        if(order.result === 'FAILED') this.classList.add('background-color--red');
-                        "></span>
+                              this.classList.toggle('background-color--green', order.result === 'COMPLETED');
+                              this.classList.toggle('background-color--red', order.result === 'FAILED');
+                              "></span>
                         </td>
                         <td class="display--flex padding--1px">
                         <textarea data-duice-bind="order"

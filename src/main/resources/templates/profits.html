@@ -162,12 +162,8 @@
                               data-duice-property="totalAmount"
                               th:data-duice-execute="|
                                 let totalAmount = profitMap.get('${broker.brokerId}').totalAmount;
-                                if (totalAmount > 0) {
-                                    this.classList.add('color--green');
-                                }
-                                if (totalAmount < 0) {
-                                    this.classList.add('color--red');
-                                }
+                                this.classList.toggle('color--green', totalAmount > 0);
+                                this.classList.toggle('color--red', totalAmount < 0);
                               |"
                               data-duice-format="number()" class="number">
                             </span>
@@ -182,12 +178,8 @@
                                   data-duice-property="realizedProfitAmount"
                                   th:data-duice-execute="|
                                     let realizedProfitAmount = profitMap.get('${broker.brokerId}').realizedProfitAmount;
-                                    if (realizedProfitAmount > 0) {
-                                        this.classList.add('color--green');
-                                    }
-                                    if (realizedProfitAmount < 0) {
-                                        this.classList.add('color--red');
-                                    }
+                                    this.classList.toggle('color--green', realizedProfitAmount > 0);
+                                    this.classList.toggle('color--red', realizedProfitAmount < 0);
                                     |"
                                   data-duice-format="number()"
                                   class="font-weight--bold number"></span>
@@ -238,16 +230,16 @@
                                     <td class="text-align--right">
                                         <span data-duice-bind="realizedProfit" data-duice-property="profitAmount" data-duice-format="number()"
                                               data-duice-execute="
-                                        if (realizedProfit.profitAmount > 0) this.classList.add('color--green');
-                                        if (realizedProfit.profitAmount < 0) this.classList.add('color--red')
-                                        " class="font-weight--bold number"></span>
+                                              this.classList.toggle('color--green', realizedProfit.profitAmount > 0);
+                                              this.classList.toggle('color--red', realizedProfit.profitAmount < 0);
+                                              " class="font-weight--bold number"></span>
                                     </td>
                                     <td class="text-align--right">
                                         <span data-duice-bind="realizedProfit" data-duice-property="profitPercentage" data-duice-format="number()"
                                               data-duice-execute="
-                                        if (realizedProfit.profitPercentage > 0) this.classList.add('color--green');
-                                        if (realizedProfit.profitPercentage < 0) this.classList.add('color--red');
-                                        " class="font-weight--bold number"></span>
+                                              this.classList.toggle('color--green', realizedProfit.profitPercentage > 0);
+                                              this.classList.toggle('color--red', realizedProfit.profitPercentage < 0);
+                                              " class="font-weight--bold number"></span>
                                         <span class="code">%</span>
                                     </td>
                                     <td class="text-align--right">
@@ -295,12 +287,8 @@
                                   data-duice-format="number()"
                                   th:data-duice-execute="|
                                   let dividendAmount = profitMap.get('${broker.brokerId}').dividendAmount;
-                                  if (dividendAmount > 0) {
-                                      this.classList.add('color--green');
-                                  }
-                                  if (dividendAmount < 0) {
-                                      this.classList.add('color--red');
-                                  }
+                                  this.classList.toggle('color--green', dividendAmount > 0);
+                                  this.classList.toggle('color--red', dividendAmount < 0);
                                   |"
                                   class="font-weight--bold number"></span>
                         </div>
@@ -341,8 +329,8 @@
                                         <span data-duice-bind="dividendHistory"
                                               data-duice-property="dividendAmount"
                                               data-duice-execute="
-                                              if (dividendHistory.dividendAmount > 0) this.classList.add('color--green');
-                                              if (dividendHistory.dividendAmount < 0) this.classList.add('color--red');
+                                              this.classList.toggle('color--green', dividendHistory.dividendAmount > 0);
+                                              this.classList.toggle('color--red', dividendHistory.dividendAmount < 0);
                                               "
                                               data-duice-format="number()"
                                               class="font-weight--bold number"></span>
