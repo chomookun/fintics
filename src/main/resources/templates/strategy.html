@@ -71,7 +71,7 @@
                                             duice.ObjectProxy.clear(strategy);
                                             duice.ObjectProxy.assign(strategy, data);
                                         }else{
-                                            document.location.href = `${_rootUrl}/strategy?strategyId=${data.strategyId}`;
+                                            document.location.replace(`${_rootUrl}/strategy?strategyId=${data.strategyId}`);
                                         }
                                     });
                             });
@@ -91,7 +91,7 @@
                 }).then(async response => {
                     if (response.ok) {
                         await _alert(/*[[#{web.global.deleteItemComplete(#{fintics.Strategy})}]]*/'');
-                        document.location.href = `${_rootUrl}/strategies`;
+                        document.location.replace(`${_rootUrl}/strategies`);
                     }
                 });
             }

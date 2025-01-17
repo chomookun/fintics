@@ -9,7 +9,7 @@
             key: 'name',
             value: null,
             _page: 0,
-            _size: 20,
+            _size: 2,
             _count: -1,
             _status: null
         });
@@ -63,8 +63,29 @@
             document.location.href = `${_rootUrl}/trade`;
         }
 
-        // document event
+        /**
+         * Pushes history
+         */
+        function pushHistory() {
+            _pushHistoryState({tradeSearch: tradeSearch});
+        }
+
+        // Handles DOMContentLoaded event
         document.addEventListener('DOMContentLoaded', () => {
+            const stateTradeSearch = _getHistoryState()?.tradeSearch;
+            if (stateTradeSearch) {
+                duice.ObjectProxy.assign(tradeSearch, stateTradeSearch);
+            }
+            getTrades();
+            _replaceHistoryState({tradeSearch: tradeSearch});
+        });
+
+        // Handles popstate event
+        window.addEventListener('popstate', () => {
+            const stateTradeSearch = _getHistoryState()?.tradeSearch;
+            if (stateTradeSearch) {
+                duice.ObjectProxy.assign(tradeSearch, stateTradeSearch);
+            }
             getTrades();
         });
     </script>
@@ -233,7 +254,7 @@
                             data-duice-size-property="_size"
                             data-duice-page-property="_page"
                             data-duice-count-property="_count"
-                            data-duice-onclick="getTrades(this.dataset.page);">
+                            data-duice-onclick="getTrades(this.dataset.page); pushHistory();">
                     </duice-pagination>
                 </div>
                 <div class="flex--1 display--flex justify-content--end">

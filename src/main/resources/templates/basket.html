@@ -102,7 +102,7 @@
                                             duice.ObjectProxy.clear(basket);
                                             duice.ObjectProxy.assign(basket, data);
                                         }else{
-                                            document.location.href = `${_rootUrl}/basket?basketId=${data.basketId}`;
+                                            document.location.replace(`${_rootUrl}/basket?basketId=${data.basketId}`);
                                         }
                                     });
                             });
@@ -122,7 +122,7 @@
                 }).then(async response => {
                     if (response.ok) {
                         await _alert(/*[[#{web.global.deleteItemComplete(#{fintics.Basket})}]]*/'');
-                        document.location.href = `${_rootUrl}/baskets`;
+                        document.location.replace(`${_rootUrl}/baskets`);
                     }
                 });
             }

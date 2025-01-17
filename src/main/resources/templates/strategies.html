@@ -10,7 +10,7 @@
             key: 'name',
             value: null,
             _page: 0,
-            _size: 20,
+            _size: 2,
             _count: -1,
             _status: null
         });
@@ -21,9 +21,7 @@
          * @param page page number
          */
         function getStrategies(page) {
-            if (page) {
-                strategySearch._page = page;
-            }
+            strategySearch._page = page ?? strategySearch._page;
             let url = new URL(`${_apiUrl}/v1/strategies`, document.location.origin);
             if (strategySearch.key != null && strategySearch.value != null) {
                 url.searchParams.append(strategySearch.key, strategySearch.value);
@@ -54,13 +52,36 @@
         }
 
         /**
-         * creates strategy
+         * Creates strategy
          */
         function createStrategy() {
             document.location.href = `${_rootUrl}/strategy`
         }
 
+        /**
+         * Pushes history
+         */
+        function pushHistory() {
+            console.warn('===pushHistory', strategySearch);
+            _pushHistoryState({strategySearch: strategySearch});
+        }
+
+        // Handles DOMContentLoaded event
         document.addEventListener('DOMContentLoaded', () => {
+            const stateStrategySearch = _getHistoryState()?.strategySearch;
+            if (stateStrategySearch) {
+                duice.ObjectProxy.assign(strategySearch, stateStrategySearch);
+            }
+            getStrategies();
+            _replaceHistoryState({strategySearch: strategySearch});
+        });
+
+        // Handles popstate event
+        window.addEventListener('popstate', () => {
+            const stateStrategySearch = _getHistoryState()?.strategySearch;
+            if (stateStrategySearch) {
+                duice.ObjectProxy.assign(strategySearch, stateStrategySearch);
+            }
             getStrategies();
         });
 
@@ -172,7 +193,7 @@
                             data-duice-size-property="_size"
                             data-duice-page-property="_page"
                             data-duice-count-property="_count"
-                            data-duice-onclick="getStrategies(this.dataset.page);">
+                            data-duice-onclick="getStrategies(this.dataset.page); pushHistory();">
                     </duice-pagination>
                 </div>
                 <div class="flex--1 display--flex justify-content--end">

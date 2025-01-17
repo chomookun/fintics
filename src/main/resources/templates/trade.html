@@ -202,7 +202,7 @@
                                             duice.ObjectProxy.clear(trade);
                                             duice.ObjectProxy.assign(trade, data);
                                         }else{
-                                            document.location.href = `${_rootUrl}/trade?tradeId=${data.tradeId}`;
+                                            document.location.replace(`${_rootUrl}/trade?tradeId=${data.tradeId}`);
                                         }
                                     });
                         });
@@ -224,7 +224,7 @@
                             if (response.ok) {
                                 _alert(/*[[#{web.global.deleteItemComplete(#{fintics.Trade})}]]*/'')
                                     .then(() => {
-                                        document.location.href = `${_rootUrl}/trades`;
+                                        document.location.replace(`${_rootUrl}/trades`);
                                     });
                             }
                         })

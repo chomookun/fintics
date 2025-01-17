@@ -22,9 +22,7 @@
          * @param page page number
          */
         function getBaskets(page) {
-            if(page) {
-                basketSearch._page = page;
-            }
+            basketSearch._page = page ?? basketSearch._page;
             let url = new URL(`${_apiUrl}/v1/baskets`, document.location.origin);
             if (basketSearch.key != null && basketSearch.value != null) {
                 url.searchParams.append(basketSearch.key, basketSearch.value);
@@ -61,8 +59,29 @@
             document.location.href = `${_rootUrl}/basket`
         }
 
-        // document event
+        /**
+         * Push history
+         */
+        function pushHistory() {
+            _pushHistoryState({basketSearch: basketSearch});
+        }
+
+        // Handles DOMContentLoaded event
         document.addEventListener('DOMContentLoaded', () => {
+            const stateBasketSearch = _getHistoryState()?.basketSearch;
+            if (stateBasketSearch) {
+                duice.ObjectProxy.assign(basketSearch, stateBasketSearch);
+            }
+            getBaskets();
+            _replaceHistoryState({basketSearch: basketSearch});
+        });
+
+        // Handle popstate event
+        window.addEventListener('popstate', () => {
+            const stateBasketSearch = _getHistoryState()?.basketSearch;
+            if (stateBasketSearch) {
+                duice.ObjectProxy.assign(basketSearch, stateBasketSearch);
+            }
             getBaskets();
         });
 
@@ -107,7 +126,7 @@
                     </div>
                 </div>
                 <div class="flex--1 display--flex gap--1px justify-content--end s__justify-content--start">
-                    <button class="button" type="submit" onclick="getBaskets();">
+                    <button class="button" type="submit" onclick="getBaskets(0);">
                         <img class="icon" th:src="@{/static/image/icon-search.svg}" alt="reset"/>
                         <span data-th-text="#{web.global.search}"></span>
                     </button>
@@ -194,7 +213,7 @@
                             data-duice-size-property="_size"
                             data-duice-page-property="_page"
                             data-duice-count-property="_count"
-                            data-duice-onclick="getStrategies(this.dataset.page);">
+                            data-duice-onclick="getBaskets(this.dataset.page); pushHistory();">
                     </duice-pagination>
                 </div>
                 <div class="flex--1 display--flex justify-content--end">
