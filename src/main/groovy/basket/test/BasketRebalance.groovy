@@ -1,13 +1,13 @@
 import groovy.json.JsonSlurper
-import org.chomoo.fintics.client.ohlcv.OhlcvClient
-import org.chomoo.fintics.indicator.Ema
-import org.chomoo.fintics.indicator.EmaContext
-import org.chomoo.fintics.indicator.Macd
-import org.chomoo.fintics.indicator.MacdContext
-import org.chomoo.fintics.model.Asset
-import org.chomoo.fintics.model.Ohlcv
-import org.chomoo.fintics.trade.Tools
-import org.chomoo.fintics.basket.BasketRebalanceAsset
+import org.chomookun.fintics.client.ohlcv.OhlcvClient
+import org.chomookun.fintics.indicator.Ema
+import org.chomookun.fintics.indicator.EmaContext
+import org.chomookun.fintics.indicator.Macd
+import org.chomookun.fintics.indicator.MacdContext
+import org.chomookun.fintics.model.Asset
+import org.chomookun.fintics.model.Ohlcv
+import org.chomookun.fintics.trade.Tools
+import org.chomookun.fintics.basket.BasketRebalanceAsset
 import org.oopscraft.fintics.model.*
 import org.oopscraft.fintics.indicator.*
 

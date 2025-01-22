@@ -1,8 +1,8 @@
 import groovy.json.JsonSlurper
 import groovy.transform.ToString
 import groovy.transform.builder.Builder
-import org.chomoo.fintics.basket.BasketRebalanceAsset
-import org.chomoo.fintics.model.Asset
+import org.chomookun.fintics.basket.BasketRebalanceAsset
+import org.chomookun.fintics.model.Asset
 
 /**
  * item

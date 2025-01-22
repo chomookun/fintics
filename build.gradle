@@ -46,11 +46,11 @@ repositories {
 dependencies {
 
     // platform
-    implementation platform("org.chomoo.arch4j:arch4j-dependencies:1.0.0-SNAPSHOT")
-    annotationProcessor platform("org.chomoo.arch4j:arch4j-dependencies:1.0.0-SNAPSHOT")
+    implementation platform("org.chomookun.arch4j:arch4j-dependencies:1.0.0-SNAPSHOT")
+    annotationProcessor platform("org.chomookun.arch4j:arch4j-dependencies:1.0.0-SNAPSHOT")
 
     // arch4j-web
-    implementation "org.chomoo.arch4j:arch4j-web:1.0.0-SNAPSHOT"
+    implementation "org.chomookun.arch4j:arch4j-web:1.0.0-SNAPSHOT"
 
     // spring boot configuration processor
     api 'org.springframework.boot:spring-boot-configuration-processor'
