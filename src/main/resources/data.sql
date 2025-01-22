@@ -197,9 +197,9 @@ values
 update fintics_broker set broker_client_properties='
 production=false
 apiUrl=https://openapivts.koreainvestment.com:29443
-appKey=PSg7ehKitLfwdHzjVIHz11ZhVEcpZyrWj9L7
-appSecret=dQ2ExOQZioQyBovsE0bHtFuWuluzrghcfTiWwwpsGSeEeVvIW7ruZCU5aD+m0os1SPU9PbmB9mQM39SL65sani9F1u/svgvnytwnudRDV+QQYjtImXVTfheHixZ5o/WEPHT6BUTDyqPvprcJV22n/DSmvivfnOV4XP7CaMuDNA4rmuG9XME=
-accountNo=50123223-01
+appKey=[appkey]
+appSecret=[appSecret]
+accountNo=[accountNo]
 insecure=true
 '
 where broker_id in ('ca5f55cd88694715bcb4c478710d9a68','961eb9c68c9547ce9ae61bbe3be7f037');
