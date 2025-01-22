@@ -2,8 +2,8 @@ import groovy.json.JsonSlurper
 import groovy.transform.ToString
 import groovy.transform.builder.Builder
 import org.jsoup.Jsoup
-import org.oopscraft.fintics.basket.BasketRebalanceAsset
-import org.oopscraft.fintics.model.Asset
+import org.chomoo.fintics.basket.BasketRebalanceAsset
+import org.chomoo.fintics.model.Asset
 
 /**
  * item

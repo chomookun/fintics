@@ -1,12 +1,14 @@
 package org.oopscraft.fintics.trade.old
 
+import org.chomoo.fintics.model.Ohlcv
+import org.chomoo.fintics.model.TradeAsset
 import org.oopscraft.fintics.indicator.*
-import org.oopscraft.fintics.indicator.ChaikinOscillatorContext
-import org.oopscraft.fintics.indicator.DmiContext
-import org.oopscraft.fintics.indicator.EmaContext
-import org.oopscraft.fintics.indicator.MacdContext
-import org.oopscraft.fintics.indicator.ObvContext
-import org.oopscraft.fintics.indicator.RsiContext
+import org.chomoo.fintics.indicator.ChaikinOscillatorContext
+import org.chomoo.fintics.indicator.DmiContext
+import org.chomoo.fintics.indicator.EmaContext
+import org.chomoo.fintics.indicator.MacdContext
+import org.chomoo.fintics.indicator.ObvContext
+import org.chomoo.fintics.indicator.RsiContext
 import org.oopscraft.fintics.model.*
 
 import java.time.LocalTime

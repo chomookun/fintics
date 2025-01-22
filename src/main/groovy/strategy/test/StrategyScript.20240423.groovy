@@ -1,9 +1,19 @@
-import org.oopscraft.fintics.model.Ohlcv
-import org.oopscraft.fintics.model.Ohlcv
-import org.oopscraft.fintics.model.Ohlcv
-import org.oopscraft.fintics.model.Ohlcv
-import org.oopscraft.fintics.model.Ohlcv
-import org.oopscraft.fintics.model.Ohlcv
+import org.chomoo.fintics.indicator.Atr
+import org.chomoo.fintics.indicator.BollingerBand
+import org.chomoo.fintics.indicator.Cci
+import org.chomoo.fintics.indicator.ChaikinOscillator
+import org.chomoo.fintics.indicator.Dmi
+import org.chomoo.fintics.indicator.Macd
+import org.chomoo.fintics.indicator.MacdContext
+import org.chomoo.fintics.indicator.Obv
+import org.chomoo.fintics.indicator.Rsi
+import org.chomoo.fintics.indicator.StochasticSlow
+import org.chomoo.fintics.model.Ohlcv
+import org.chomoo.fintics.model.Ohlcv
+import org.chomoo.fintics.model.Ohlcv
+import org.chomoo.fintics.model.Ohlcv
+import org.chomoo.fintics.model.Ohlcv
+import org.chomoo.fintics.model.Ohlcv
 import org.oopscraft.fintics.trade.Tool
 import org.oopscraft.fintics.indicator.*
 

@@ -1,12 +1,18 @@
-import org.oopscraft.fintics.model.Ohlcv
-import org.oopscraft.fintics.model.Ohlcv
-import org.oopscraft.fintics.model.Ohlcv
-import org.oopscraft.fintics.model.Ohlcv
-import org.oopscraft.fintics.model.Ohlcv
-import org.oopscraft.fintics.model.Ohlcv
-import org.oopscraft.fintics.strategy.StrategyResult
-import org.oopscraft.fintics.strategy.StrategyResult.Action
-import org.oopscraft.fintics.trade.Tools
+import org.chomoo.fintics.indicator.Dmi
+import org.chomoo.fintics.indicator.DmiContext
+import org.chomoo.fintics.indicator.Ema
+import org.chomoo.fintics.indicator.EmaContext
+import org.chomoo.fintics.indicator.Macd
+import org.chomoo.fintics.indicator.MacdContext
+import org.chomoo.fintics.model.Ohlcv
+import org.chomoo.fintics.model.Ohlcv
+import org.chomoo.fintics.model.Ohlcv
+import org.chomoo.fintics.model.Ohlcv
+import org.chomoo.fintics.model.Ohlcv
+import org.chomoo.fintics.model.Ohlcv
+import org.chomoo.fintics.strategy.StrategyResult
+import org.chomoo.fintics.strategy.StrategyResult.Action
+import org.chomoo.fintics.trade.Tools
 import org.oopscraft.fintics.indicator.*
 
 
