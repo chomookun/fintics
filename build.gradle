@@ -3,7 +3,6 @@ plugins {
     id 'java-library'
     id 'io.freefair.lombok' version '8.10'
     id 'org.springframework.boot' version '3.4.1'
-    id 'idea'
     id 'maven-publish'
     id 'com.google.cloud.tools.jib' version '3.2.0'
     id 'application'
@@ -53,7 +52,7 @@ dependencies {
     implementation "org.chomookun.arch4j:arch4j-web:1.0.0-SNAPSHOT"
 
     // spring boot configuration processor
-    api 'org.springframework.boot:spring-boot-configuration-processor'
+    implementation 'org.springframework.boot:spring-boot-configuration-processor'
     annotationProcessor "org.springframework.boot:spring-boot-configuration-processor"
 
     // query dsl
