@@ -238,7 +238,7 @@
                 </div>
                 <div class="grid-column--span-12">
                     <div>
-                        <img class="icon" th:src="@{/static/image/icon-asset.svg}" alt="asset"/>
+                        <img class="icon font-size--large" th:src="@{/static/image/icon-asset.svg}" alt="asset"/>
                         <span data-th-text="#{fintics.BasketAsset}" class="font-weight--bold width--100"></span>
                     </div>
                     <div class="box overflow--auto">
@@ -260,7 +260,7 @@
                             <thead>
                             <tr>
                                 <th class="text-align--center">
-                                    <button class="button font-size--smaller" type="button" onclick="addBasketAsset();">
+                                    <button class="button" type="button" onclick="addBasketAsset();">
                                         <img class="icon" th:src="@{/static/image/icon-add.svg}" alt="add"/>
                                     </button>
                                 </th>
@@ -281,7 +281,7 @@
                             <tr data-duice-bind="basket.basketAssets" data-duice-loop="basketAsset,status" data-duice-editable="true"
                                 data-duice-execute="if(basketAsset._new) this.classList.add('background-color--yellow');">
                                 <td class="text-align--center">
-                                    <button class="button font-size--smaller" type="button"
+                                    <button class="button" type="button"
                                             data-duice-bind="basketAsset"
                                             data-duice-execute="this.dataset.index=status.index;"
                                             onclick="removeBasketAsset(this.dataset.index);">
@@ -295,7 +295,7 @@
                                     <span data-duice-bind="basketAsset" data-duice-property="symbol" class="code font-weight--bold"></span>
                                 </td>
                                 <td class="white-space--nowrap overflow--hidden text-overflow--ellipsis">
-                                    <img class="icon icon--circle font-size--large" data-duice-bind="basketAsset" data-duice-property="icon" th:onerror="|this.src='@{/static/image/icon-asset.svg}';|" alt=""/>
+                                    <img class="icon border-radius--50 font-size--large" data-duice-bind="basketAsset" data-duice-property="icon" th:onerror="|this.src='@{/static/image/icon-asset.svg}';|" alt=""/>
                                     &nbsp;
                                     <span data-duice-bind="basketAsset" data-duice-property="name"
                                         data-duice-execute="
@@ -324,7 +324,7 @@
                                     <span data-duice-bind="basketAsset" data-duice-property="type" class="badge"></span>
                                 </td>
                                 <td>
-                                    <div class="overflow-y--scroll" style="line-height:1.5em; height:5em;">
+                                    <div class="overflow-y--scroll box" style="line-height:1.5em; height:5em;">
                                         <table class="table width--100 border--none font-size--smaller code">
                                             <colgroup>
                                                 <col class="width--50"/>
@@ -467,7 +467,7 @@
                 </div>
             </form>
             <div class="display--flex justify-content--space-between">
-                <div>
+                <div class="display--flex gap--1px">
                     <button class="button" type="button"
                             th:classappend="!${#authorization.expression('hasAuthority(''basket.edit'')')}?'locked'"
                             onclick="exportBasket();">
@@ -481,7 +481,7 @@
                         <span>Import</span>
                     </button>
                 </div>
-                <div>
+                <div class="display--flex gap--1px justify-content--end">
                     <button class="button" type="button"
                             data-duice-bind="basket"
                             th:classappend="!${#authorization.expression('hasAuthority(''basket.edit'')')}?'locked'"
@@ -676,7 +676,7 @@
                         <tbody>
                         <tr data-duice-bind="assetSelectDialog.assets" data-duice-loop="asset,status">
                             <td class="text-align--center">
-                                <button class="button font-size--smaller" type="button"
+                                <button class="button" type="button"
                                         data-duice-bind="asset"
                                         data-duice-execute="
                         this.dataset.index = status.index;
@@ -691,7 +691,7 @@
                                 <span data-duice-bind="asset" data-duice-property="symbol" class="font-weight--bold code"></span>
                             </td>
                             <td class="text-align--left" style="overflow-x: hidden;">
-                                <img class="icon icon--circle font-size--large" data-duice-bind="asset" data-duice-property="icon" th:onerror="|this.src='@{/static/image/icon-asset.svg}';|" alt=""/>
+                                <img class="icon border-radius--50 font-size--large" th:src="@{/static/image/icon-asset.svg}" data-duice-bind="asset" data-duice-property="icon" th:onerror="|this.src='@{/static/image/icon-asset.svg}';|" alt=""/>
                                 &nbsp;
                                 <span data-duice-bind="asset" data-duice-property="name"></span>
                             </td>
@@ -702,8 +702,8 @@
                                 <span class="badge code" data-duice-bind="asset" data-duice-property="type"></span>
                             </td>
                             <td>
-                                <div class="overflow-y--scroll border--1 padding--1px" style="line-height:1.5em; height:5em;">
-                                    <table class="width--100 border--0 font-size--smaller code">
+                                <div class="overflow-y--scroll box" style="line-height:1.5em; height:5em;">
+                                    <table class="width--100 border--none font-size--smaller code">
                                         <colgroup>
                                             <col class="width--50"/>
                                             <col class="width--50"/>
@@ -816,7 +816,7 @@
                         <tbody>
                         <tr data-duice-bind="assetSelectDialog.selectedAssets" data-duice-loop="asset,status">
                             <td class="text-align--center">
-                                <button class="button font-size--smaller" type="button"
+                                <button class="button" type="button"
                                         data-duice-bind="asset"
                                         data-duice-execute="this.dataset.index = status.index;"
                                         onclick="assetSelectDialog.deselectAsset(this.dataset.index);">
@@ -827,7 +827,7 @@
                                 <span data-duice-bind="asset" data-duice-property="symbol" class="font-weight--bold code"></span>
                             </td>
                             <td>
-                                <img class="icon icon--circle font-size--large" data-duice-bind="asset" data-duice-property="icon" th:onerror="|this.src='@{/static/image/icon-asset.svg}';|" alt=""/>
+                                <img th:src="@{/static/image/icon-asset.svg}" class="icon border-radius--50 font-size--large" data-duice-bind="asset" data-duice-property="icon" th:onerror="|this.src='@{/static/image/icon-asset.svg}';|" alt=""/>
                                 &nbsp;
                                 <span data-duice-bind="asset" data-duice-property="name"></span>
                             </td>
@@ -838,8 +838,8 @@
                                 <span class="badge code" data-duice-bind="asset" data-duice-property="type"></span>
                             </td>
                             <td>
-                                <div class="overflow-y--scroll border--1 padding--1px" style="line-height:1.5em; height:5em;">
-                                    <table class="width--100 border--0 font-size--smaller code">
+                                <div class="overflow-y--scroll box" style="line-height:1.5em; height:5em;">
+                                    <table class="width--100 border--none font-size--smaller code">
                                         <colgroup>
                                             <col class="width--50"/>
                                             <col class="width--50"/>

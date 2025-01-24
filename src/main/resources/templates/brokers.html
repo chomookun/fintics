@@ -335,7 +335,7 @@
                     </form>
                     <div class="display--flex justify-content--space-between">
                         <div></div>
-                        <div class="text-align--right">
+                        <div class="display--flex justify-content--end gap--1px">
                             <button class="button"
                                     type="button" onclick="deleteBroker();"
                                     th:classappend="!${#authorization.expression('hasAuthority(''brokers.edit'')')}?'locked'"

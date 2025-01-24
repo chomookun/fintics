@@ -457,7 +457,7 @@
                 <div class="grid-column--span-6">
                     <label>
                         <span class="font-weight--bold" data-th-text="#{fintics.Trade.cashAssetId}"></span>
-                        <div class="width--100">
+                        <div class="width--100 display--flex gap--1px">
                             <input type="hidden" data-duice-bind="trade" data-duice-property="cashAssetId"/>
                             <input type="text" data-duice-bind="cashAsset" data-duice-property="name" class="width--50"/>
                             <button type="button" onclick="selectCashAsset();" class="small">
@@ -550,7 +550,7 @@
                                 <span data-duice-bind="basketAsset" data-duice-property="symbol" class="code font-weight--bold"></span>
                             </td>
                             <td class="text-align--left">
-                                <img class="icon icon--circle font-size--large" data-duice-bind="basketAsset" data-duice-property="icon" th:onerror="|this.src='@{/static/image/icon-asset.svg}';|" alt=""/>
+                                <img th:src="@{/static/image/icon-asset.svg}" class="icon border-radius--50 font-size--large" data-duice-bind="basketAsset" data-duice-property="icon" th:onerror="|this.src='@{/static/image/icon-asset.svg}';|" alt=""/>
                                 &nbsp;
                                 <span data-duice-bind="basketAsset" data-duice-property="name"
                                       data-duice-execute="this.dataset.assetId = basketAsset.assetId;"
@@ -564,8 +564,8 @@
                                 <span data-duice-bind="basketAsset" data-duice-property="type" class="badge"></span>
                             </td>
                             <td>
-                                <div class="overflow-y--scroll border--1 padding--1px" style="line-height:1em; height:5em;">
-                                    <table class="width--100 border--0 font-size--smaller code">
+                                <div class="overflow-y--scroll box" style="line-height:1em; height:5em;">
+                                    <table class="width--100 border--none font-size--smaller code">
                                         <colgroup>
                                             <col class="width--50"/>
                                             <col class="width--50"/>
@@ -638,7 +638,8 @@
                                     <input type="number"
                                            data-duice-bind="basketAsset"
                                            data-duice-property="holdingWeight"
-                                           class="width--50 number"/><span class="code">%</span>
+                                           class="width--50 number"/>
+                                    <span class="code">%</span>
                                 </label>
                             </td>
                             <td>
@@ -696,7 +697,7 @@
                 </div>
             </form>
             <div class="display--flex justify-content--space-between">
-                <div>
+                <div class="display--flex gap--1px">
                     <button class="button" type="button"
                             th:classappend="!${#authorization.expression('hasAuthority(''trade.edit'')')}?'locked'"
                             onclick="exportTrade();">
@@ -710,7 +711,7 @@
                         <span>Import</span>
                     </button>
                 </div>
-                <div>
+                <div class="display--flex justify-content--end gap--1px">
                     <button class="button" type="button"
                             data-duice-bind="trade"
                             data-duice-execute="this.disabled=(trade._new);"
@@ -1042,7 +1043,7 @@
                             <span data-duice-bind="asset" data-duice-property="symbol" class="code font-weight--bold"></span>
                         </td>
                         <td class="text-align--left" style="overflow-x: hidden;">
-                            <img class="icon" data-duice-bind="asset" data-duice-property="icon" th:onerror="|this.src='@{/static/image/icon-asset.svg}';|" alt=""/>
+                            <img class="icon border-radius--50 font-size--large" data-duice-bind="asset" data-duice-property="icon" th:onerror="|this.src='@{/static/image/icon-asset.svg}';|" alt=""/>
                             &nbsp;
                             <span data-duice-bind="asset" data-duice-property="name"></span>
                         </td>
