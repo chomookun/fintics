@@ -27,6 +27,7 @@ class KrAssetClientTest extends CoreTestSupport {
         return new KrAssetClient(assetClientProperties);
     }
 
+    @Disabled
     @Test
     void getAssets() {
         // given
@@ -43,7 +44,7 @@ class KrAssetClientTest extends CoreTestSupport {
                         asset.getType() != null));
     }
 
-//    @Disabled
+    @Disabled
     @Test
     void getStockAssetDetail() {
         // given

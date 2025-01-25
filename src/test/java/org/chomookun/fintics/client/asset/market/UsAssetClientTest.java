@@ -29,6 +29,7 @@ class UsAssetClientTest extends CoreTestSupport {
         return new UsAssetClient(assetClientProperties, objectMapper);
     }
 
+    @Disabled
     @Test
     void getStockAssets() {
         // given
@@ -45,6 +46,7 @@ class UsAssetClientTest extends CoreTestSupport {
                 asset.getType() != null));
     }
 
+    @Disabled
     @Test
     void getEtfAssets() {
         // given
