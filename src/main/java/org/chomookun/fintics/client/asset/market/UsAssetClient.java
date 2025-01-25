@@ -224,7 +224,6 @@ public class UsAssetClient extends AssetClient {
         BigDecimal netIncome = null;
         BigDecimal eps = null;
         BigDecimal roe = null;
-        BigDecimal roa = null;
         BigDecimal per = null;
         BigDecimal dividendYield = BigDecimal.ZERO;
         Integer dividendFrequency = 0;
@@ -311,12 +310,6 @@ public class UsAssetClient extends AssetClient {
                     .multiply(BigDecimal.valueOf(100));
         }
 
-        // roa
-        if(netIncome != null && totalAssets != null) {
-            roa = netIncome.divide(totalAssets, 8, RoundingMode.HALF_UP)
-                    .multiply(BigDecimal.valueOf(100));
-        }
-
         // dividend frequency
         List<Map<String,String>> dividends = getDividends(asset);
         if (dividends.size() > 0) {
@@ -327,7 +320,6 @@ public class UsAssetClient extends AssetClient {
         assetDetail.put("marketCap", Optional.ofNullable(marketCap).map(BigDecimal::toPlainString).orElse(null));
         assetDetail.put("eps", Optional.ofNullable(eps).map(BigDecimal::toPlainString).orElse(null));
         assetDetail.put("roe", Optional.ofNullable(roe).map(BigDecimal::toPlainString).orElse(null));
-        assetDetail.put("roa", Optional.ofNullable(roa).map(BigDecimal::toPlainString).orElse(null));
         assetDetail.put("per", Optional.ofNullable(per).map(BigDecimal::toPlainString).orElse(null));
         assetDetail.put("dividendYield", Optional.ofNullable(dividendYield).map(BigDecimal::toPlainString).orElse(null));
         assetDetail.put("dividendFrequency", Optional.ofNullable(dividendFrequency).map(String::valueOf).orElse(null));

@@ -27,7 +27,6 @@ class KrAssetClientTest extends CoreTestSupport {
         return new KrAssetClient(assetClientProperties);
     }
 
-    @Disabled
     @Test
     void getAssets() {
         // given
@@ -44,7 +43,7 @@ class KrAssetClientTest extends CoreTestSupport {
                         asset.getType() != null));
     }
 
-    @Disabled
+//    @Disabled
     @Test
     void getStockAssetDetail() {
         // given
@@ -62,7 +61,6 @@ class KrAssetClientTest extends CoreTestSupport {
         assertNotNull(assetDetail.get("marketCap"));
         assertNotNull(assetDetail.get("eps"));
         assertNotNull(assetDetail.get("roe"));
-        assertNotNull(assetDetail.get("roa"));
         assertNotNull(assetDetail.get("per"));
         assertNotNull(assetDetail.get("dividendYield"));
         assertNotNull(assetDetail.get("capitalGain"));

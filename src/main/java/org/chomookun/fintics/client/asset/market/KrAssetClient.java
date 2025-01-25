@@ -227,7 +227,6 @@ public class KrAssetClient extends AssetClient {
         BigDecimal marketCap = asset.getMarketCap();    // default is input asset
         BigDecimal eps = null;
         BigDecimal roe = null;
-        BigDecimal roa = null;
         BigDecimal per = null;
         BigDecimal dividendYield = BigDecimal.ZERO;
         Integer dividendFrequency = 0;
@@ -242,6 +241,7 @@ public class KrAssetClient extends AssetClient {
         String issucoCustno = secInfo.get("ISSUCO_CUSTNO");
 
         // calls service 1
+        // https://seibro.or.kr/websquare/control.jsp?w2xPath=/IPORTAL/user/stock/BIP_CNTS02006V.xml&menuNo=44
         try {
             String w2xPath = "/IPORTAL/user/stock/BIP_CNTS02006V.xml";
             HttpHeaders headers = createSeibroHeaders(w2xPath);
@@ -284,43 +284,6 @@ public class KrAssetClient extends AssetClient {
             throw new RuntimeException(e);
         }
 
-        // calls service 2
-        try {
-            String w2xPath = "/IPORTAL/user/stock/BIP_CNTS02006V.xml";
-            HttpHeaders headers = createSeibroHeaders(w2xPath);
-            headers.setContentType(MediaType.APPLICATION_XML);
-            String action = "finaRatioList";
-            String task = "ksd.safe.bip.cnts.Company.process.EntrBySecIssuPTask";
-            ZonedDateTime now = ZonedDateTime.now(ZoneId.of("Asia/Seoul"));
-            Map<String,String> payloadMap = new LinkedHashMap<>(){{
-                put("W2XPATH", w2xPath);
-                put("ISIN", isin);
-                put("SHOTN_ISIN", shotnIsin);
-                put("ISSUCO_CUSTNO", issucoCustno);
-                put("STD_DT", now.format(DateTimeFormatter.ofPattern("yyyyMMdd")));
-                put("SETACC_YYMM3", now.minusYears(1).format(DateTimeFormatter.ofPattern("yyyy")));
-            }};
-            String payloadXml = createSeibroPayloadXml(action, task, payloadMap);
-            RequestEntity<String> requestEntity = RequestEntity.post(url)
-                    .headers(headers)
-                    .body(payloadXml);
-            // exchange
-            ResponseEntity<String> responseEntity = restTemplate.exchange(requestEntity, String.class);
-            // response
-            String responseBody = responseEntity.getBody();
-            List<Map<String,String>> responseList = convertSeibroXmlToList(responseBody);
-            // find value
-            for(Map<String,String> row : responseList) {
-                String name = row.get("HB");
-                String value = row.get("A3");
-                if (name.startsWith("ROA")) {
-                    roa = toNumber(value, null);
-                }
-            }
-        } catch (Exception e) {
-            throw new RuntimeException(e);
-        }
-
         // dividends
         List<Map<String,String>> dividends = getStockDividends(asset);
         if (dividends.size() > 0) {
@@ -331,7 +294,6 @@ public class KrAssetClient extends AssetClient {
         assetDetail.put("marketCap", Optional.ofNullable(marketCap).map(BigDecimal::toPlainString).orElse(null));
         assetDetail.put("eps", Optional.ofNullable(eps).map(BigDecimal::toPlainString).orElse(null));
         assetDetail.put("roe", Optional.ofNullable(roe).map(BigDecimal::toPlainString).orElse(null));
-        assetDetail.put("roa", Optional.ofNullable(roa).map(BigDecimal::toPlainString).orElse(null));
         assetDetail.put("per", Optional.ofNullable(per).map(BigDecimal::toPlainString).orElse(null));
         assetDetail.put("dividendYield", Optional.ofNullable(dividendYield).map(BigDecimal::toPlainString).orElse(null));
         assetDetail.put("dividendFrequency", Optional.ofNullable(dividendFrequency).map(String::valueOf).orElse(null));

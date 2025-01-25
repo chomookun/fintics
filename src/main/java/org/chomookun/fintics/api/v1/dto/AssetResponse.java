@@ -37,8 +37,6 @@ public class AssetResponse {
 
     private BigDecimal roe;
 
-    private BigDecimal roa;
-
     private BigDecimal per;
 
     private Integer dividendFrequency;
@@ -77,7 +75,6 @@ public class AssetResponse {
                 .marketCap(asset.getMarketCap())
                 .eps(asset.getEps())
                 .roe(asset.getRoe())
-                .roa(asset.getRoa())
                 .per(asset.getPer())
                 .dividendFrequency(asset.getDividendFrequency())
                 .dividendYield(asset.getDividendYield())

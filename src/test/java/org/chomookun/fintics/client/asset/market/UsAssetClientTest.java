@@ -29,7 +29,6 @@ class UsAssetClientTest extends CoreTestSupport {
         return new UsAssetClient(assetClientProperties, objectMapper);
     }
 
-    @Disabled
     @Test
     void getStockAssets() {
         // given
@@ -46,7 +45,6 @@ class UsAssetClientTest extends CoreTestSupport {
                 asset.getType() != null));
     }
 
-    @Disabled
     @Test
     void getEtfAssets() {
         // given
@@ -63,7 +61,6 @@ class UsAssetClientTest extends CoreTestSupport {
                 asset.getType() != null));
     }
 
-    @Disabled
     @Test
     void getStockAssetDetail() {
         // given
@@ -80,7 +77,6 @@ class UsAssetClientTest extends CoreTestSupport {
         assertNotNull(assetDetail.get("marketCap"));
         assertNotNull(assetDetail.get("eps"));
         assertNotNull(assetDetail.get("roe"));
-        assertNotNull(assetDetail.get("roa"));
         assertNotNull(assetDetail.get("per"));
         assertNotNull(assetDetail.get("dividendYield"));
     }

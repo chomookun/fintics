@@ -32,8 +32,6 @@ public class Asset {
 
     private BigDecimal roe;
 
-    private BigDecimal roa;
-
     private BigDecimal per;
 
     private Integer dividendFrequency;
@@ -72,7 +70,6 @@ public class Asset {
                 .marketCap(assetEntity.getMarketCap())
                 .eps(assetEntity.getEps())
                 .roe(assetEntity.getRoe())
-                .roa(assetEntity.getRoa())
                 .per(assetEntity.getPer())
                 .dividendFrequency(assetEntity.getDividendFrequency())
                 .dividendYield(assetEntity.getDividendYield())
