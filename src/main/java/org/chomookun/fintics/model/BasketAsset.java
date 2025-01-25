@@ -69,6 +69,8 @@ public class BasketAsset extends Asset {
             basketAsset.setRoe(assetEntity.getRoe());
             basketAsset.setDividendYield(assetEntity.getDividendYield());
             basketAsset.setDividendFrequency(assetEntity.getDividendFrequency());
+            basketAsset.setCapitalGain(assetEntity.getCapitalGain());
+            basketAsset.setTotalReturn(assetEntity.getTotalReturn());
         }
 
         // return
