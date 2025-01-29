@@ -554,11 +554,11 @@
                                         |"
                                               onclick="_openLink(`${_rootUrl}/orders?tradeId=${this.dataset.tradeId}&assetId=${this.dataset.assetId}`, '_blank');">
                                         <span data-duice-bind="basketAsset" data-duice-if="return basketAsset.buyCount > 0;">
-                                            <img class="icon" th:src="@{/static/image/icon-order-buy.svg}" alt=""/>
+                                            <img class="icon" th:src="@{/static/image/icon-add.svg}" alt=""/>
                                             <span data-duice-bind="basketAsset" data-duice-property="buyCount" class="number"></span>
                                         </span>
                                         <span data-duice-bind="basketAsset" data-duice-if="return basketAsset.sellCount > 0;">
-                                            <img class="icon" th:src="@{/static/image/icon-order-sell.svg}" alt=""/>
+                                            <img class="icon" th:src="@{/static/image/icon-remove.svg}" alt=""/>
                                             <span data-duice-bind="basketAsset" data-duice-property="sellCount" class="number"></span>
                                         </span>
                                     </span>
@@ -615,7 +615,7 @@
                                             data-duice-execute="this.dataset.assetId=basketAsset.assetId"
                                             th:attr="onclick=|monitorMap.get('${trade.tradeId}').buyTradeAsset(this.dataset.assetId);|"
                                             th:classappend="!${#authorization.expression('hasAuthority(''trade.edit'')')}?'locked'">
-                                        <img class="icon" th:src="@{/static/image/icon-order-buy.svg}" alt="buy"/>
+                                        <img class="icon" th:src="@{/static/image/icon-add.svg}" alt="buy"/>
                                         <span data-th-text="#{fintics.Order.Type.BUY}"></span>
                                     </button>
                                     <button class="button" type="button"
@@ -623,7 +623,7 @@
                                             data-duice-execute="this.dataset.assetId=basketAsset.assetId;"
                                             th:attr="onclick=|monitorMap.get('${trade.tradeId}').sellTradeAsset(this.dataset.assetId);|"
                                             th:classappend="!${#authorization.expression('hasAuthority(''trade.edit'')')}?'locked'">
-                                        <img class="icon" th:src="@{/static/image/icon-order-sell.svg}" alt="sell"/>
+                                        <img class="icon" th:src="@{/static/image/icon-remove.svg}" alt="sell"/>
                                         <span data-th-text="#{fintics.Order.Type.SELL}"></span>
                                     </button>
                                 </div>
