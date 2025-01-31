@@ -48,6 +48,9 @@ public class AssetEntity extends BaseEntity {
     @Column(name = "roe", scale = 2)
     private BigDecimal roe;
 
+    @Column(name = "price", scale = 4)
+    private BigDecimal price;
+
     @Column(name = "per", scale = 2)
     private BigDecimal per;
 

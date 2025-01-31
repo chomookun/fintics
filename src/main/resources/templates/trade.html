@@ -646,7 +646,9 @@
                         </tr>
                         <tr data-duice-bind="basket.basketAssets"
                             data-duice-execute="if(basket.basketAssets.length === 0) this.hidden=false;" hidden>
-                            <td colspan="100%" class="text-align--center">No Data</td>
+                            <td colspan="100%" class="text-align--center padding--1rem">
+                                <span data-th-text="#{web.global.itemNotFound(#{fintics.BasketAsset})}"></span>
+                            </td>
                         </tr>
                         </tbody>
                     </table>

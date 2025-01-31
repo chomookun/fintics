@@ -28,7 +28,6 @@ class SimpleAssetClientTest extends CoreTestSupport {
         return new SimpleAssetClient(assetClientProperties, objectMapper);
     }
 
-    @Disabled
     @Test
     void getAssets() {
         // given
@@ -39,9 +38,8 @@ class SimpleAssetClientTest extends CoreTestSupport {
         assertTrue(assets.size() > 0);
     }
 
-    @Disabled
     @Test
-    void getAssetDetailForUs() {
+    void updateAssetForUs() {
         // given
         Asset asset = Asset.builder()
                 .assetId("US.MSFT")
@@ -50,14 +48,13 @@ class SimpleAssetClientTest extends CoreTestSupport {
                 .type("STOCK")
                 .build();
         // when
-        Map<String,String> assetDetail = getSimpleAssetClient().getAssetDetail(asset);
+        getSimpleAssetClient().updateAsset(asset);
         // then
-        log.info("assetDetail: {}", assetDetail);
+        log.info("asset: {}", asset);
     }
 
-    @Disabled
     @Test
-    void getAssetDetailForKr() {
+    void updateAssetForKr() {
         // given
         Asset asset = Asset.builder()
                 .assetId("KR.005930")
@@ -66,9 +63,9 @@ class SimpleAssetClientTest extends CoreTestSupport {
                 .type("STOCK")
                 .build();
         // when
-        Map<String,String> assetDetail = getSimpleAssetClient().getAssetDetail(asset);
+        getSimpleAssetClient().updateAsset(asset);
         // then
-        log.info("assetDetail: {}", assetDetail);
+        log.info("asset: {}", asset);
     }
 
 }

@@ -188,12 +188,12 @@
                         </td>
                     </tr>
                     <tr data-duice-bind="basketSearch" data-duice-if="return basketSearch._status === 'loading'">
-                        <td colspan="100%" class="text-align--center">
-                            <img class="icon font-size--larger" th:src="@{/static/image/loading.svg}" alt="loading"/>
+                        <td colspan="100%" class="text-align--center padding--1rem">
+                            <span class="blink" data-th-text="#{web.global.itemLoading(#{fintics.Basket})}"></span>
                         </td>
                     </tr>
                     <tr data-duice-bind="basketSearch" data-duice-if="return basketSearch._status === 'completed' && baskets.length < 1;" hidden>
-                        <td colspan="100%" class="text-align--center">
+                        <td colspan="100%" class="text-align--center padding--1rem">
                             <span data-th-text="#{web.global.itemNotFound(#{fintics.Basket})}"></span>
                         </td>
                     </tr>

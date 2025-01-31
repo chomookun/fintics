@@ -22,7 +22,7 @@ public class ProfitResponse {
     private List<RealizedProfitResponse> realizedProfits = new ArrayList<>();
 
     @Builder.Default
-    private List<DividendHistoryResponse> dividendHistories = new ArrayList<>();
+    private List<DividendProfitResponse> dividendProfits = new ArrayList<>();
 
     /**
      * factory method
@@ -37,8 +37,8 @@ public class ProfitResponse {
                 .realizedProfits(profit.getRealizedProfits().stream()
                         .map(RealizedProfitResponse::from)
                         .toList())
-                .dividendHistories(profit.getDividendHistories().stream()
-                        .map(DividendHistoryResponse::from)
+                .dividendProfits(profit.getDividendProfits().stream()
+                        .map(DividendProfitResponse::from)
                         .toList())
                 .build();
     }

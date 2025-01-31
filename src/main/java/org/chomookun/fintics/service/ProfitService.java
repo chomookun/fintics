@@ -4,7 +4,7 @@ import lombok.RequiredArgsConstructor;
 import org.chomookun.fintics.client.broker.BrokerClient;
 import org.chomookun.fintics.client.broker.BrokerClientFactory;
 import org.chomookun.fintics.model.Broker;
-import org.chomookun.fintics.model.DividendHistory;
+import org.chomookun.fintics.model.DividendProfit;
 import org.chomookun.fintics.model.Profit;
 import org.chomookun.fintics.model.RealizedProfit;
 import org.springframework.stereotype.Service;
@@ -35,7 +35,7 @@ public class ProfitService {
         Broker broker = brokerService.getBroker(brokerId).orElseThrow();
         BrokerClient brokerClient = brokerClientFactory.getObject(broker);
         List<RealizedProfit> realizedProfits;
-        List<DividendHistory> dividendHistories;
+        List<DividendProfit> dividendHistories;
         try {
             realizedProfits = brokerClient.getRealizedProfits(dateFrom, dateTo);
             dividendHistories = brokerClient.getDividendHistories(dateFrom, dateTo);
@@ -50,7 +50,7 @@ public class ProfitService {
 
         // dividend amount
         BigDecimal dividendAmount = dividendHistories.stream()
-                .map(DividendHistory::getDividendAmount)
+                .map(DividendProfit::getDividendAmount)
                 .reduce(BigDecimal.ZERO, BigDecimal::add);
 
         // total amount
@@ -62,7 +62,7 @@ public class ProfitService {
                 .realizedProfitAmount(realizedProfitAmount)
                 .realizedProfits(realizedProfits)
                 .dividendAmount(dividendAmount)
-                .dividendHistories(dividendHistories)
+                .dividendProfits(dividendHistories)
                 .build();
     }
 

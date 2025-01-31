@@ -76,6 +76,8 @@ public class AssetCollector extends AbstractScheduler {
 
         // merge (상장 폐지 등 삭제 종목 제외는 skip)
         for (Asset asset : assets) {
+
+            // Updates financial details
             try {
                 AssetEntity assetEntity = assetRepository.findById(asset.getAssetId()).orElse(null);
                 if (assetEntity == null) {
@@ -88,17 +90,27 @@ public class AssetCollector extends AbstractScheduler {
                 assetEntity.setExchange(asset.getExchange());
                 assetEntity.setType(asset.getType());
 
-                // gets asset details
-                Map<String, String> assetDetail = assetClient.getAssetDetail(asset);
+                // updates asset details
+                boolean needToUpdate = true;
+                // 주식 중 시가 총액이 0이거나 산출 되지 않은 기업은 제외
+                if (Objects.equals(asset.getType(), "STOCK")) {
+                    if (asset.getMarketCap() == null || asset.getMarketCap().compareTo(BigDecimal.ZERO) <= 0) {
+                        needToUpdate = false;
+                    }
+                }
+                if (needToUpdate) {
+                    assetClient.updateAsset(asset);
+                }
                 assetEntity.setUpdatedDate(LocalDate.now());
-                assetEntity.setMarketCap(Optional.ofNullable(assetDetail.get("marketCap")).map(BigDecimal::new).orElse(null));
-                assetEntity.setEps(Optional.ofNullable(assetDetail.get("eps")).map(BigDecimal::new).orElse(null));
-                assetEntity.setRoe(Optional.ofNullable(assetDetail.get("roe")).map(BigDecimal::new).orElse(null));
-                assetEntity.setPer(Optional.ofNullable(assetDetail.get("per")).map(BigDecimal::new).orElse(null));
-                assetEntity.setDividendFrequency(Optional.ofNullable(assetDetail.get("dividendFrequency")).map(Integer::parseInt).orElse(null));
-                assetEntity.setDividendYield(Optional.ofNullable(assetDetail.get("dividendYield")).map(BigDecimal::new).orElse(null));
-                assetEntity.setCapitalGain(Optional.ofNullable(assetDetail.get("capitalGain")).map(BigDecimal::new).orElse(null));
-                assetEntity.setTotalReturn(Optional.ofNullable(assetDetail.get("totalReturn")).map(BigDecimal::new).orElse(null));
+                assetEntity.setMarketCap(asset.getMarketCap());
+                assetEntity.setPrice(asset.getPrice());
+                assetEntity.setEps(asset.getEps());
+                assetEntity.setRoe(asset.getRoe());
+                assetEntity.setPer(asset.getPer());
+                assetEntity.setDividendFrequency(asset.getDividendFrequency());
+                assetEntity.setDividendYield(asset.getDividendYield());
+                assetEntity.setCapitalGain(asset.getCapitalGain());
+                assetEntity.setTotalReturn(asset.getTotalReturn());
 
                 // saves
                 saveEntities("assetEntity", List.of(assetEntity), transactionManager, assetRepository);

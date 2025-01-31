@@ -8,18 +8,22 @@ import java.time.LocalDate;
 
 @Getter
 @Builder
-public class DividendHistory {
+public class DividendProfit {
 
-    private LocalDate date;
+    private String assetId;
 
     private String symbol;
 
     private String name;
 
+    private LocalDate date;
+
+    private LocalDate paymentDate;
+
+    private BigDecimal dividendPerShare;
+
     private BigDecimal holdingQuantity;
 
     private BigDecimal dividendAmount;
-
-    private LocalDate paymentDate;
 
 }

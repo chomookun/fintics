@@ -2,7 +2,6 @@ package org.chomookun.fintics.client.asset.market;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 import org.chomookun.arch4j.core.common.test.CoreTestSupport;
 import org.chomookun.fintics.FinticsConfiguration;
@@ -11,6 +10,7 @@ import org.chomookun.fintics.model.Asset;
 import org.springframework.boot.test.context.SpringBootTest;
 
 import java.math.BigDecimal;
+import java.time.LocalDate;
 import java.util.List;
 import java.util.Map;
 
@@ -27,7 +27,6 @@ class KrAssetClientTest extends CoreTestSupport {
         return new KrAssetClient(assetClientProperties);
     }
 
-    @Disabled
     @Test
     void getAssets() {
         // given
@@ -44,9 +43,8 @@ class KrAssetClientTest extends CoreTestSupport {
                         asset.getType() != null));
     }
 
-    @Disabled
     @Test
-    void getStockAssetDetail() {
+    void getSecInfo() {
         // given
         Asset asset = Asset.builder()
                 .assetId("KR.005930")
@@ -56,38 +54,28 @@ class KrAssetClientTest extends CoreTestSupport {
                 .marketCap(BigDecimal.TEN)
                 .build();
         // when
-        Map<String,String> assetDetail = getKrAssetClient().getStockAssetDetail(asset);
+        Map<String,String> secInfo = getKrAssetClient().getSecInfo(asset);
         // then
-        log.info("assetDetail: {}", assetDetail);
-        assertNotNull(assetDetail.get("marketCap"));
-        assertNotNull(assetDetail.get("eps"));
-        assertNotNull(assetDetail.get("roe"));
-        assertNotNull(assetDetail.get("per"));
-        assertNotNull(assetDetail.get("dividendYield"));
-        assertNotNull(assetDetail.get("capitalGain"));
-        assertNotNull(assetDetail.get("totalReturn"));
+        log.info("secInfo:{}", secInfo);
     }
 
-    @Disabled
     @Test
-    void getEtfAssetDetail() {
+    void getStockPrices() {
         // given
         Asset asset = Asset.builder()
-                .assetId("KR.069500")
-                .name("KODEX 200")
+                .assetId("KR.005930")
+                .name("Samsung Electronics")
                 .market("KR")
-                .type("ETF")
+                .type("STOCK")
                 .marketCap(BigDecimal.TEN)
                 .build();
         // when
-        Map<String,String> assetDetail = getKrAssetClient().getEtfAssetDetail(asset);
+        Map<LocalDate, BigDecimal> prices = getKrAssetClient().getStockPrices(asset);
         // then
-        log.info("assetDetail: {}", assetDetail);
-        assertNotNull(assetDetail.get("marketCap"));
-        assertNotNull(assetDetail.get("dividendYield"));
+        log.info("prices:{}", prices);
+        assertTrue(prices.size() > 0);
     }
 
-    @Disabled
     @Test
     void getStockDividends() {
         // given
@@ -99,29 +87,27 @@ class KrAssetClientTest extends CoreTestSupport {
                 .marketCap(BigDecimal.TEN)
                 .build();
         // when
-        List<Map<String,String>> dividends = getKrAssetClient().getStockDividends(asset);
+        Map<LocalDate, BigDecimal> dividends = getKrAssetClient().getStockDividends(asset);
         // then
         log.info("dividends:{}", dividends);
     }
 
-    @Disabled
     @Test
-    void getStockOhlcvs() {
+    void getEtfPrices() {
         // given
         Asset asset = Asset.builder()
-                .assetId("KR.005930")
-                .name("Samsung Electronics")
+                .assetId("KR.069500")
+                .name("KODEX 200")
                 .market("KR")
-                .type("STOCK")
-                .marketCap(BigDecimal.TEN)
+                .type("ETF")
                 .build();
         // when
-        List<Map<String,String>> ohlcvs = getKrAssetClient().getStockOhlcvs(asset);
+        Map<LocalDate, BigDecimal> prices = getKrAssetClient().getEtfPrices(asset);
         // then
-        log.info("ohlcvs:{}", ohlcvs);
+        log.info("prices:{}", prices);
+        assertTrue(prices.size() > 0);
     }
 
-    @Disabled
     @Test
     void getEtfDividends() {
         // given
@@ -132,25 +118,52 @@ class KrAssetClientTest extends CoreTestSupport {
                 .type("ETF")
                 .build();
         // when
-        List<Map<String,String>> dividends = getKrAssetClient().getEtfDividends(asset);
+        Map<LocalDate, BigDecimal> dividends = getKrAssetClient().getEtfDividends(asset);
         // then
         log.info("dividends:{}", dividends);
     }
 
-    @Disabled
     @Test
-    void getEtfOhlcvs() {
+    void updateStockAsset() {
+        // given
+        Asset asset = Asset.builder()
+                .assetId("KR.005930")
+                .name("Samsung Electronics")
+                .market("KR")
+                .type("STOCK")
+                .marketCap(BigDecimal.TEN)
+                .build();
+        // when
+        getKrAssetClient().updateStockAsset(asset);
+        // then
+        log.info("asset: {}", asset);
+        assertNotNull(asset.getEps());
+        assertNotNull(asset.getRoe());
+        assertNotNull(asset.getPer());
+        assertNotNull(asset.getDividendFrequency());
+        assertNotNull(asset.getDividendYield());
+        assertNotNull(asset.getCapitalGain());
+        assertNotNull(asset.getTotalReturn());
+    }
+
+    @Test
+    void updateEtfAsset() {
         // given
         Asset asset = Asset.builder()
                 .assetId("KR.069500")
                 .name("KODEX 200")
                 .market("KR")
                 .type("ETF")
+                .marketCap(BigDecimal.TEN)
                 .build();
         // when
-        List<Map<String,String>> ohlcvs = getKrAssetClient().getEtfOhlcvs(asset);
+        getKrAssetClient().updateEtfAsset(asset);
         // then
-        log.info("ohlcvs:{}", ohlcvs);
+        log.info("asset: {}", asset);
+        assertNotNull(asset.getDividendFrequency());
+        assertNotNull(asset.getDividendYield());
+        assertNotNull(asset.getCapitalGain());
+        assertNotNull(asset.getTotalReturn());
     }
 
 }

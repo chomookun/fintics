@@ -854,7 +854,7 @@ public class KisUsBrokerClient extends BrokerClient {
      * @return 배당 이력
      */
     @Override
-    public List<DividendHistory> getDividendHistories(LocalDate dateFrom, LocalDate dateTo) throws InterruptedException {
+    public List<DividendProfit> getDividendHistories(LocalDate dateFrom, LocalDate dateTo) throws InterruptedException {
         return new ArrayList<>();
     }
 

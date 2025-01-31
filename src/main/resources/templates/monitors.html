@@ -631,13 +631,13 @@
                         </tr>
                         <tr th:data-duice-bind="|monitorMap.get('${trade.tradeId}').basket|"
                             th:data-duice-if="|return monitorMap.get('${trade.tradeId}').basket._status === 'loading'|" hidden>
-                            <td colspan="100%" class="text-align--center">
-                                <img class="icon font-size--larger" th:src="@{/static/image/loading.svg}" alt="loading"/>
+                            <td colspan="100%" class="text-align--center padding--1rem">
+                                <span class="blink" data-th-text="#{web.global.itemLoading(#{fintics.BasketAsset})}"></span>
                             </td>
                         </tr>
                         <tr th:data-duice-bind="|monitorMap.get('${trade.tradeId}').basket|"
                             th:data-duice-if="|return monitorMap.get('${trade.tradeId}').basket._status == 'completed' && monitorMap.get('${trade.tradeId}').basket.basketAssets.length < 1|" hidden>
-                            <td colspan="100%" class="text-align--center">
+                            <td colspan="100%" class="text-align--center padding--1rem">
                                 <span data-th-text="#{web.global.itemNotFound(#{fintics.BasketAsset})}"></span>
                             </td>
                         </tr>

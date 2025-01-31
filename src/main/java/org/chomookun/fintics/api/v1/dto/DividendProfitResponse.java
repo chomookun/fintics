@@ -2,32 +2,37 @@ package org.chomookun.fintics.api.v1.dto;
 
 import lombok.Builder;
 import lombok.Getter;
-import org.chomookun.fintics.model.DividendHistory;
+import org.chomookun.fintics.model.DividendProfit;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
 
 @Getter
 @Builder
-public class DividendHistoryResponse {
+public class DividendProfitResponse {
 
-    private LocalDate date;
+    private String assetId;
 
     private String symbol;
 
     private String name;
 
+    private LocalDate date;
+
+    private LocalDate paymentDate;
+
+    private BigDecimal dividendPerShare;
+
     private BigDecimal holdingQuantity;
 
     private BigDecimal dividendAmount;
 
-    private LocalDate paymentDate;
-
-    public static DividendHistoryResponse from(DividendHistory dividendHistory) {
-        return DividendHistoryResponse.builder()
+    public static DividendProfitResponse from(DividendProfit dividendHistory) {
+        return DividendProfitResponse.builder()
                 .date(dividendHistory.getDate())
                 .symbol(dividendHistory.getSymbol())
                 .name(dividendHistory.getName())
+                .dividendPerShare(dividendHistory.getDividendPerShare())
                 .holdingQuantity(dividendHistory.getHoldingQuantity())
                 .dividendAmount(dividendHistory.getDividendAmount())
                 .paymentDate(dividendHistory.getPaymentDate())

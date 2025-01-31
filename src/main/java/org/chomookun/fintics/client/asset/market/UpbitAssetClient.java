@@ -5,6 +5,8 @@ import org.chomookun.arch4j.core.common.support.RestTemplateBuilder;
 import org.chomookun.fintics.client.asset.AssetClient;
 import org.chomookun.fintics.client.asset.AssetClientProperties;
 import org.chomookun.fintics.model.Asset;
+import org.chomookun.fintics.model.DividendProfit;
+import org.chomookun.fintics.model.Ohlcv;
 import org.springframework.core.ParameterizedTypeReference;
 import org.springframework.http.RequestEntity;
 import org.springframework.http.ResponseEntity;
@@ -50,13 +52,13 @@ public class UpbitAssetClient extends AssetClient {
     }
 
     @Override
-    public boolean isSupport(Asset asset) {
-        return false;
+    public void updateAsset(Asset asset) {
+        // not supported
     }
 
     @Override
-    public Map<String, String> getAssetDetail(Asset asset) {
-        return Collections.emptyMap();
+    public boolean isSupport(Asset asset) {
+        return false;
     }
 
 }

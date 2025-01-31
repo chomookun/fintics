@@ -14,8 +14,6 @@ public class AssetClientProperties {
 
     private final String className;
 
-//    private Class<? extends AssetClient> className;
-
     private Map<String, String> properties;
 
     public Optional<String> getProperty(String name) {

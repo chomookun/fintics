@@ -754,13 +754,15 @@
                         </tr>
                         <tr data-duice-bind="assetSelectDialog.assetSearch"
                             data-duice-if="return assetSelectDialog.assetSearch._status === 'loading';">
-                            <td colspan="100%" class="text-align--center">
-                                <img class="icon font-size--larger" th:src="@{/static/image/loading.svg}" alt="loading"/>
+                            <td colspan="100%" class="text-align--center padding--1rem">
+                                <span class="blink" data-th-text="#{web.global.itemLoading(#{fintics.Basket})}"></span>
                             </td>
                         </tr>
                         <tr data-duice-bind="assetSelectDialog.assetSearch"
                             data-duice-if="return assetSelectDialog.assetSearch._status === 'completed' && assetSelectDialog.assets.length < 1;" hidden>
-                            <td colspan="100%" class="text-align--center font-size--smaller">No Data</td>
+                            <td colspan="100%" class="text-align--center padding--1rem">
+                                <span data-th-text="#{web.global.itemNotFound(#{fintics.Basket})}"></span>
+                            </td>
                         </tr>
                         </tbody>
                     </table>

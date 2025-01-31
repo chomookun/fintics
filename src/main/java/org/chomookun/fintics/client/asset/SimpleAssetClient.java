@@ -6,6 +6,8 @@ import org.chomookun.fintics.client.asset.market.KrAssetClient;
 import org.chomookun.fintics.client.asset.market.UpbitAssetClient;
 import org.chomookun.fintics.client.asset.market.UsAssetClient;
 import org.chomookun.fintics.model.Asset;
+import org.chomookun.fintics.model.DividendProfit;
+import org.chomookun.fintics.model.Ohlcv;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.stereotype.Component;
 
@@ -29,6 +31,16 @@ public class SimpleAssetClient extends AssetClient {
     }
 
     @Override
+    public boolean isSupport(Asset asset) {
+        for(AssetClient assetClient : assetClients) {
+            if (assetClient.isSupport(asset)) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    @Override
     public List<Asset> getAssets() {
         List<Asset> assets = new ArrayList<>();
         for(AssetClient assetClient : assetClients) {
@@ -42,23 +54,13 @@ public class SimpleAssetClient extends AssetClient {
     }
 
     @Override
-    public boolean isSupport(Asset asset) {
-        for(AssetClient assetClient : assetClients) {
-            if (assetClient.isSupport(asset)) {
-                return true;
-            }
-        }
-        return false;
-    }
-
-    @Override
-    public Map<String,String> getAssetDetail(Asset asset) {
+    public void updateAsset(Asset asset) {
         for (AssetClient assetClient : assetClients) {
             if (assetClient.isSupport(asset)) {
-                return assetClient.getAssetDetail(asset);
+                assetClient.updateAsset(asset);
+                return;
             }
         }
-        return Collections.emptyMap();
     }
 
 }

@@ -54,6 +54,10 @@ def etfSymbols = [
         '161510',   // PLUS 고배당주
         '279530',   // KODEX 고배당
         '104530',   // KOSEF 고배당
+        '104530',   // KIWOOM 고배당
+        '495230',   // KoAct 코리아밸류업액티브
+        '466940',   // TIGER 은행고배당플러스TOP10
+        '211900',   // KODEX 배당성장
 ]
 etfSymbols.each{
     def etfItems = getEtfItems(it)
@@ -106,14 +110,11 @@ List<Item> finalItems = candidateItems.findAll {
         return false
     }
 
-    // ROA
-    def roa = asset.getRoa() ?: 0.0
-    if (roa < 0.0) {    // ROA 0 이하는 부채 비율이 높은 경우 일수 있음 으로 제외
+    // PER
+    def per = asset.getPer() ?: 9999
+    if (per > 20.0) {   // PER 20 이상은 고 평가된 회사로 제외
         return false
     }
-
-    // PER
-    def per = asset.getPer() ?: 100
 
     // dividendYield
     def dividendYield = asset.getDividendYield() ?: 0.0

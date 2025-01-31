@@ -51,8 +51,8 @@ List<Item> candidateItems = []
 //=======================================
 // ETF list
 def etfSymbols = [
+        'DGRO',     // iShares Core Dividend Growth ETF
         'DGRW',     // WisdomTree U.S. Quality Dividend Growth Fund
-        'BALI',     // iShares Advantage Large Cap Income ETF
         'JEPI',     // JPMorgan Equity Premium Income ETF
         'DIVO',     // Amplify CWP Enhanced Dividend Income ETF
         'SCHD',     // Schwab U.S. Dividend Equity ETF
@@ -106,12 +106,6 @@ List<Item> finalItems = candidateItems.findAll {
     //  ROE
     def roe = asset.getRoe() ?: 0.0
     if (roe < 5.0) {    // ROE 5 이하는 수익성 없는 회사로 제외
-        return false
-    }
-
-    // ROA
-    def roa = asset.getRoa() ?: 0.0
-    if (roa < 0.0) {    // ROA 0 이하는 부채 비율이 높은 경우 일수 있음 으로 제외
         return false
     }
 

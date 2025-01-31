@@ -168,12 +168,12 @@
                         </td>
                     </tr>
                     <tr data-duice-bind="strategySearch" data-duice-if="return strategySearch._status === 'loading';">
-                        <td colspan="100%" class="text-align--center">
-                            <img class="icon" th:src="@{/static/image/loading.svg}" alt="loading"/>
+                        <td colspan="100%" class="text-align--center padding--1rem">
+                            <span class="blink" data-th-text="#{web.global.itemLoading(#{fintics.Strategy})}"></span>
                         </td>
                     </tr>
                     <tr data-duice-bind="strategySearch" data-duice-if="return strategySearch._status === 'completed' && strategies.length < 1;" hidden>
-                        <td colspan="100%" class="text-align--center">
+                        <td colspan="100%" class="text-align--center padding--1rem">
                             <span data-th-text="#{web.global.itemNotFound(#{fintics.Strategy})}"></span>
                         </td>
                     </tr>

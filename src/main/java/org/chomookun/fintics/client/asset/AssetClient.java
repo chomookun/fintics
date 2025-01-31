@@ -2,6 +2,8 @@ package org.chomookun.fintics.client.asset;
 
 import lombok.Getter;
 import org.chomookun.fintics.model.Asset;
+import org.chomookun.fintics.model.DividendProfit;
+import org.chomookun.fintics.model.Ohlcv;
 
 import java.util.List;
 import java.util.Map;
@@ -20,12 +22,6 @@ public abstract class AssetClient {
     }
 
     /**
-     * returns assets
-     * @return assets
-     */
-    public abstract List<Asset> getAssets();
-
-    /**
      * checks support asset
      * @param asset asset
      * @return support or not
@@ -33,10 +29,16 @@ public abstract class AssetClient {
     public abstract boolean isSupport(Asset asset);
 
     /**
-     * return asset details
+     * returns assets
+     * @return assets
+     */
+    public abstract List<Asset> getAssets();
+
+    /**
+     * Updates asset
      * @param asset asset
      */
-    public abstract Map<String,String> getAssetDetail(Asset asset);
+    public abstract void updateAsset(Asset asset);
 
     /**
      * convert to asset id

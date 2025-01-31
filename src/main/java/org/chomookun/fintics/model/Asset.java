@@ -32,6 +32,8 @@ public class Asset {
 
     private BigDecimal roe;
 
+    private BigDecimal price;
+
     private BigDecimal per;
 
     private Integer dividendFrequency;
