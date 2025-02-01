@@ -236,7 +236,7 @@ public class SimpleOhlcvClient extends OhlcvClient implements YahooClientSupport
         // apply pageable (yahoo chart not support offset,limit)
         if (pageable.isPaged()) {
             long startIndex = pageable.getOffset();
-            long endIndex = startIndex + pageable.getPageSize();
+            long endIndex = Math.min(ohlcvs.size(), startIndex + pageable.getPageSize());
             ohlcvs = ohlcvs.subList(Math.toIntExact(startIndex), Math.toIntExact(endIndex));
         }
 
