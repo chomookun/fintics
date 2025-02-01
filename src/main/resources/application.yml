@@ -33,10 +33,15 @@ fintics:
   system-alarm-id: fintics
   data-retention-months: 3
   asset-client:
-    class-name: org.oopscraft.fintics.client.asset.SimpleAssetClient
+    class-name: org.chomookun.fintics.client.asset.SimpleAssetClient
     properties:
       name: value
   ohlcv-client:
-    class-name: org.oopscraft.fintics.client.ohlcv.SimpleOhlcvClient
+    class-name: org.chomookun.fintics.client.ohlcv.SimpleOhlcvClient
     properties:
       name: value
+  dividend-client:
+    class-name: org.chomookun.fintics.client.dividend.SimpleDividendClient
+    properties:
+      name: value
+

@@ -1,4 +1,4 @@
-package org.chomookun.fintics.client.ohlcv;
+package org.chomookun.fintics.client.dividend;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -9,13 +9,13 @@ import java.util.Map;
 import java.util.Optional;
 
 /**
- * ohlcv client properties
+ * dividend client properties
  */
-@ConfigurationProperties(prefix = "fintics.ohlcv-client")
+@ConfigurationProperties(prefix = "fintics.dividend-client")
 @AllArgsConstructor
 @Getter
 @Builder
-public class OhlcvClientProperties {
+public class DividendClientProperties {
 
     private final String className;
 

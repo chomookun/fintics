@@ -7,9 +7,12 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.hc.client5.http.impl.DefaultHttpRequestRetryStrategy;
 import org.chomookun.arch4j.core.common.support.RestTemplateBuilder;
+import org.chomookun.fintics.client.support.YahooClientSupport;
 import org.chomookun.fintics.model.Asset;
 import org.chomookun.fintics.model.Ohlcv;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.RequestEntity;
 import org.springframework.http.ResponseEntity;
@@ -22,15 +25,17 @@ import java.math.RoundingMode;
 import java.time.*;
 import java.time.temporal.ChronoUnit;
 import java.util.*;
+import java.util.concurrent.atomic.AtomicBoolean;
+import java.util.concurrent.atomic.AtomicLong;
 import java.util.stream.Collectors;
 
 /**
  * simple ohlcv client
  */
 @Component
-@ConditionalOnProperty(prefix = "fintics", name = "ohlcv-client.class-name", havingValue="org.oopscraft.fintics.client.ohlcv.SimpleOhlcvClient")
+@ConditionalOnProperty(prefix = "fintics", name = "ohlcv-client.class-name", havingValue="org.chomookun.fintics.client.ohlcv.SimpleOhlcvClient")
 @Slf4j
-public class SimpleOhlcvClient extends OhlcvClient {
+public class SimpleOhlcvClient extends OhlcvClient implements YahooClientSupport {
 
     private final static Object LOCK_OBJECT = new Object();
 
@@ -143,10 +148,11 @@ public class SimpleOhlcvClient extends OhlcvClient {
      * @param type type
      * @param dateTimeFrom date time from
      * @param dateTimeTo date time to
+     * @param pageable pageable
      * @return list of ohlcvs
      */
     @Override
-    public List<Ohlcv> getOhlcvs(Asset asset, Ohlcv.Type type, LocalDateTime dateTimeFrom, LocalDateTime dateTimeTo) {
+    public List<Ohlcv> getOhlcvs(Asset asset, Ohlcv.Type type, LocalDateTime dateTimeFrom, LocalDateTime dateTimeTo, Pageable pageable) {
         HttpHeaders headers = createYahooHeader();
 
         // yahoo symbol
@@ -227,6 +233,13 @@ public class SimpleOhlcvClient extends OhlcvClient {
                 .comparing(Ohlcv::getDateTime)
                 .reversed());
 
+        // apply pageable (yahoo chart not support offset,limit)
+        if (pageable.isPaged()) {
+            long startIndex = pageable.getOffset();
+            long endIndex = startIndex + pageable.getPageSize();
+            ohlcvs = ohlcvs.subList(Math.toIntExact(startIndex), Math.toIntExact(endIndex));
+        }
+
         // return
         return ohlcvs;
     }
@@ -250,10 +263,9 @@ public class SimpleOhlcvClient extends OhlcvClient {
         List<BigDecimal> volumes = objectMapper.convertValue(quoteNode.path("volume"), new TypeReference<>(){});
 
         // duplicated data retrieved.
-        Map<LocalDateTime, Ohlcv> ohlcvMap = new LinkedHashMap<>();
+        Map<LocalDateTime, Ohlcv> ohlcvMap = new TreeMap<>();
         if(timestamps != null) {        // if data not found, timestamps element is null.
             for(int i = 0; i < timestamps.size(); i ++) {
-
                 // truncates dateTime
                 Instant instant = Instant.ofEpochSecond(timestamps.get(i));
                 ZoneId timeZone = getTimezone(asset);
@@ -276,6 +288,14 @@ public class SimpleOhlcvClient extends OhlcvClient {
                 BigDecimal low = Optional.ofNullable(lows.get(i)).orElse(open);
                 BigDecimal close = Optional.ofNullable(closes.get(i)).orElse(open);
                 BigDecimal volume = Optional.ofNullable(volumes.get(i)).orElse(BigDecimal.ZERO);
+
+                // interpolate flag
+                boolean interpolated = switch(type) {
+                    case MINUTE -> !interval.equals("1m");
+                    case DAILY -> !interval.equals("1d");
+                    default -> false;
+                };
+
                 Ohlcv ohlcv = Ohlcv.builder()
                         .assetId(asset.getAssetId())
                         .dateTime(dateTime)
@@ -286,102 +306,12 @@ public class SimpleOhlcvClient extends OhlcvClient {
                         .low(low.setScale(2, RoundingMode.HALF_UP))
                         .close(close.setScale(2, RoundingMode.HALF_UP))
                         .volume(volume.setScale(2, RoundingMode.HALF_UP))
+                        .interpolated(interpolated)
                         .build();
                 ohlcvMap.put(dateTime, ohlcv);
-
-                // interpolates minute ohlcv
-                if(type == Ohlcv.Type.MINUTE) {
-                    int intervalMinutes = Integer.parseInt(interval.replace("m",""));
-                    for(int j = 1; j < intervalMinutes; j++) {
-                        LocalDateTime interpolatedDateTime = dateTime.minusMinutes(j);
-                        // 개장 시간 확익
-                        String market = asset.getAssetId().split("\\.")[0];
-                        LocalTime time = interpolatedDateTime.toLocalTime();
-                        LocalTime startTime = null;
-                        LocalTime endTime = null;
-                        switch(market) {
-                            case "US" -> {
-                                startTime = LocalTime.of(9, 30);
-                                endTime = LocalTime.of(16, 0);
-                            }
-                            case "KR" -> {
-                                startTime = LocalTime.of(9, 0);
-                                endTime = LocalTime.of(15, 30);
-                            }
-                            default -> throw new RuntimeException(String.format("invalid market[%s]", market));
-                        }
-                        if (time.isBefore(startTime) || time.isAfter(endTime)) {
-                            continue;
-                        }
-
-                        // creates ohlcv
-                        Ohlcv interpolatedOhlcv = Ohlcv.builder()
-                                .assetId(asset.getAssetId())
-                                .dateTime(interpolatedDateTime)
-                                .timeZone(timeZone)
-                                .type(type)
-                                .open(open.setScale(2, RoundingMode.HALF_UP))
-                                .high(high.setScale(2, RoundingMode.HALF_UP))
-                                .low(low.setScale(2, RoundingMode.HALF_UP))
-                                .close(close.setScale(2, RoundingMode.HALF_UP))
-                                .volume(BigDecimal.ZERO)
-                                .interpolated(true)
-                                .build();
-                        // add if not exists
-                        if (!ohlcvMap.containsKey(interpolatedDateTime)) {
-                            ohlcvMap.put(interpolatedDateTime, interpolatedOhlcv);
-                        }
-                    }
-                }
-                // interpolates daily ohlcv
-                if(type == Ohlcv.Type.DAILY) {
-                    int intervalDays = Integer.parseInt(interval.replace("d",""));
-                    for(int j = 1; j < intervalDays; j++) {
-                        LocalDateTime interpolatedDateTime = dateTime.minusDays(j);
-                        // skip weekend
-                        DayOfWeek dayOfWeek = interpolatedDateTime.getDayOfWeek();
-                        if (dayOfWeek == DayOfWeek.SATURDAY || dayOfWeek == DayOfWeek.SUNDAY) {
-                            continue;
-                        }
-                        Ohlcv interpolatedOhlcv = Ohlcv.builder()
-                                .dateTime(interpolatedDateTime)
-                                .timeZone(timeZone)
-                                .type(type)
-                                .open(open.setScale(2, RoundingMode.HALF_UP))
-                                .high(high.setScale(2, RoundingMode.HALF_UP))
-                                .low(low.setScale(2, RoundingMode.HALF_UP))
-                                .close(close.setScale(2, RoundingMode.HALF_UP))
-                                .volume(BigDecimal.ZERO)
-                                .interpolated(true)
-                                .build();
-                        if (!ohlcvMap.containsKey(interpolatedDateTime)) {
-                            ohlcvMap.put(interpolatedDateTime, interpolatedOhlcv);
-                        }
-                    }
-                }
             }
         }
         return ohlcvMap;
-    }
-
-    /**
-     * creates yahoo http header
-     * @return http headers
-     */
-    private HttpHeaders createYahooHeader() {
-        HttpHeaders headers = new HttpHeaders();
-        headers.add("authority"," query1.finance.yahoo.com");
-        headers.add("Accept", "*/*");
-        headers.add("origin", "https://finance.yahoo.com");
-        headers.add("referer", "");
-        headers.add("Sec-Ch-Ua","\"Chromium\";v=\"118\", \"Google Chrome\";v=\"118\", \"Not=A?Brand\";v=\"99\"");
-        headers.add("Sec-Ch-Ua-Mobile","?0");
-        headers.add("Sec-Ch-Ua-Platform", "macOS");
-        headers.add("Sec-Fetch-Dest","document");
-        headers.add("Sec-Fetch-Mode","navigate");
-        headers.add("Sec-Fetch-Site", "none");
-        headers.add("User-Agent","Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/116.0.0.0 Safari/537.36");
-        return headers;
     }
 
 }

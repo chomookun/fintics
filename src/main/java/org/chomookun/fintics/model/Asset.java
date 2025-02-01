@@ -26,13 +26,15 @@ public class Asset {
 
     private LocalDate updatedDate;
 
+    private BigDecimal price;
+
+    private BigDecimal volume;
+
     private BigDecimal marketCap;
 
     private BigDecimal eps;
 
     private BigDecimal roe;
-
-    private BigDecimal price;
 
     private BigDecimal per;
 
@@ -69,6 +71,8 @@ public class Asset {
                 .exchange(assetEntity.getExchange())
                 .type(assetEntity.getType())
                 .updatedDate(assetEntity.getUpdatedDate())
+                .price(assetEntity.getPrice())
+                .volume(assetEntity.getVolume())
                 .marketCap(assetEntity.getMarketCap())
                 .eps(assetEntity.getEps())
                 .roe(assetEntity.getRoe())

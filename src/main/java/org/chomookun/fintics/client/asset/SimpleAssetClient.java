@@ -6,18 +6,14 @@ import org.chomookun.fintics.client.asset.market.KrAssetClient;
 import org.chomookun.fintics.client.asset.market.UpbitAssetClient;
 import org.chomookun.fintics.client.asset.market.UsAssetClient;
 import org.chomookun.fintics.model.Asset;
-import org.chomookun.fintics.model.DividendProfit;
-import org.chomookun.fintics.model.Ohlcv;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.stereotype.Component;
 
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
-import java.util.Map;
 
 @Component
-@ConditionalOnProperty(prefix = "fintics", name = "asset-client.class-name", havingValue="org.oopscraft.fintics.client.asset.SimpleAssetClient")
+@ConditionalOnProperty(prefix = "fintics", name = "asset-client.class-name", havingValue="org.chomookun.fintics.client.asset.SimpleAssetClient")
 @Slf4j
 public class SimpleAssetClient extends AssetClient {
 

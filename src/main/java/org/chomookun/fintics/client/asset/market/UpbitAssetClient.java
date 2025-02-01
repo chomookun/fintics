@@ -5,16 +5,14 @@ import org.chomookun.arch4j.core.common.support.RestTemplateBuilder;
 import org.chomookun.fintics.client.asset.AssetClient;
 import org.chomookun.fintics.client.asset.AssetClientProperties;
 import org.chomookun.fintics.model.Asset;
-import org.chomookun.fintics.model.DividendProfit;
-import org.chomookun.fintics.model.Ohlcv;
 import org.springframework.core.ParameterizedTypeReference;
 import org.springframework.http.RequestEntity;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.client.RestTemplate;
 
-import java.util.Collections;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 public class UpbitAssetClient extends AssetClient {
@@ -37,17 +35,16 @@ public class UpbitAssetClient extends AssetClient {
                 .build();
         ResponseEntity<List<Map<String, String>>> responseEntity = restTemplate.exchange(requestEntity, new ParameterizedTypeReference<>() {
         });
-        return responseEntity.getBody().stream()
+        List<Map<String,String>> responseBody = Optional.ofNullable(responseEntity.getBody()).orElseThrow();
+        return responseBody.stream()
                 .filter(map -> map.get("market").startsWith("KRW-"))
-                .map(map -> {
-                    return Asset.builder()
-                            .assetId(toAssetId("UPBIT", map.get("market")))
-                            .name(map.get("english_name"))
-                            .market("UPBIT")
-                            .exchange("UPBIT")
-                            .type("CRYPTO")
-                            .build();
-                })
+                .map(map -> Asset.builder()
+                        .assetId(toAssetId("UPBIT", map.get("market")))
+                        .name(map.get("english_name"))
+                        .market("UPBIT")
+                        .exchange("UPBIT")
+                        .type("CRYPTO")
+                        .build())
                 .collect(Collectors.toList());
     }
 

@@ -1,32 +1,31 @@
-package org.chomookun.fintics.client.asset;
+package org.chomookun.fintics.client.dividend;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.junit.jupiter.api.Test;
 import org.chomookun.arch4j.core.common.test.CoreTestSupport;
 import org.chomookun.fintics.FinticsConfiguration;
 import org.chomookun.fintics.model.Asset;
+import org.chomookun.fintics.model.Dividend;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.MethodSource;
 import org.springframework.boot.test.context.SpringBootTest;
 
 import java.math.BigDecimal;
+import java.time.LocalDate;
 import java.util.List;
-
-import static org.junit.jupiter.api.Assertions.*;
 
 @SpringBootTest(classes = FinticsConfiguration.class)
 @RequiredArgsConstructor
 @Slf4j
-class SimpleAssetClientTest extends CoreTestSupport {
+class SimpleDividendClientTest extends CoreTestSupport {
 
-    private final AssetClientProperties assetClientProperties;
+    private final DividendClientProperties dividendClientProperties;
 
     private final ObjectMapper objectMapper;
 
-    SimpleAssetClient getSimpleAssetClient() {
-        return new SimpleAssetClient(assetClientProperties, objectMapper);
+    SimpleDividendClient getSimpleDividendClient() {
+        return new SimpleDividendClient(dividendClientProperties, objectMapper);
     }
 
     static List<Asset> getTestAssets() {
@@ -58,23 +57,16 @@ class SimpleAssetClientTest extends CoreTestSupport {
         );
     }
 
-    @Test
-    void getAssets() {
-        // given
-        // when
-        List<Asset> assets = getSimpleAssetClient().getAssets();
-        // then
-        log.info("assets: {}", assets);
-        assertFalse(assets.isEmpty());
-    }
-
     @ParameterizedTest
     @MethodSource("getTestAssets")
-    void updateAsset(Asset asset) {
+    void getDividends(Asset asset) {
+        // given
+        LocalDate dateFrom = LocalDate.now().minusYears(3);
+        LocalDate dateTo = LocalDate.now();
         // when
-        getSimpleAssetClient().updateAsset(asset);
+        List<Dividend> dividends = getSimpleDividendClient().getDividends(asset, dateFrom, dateTo);
         // then
-        log.info("asset: {}", asset);
+        log.info("dividends:{}", dividends);
     }
 
 }

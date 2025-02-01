@@ -1,12 +1,14 @@
 package org.chomookun.fintics.service;
 
 import lombok.RequiredArgsConstructor;
+import org.chomookun.fintics.client.ohlcv.OhlcvClient;
 import org.chomookun.fintics.dao.OhlcvRepository;
 import org.chomookun.fintics.dao.OhlcvSplitEntity;
 import org.chomookun.fintics.dao.OhlcvSplitRepository;
+import org.chomookun.fintics.model.Asset;
 import org.chomookun.fintics.model.Ohlcv;
 import org.springframework.data.domain.Pageable;
-import org.springframework.stereotype.Component;
+import org.springframework.stereotype.Service;
 
 import java.math.BigDecimal;
 import java.math.MathContext;
@@ -19,13 +21,17 @@ import java.util.TreeMap;
 /**
  * ohlcv service
  */
-@Component
+@Service
 @RequiredArgsConstructor
 public class OhlcvService {
 
     private final OhlcvRepository ohlcvRepository;
 
     private final OhlcvSplitRepository ohlcvSplitRepository;
+
+    private final AssetService assetService;
+
+    private final OhlcvClient ohlcvClient;
 
     /**
      * returns daily ohlcvs
@@ -40,6 +46,12 @@ public class OhlcvService {
         List<Ohlcv> dailyOhlcvs = ohlcvRepository.findAllByAssetIdAndType(assetId, Ohlcv.Type.DAILY, dateTimeFrom, dateTimeTo, pageable).stream()
                 .map(Ohlcv::from)
                 .toList();
+
+        // ohlcv client
+        if (dailyOhlcvs.isEmpty()) {
+            Asset asset = assetService.getAsset(assetId).orElseThrow();
+            dailyOhlcvs = ohlcvClient.getOhlcvs(asset, Ohlcv.Type.DAILY, dateTimeFrom, dateTimeTo, pageable);
+        }
 
         // apply split ratio
         applySplitRatioIfExist(assetId, dailyOhlcvs);

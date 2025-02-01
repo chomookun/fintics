@@ -51,11 +51,11 @@ public class AssetCollector extends AbstractScheduler {
     void saveAssets() {
         // basket 에 등록된 asset id 추출
         List<String> basketAssetIds = new ArrayList<>();
-        basketRepository.findAll().forEach(basketEntity -> {
-            basketAssetIds.addAll(basketEntity.getBasketAssets().stream()
-                    .map(BasketAssetEntity::getAssetId)
-                    .toList());
-        });
+        basketRepository.findAll().forEach(basketEntity ->
+                basketAssetIds.addAll(basketEntity.getBasketAssets().stream()
+                        .map(BasketAssetEntity::getAssetId)
+                        .toList())
+        );
 
         // AssetClient 로 부터 Assets 조회
         List<Asset> assetsFromClient = assetClient.getAssets();
@@ -102,8 +102,9 @@ public class AssetCollector extends AbstractScheduler {
                     assetClient.updateAsset(asset);
                 }
                 assetEntity.setUpdatedDate(LocalDate.now());
-                assetEntity.setMarketCap(asset.getMarketCap());
                 assetEntity.setPrice(asset.getPrice());
+                assetEntity.setVolume(asset.getVolume());
+                assetEntity.setMarketCap(asset.getMarketCap());
                 assetEntity.setEps(asset.getEps());
                 assetEntity.setRoe(asset.getRoe());
                 assetEntity.setPer(asset.getPer());

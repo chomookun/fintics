@@ -28,12 +28,11 @@ class UpbitAssetClientTest extends CoreTestSupport {
     @Disabled
     @Test
     void getAssets() {
-        // given
         // when
         List<Asset> assets = getUpbitAssetClient().getAssets();
         // then
         log.info("assets: {}", assets);
-        assertTrue(assets.size() > 0);
+        assertFalse(assets.isEmpty());
         assertTrue(assets.stream().allMatch(asset ->
                 asset.getAssetId() != null &&
                         asset.getName() != null &&

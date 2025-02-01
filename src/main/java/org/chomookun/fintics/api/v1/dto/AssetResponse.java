@@ -31,6 +31,10 @@ public class AssetResponse {
 
     private LocalDate updatedDate;
 
+    private BigDecimal price;
+
+    private BigDecimal volume;
+
     private BigDecimal marketCap;
 
     private BigDecimal eps;
@@ -72,6 +76,8 @@ public class AssetResponse {
                 .exchange(asset.getExchange())
                 .type(asset.getType())
                 .updatedDate(asset.getUpdatedDate())
+                .price(asset.getPrice())
+                .volume(asset.getVolume())
                 .marketCap(asset.getMarketCap())
                 .eps(asset.getEps())
                 .roe(asset.getRoe())

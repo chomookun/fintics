@@ -2,17 +2,19 @@ package org.chomookun.fintics.client.asset.market;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.chomookun.fintics.model.Dividend;
+import org.chomookun.fintics.model.Ohlcv;
 import org.junit.jupiter.api.Test;
 import org.chomookun.arch4j.core.common.test.CoreTestSupport;
 import org.chomookun.fintics.FinticsConfiguration;
 import org.chomookun.fintics.client.asset.AssetClientProperties;
 import org.chomookun.fintics.model.Asset;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.MethodSource;
 import org.springframework.boot.test.context.SpringBootTest;
 
 import java.math.BigDecimal;
-import java.time.LocalDate;
 import java.util.List;
-import java.util.Map;
 
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -23,18 +25,51 @@ class KrAssetClientTest extends CoreTestSupport {
 
     private final AssetClientProperties assetClientProperties;
 
+    /**
+     * Returns KrAssetClient
+     * @return KrAssetClient
+     */
     public KrAssetClient getKrAssetClient() {
         return new KrAssetClient(assetClientProperties);
     }
 
+    /**
+     * Returns test stock assets
+     * @return test stock assets
+     */
+    static List<Asset> getTestStockAssets() {
+        return List.of(
+                Asset.builder()
+                        .assetId("KR.005930")
+                        .name("Samsung Electronics")
+                        .market("KR")
+                        .type("STOCK")
+                        .marketCap(BigDecimal.TEN)
+                        .build()
+        );
+    }
+
+    /**
+     * Returns test ETF assets
+     * @return test ETF assets
+     */
+    static List<Asset> getTestEtfAssets() {
+        return List.of(
+                Asset.builder()
+                        .assetId("KR.069500")
+                        .name("KODEX 200")
+                        .market("KR")
+                        .type("ETF")
+                        .build()
+        );
+    }
+
     @Test
     void getAssets() {
-        // given
         // when
         List<Asset> assets = getKrAssetClient().getAssets();
         // then
-        log.info("assets: {}", assets);
-        assertTrue(assets.size() > 0);
+        assertFalse(assets.isEmpty());
         assertTrue(assets.stream().allMatch(asset ->
                 asset.getAssetId() != null &&
                         asset.getName() != null &&
@@ -43,100 +78,49 @@ class KrAssetClientTest extends CoreTestSupport {
                         asset.getType() != null));
     }
 
-    @Test
-    void getSecInfo() {
-        // given
-        Asset asset = Asset.builder()
-                .assetId("KR.005930")
-                .name("Samsung Electronics")
-                .market("KR")
-                .type("STOCK")
-                .marketCap(BigDecimal.TEN)
-                .build();
+    @ParameterizedTest
+    @MethodSource("getTestStockAssets")
+    void getStockOhlcvs(Asset asset) {
         // when
-        Map<String,String> secInfo = getKrAssetClient().getSecInfo(asset);
+        List<Ohlcv> stockOhlcvs = getKrAssetClient().getStockOhlcvs(asset);
         // then
-        log.info("secInfo:{}", secInfo);
+        assertFalse(stockOhlcvs.isEmpty());
     }
 
-    @Test
-    void getStockPrices() {
-        // given
-        Asset asset = Asset.builder()
-                .assetId("KR.005930")
-                .name("Samsung Electronics")
-                .market("KR")
-                .type("STOCK")
-                .marketCap(BigDecimal.TEN)
-                .build();
+    @ParameterizedTest
+    @MethodSource("getTestEtfAssets")
+    void getStockDividends(Asset asset) {
         // when
-        Map<LocalDate, BigDecimal> prices = getKrAssetClient().getStockPrices(asset);
+        List<Dividend> stockDividends = getKrAssetClient().getStockDividends(asset);
         // then
-        log.info("prices:{}", prices);
-        assertTrue(prices.size() > 0);
+        log.info("stockDividends:{}", stockDividends);
     }
 
-    @Test
-    void getStockDividends() {
-        // given
-        Asset asset = Asset.builder()
-                .assetId("KR.005930")
-                .name("Samsung Electronics")
-                .market("KR")
-                .type("STOCK")
-                .marketCap(BigDecimal.TEN)
-                .build();
+    @ParameterizedTest
+    @MethodSource("getTestEtfAssets")
+    void getEtfOhlcvs(Asset asset) {
         // when
-        Map<LocalDate, BigDecimal> dividends = getKrAssetClient().getStockDividends(asset);
+        List<Ohlcv> etfOhlcvs = getKrAssetClient().getEtfOhlcvs(asset);
         // then
-        log.info("dividends:{}", dividends);
+        assertFalse(etfOhlcvs.isEmpty());
     }
 
-    @Test
-    void getEtfPrices() {
-        // given
-        Asset asset = Asset.builder()
-                .assetId("KR.069500")
-                .name("KODEX 200")
-                .market("KR")
-                .type("ETF")
-                .build();
+    @ParameterizedTest
+    @MethodSource("getTestEtfAssets")
+    void getEtfDividends(Asset asset) {
         // when
-        Map<LocalDate, BigDecimal> prices = getKrAssetClient().getEtfPrices(asset);
+        List<Dividend> etfDividends = getKrAssetClient().getEtfDividends(asset);
         // then
-        log.info("prices:{}", prices);
-        assertTrue(prices.size() > 0);
+        log.info("etfDividends:{}", etfDividends);
     }
 
-    @Test
-    void getEtfDividends() {
-        // given
-        Asset asset = Asset.builder()
-                .assetId("KR.069500")
-                .name("KODEX 200")
-                .market("KR")
-                .type("ETF")
-                .build();
-        // when
-        Map<LocalDate, BigDecimal> dividends = getKrAssetClient().getEtfDividends(asset);
-        // then
-        log.info("dividends:{}", dividends);
-    }
-
-    @Test
-    void updateStockAsset() {
-        // given
-        Asset asset = Asset.builder()
-                .assetId("KR.005930")
-                .name("Samsung Electronics")
-                .market("KR")
-                .type("STOCK")
-                .marketCap(BigDecimal.TEN)
-                .build();
-        // when
+    @ParameterizedTest
+    @MethodSource("getTestStockAssets")
+    void updateStockAsset(Asset asset) {
+       // when
         getKrAssetClient().updateStockAsset(asset);
         // then
-        log.info("asset: {}", asset);
+        log.info("asset:{}", asset);
         assertNotNull(asset.getEps());
         assertNotNull(asset.getRoe());
         assertNotNull(asset.getPer());

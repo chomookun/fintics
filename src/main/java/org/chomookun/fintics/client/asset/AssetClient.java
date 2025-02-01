@@ -2,15 +2,12 @@ package org.chomookun.fintics.client.asset;
 
 import lombok.Getter;
 import org.chomookun.fintics.model.Asset;
-import org.chomookun.fintics.model.DividendProfit;
-import org.chomookun.fintics.model.Ohlcv;
 
 import java.util.List;
-import java.util.Map;
 
+@Getter
 public abstract class AssetClient {
 
-    @Getter
     private final AssetClientProperties assetClientProperties;
 
     /**

@@ -4,6 +4,8 @@
       xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
       layout:decorate="_web.html">
 <th:block layout:fragment="_content">
+    <script th:src="@{/static/lightweight-charts/lightweight-charts.js?version={version}(version=${_scriptVersion})}"></script>
+    <script th:src="@{/static/fintics.js?version={version}(version=${_scriptVersion})}"></script>
     <script th:inline="javascript">
         // defines
         const assetSearch = new duice.ObjectProxy({
@@ -171,7 +173,12 @@
                         <td>
                             <img class="icon border-radius--50 font-size--large" data-duice-bind="asset" data-duice-property="icon" th:onerror="|this.onerror=null; this.src='@{/static/image/icon-asset.svg}';|" alt=""/>
                             &nbsp;
-                            <span data-duice-bind="asset" data-duice-property="name"></span>
+                            <a href="javascript:void(0);"
+                               data-duice-bind="asset"
+                               data-duice-execute="this.dataset.assetId=asset.assetId;"
+                               onclick="_assetDialog.open(this.dataset.assetId);">
+                                <span data-duice-bind="asset" data-duice-property="name"></span>
+                            </a>
                         </td>
                         <td class="text-align--center">
                             <span data-duice-bind="asset" data-duice-property="market" class="badge"></span>
@@ -193,6 +200,14 @@
                                         <col class="width--50"/>
                                     </colgroup>
                                     <tbody>
+                                    <tr>
+                                        <td data-th-text="#{fintics.Asset.price}"></td>
+                                        <td data-duice-bind="asset" data-duice-property="price" data-duice-format="number()" class="text-align--right"></td>
+                                    </tr>
+                                    <tr>
+                                        <td data-th-text="#{fintics.Asset.volume}"></td>
+                                        <td data-duice-bind="asset" data-duice-property="volume" data-duice-format="number()" class="text-align--right"></td>
+                                    </tr>
                                     <tr>
                                         <td data-th-text="#{fintics.Asset.marketCap}"></td>
                                         <td data-duice-bind="asset" data-duice-property="marketCap" data-duice-format="number()" class="text-align--right"></td>
@@ -281,5 +296,7 @@
     <!-- ================================== -->
     <!-- end: assets                        -->
     <!-- ================================== -->
+
+    <th:block th:insert="_common.html :: _assetDialog"/>
 
 </th:block>

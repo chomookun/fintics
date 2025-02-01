@@ -10,6 +10,7 @@ insert into `core_authority`
 values
     ('api.assets','Y','Assets Access API Authority'),
     ('api.ohlcvs','Y','Ohlcvs API Authority'),
+    ('api.dividends','Y','Dividends Access API Authority'),
     ('api.orders','Y','Orders API Authority'),
     ('api.trades','Y','Trades API Access Authority'),
     ('api.trades.edit','Y','Trades Edit API Authority'),
@@ -42,6 +43,7 @@ insert into `core_role_authority`
 values
     ('USER','api.assets'),
     ('USER','api.ohlcvs'),
+    ('USER','api.dividends'),
     ('USER','api.orders'),
     ('USER','api.baskets'),
     ('USER','api.strategies'),

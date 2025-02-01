@@ -3,19 +3,19 @@ package org.chomookun.fintics.client.asset.market;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.junit.jupiter.api.Disabled;
+import org.chomookun.fintics.model.Dividend;
+import org.chomookun.fintics.model.Ohlcv;
 import org.junit.jupiter.api.Test;
 import org.chomookun.arch4j.core.common.test.CoreTestSupport;
 import org.chomookun.fintics.FinticsConfiguration;
 import org.chomookun.fintics.client.asset.AssetClientProperties;
 import org.chomookun.fintics.model.Asset;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.MethodSource;
 import org.springframework.boot.test.context.SpringBootTest;
 
-import java.math.BigDecimal;
-import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
 
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -32,14 +32,41 @@ class UsAssetClientTest extends CoreTestSupport {
         return new UsAssetClient(assetClientProperties, objectMapper);
     }
 
+    /**
+     * Returns test stock assets
+     * @return test stock assets
+     */
+    static List<Asset> getTestStockAssets() {
+        return List.of(
+                Asset.builder()
+                        .assetId("US.MSFT")
+                        .name("Microsoft Corporation Common Stock")
+                        .market("US")
+                        .type("STOCK")
+                        .build()
+        );
+    }
+
+    /**
+     * Returns test ETF assets
+     * @return test ETF assets
+     */
+    static List<Asset> getTestEtfAssets() {
+        return List.of(
+                Asset.builder()
+                        .assetId("US.SPY")
+                        .market("US")
+                        .type("ETF")
+                        .build()
+        );
+    }
+
     @Test
     void getAssets() {
-        // given
         // when
         List<Asset> assets = getUsAssetClient().getAssets();
         // then
-        log.info("assets: {}", assets);
-        assertTrue(assets.size() > 0);
+        assertFalse(assets.isEmpty());
         assertTrue(assets.stream().allMatch(asset ->
                 asset.getAssetId() != null &&
                         asset.getName() != null &&
@@ -59,8 +86,7 @@ class UsAssetClientTest extends CoreTestSupport {
             assets.addAll(exchangeAssets);
         });
         // then
-        log.info("assets: {}", assets);
-        assertTrue(assets.size() > 0);
+        assertFalse(assets.isEmpty());
         assertTrue(assets.stream().allMatch(asset ->
                 asset.getAssetId() != null &&
                         asset.getName() != null &&
@@ -71,12 +97,10 @@ class UsAssetClientTest extends CoreTestSupport {
 
     @Test
     void getEtfAssets() {
-        // given
         // when
         List<Asset> assets = getUsAssetClient().getEtfAssets();
         // then
-        log.info("assets: {}", assets);
-        assertTrue(assets.size() > 0);
+        assertFalse(assets.isEmpty());
         assertTrue(assets.stream().allMatch(asset ->
                 asset.getAssetId() != null &&
                         asset.getName() != null &&
@@ -85,76 +109,27 @@ class UsAssetClientTest extends CoreTestSupport {
                         asset.getType() != null));
     }
 
-    @Test
-    void getStockPrices() {
-        // given
-        Asset asset = Asset.builder()
-                .assetId("US.MSFT")
-                .name("Microsoft Corporation Common Stock")
-                .market("US")
-                .type("STOCK")
-                .build();
+    @ParameterizedTest
+    @MethodSource({"getTestStockAssets", "getTestEtfAssets"})
+    void getOhlcvs(Asset asset) {
         // when
-        Map<LocalDate, BigDecimal> stockPrices = getUsAssetClient().getPrices(asset);
+        List<Ohlcv> ohlcvs = getUsAssetClient().getOhlcvs(asset);
         // then
-        log.info("stockPrice:{}", stockPrices);
-        assertTrue(stockPrices.size() > 0);
+        assertFalse(ohlcvs.isEmpty());
     }
 
-    @Test
-    void getEtfPrices() {
-        // given
-        Asset asset = Asset.builder()
-                .assetId("US.SPY")
-                .market("US")
-                .type("ETF")
-                .build();
+    @ParameterizedTest
+    @MethodSource({"getTestStockAssets", "getTestEtfAssets"})
+    void getDividends(Asset asset) {
         // when
-        Map<LocalDate, BigDecimal> etfPrices = getUsAssetClient().getPrices(asset);
+        List<Dividend> dividends = getUsAssetClient().getDividends(asset);
         // then
-        log.info("etfPrices:{}", etfPrices);
-        assertTrue(etfPrices.size() > 0);
+        log.info("dividends:{}", dividends);
     }
 
-    @Test
-    void getStockDividends() {
-        // given
-        Asset asset = Asset.builder()
-                .assetId("US.MSFT")
-                .name("Microsoft Corporation Common Stock")
-                .market("US")
-                .type("STOCK")
-                .build();
-        // when
-        Map<LocalDate, BigDecimal> stockDividends = getUsAssetClient().getDividends(asset);
-        // then
-        log.info("stockDividends:{}", stockDividends);
-    }
-
-    @Test
-    void getEtfDividends() {
-        // given
-        Asset asset = Asset.builder()
-                .assetId("US.SPY")
-                .market("US")
-                .type("ETF")
-                .build();
-        // when
-        Map<LocalDate, BigDecimal> etfDividends = getUsAssetClient().getDividends(asset);
-        // then
-        log.info("etfDividends:{}", etfDividends);
-        assertTrue(etfDividends.size() > 0);
-    }
-
-    @Test
-    void updateStockAsset() {
-        // given
-        Asset asset = Asset.builder()
-                .assetId("US.MSFT")
-                .name("Microsoft Corporation Common Stock")
-                .market("US")
-                .type("STOCK")
-                .build();
+    @ParameterizedTest
+    @MethodSource("getTestStockAssets")
+    void updateStockAsset(Asset asset) {
         // when
         getUsAssetClient().updateStockAsset(asset);
         // then
@@ -164,14 +139,9 @@ class UsAssetClientTest extends CoreTestSupport {
         assertNotNull(asset.getTotalReturn());
     }
 
-    @Test
-    void updateEtfAsset() {
-        // given
-        Asset asset = Asset.builder()
-                .assetId("US.SPY")
-                .market("US")
-                .type("ETF")
-                .build();
+    @ParameterizedTest
+    @MethodSource("getTestEtfAssets")
+    void updateEtfAsset(Asset asset) {
         // when
         getUsAssetClient().updateEtfAsset(asset);
         // then

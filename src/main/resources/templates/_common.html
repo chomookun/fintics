@@ -37,6 +37,7 @@
                     },
                 },
                 candlestickSeries: null,
+                dividends: new duice.ArrayProxy([]),
                 open: async function(assetId) {
                     this.assetId = assetId;
 
@@ -61,6 +62,7 @@
                     this.dailyOhlcvs = [];
                     this.candlestickSeries.setData([]);
                     document.getElementsByName('_assetDialogChartPeriod').forEach(it => it.checked = false);
+                    duice.ArrayProxy.clear(this.dividends);
 
                     // retrieves asset
                     this.getAsset();
@@ -78,6 +80,9 @@
                         document.getElementsByName('_assetDialogChartPeriod')[0].checked = true;
                         this.drawChart('daily', 1);
                     });
+
+                    // retrieves dividends
+                    this.getDividends();
 
                     // returns promise
                     return promise;
@@ -165,6 +170,16 @@
 
                     // returns
                     return resampledData;
+                },
+                getDividends: function () {
+                    this.dividends._status = 'loading';
+                    duice.ArrayProxy.clear(this.dividends);
+                    let url = new URL(`${_apiUrl}/v1/dividends/${this.assetId}`, document.location.href);
+                    _fetch(url).then(response => response.json())
+                        .then(responseBody => {
+                            this.dividends._status = 'completed';
+                            duice.ArrayProxy.assign(this.dividends, responseBody);
+                        });
                 }
             }
         </script>
@@ -219,6 +234,16 @@
                         </td>
                     </tr>
                     <tr>
+                        <td data-th-text="#{fintics.Asset.price}" class="font-weight--bold"></td>
+                        <td class="text-align--right">
+                            <span data-duice-bind="_assetDialog.asset" data-duice-property="price" data-duice-format="number()" class="number"></span>
+                        </td>
+                        <td data-th-text="#{fintics.Asset.volume}" class="font-weight--bold"></td>
+                        <td class="text-align--right">
+                            <span data-duice-bind="_assetDialog.asset" data-duice-property="volume" data-duice-format="number()" class="number"></span>
+                        </td>
+                    </tr>
+                    <tr>
                         <td data-th-text="#{fintics.Asset.marketCap}" class="font-weight--bold"></td>
                         <td class="text-align--right">
                             <span data-duice-bind="_assetDialog.asset" data-duice-property="marketCap" data-duice-format="number()" class="number"></span>
@@ -242,6 +267,7 @@
                         <td data-th-text="#{fintics.Asset.dividendYield}" class="font-weight--bold"></td>
                         <td class="text-align--right">
                             <span data-duice-bind="_assetDialog.asset" data-duice-property="dividendYield" class="number"></span>
+                            <span class="code">%</spanc>
                         </td>
                         <td data-th-text="#{fintics.Asset.dividendFrequency}" class="font-weight--bold"></td>
                         <td class="text-align--right">
@@ -291,6 +317,48 @@
                     </div>
                 </div>
                 <div id="_assetDialogChart"></div>
+            </div>
+            <div>
+                <div>
+                    <img class="icon" th:src="@{/static/image/icon-dividend.svg}" alt="detail"/>
+                    <span data-th-text="#{fintics.Dividend}" class="font-weight--bold"></span>
+                </div>
+                <div class="width-100 box overflow--auto" style="max-height:15rem;">
+                    <table class="table width--100 border--none">
+                        <thead>
+                        <tr>
+                            <th>
+                                <span th:text="#{fintics.Dividend.date}"></span>
+                            </th>
+                            <th>
+                                <span th:text="#{fintics.Dividend.dividendPerShare}"></span>
+                            </th>
+                        </tr>
+                        </thead>
+                        <tbody>
+                        <tr data-duice-bind="_assetDialog.dividends" data-duice-loop="dividend,status">
+                            <td class="text-align--center">
+                                <span data-duice-bind="dividend" data-duice-property="date" class="date"></span>
+                            </td>
+                            <td class="text-align--right">
+                                <span data-duice-bind="dividend" data-duice-property="dividendPerShare" class="number"></span>
+                            </td>
+                        </tr>
+                        <tr data-duice-bind="_assetDialog.dividends"
+                            data-duice-if="return _assetDialog.dividends._status === 'loading';">
+                            <td colspan="100%" class="text-align--center padding--1rem">
+                                <span class="blink" data-th-text="#{web.global.itemLoading(#{fintics.Dividend})}"></span>
+                            </td>
+                        </tr>
+                        <tr data-duice-bind="_assetDialog.dividends"
+                            data-duice-if="return _assetDialog.dividends._status === 'completed' && _assetDialog.dividends.length < 1;" hidden>
+                            <td colspan="100%" class="text-align--center padding--1rem">
+                                <span data-th-text="#{web.global.itemNotFound(#{fintics.Dividend})}"></span>
+                            </td>
+                        </tr>
+                        </tbody>
+                    </table>
+                </div>
             </div>
        </div>
     </dialog>

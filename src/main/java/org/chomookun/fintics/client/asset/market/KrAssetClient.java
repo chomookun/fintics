@@ -5,40 +5,28 @@ import org.apache.hc.client5.http.impl.DefaultHttpRequestRetryStrategy;
 import org.chomookun.arch4j.core.common.support.RestTemplateBuilder;
 import org.chomookun.fintics.client.asset.AssetClient;
 import org.chomookun.fintics.client.asset.AssetClientProperties;
+import org.chomookun.fintics.client.support.SeibroClientSupport;
 import org.chomookun.fintics.model.Asset;
-import org.chomookun.fintics.model.DividendProfit;
+import org.chomookun.fintics.model.Dividend;
 import org.chomookun.fintics.model.Ohlcv;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
 import org.springframework.http.RequestEntity;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.client.RestTemplate;
-import org.w3c.dom.*;
-import org.xml.sax.InputSource;
 
-import javax.xml.parsers.DocumentBuilder;
-import javax.xml.parsers.DocumentBuilderFactory;
-import javax.xml.transform.OutputKeys;
-import javax.xml.transform.Transformer;
-import javax.xml.transform.TransformerFactory;
-import javax.xml.transform.dom.DOMSource;
-import javax.xml.transform.stream.StreamResult;
-import javax.xml.xpath.XPath;
-import javax.xml.xpath.XPathConstants;
-import javax.xml.xpath.XPathExpression;
-import javax.xml.xpath.XPathFactory;
-import java.io.StringReader;
-import java.io.StringWriter;
 import java.math.BigDecimal;
 import java.math.MathContext;
 import java.math.RoundingMode;
 import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.time.ZoneId;
 import java.time.format.DateTimeFormatter;
 import java.util.*;
 import java.util.stream.Collectors;
 
 @Slf4j
-public class KrAssetClient extends AssetClient {
+public class KrAssetClient extends AssetClient implements SeibroClientSupport {
 
     private static final String MARKET_KR = "KR";
 
@@ -109,8 +97,8 @@ public class KrAssetClient extends AssetClient {
 
         // sort
         rows.sort((o1, o2) -> {
-            BigDecimal o1MarketCap = toNumber(o1.get("MARTP_TOTAMT"), BigDecimal.ZERO);
-            BigDecimal o2MarketCap = toNumber(o2.get("MARTP_TOTAMT"), BigDecimal.ZERO);
+            BigDecimal o1MarketCap = convertStringToNumber(o1.get("MARTP_TOTAMT"), BigDecimal.ZERO);
+            BigDecimal o2MarketCap = convertStringToNumber(o2.get("MARTP_TOTAMT"), BigDecimal.ZERO);
             return o2MarketCap.compareTo(o1MarketCap);
         });
 
@@ -131,7 +119,7 @@ public class KrAssetClient extends AssetClient {
                             .exchange(exchange)
                             .type("STOCK")
                             .updatedDate(LocalDate.now())
-                            .marketCap(toNumber(row.get("MARTP_TOTAMT"), null))
+                            .marketCap(convertStringToNumber(row.get("MARTP_TOTAMT"), null))
                             .build();
                 })
                 .collect(Collectors.toList());
@@ -177,8 +165,8 @@ public class KrAssetClient extends AssetClient {
 
         // sort
         rows.sort((o1, o2) -> {
-            BigDecimal o1MarketCap = toNumber(o1.get("NETASST_TOTAMT"), BigDecimal.ZERO);
-            BigDecimal o2MarketCap = toNumber(o2.get("NETASST_TOTAMT"), BigDecimal.ZERO);
+            BigDecimal o1MarketCap = convertStringToNumber(o1.get("NETASST_TOTAMT"), BigDecimal.ZERO);
+            BigDecimal o2MarketCap = convertStringToNumber(o2.get("NETASST_TOTAMT"), BigDecimal.ZERO);
             return o2MarketCap.compareTo(o1MarketCap);
         });
 
@@ -189,7 +177,7 @@ public class KrAssetClient extends AssetClient {
         return rows.stream()
                 .map(row -> {
                     // market cap (etf is 1 krw unit)
-                    BigDecimal marketCap = toNumber(row.get("NETASST_TOTAMT"), null);
+                    BigDecimal marketCap = convertStringToNumber(row.get("NETASST_TOTAMT"), null);
                     if(marketCap != null) {
                         marketCap = marketCap.divide(BigDecimal.valueOf(100_000_000), MathContext.DECIMAL32)
                                 .setScale(0, RoundingMode.HALF_UP);
@@ -219,13 +207,19 @@ public class KrAssetClient extends AssetClient {
             case "STOCK" -> updateStockAsset(asset);
             case "ETF" -> updateEtfAsset(asset);
             default -> throw new RuntimeException("Unsupported asset type");
-        };
+        }
     }
 
+    /**
+     * Updates stock asset
+     * @param asset stock asset
+     */
     void updateStockAsset(Asset asset) {
+        BigDecimal price = null;
+        BigDecimal volume = null;
+        BigDecimal marketCap = asset.getMarketCap();
         BigDecimal eps = null;
         BigDecimal roe = null;
-        BigDecimal price = null;
         BigDecimal per = null;
         int dividendFrequency = 0;
         BigDecimal dividendYield = BigDecimal.ZERO;
@@ -233,7 +227,7 @@ public class KrAssetClient extends AssetClient {
         BigDecimal totalReturn = BigDecimal.ZERO;
 
         // sec info
-        Map<String,String> secInfo = getSecInfo(asset);
+        Map<String,String> secInfo = getSeibroSecInfo(asset, restTemplate);
         String issucoCustno = secInfo.get("ISSUCO_CUSTNO");
 
         // calculates TTM EPS
@@ -273,7 +267,7 @@ public class KrAssetClient extends AssetClient {
                     continue;
                 }
                 if (value != null && value.trim().length() > 0) {
-                    ttmEpses.add(toNumber(value, BigDecimal.ZERO));
+                    ttmEpses.add(convertStringToNumber(value, BigDecimal.ZERO));
                 }
                 if (ttmEpses.size() >= 4) {
                     break;
@@ -323,7 +317,7 @@ public class KrAssetClient extends AssetClient {
                     continue;
                 }
                 if (value != null && value.trim().length() > 0) {
-                    ttmRoes.add(toNumber(value, BigDecimal.ZERO));
+                    ttmRoes.add(convertStringToNumber(value, BigDecimal.ZERO));
                 }
                 if (ttmRoes.size() >= 4) {
                     break;
@@ -337,12 +331,10 @@ public class KrAssetClient extends AssetClient {
             throw new RuntimeException(e);
         }
 
-        // price
-        Map<LocalDate, BigDecimal> prices = getStockPrices(asset);
-        price = prices.entrySet().stream()
-                .max(Map.Entry.comparingByKey())
-                .map(Map.Entry::getValue)
-                .orElseThrow();
+        // price,volume
+        List<Ohlcv> ohlcvs = getStockOhlcvs(asset);
+        price = ohlcvs.get(0).getClose();
+        volume = ohlcvs.get(0).getVolume();
 
         // calculates PER
         if (eps.compareTo(BigDecimal.ZERO) <= 0) {
@@ -353,23 +345,18 @@ public class KrAssetClient extends AssetClient {
         }
 
         // calculates dividend
-        Map<LocalDate, BigDecimal> dividends = getStockDividends(asset);
+        List<Dividend> dividends = getStockDividends(asset);
         dividendFrequency = dividends.size();
-        BigDecimal dividendPerShare = dividends.values().stream()
+        BigDecimal dividendPerShare = dividends.stream()
+                .map(Dividend::getDividendPerShare)
                 .reduce(BigDecimal.ZERO, BigDecimal::add);
         dividendYield = dividendPerShare.divide(price, MathContext.DECIMAL32)
                 .multiply(BigDecimal.valueOf(100))
                 .setScale(2, RoundingMode.HALF_UP);
 
         // capital gain
-        BigDecimal startClose = prices.entrySet().stream()
-                .min(Map.Entry.comparingByKey())
-                .map(Map.Entry::getValue)
-                .orElse(BigDecimal.ZERO);
-        BigDecimal endClose = prices.entrySet().stream()
-                .max(Map.Entry.comparingByKey())
-                .map(Map.Entry::getValue)
-                .orElse(BigDecimal.ZERO);
+        BigDecimal startClose = ohlcvs.get(ohlcvs.size()-1).getClose();
+        BigDecimal endClose =  ohlcvs.get(0).getClose();
         capitalGain = endClose.subtract(startClose)
                 .divide(startClose, MathContext.DECIMAL32)
                 .multiply(BigDecimal.valueOf(100))
@@ -380,10 +367,12 @@ public class KrAssetClient extends AssetClient {
                 .setScale(2, RoundingMode.HALF_UP);
 
         // updates asset
+        asset.setPrice(price);
+        asset.setVolume(volume);
+        asset.setMarketCap(marketCap);
         asset.setEps(eps);
         asset.setRoe(roe);
         asset.setPer(per);
-        asset.setPrice(price);
         asset.setDividendFrequency(dividendFrequency);
         asset.setDividendYield(dividendYield);
         asset.setCapitalGain(capitalGain);
@@ -394,19 +383,20 @@ public class KrAssetClient extends AssetClient {
      * Returns stock ohlcvs
      * @param asset asset
      * @return ohlcvs
+     * @see <a href="https://seibro.or.kr/websquare/control.jsp?w2xPath=/IPORTAL/user/stock/BIP_CNTS02007V.xml&menuNo=45">일자별시세</a>
      */
-    Map<LocalDate, BigDecimal> getStockPrices(Asset asset) {
+    List<Ohlcv> getStockOhlcvs(Asset asset) {
         LocalDate dateFrom = LocalDate.now().minusYears(1);
-        LocalDate dateTo = LocalDate.now().minusDays(1);
+        LocalDate dateTo = LocalDate.now();
         String url = "https://seibro.or.kr/websquare/engine/proworks/callServletService.jsp";
         String w2xPath = "/IPORTAL/user/stock/BIP_CNTS02007V.xml&menuNo=45";
         HttpHeaders headers = createSeibroHeaders(w2xPath);
         headers.setContentType(MediaType.APPLICATION_XML);
         String action = "secnInfoDDPList";
         String task = "ksd.safe.bip.cnts.Stock.process.SecnInfoPTask";
-        Map<String,String> secInfo = getSecInfo(asset);
+        Map<String,String> secInfo = getSeibroSecInfo(asset, restTemplate);
         String isin = secInfo.get("ISIN");
-        Map<LocalDate, BigDecimal> prices = new LinkedHashMap<>();
+        List<Ohlcv> ohlcvs = new ArrayList<>();
         int startPage = 1;
         int endPage = 100;
         for (int i = 0; i < 100; i ++) {
@@ -429,11 +419,26 @@ public class KrAssetClient extends AssetClient {
             String responseBody = responseEntity.getBody();
             List<Map<String, String>> rows = convertSeibroXmlToList(responseBody);
             rows.forEach(row -> {
-                LocalDate date = LocalDate.parse(row.get("SECN_PRICE_STD_DT"), DateTimeFormatter.BASIC_ISO_DATE);
-                BigDecimal price = new BigDecimal(row.get("CURDAY_CPRI"));
-                prices.put(date, price);
+                LocalDateTime dateTime = LocalDate.parse(row.get("SECN_PRICE_STD_DT"), DateTimeFormatter.BASIC_ISO_DATE).atStartOfDay();
+                BigDecimal open = new BigDecimal(row.get("MARTP"));
+                BigDecimal high = new BigDecimal(row.get("HGPRC"));
+                BigDecimal low = new BigDecimal(row.get("LWPRC"));
+                BigDecimal close = new BigDecimal(row.get("CURDAY_CPRI"));
+                BigDecimal volume = new BigDecimal(row.get("TR_QTY"));
+                Ohlcv ohlcv = Ohlcv.builder()
+                        .assetId(asset.getAssetId())
+                        .dateTime(dateTime)
+                        .timeZone(ZoneId.of("Asia/Seoul"))
+                        .type(Ohlcv.Type.DAILY)
+                        .dateTime(dateTime)
+                        .open(open)
+                        .high(high)
+                        .low(low)
+                        .close(close)
+                        .volume(volume)
+                        .build();
+                ohlcvs.add(ohlcv);
             });
-
             // check next page
             if (rows.size() < 100) {
                 break;
@@ -442,89 +447,105 @@ public class KrAssetClient extends AssetClient {
                 endPage += 100;
             }
         }
+        // sort
+        ohlcvs.sort(Comparator.comparing(Ohlcv::getDateTime).reversed());
         // returns
-        return prices;
+        return ohlcvs;
     }
 
     /**
      * returns stock dividends
      * @param asset asset
      * @return dividends
-     * @see [배당내역전체검색] (https://seibro.or.kr/websquare/control.jsp?w2xPath=/IPORTAL/user/company/BIP_CNTS01041V.xml&menuNo=285)
+     * @see <a href="https://seibro.or.kr/websquare/control.jsp?w2xPath=/IPORTAL/user/company/BIP_CNTS01041V.xml&menuNo=285">배당내역전체검색</a>
      */
-    Map<LocalDate, BigDecimal> getStockDividends(Asset asset) {
+    List<Dividend> getStockDividends(Asset asset) {
         LocalDate dateFrom = LocalDate.now().minusYears(1);
-        LocalDate dateTo = LocalDate.now().minusDays(1);
+        LocalDate dateTo = LocalDate.now();
         String url = "https://seibro.or.kr/websquare/engine/proworks/callServletService.jsp";
         String w2xPath = "/IPORTAL/user/company/BIP_CNTS01041V.xml";
         HttpHeaders headers = createSeibroHeaders(w2xPath);
         headers.setContentType(MediaType.APPLICATION_XML);
         String action = "divStatInfoPList";
         String task = "ksd.safe.bip.cnts.Company.process.EntrFnafInfoPTask";
-        Map<String,String> secInfo = getSecInfo(asset);
+        Map<String,String> secInfo = getSeibroSecInfo(asset, restTemplate);
         String issucoCustno = secInfo.get("ISSUCO_CUSTNO");
         String isin = secInfo.get("SHOTN_ISIN");
-        Map<String,String> payloadMap = new LinkedHashMap<>(){{
-            put("W2XPATH", w2xPath);
-            put("MENU_NO","285");
-            put("CMM_BTN_ABBR_NM","allview,allview,print,hwp,word,pdf,searchIcon,seach,xls,link,link,wide,wide,top,");
-            put("ISSUCO_CUSTNO", issucoCustno);
-            put("RGT_RSN_DTAIL_SORT_CD", "02");     // 현금 배당
-            put("RGT_STD_DT_FROM", dateFrom.format(DateTimeFormatter.BASIC_ISO_DATE));
-            put("RGT_STD_DT_TO", dateTo.format(DateTimeFormatter.BASIC_ISO_DATE));
-            put("START_PAGE", String.valueOf(1));
-            put("END_PAGE", String.valueOf(30));
-        }};
-        String payloadXml = createSeibroPayloadXml(action, task, payloadMap);
-        RequestEntity<String> requestEntity = RequestEntity.post(url)
-                .headers(headers)
-                .body(payloadXml);
-        ResponseEntity<String> responseEntity = restTemplate.exchange(requestEntity, String.class);
-        String responseBody = responseEntity.getBody();
-        List<Map<String,String>> rows = convertSeibroXmlToList(responseBody);
-        Map<LocalDate, BigDecimal> dividends = new HashMap<>();
-        rows.stream()
-                .filter(row -> Objects.equals(row.get("SHOTN_ISIN"), isin))     // 해당 종목 배당정보만 필터링
-                .forEach(row -> {
-                    LocalDate date = LocalDate.parse(row.get("RGT_STD_DT"), DateTimeFormatter.BASIC_ISO_DATE);
-                    BigDecimal dividend = new BigDecimal(row.get("CASH_ALOC_AMT"));
-                    dividends.put(date, dividend);
-                });
+        List<Dividend> dividends = new ArrayList<>();
+        int startPage = 1;
+        int endPage = 100;
+        for (int i = 0; i < 100; i ++) {
+            int finalStartPage = startPage;
+            int finalEndPage = endPage;
+            Map<String, String> payloadMap = new LinkedHashMap<>() {{
+                put("W2XPATH", w2xPath);
+                put("MENU_NO", "285");
+                put("CMM_BTN_ABBR_NM", "allview,allview,print,hwp,word,pdf,searchIcon,seach,xls,link,link,wide,wide,top,");
+                put("ISSUCO_CUSTNO", issucoCustno);
+                put("RGT_RSN_DTAIL_SORT_CD", "02");     // 현금 배당
+                put("RGT_STD_DT_FROM", dateFrom.format(DateTimeFormatter.BASIC_ISO_DATE));
+                put("RGT_STD_DT_TO", dateTo.format(DateTimeFormatter.BASIC_ISO_DATE));
+                put("START_PAGE", String.valueOf(finalStartPage));
+                put("END_PAGE", String.valueOf(finalEndPage));
+            }};
+            String payloadXml = createSeibroPayloadXml(action, task, payloadMap);
+            RequestEntity<String> requestEntity = RequestEntity.post(url)
+                    .headers(headers)
+                    .body(payloadXml);
+            ResponseEntity<String> responseEntity = restTemplate.exchange(requestEntity, String.class);
+            String responseBody = responseEntity.getBody();
+            List<Map<String, String>> rows = convertSeibroXmlToList(responseBody);
+            rows.stream()
+                    .filter(row -> Objects.equals(row.get("SHOTN_ISIN"), isin))     // 해당 종목 배당정보만 필터링
+                    .forEach(row -> {
+                        LocalDate date = LocalDate.parse(row.get("RGT_STD_DT"), DateTimeFormatter.BASIC_ISO_DATE);
+                        BigDecimal dividendPerShare = new BigDecimal(row.get("CASH_ALOC_AMT"));
+                        Dividend dividend = Dividend.builder()
+                                .assetId(asset.getAssetId())
+                                .date(date)
+                                .dividendPerShare(dividendPerShare)
+                                .build();
+                        dividends.add(dividend);
+                    });
+            // check next page
+            if (rows.size() < 100) {
+                break;
+            } else {
+                startPage += 100;
+                endPage += 100;
+            }
+        }
+        // sort
+        dividends.sort(Comparator.comparing(Dividend::getDate).reversed());
+        // returns
         return dividends;
     }
 
     void updateEtfAsset(Asset asset) {
-        BigDecimal price = null;
+        BigDecimal price;
+        BigDecimal volume;
+        BigDecimal marketCap = asset.getMarketCap();
         int dividendFrequency = 0;
         BigDecimal dividendYield = BigDecimal.ZERO;
         BigDecimal capitalGain = BigDecimal.ZERO;
         BigDecimal totalReturn = BigDecimal.ZERO;
 
         // price
-        Map<LocalDate, BigDecimal> prices = getEtfPrices(asset);
-        price = prices.entrySet().stream()
-                .max(Map.Entry.comparingByKey())
-                .map(Map.Entry::getValue)
-                .orElseThrow();
+        List<Ohlcv> ohlcvs = getEtfOhlcvs(asset);
+        price = ohlcvs.get(0).getClose();
+        volume = ohlcvs.get(0).getVolume();
 
         // calculates dividend
-        Map<LocalDate, BigDecimal> dividends = getEtfDividends(asset);
+        List<Dividend> dividends = getEtfDividends(asset);
         dividendFrequency = dividends.size();
-        BigDecimal dividendPerShare = dividends.values().stream()
-                .reduce(BigDecimal.ZERO, BigDecimal::add);
+        BigDecimal dividendPerShare = dividends.get(0).getDividendPerShare();
         dividendYield = dividendPerShare.divide(price, MathContext.DECIMAL32)
                 .multiply(BigDecimal.valueOf(100))
                 .setScale(2, RoundingMode.HALF_UP);
 
         // capital gain
-        BigDecimal startPrice = prices.entrySet().stream()
-                .min(Map.Entry.comparingByKey())
-                .map(Map.Entry::getValue)
-                .orElse(BigDecimal.ZERO);
-        BigDecimal endPrice = prices.entrySet().stream()
-                .max(Map.Entry.comparingByKey())
-                .map(Map.Entry::getValue)
-                .orElse(BigDecimal.ZERO);
+        BigDecimal startPrice = ohlcvs.get(ohlcvs.size() - 1).getClose();
+        BigDecimal endPrice = ohlcvs.get(0).getClose();
         capitalGain = endPrice.subtract(startPrice)
                 .divide(startPrice, MathContext.DECIMAL32)
                 .multiply(BigDecimal.valueOf(100))
@@ -535,6 +556,9 @@ public class KrAssetClient extends AssetClient {
                 .setScale(2, RoundingMode.HALF_UP);
 
         // updates asset
+        asset.setPrice(price);
+        asset.setVolume(volume);
+        asset.setMarketCap(marketCap);
         asset.setDividendFrequency(dividendFrequency);
         asset.setDividendYield(dividendYield);
         asset.setCapitalGain(capitalGain);
@@ -545,20 +569,20 @@ public class KrAssetClient extends AssetClient {
      * Returns ETF ohlcvs
      * @param asset asset
      * @return etf ohlcvs
-     * @see [기준가추이] (https://seibro.or.kr/websquare/control.jsp?w2xPath=/IPORTAL/user/etf/BIP_CNTS06033V.xml&menuNo=182)
+     * @see <a href="https://seibro.or.kr/websquare/control.jsp?w2xPath=/IPORTAL/user/etf/BIP_CNTS06033V.xml&menuNo=182">기준가추이</a>
      */
-    Map<LocalDate, BigDecimal> getEtfPrices(Asset asset) {
+    List<Ohlcv> getEtfOhlcvs(Asset asset) {
         LocalDate dateFrom = LocalDate.now().minusYears(1);
-        LocalDate dateTo = LocalDate.now().minusDays(1);
+        LocalDate dateTo = LocalDate.now();
         String url = "https://seibro.or.kr/websquare/engine/proworks/callServletService.jsp";
         String w2xPath = "/IPORTAL/user/etf/BIP_CNTS06033V.xml";
         HttpHeaders headers = createSeibroHeaders(w2xPath);
         headers.setContentType(MediaType.APPLICATION_XML);
         String action = "compstInfoStkDayprcList";
         String task = "ksd.safe.bip.cnts.etf.process.EtfCompstInfoPTask";
-        Map<String,String> secInfo = getSecInfo(asset);
+        Map<String,String> secInfo = getSeibroSecInfo(asset, restTemplate);
         String isin = secInfo.get("ISIN");
-        Map<LocalDate, BigDecimal> prices = new HashMap<>();
+        List<Ohlcv> ohlcvs = new ArrayList<>();
         int startPage = 1;
         int endPage = 100;
         for (int i = 0; i < 100; i ++) {
@@ -583,9 +607,25 @@ public class KrAssetClient extends AssetClient {
             String responseBody = responseEntity.getBody();
             List<Map<String, String>> rows = convertSeibroXmlToList(responseBody);
             rows.forEach(row -> {
-                LocalDate date = LocalDate.parse(row.get("STD_DT"), DateTimeFormatter.BASIC_ISO_DATE);
-                BigDecimal price = new BigDecimal(row.get("CPRI"));
-                prices.put(date, price);
+                LocalDateTime dateTime = LocalDate.parse(row.get("STD_DT"), DateTimeFormatter.BASIC_ISO_DATE).atStartOfDay();
+                BigDecimal open = new BigDecimal(row.get("MARTP"));
+                BigDecimal high = new BigDecimal(row.get("HGPRC"));
+                BigDecimal low = new BigDecimal(row.get("LWPRC"));
+                BigDecimal close = new BigDecimal(row.get("CPRI"));
+                BigDecimal volume = new BigDecimal(row.get("TR_QTY"));
+                Ohlcv ohlcv = Ohlcv.builder()
+                        .assetId(asset.getAssetId())
+                        .dateTime(dateTime)
+                        .timeZone(ZoneId.of("Asia/Seoul"))
+                        .type(Ohlcv.Type.DAILY)
+                        .dateTime(dateTime)
+                        .open(open)
+                        .high(high)
+                        .low(low)
+                        .close(close)
+                        .volume(volume)
+                        .build();
+                ohlcvs.add(ohlcv);
             });
             // check next page
             if (rows.size() < 100) {
@@ -595,235 +635,75 @@ public class KrAssetClient extends AssetClient {
                 endPage += 100;
             }
         }
+        // sort
+        ohlcvs.sort(Comparator.comparing(Ohlcv::getDateTime).reversed());
         // returns
-        return prices;
+        return ohlcvs;
     }
 
     /**
      * returns etf dividends
      * @param asset asset
      * @return dividends
-     * @see [분배금지급현황] (https://seibro.or.kr/websquare/control.jsp?w2xPath=/IPORTAL/user/etf/BIP_CNTS06030V.xml&menuNo=179)
+     * @see <a href="https://seibro.or.kr/websquare/control.jsp?w2xPath=/IPORTAL/user/etf/BIP_CNTS06030V.xml&menuNo=179">분배금지급현황</a>
      */
-    Map<LocalDate, BigDecimal> getEtfDividends(Asset asset) {
+    List<Dividend> getEtfDividends(Asset asset) {
         LocalDate dateFrom = LocalDate.now().minusYears(1);
-        LocalDate dateTo = LocalDate.now().minusDays(1);
+        LocalDate dateTo = LocalDate.now();
         String url = "https://seibro.or.kr/websquare/engine/proworks/callServletService.jsp";
         String w2xPath = "/IPORTAL/user/etf/BIP_CNTS06030V.xml";
         HttpHeaders headers = createSeibroHeaders(w2xPath);
         headers.setContentType(MediaType.APPLICATION_XML);
         String action = "exerInfoDtramtPayStatPlist";
         String task = "ksd.safe.bip.cnts.etf.process.EtfExerInfoPTask";
-        Map<String,String> secInfo = getSecInfo(asset);
+        Map<String,String> secInfo = getSeibroSecInfo(asset, restTemplate);
         String isin = secInfo.get("ISIN");
-        Map<String,String> payloadMap = new LinkedHashMap<>(){{
-            put("W2XPATH", w2xPath);
-            put("MENU_NO","179");
-            put("CMM_BTN_ABBR_NM","allview,allview,print,hwp,word,pdf,searchIcon,searchIcon,seach,searchIcon,seach,link,link,wide,wide,top,");
-            put("isin", isin);
-            put("RGT_RSN_DTAIL_SORT_CD", "11");
-            put("fromRGT_STD_DT", dateFrom.format(DateTimeFormatter.BASIC_ISO_DATE));
-            put("toRGT_STD_DT", dateTo.format(DateTimeFormatter.BASIC_ISO_DATE));
-            put("START_PAGE", String.valueOf(1));
-            put("END_PAGE", String.valueOf(30));
-        }};
-        String payloadXml = createSeibroPayloadXml(action, task, payloadMap);
-        RequestEntity<String> requestEntity = RequestEntity.post(url)
-                .headers(headers)
-                .body(payloadXml);
-        ResponseEntity<String> responseEntity = restTemplate.exchange(requestEntity, String.class);
-        String responseBody = responseEntity.getBody();
-        List<Map<String,String>> rows = convertSeibroXmlToList(responseBody);
-        Map<LocalDate, BigDecimal> dividends = new HashMap<>();
-        rows.forEach(row -> {
-            LocalDate date = LocalDate.parse(row.get("RGT_STD_DT"), DateTimeFormatter.BASIC_ISO_DATE);
-            BigDecimal dividend = new BigDecimal(row.get("ESTM_STDPRC"));
-            dividends.put(date, dividend);
-        });
+        List<Dividend> dividends = new ArrayList<>();
+        int startPage = 1;
+        int endPage = 100;
+        for (int i = 0; i < 100; i ++) {
+            int finalStartPage = startPage;
+            int finalEndPage = endPage;
+            Map<String, String> payloadMap = new LinkedHashMap<>() {{
+                put("W2XPATH", w2xPath);
+                put("MENU_NO", "179");
+                put("CMM_BTN_ABBR_NM", "allview,allview,print,hwp,word,pdf,searchIcon,searchIcon,seach,searchIcon,seach,link,link,wide,wide,top,");
+                put("isin", isin);
+                put("RGT_RSN_DTAIL_SORT_CD", "11");
+                put("fromRGT_STD_DT", dateFrom.format(DateTimeFormatter.BASIC_ISO_DATE));
+                put("toRGT_STD_DT", dateTo.format(DateTimeFormatter.BASIC_ISO_DATE));
+                put("START_PAGE", String.valueOf(finalStartPage));
+                put("END_PAGE", String.valueOf(finalEndPage));
+            }};
+            String payloadXml = createSeibroPayloadXml(action, task, payloadMap);
+            RequestEntity<String> requestEntity = RequestEntity.post(url)
+                    .headers(headers)
+                    .body(payloadXml);
+            ResponseEntity<String> responseEntity = restTemplate.exchange(requestEntity, String.class);
+            String responseBody = responseEntity.getBody();
+            List<Map<String, String>> rows = convertSeibroXmlToList(responseBody);
+            rows.forEach(row -> {
+                LocalDate date = LocalDate.parse(row.get("RGT_STD_DT"), DateTimeFormatter.BASIC_ISO_DATE);
+                BigDecimal dividendPerShare = new BigDecimal(row.get("ESTM_STDPRC"));
+                Dividend dividend = Dividend.builder()
+                        .assetId(asset.getAssetId())
+                        .date(date)
+                        .dividendPerShare(dividendPerShare)
+                        .build();
+                dividends.add(dividend);
+            });
+            // check next page
+            if (rows.size() < 100) {
+                break;
+            } else {
+                startPage += 100;
+                endPage += 100;
+            }
+        }
+        // sort
+        dividends.sort(Comparator.comparing(Dividend::getDate).reversed());
+        // returns
         return dividends;
-    }
-
-    /**
-     * gets SEC info
-     * @param asset asset
-     * @return sec info
-     */
-    Map<String, String> getSecInfo(Asset asset) {
-        String url = "https://seibro.or.kr/websquare/engine/proworks/callServletService.jsp";
-        String w2xPath = "/IPORTAL/user/stock/BIP_CNTS02006V.xml";
-        HttpHeaders headers = createSeibroHeaders(w2xPath);
-        headers.setContentType(MediaType.APPLICATION_XML);
-        String action = "secnInfoDefault";
-        String task = "ksd.safe.bip.cnts.Stock.process.SecnInfoPTask";
-        Map<String,String> payloadMap = new LinkedHashMap<>(){{
-            put("W2XPATH", w2xPath);
-            put("SHOTN_ISIN", asset.getSymbol());
-        }};
-        String payloadXml = createSeibroPayloadXml(action, task, payloadMap);
-        RequestEntity<String> requestEntity = RequestEntity.post(url)
-                .headers(headers)
-                .body(payloadXml);
-        ResponseEntity<String> responseEntity = restTemplate.exchange(requestEntity, String.class);
-        String responseBody = responseEntity.getBody();
-        return convertSeibroXmlToMap(responseBody);
-    }
-
-    /**
-     * returns seibro api header
-     * @param w2xPath w2xPath
-     * @return http headers for seibro
-     */
-    HttpHeaders createSeibroHeaders(String w2xPath) {
-        HttpHeaders headers = new HttpHeaders();
-        headers.add("Accept", "application/xml");
-        headers.add("Origin","https://seibro.or.kr");
-        headers.add("Referer","https://seibro.or.kr/websquare/control.jsp?w2xPath=" + w2xPath);
-        return headers;
-    }
-
-    /**
-     * creates payload XML string
-     * @param action seibro api action
-     * @param task seibro api task
-     * @param payloadMap payload map
-     * @return payload XML string
-     */
-    static String createSeibroPayloadXml(String action, String task, Map<String,String> payloadMap) {
-        // Create a new Document
-        DocumentBuilderFactory dbFactory = DocumentBuilderFactory.newInstance();
-        DocumentBuilder dBuilder ;
-        try {
-            dBuilder = dbFactory.newDocumentBuilder();
-        }catch(Throwable e){
-            throw new RuntimeException(e);
-        }
-        Document doc = dBuilder.newDocument();
-
-        // Create the root element <reqParam>
-        Element reqParamElement = doc.createElement("reqParam");
-        doc.appendChild(reqParamElement);
-
-        // Add attributes to <reqParam>
-        Attr actionAttr = doc.createAttribute("action");
-        actionAttr.setValue(action);
-        reqParamElement.setAttributeNode(actionAttr);
-
-        Attr taskAttr = doc.createAttribute("task");
-        taskAttr.setValue(task);
-        reqParamElement.setAttributeNode(taskAttr);
-
-        // Add child elements to <reqParam>
-        for(String key : payloadMap.keySet()) {
-            String value = payloadMap.get(key);
-            Element childElement = doc.createElement(key);
-            Attr attr = doc.createAttribute("value");
-            attr.setValue(value);
-            childElement.setAttributeNode(attr);
-            reqParamElement.appendChild(childElement);
-        }
-
-        // convert to string
-        try {
-            TransformerFactory transformerFactory = TransformerFactory.newInstance();
-            Transformer transformer = transformerFactory.newTransformer();
-            transformer.setOutputProperty(OutputKeys.OMIT_XML_DECLARATION, "yes");
-            StringWriter writer = new StringWriter();
-            transformer.transform(new DOMSource(reqParamElement), new StreamResult(writer));
-            return writer.toString();
-        }catch(Throwable e) {
-            throw new RuntimeException(e);
-        }
-    }
-
-    /**
-     * convert seibro xml response to map
-     * @param responseXml response xml
-     * @return map
-     */
-    Map<String, String> convertSeibroXmlToMap(String responseXml) {
-        Map<String, String> map  = new LinkedHashMap<>();
-        InputSource inputSource;
-        StringReader stringReader;
-        try {
-            DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
-            DocumentBuilder builder = factory.newDocumentBuilder();
-            stringReader = new StringReader(responseXml);
-            inputSource = new InputSource(stringReader);
-            Document document = builder.parse(inputSource);
-            XPathFactory xPathFactory = XPathFactory.newInstance();
-            XPath xPath = xPathFactory.newXPath();
-
-            XPathExpression expr = xPath.compile("/result/*");
-            NodeList propertyNodes = (NodeList) expr.evaluate(document, XPathConstants.NODESET);
-            for(int i = 0; i < propertyNodes.getLength(); i++) {
-                Element propertyElement = (Element) propertyNodes.item(i);
-                String propertyName = propertyElement.getTagName();
-                String propertyValue = propertyElement.getAttribute("value");
-                map.put(propertyName, propertyValue);
-            }
-        }catch(Throwable e) {
-            throw new RuntimeException(e);
-        }
-        return map;
-    }
-
-    /**
-     * convert seibro response XML to list
-     * @param responseXml response XML
-     * @return list of seibro response map
-     */
-    static List<Map<String, String>> convertSeibroXmlToList(String responseXml) {
-        List<Map<String,String>> list = new ArrayList<>();
-        InputSource inputSource;
-        StringReader stringReader;
-        try {
-            DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
-            DocumentBuilder builder = factory.newDocumentBuilder();
-            stringReader = new StringReader(responseXml);
-            inputSource = new InputSource(stringReader);
-            Document document = builder.parse(inputSource);
-            XPathFactory xPathFactory = XPathFactory.newInstance();
-            XPath xPath = xPathFactory.newXPath();
-
-            Double count = (Double) xPath.evaluate("count(//vector)", document, XPathConstants.NUMBER);
-            if(count.intValue() == 0) {
-                throw new RuntimeException("response body error - vector element count is 0.");
-            }
-
-            XPathExpression expr = xPath.compile("//vector/data/result");
-            NodeList nodeList = (NodeList) expr.evaluate(document, XPathConstants.NODESET);
-            for(int i = 0; i < nodeList.getLength(); i++) {
-                Map<String, String> map = new LinkedHashMap<>();
-                Node result = nodeList.item(i);
-                NodeList propertyNodes = result.getChildNodes();
-                for(int ii = 0; ii < propertyNodes.getLength(); ii++) {
-                    Element propertyElement = (Element) propertyNodes.item(ii);
-                    String propertyName = propertyElement.getTagName();
-                    String propertyValue = propertyElement.getAttribute("value");
-                    map.put(propertyName, propertyValue);
-                }
-                list.add(map);
-            }
-
-        }catch(Throwable e) {
-            throw new RuntimeException(e);
-        }
-        return list;
-    }
-
-    /**
-     * convert to string to number
-     * @param value number string
-     * @param defaultValue default number
-     * @return converted number
-     */
-    BigDecimal toNumber(Object value, BigDecimal defaultValue) {
-        try {
-            String valueString = value.toString().replace(",", "");
-            return new BigDecimal(valueString);
-        }catch(Throwable e){
-            return defaultValue;
-        }
     }
 
 }

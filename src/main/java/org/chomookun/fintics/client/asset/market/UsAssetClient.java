@@ -10,7 +10,11 @@ import org.apache.hc.client5.http.impl.DefaultHttpRequestRetryStrategy;
 import org.chomookun.arch4j.core.common.support.RestTemplateBuilder;
 import org.chomookun.fintics.client.asset.AssetClient;
 import org.chomookun.fintics.client.asset.AssetClientProperties;
+import org.chomookun.fintics.client.support.NasdaqClientSupport;
+import org.chomookun.fintics.client.support.YahooClientSupport;
 import org.chomookun.fintics.model.Asset;
+import org.chomookun.fintics.model.Dividend;
+import org.chomookun.fintics.model.Ohlcv;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.RequestEntity;
 import org.springframework.http.ResponseEntity;
@@ -20,15 +24,12 @@ import org.springframework.web.util.UriComponentsBuilder;
 import java.math.BigDecimal;
 import java.math.MathContext;
 import java.math.RoundingMode;
-import java.time.Instant;
-import java.time.LocalDate;
-import java.time.ZoneId;
-import java.time.ZoneOffset;
+import java.time.*;
 import java.util.*;
 import java.util.stream.Collectors;
 
 @Slf4j
-public class UsAssetClient extends AssetClient {
+public class UsAssetClient extends AssetClient implements NasdaqClientSupport, YahooClientSupport {
 
     private static final String MARKET_US = "US";
 
@@ -111,7 +112,7 @@ public class UsAssetClient extends AssetClient {
 
     /**
      * gets list of ETF
-     * @see [Nasdaq Symbol Screener](https://www.nasdaq.com/market-activity/etf/screener)
+     * @see <a href="https://www.nasdaq.com/market-activity/etf/screener">Nasdaq Symbol Screener</a>
      * @return list of etf asset
      */
     protected List<Asset> getEtfAssets() {
@@ -133,8 +134,8 @@ public class UsAssetClient extends AssetClient {
         // sort
         rows.sort((o1, o2) -> {
             try {
-                BigDecimal o1LastSalePrice = convertCurrencyToNumber(o1.get("lastSalePrice"));
-                BigDecimal o2LastSalePrice = convertCurrencyToNumber(o2.get("lastSalePrice"));
+                BigDecimal o1LastSalePrice = convertCurrencyToNumber(o1.get("lastSalePrice"), CURRENCY_USD, BigDecimal.ZERO);
+                BigDecimal o2LastSalePrice = convertCurrencyToNumber(o2.get("lastSalePrice"), CURRENCY_USD, BigDecimal.ZERO);
                 return o2LastSalePrice.compareTo(o1LastSalePrice);
             } catch (Exception e) {
                 log.warn(e.getMessage());
@@ -212,21 +213,22 @@ public class UsAssetClient extends AssetClient {
             case "STOCK" -> updateStockAsset(asset);
             case "ETF" -> updateEtfAsset(asset);
             default -> throw new RuntimeException("Unsupported asset type");
-        };
+        }
     }
 
     void updateStockAsset(Asset asset) {
+        BigDecimal price = null;
+        BigDecimal volume = null;
         BigDecimal marketCap = null;
-        BigDecimal totalAssets = null;
         BigDecimal totalEquity = null;
         BigDecimal netIncome = null;
         BigDecimal eps = null;
         BigDecimal roe = null;
         BigDecimal per = null;
         BigDecimal dividendYield = null;
-        int dividendFrequency = 0;
-        BigDecimal capitalGain = null;
-        BigDecimal totalReturn = null;
+        int dividendFrequency;
+        BigDecimal capitalGain;
+        BigDecimal totalReturn;
 
         // calls summary api
         HttpHeaders headers = createNasdaqHeaders();
@@ -251,17 +253,23 @@ public class UsAssetClient extends AssetClient {
         for(String name : summaryDataMap.keySet()) {
             Map<String, String> map = summaryDataMap.get(name);
             String value = map.get("value");
+            if (name.equals("PreviousClose")) {
+                price = convertCurrencyToNumber(value, CURRENCY_USD, null);
+            }
+            if (name.equals("ShareVolume")) {
+                volume = convertStringToNumber(value, null);
+            }
             if (name.equals("MarketCap")) {
-                marketCap = convertStringToNumber(value);
+                marketCap = convertStringToNumber(value, null);
             }
             if (name.equals("EarningsPerShare")) {
-                eps = convertCurrencyToNumber(value);
+                eps = convertCurrencyToNumber(value, CURRENCY_USD, null);
             }
             if (name.equals("PERatio")) {
-                per = convertStringToNumber(value);
+                per = convertStringToNumber(value, null);
             }
             if(name.equals("Yield")) {
-                dividendYield = convertPercentageToNumber(value);
+                dividendYield = convertPercentageToNumber(value, null);
             }
         }
 
@@ -289,10 +297,7 @@ public class UsAssetClient extends AssetClient {
             String key = row.get("value1");
             String value = row.get("value2");
             if("Total Equity".equals(key)) {
-                totalEquity = convertCurrencyToNumber(value);
-            }
-            if("Total Assets".equals(key)) {
-                totalAssets = convertCurrencyToNumber(value);
+                totalEquity = convertCurrencyToNumber(value, CURRENCY_USD, null);
             }
         }
 
@@ -300,7 +305,7 @@ public class UsAssetClient extends AssetClient {
             String key = row.get("value1");
             String value = row.get("value2");
             if("Net Income".equals(key)) {
-                netIncome = convertCurrencyToNumber(value);
+                netIncome = convertCurrencyToNumber(value, CURRENCY_USD, null);
             }
         }
 
@@ -311,19 +316,13 @@ public class UsAssetClient extends AssetClient {
         }
 
         // dividend frequency
-        Map<LocalDate, BigDecimal> dividends = getDividends(asset);
+        List<Dividend> dividends = getDividends(asset);
         dividendFrequency = dividends.size();
 
         // capital gain
-        Map<LocalDate, BigDecimal> prices = getPrices(asset);
-        BigDecimal startPrice = prices.entrySet().stream()
-                .min(Map.Entry.comparingByKey())
-                .map(Map.Entry::getValue)
-                .orElse(BigDecimal.ZERO);
-        BigDecimal endPrice = prices.entrySet().stream()
-                .max(Map.Entry.comparingByKey())
-                .map(Map.Entry::getValue)
-                .orElse(BigDecimal.ZERO);
+        List<Ohlcv> ohlcvs = getOhlcvs(asset);
+        BigDecimal startPrice = ohlcvs.get(ohlcvs.size() - 1).getClose();
+        BigDecimal endPrice = ohlcvs.get(0).getClose();
         capitalGain = endPrice.subtract(startPrice)
                 .divide(startPrice, MathContext.DECIMAL32)
                 .multiply(BigDecimal.valueOf(100))
@@ -334,6 +333,9 @@ public class UsAssetClient extends AssetClient {
                 .setScale(2, RoundingMode.HALF_UP);
 
         // update asset
+        asset.setPrice(price);
+        asset.setVolume(volume);
+        asset.setMarketCap(marketCap);
         asset.setEps(eps);
         asset.setRoe(roe);
         asset.setPer(per);
@@ -344,11 +346,12 @@ public class UsAssetClient extends AssetClient {
     }
 
     void updateEtfAsset(Asset asset) {
+        BigDecimal price = null;
         BigDecimal marketCap = null;
-        int dividendFrequency = 0;
+        int dividendFrequency;
         BigDecimal dividendYield = null;
-        BigDecimal capitalGain = null;
-        BigDecimal totalReturn = null;
+        BigDecimal capitalGain;
+        BigDecimal totalReturn;
 
         // calls summary api
         HttpHeaders headers = createNasdaqHeaders();
@@ -373,28 +376,25 @@ public class UsAssetClient extends AssetClient {
         for(String name : summaryDataMap.keySet()) {
             Map<String, String> map = summaryDataMap.get(name);
             String value = map.get("value");
+            if (Objects.equals(name, "PreviousClose")) {
+                price = convertCurrencyToNumber(value, CURRENCY_USD, null);
+            }
             if (Objects.equals(name, "MarketCap")) {
-                marketCap = convertStringToNumber(value);
+                marketCap = convertStringToNumber(value, null);
             }
             if (Objects.equals(name, "Yield")) {
-                dividendYield = convertPercentageToNumber(value);
+                dividendYield = convertPercentageToNumber(value, null);
             }
         }
 
         // dividend frequency
-        Map<LocalDate, BigDecimal> dividends = getDividends(asset);
+        List<Dividend> dividends = getDividends(asset);
         dividendFrequency = dividends.size();
 
         // capital gain
-        Map<LocalDate, BigDecimal> prices = getPrices(asset);
-        BigDecimal startPrice = prices.entrySet().stream()
-                .min(Map.Entry.comparingByKey())
-                .map(Map.Entry::getValue)
-                .orElse(BigDecimal.ZERO);
-        BigDecimal endPrice = prices.entrySet().stream()
-                .max(Map.Entry.comparingByKey())
-                .map(Map.Entry::getValue)
-                .orElse(BigDecimal.ZERO);
+        List<Ohlcv> ohlcvs = getOhlcvs(asset);
+        BigDecimal startPrice = ohlcvs.get(ohlcvs.size() - 1).getClose();
+        BigDecimal endPrice = ohlcvs.get(0).getClose();
         capitalGain = endPrice.subtract(startPrice)
                 .divide(startPrice, MathContext.DECIMAL32)
                 .multiply(BigDecimal.valueOf(100))
@@ -405,6 +405,7 @@ public class UsAssetClient extends AssetClient {
                 .setScale(2, RoundingMode.HALF_UP);
 
         // updates
+        asset.setPrice(price);
         asset.setMarketCap(marketCap);
         asset.setDividendFrequency(dividendFrequency);
         asset.setDividendYield(dividendYield);
@@ -417,7 +418,7 @@ public class UsAssetClient extends AssetClient {
      * @param asset asset
      * @return prices
      */
-    public Map<LocalDate, BigDecimal> getPrices(Asset asset) {
+    public List<Ohlcv> getOhlcvs(Asset asset) {
         LocalDate dateFrom = LocalDate.now().minusYears(1);
         LocalDate dateTo = LocalDate.now().minusDays(1);
         HttpHeaders headers = createYahooHeader();
@@ -448,18 +449,32 @@ public class UsAssetClient extends AssetClient {
         List<BigDecimal> lows = objectMapper.convertValue(quoteNode.path("low"), new TypeReference<>(){});
         List<BigDecimal> closes = objectMapper.convertValue(quoteNode.path("close"), new TypeReference<>(){});
         List<BigDecimal> volumes = objectMapper.convertValue(quoteNode.path("volume"), new TypeReference<>(){});
-
-        Map<LocalDate, BigDecimal> prices = new HashMap<>();
+        List<Ohlcv> ohlcvs = new ArrayList<>();
         for (int i = 0; i < timestamps.size(); i ++) {
             long timestamp = timestamps.get(i);
-            LocalDate date = Instant.ofEpochSecond(timestamp)
-                    .atZone(ZoneId.of("America/New_York"))
-                    .toLocalDate();
+            ZoneId zoneId = ZoneId.of("America/New_York");
+            LocalDateTime dateTime = Instant.ofEpochSecond(timestamp)
+                    .atZone(zoneId)
+                    .toLocalDate()
+                    .atStartOfDay();
+            BigDecimal open = opens.get(i);
+            BigDecimal high = highs.get(i);
+            BigDecimal low = lows.get(i);
             BigDecimal close = closes.get(i);
-            prices.put(date, close);
+            BigDecimal volume = volumes.get(i);
+            Ohlcv ohlcv = Ohlcv.builder()
+                    .dateTime(dateTime)
+                    .timeZone(zoneId)
+                    .open(open)
+                    .high(high)
+                    .low(low)
+                    .close(close)
+                    .volume(volume)
+                    .build();
+            ohlcvs.add(ohlcv);
         }
         // returns
-        return prices;
+        return ohlcvs;
     }
 
     /**
@@ -467,7 +482,7 @@ public class UsAssetClient extends AssetClient {
      * @param asset asset
      * @return dividends
      */
-    public Map<LocalDate, BigDecimal> getDividends(Asset asset) {
+    public List<Dividend> getDividends(Asset asset) {
         LocalDate dateFrom = LocalDate.now().minusYears(1);
         LocalDate dateTo = LocalDate.now().minusDays(1);
         HttpHeaders headers = createYahooHeader();
@@ -493,106 +508,21 @@ public class UsAssetClient extends AssetClient {
         JsonNode resultNode = rootNode.path("chart").path("result").get(0);
         JsonNode eventsNode = resultNode.path("events").path("dividends");
         Map<String, Map<String,Double>> dividendsMap = objectMapper.convertValue(eventsNode, new TypeReference<>(){});
-        Map<LocalDate, BigDecimal> dividends = new HashMap<>();
+        List<Dividend> dividends = new ArrayList<>();
         for (Map.Entry<String, Map<String,Double>> entry : dividendsMap.entrySet()) {
             Map<String,Double> value = entry.getValue();
             LocalDate date = Instant.ofEpochSecond(value.get("date").longValue())
                     .atOffset(ZoneOffset.UTC)
                     .toLocalDate();
-            BigDecimal dividend = BigDecimal.valueOf(value.get("amount"));
-            dividends.put(date, dividend);
+            BigDecimal dividendPerShare = BigDecimal.valueOf(value.get("amount"));
+            Dividend dividend = Dividend.builder()
+                    .date(date)
+                    .dividendPerShare(dividendPerShare)
+                    .build();
+            dividends.add(dividend);
         }
         // returns
         return dividends;
-    }
-
-    /**
-     * creates nasdaq http headers
-     * @return http headers
-     */
-    HttpHeaders createNasdaqHeaders() {
-        HttpHeaders headers = new HttpHeaders();
-        headers.add("authority","api.nasdaq.com");
-        headers.add("origin","https://www.nasdaq.com");
-        headers.add("referer","https://www.nasdaq.com");
-        headers.add("sec-ch-ua","\"Chromium\";v=\"116\", \"Not)A;Brand\";v=\"24\", \"Google Chrome\";v=\"116\"");
-        headers.add("sec-ch-ua-mobile","?0");
-        headers.add("sec-ch-ua-platform", "macOS");
-        headers.add("sec-fetch-dest","empty");
-        headers.add("sec-fetch-mode","cors");
-        headers.add("sec-fetch-site", "same-site");
-        headers.add("user-agent","Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/116.0.0.0 Safari/537.36");
-        return headers;
-    }
-
-    /**
-     * creates yahoo finance http headers
-     * @return http headers
-     */
-    HttpHeaders createYahooHeader() {
-        HttpHeaders headers = new HttpHeaders();
-        headers.add("authority"," query1.finance.yahoo.com");
-        headers.add("Accept", "*/*");
-        headers.add("origin", "https://finance.yahoo.com");
-        headers.add("referer", "");
-        headers.add("Sec-Ch-Ua","\"Chromium\";v=\"118\", \"Google Chrome\";v=\"118\", \"Not=A?Brand\";v=\"99\"");
-        headers.add("Sec-Ch-Ua-Mobile","?0");
-        headers.add("Sec-Ch-Ua-Platform", "macOS");
-        headers.add("Sec-Fetch-Dest","document");
-        headers.add("Sec-Fetch-Mode","navigate");
-        headers.add("Sec-Fetch-Site", "none");
-        headers.add("User-Agent","Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/116.0.0.0 Safari/537.36");
-        return headers;
-    }
-
-    /**
-     * converts string to number
-     * @param value string
-     * @return number
-     */
-    BigDecimal convertStringToNumber(String value) {
-        if (value == null) {
-            return null;
-        }
-        value = value.replace(",", "");
-        try {
-            return new BigDecimal(value);
-        }catch(Throwable e){
-            return null;
-        }
-    }
-
-    /**
-     * converts currency string to number
-     * @param value currency string
-     * @return currency number
-     */
-    BigDecimal convertCurrencyToNumber(String value) {
-        if (value == null) {
-            return null;
-        }
-        try {
-            value = value.replace(CURRENCY_USD.getSymbol(), "");
-            value = value.replace(",","");
-            value = value.trim().isEmpty() ? "0" : value;
-            return new BigDecimal(value);
-        } catch (Throwable e) {
-            return null;
-        }
-    }
-
-    /**
-     * converts percentage string to number
-     * @param value percentage string
-     * @return percentage number
-     */
-    BigDecimal convertPercentageToNumber(String value) {
-        value = value.replace("%", "");
-        try {
-            return new BigDecimal(value);
-        }catch(Throwable e){
-            return null;
-        }
     }
 
 }

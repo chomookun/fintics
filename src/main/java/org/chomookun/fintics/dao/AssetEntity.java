@@ -39,6 +39,12 @@ public class AssetEntity extends BaseEntity {
     @Column(name = "updated_date")
     private LocalDate updatedDate;
 
+    @Column(name = "price", scale = 4)
+    private BigDecimal price;
+
+    @Column(name = "volume")
+    private BigDecimal volume;
+
     @Column(name = "market_cap", precision = 32)
     private BigDecimal marketCap;
 
@@ -47,9 +53,6 @@ public class AssetEntity extends BaseEntity {
 
     @Column(name = "roe", scale = 2)
     private BigDecimal roe;
-
-    @Column(name = "price", scale = 4)
-    private BigDecimal price;
 
     @Column(name = "per", scale = 2)
     private BigDecimal per;
