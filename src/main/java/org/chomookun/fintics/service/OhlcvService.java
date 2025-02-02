@@ -50,7 +50,14 @@ public class OhlcvService {
         // ohlcv client
         if (dailyOhlcvs.isEmpty()) {
             Asset asset = assetService.getAsset(assetId).orElseThrow();
-            dailyOhlcvs = ohlcvClient.getOhlcvs(asset, Ohlcv.Type.DAILY, dateTimeFrom, dateTimeTo, pageable);
+            dailyOhlcvs = ohlcvClient.getOhlcvs(asset, Ohlcv.Type.DAILY, dateTimeFrom, dateTimeTo);
+
+            // apply pageable (client not support pagination)
+            if (pageable.isPaged()) {
+                long startIndex = pageable.getOffset();
+                long endIndex = Math.min(dailyOhlcvs.size(), startIndex + pageable.getPageSize());
+                dailyOhlcvs = dailyOhlcvs.subList(Math.toIntExact(startIndex), Math.toIntExact(endIndex));
+            }
         }
 
         // apply split ratio
@@ -73,6 +80,19 @@ public class OhlcvService {
         List<Ohlcv> minuteOhlcvs = ohlcvRepository.findAllByAssetIdAndType(assetId, Ohlcv.Type.MINUTE, dateTimeFrom, dateTimeTo, pageable).stream()
                 .map(Ohlcv::from)
                 .toList();
+
+        // ohlcv client
+        if (minuteOhlcvs.isEmpty()) {
+            Asset asset = assetService.getAsset(assetId).orElseThrow();
+            minuteOhlcvs = ohlcvClient.getOhlcvs(asset, Ohlcv.Type.MINUTE, dateTimeFrom, dateTimeTo);
+
+            // apply pageable (client not support pagination)
+            if (pageable.isPaged()) {
+                long startIndex = pageable.getOffset();
+                long endIndex = Math.min(minuteOhlcvs.size(), startIndex + pageable.getPageSize());
+                minuteOhlcvs = minuteOhlcvs.subList(Math.toIntExact(startIndex), Math.toIntExact(endIndex));
+            }
+        }
 
         // apply split ratio
         applySplitRatioIfExist(assetId, minuteOhlcvs);

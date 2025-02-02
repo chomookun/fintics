@@ -31,6 +31,6 @@ public abstract class OhlcvClient {
      */
     public abstract boolean isSupported(Asset asset);
 
-    public abstract List<Ohlcv> getOhlcvs(Asset asset, Ohlcv.Type type, LocalDateTime datetimeFrom, LocalDateTime datetimeTo, Pageable pageable);
+    public abstract List<Ohlcv> getOhlcvs(Asset asset, Ohlcv.Type type, LocalDateTime datetimeFrom, LocalDateTime datetimeTo);
 
 }

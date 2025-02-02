@@ -89,22 +89,7 @@ class SimpleOhlcvClientTest extends CoreTestSupport {
         LocalDateTime dateTimeTo = LocalDateTime.now();
         Pageable pageable = Pageable.unpaged();
         // when
-        List<Ohlcv> dailyOhlcvs = getSimpleOhlcvClient().getOhlcvs(asset, type, dateTimeFrom, dateTimeTo, pageable);
-        // then
-        log.info("dailyOhlcvs:{}", dailyOhlcvs);
-        assertFalse(dailyOhlcvs.isEmpty());
-    }
-
-    @ParameterizedTest
-    @MethodSource({"getTestUsStockAssets","getTestUsEtfAssets","getTestKrStockAssets","getTestKrEtfAssets"})
-    void getDailyOhlcvsWithPageable(Asset asset) {
-        // given
-        Ohlcv.Type type = Ohlcv.Type.DAILY;
-        LocalDateTime dateTimeFrom = LocalDateTime.now().minusYears(1);
-        LocalDateTime dateTimeTo = LocalDateTime.now();
-        Pageable pageable = PageRequest.of(1, 10);
-        // when
-        List<Ohlcv> dailyOhlcvs = getSimpleOhlcvClient().getOhlcvs(asset, type, dateTimeFrom, dateTimeTo, pageable);
+        List<Ohlcv> dailyOhlcvs = getSimpleOhlcvClient().getOhlcvs(asset, type, dateTimeFrom, dateTimeTo);
         // then
         log.info("dailyOhlcvs:{}", dailyOhlcvs);
         assertFalse(dailyOhlcvs.isEmpty());
@@ -119,24 +104,9 @@ class SimpleOhlcvClientTest extends CoreTestSupport {
         LocalDateTime dateTimeTo = LocalDateTime.now();
         Pageable pageable = Pageable.unpaged();
         // when
-        List<Ohlcv> minuteOhlcvs = getSimpleOhlcvClient().getOhlcvs(asset, type, dateTimeFrom, dateTimeTo, pageable);
+        List<Ohlcv> minuteOhlcvs = getSimpleOhlcvClient().getOhlcvs(asset, type, dateTimeFrom, dateTimeTo);
         // then
         log.info("minuteOhlcvs:{}", minuteOhlcvs);
-        assertFalse(minuteOhlcvs.isEmpty());
-    }
-
-    @ParameterizedTest
-    @MethodSource({"getTestUsStockAssets","getTestUsEtfAssets","getTestKrStockAssets","getTestKrEtfAssets"})
-    void getMinuteOhlcvsWithPageable(Asset asset) {
-        // given
-        Ohlcv.Type type = Ohlcv.Type.MINUTE;
-        LocalDateTime dateTimeFrom = LocalDateTime.now().minusDays(30);
-        LocalDateTime dateTimeTo = LocalDateTime.now();
-        Pageable pageable = PageRequest.of(1, 10);
-        // when
-        List<Ohlcv> minuteOhlcvs = getSimpleOhlcvClient().getOhlcvs(asset, type, dateTimeFrom, dateTimeTo, pageable);
-        log.info("minuteOhlcvs:{}", minuteOhlcvs);
-        // then
         assertFalse(minuteOhlcvs.isEmpty());
     }
 

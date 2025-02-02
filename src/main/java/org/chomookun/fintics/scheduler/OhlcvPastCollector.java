@@ -90,7 +90,7 @@ public class OhlcvPastCollector extends AbstractScheduler {
             dateTimeFrom = expiredDateTime;
         }
         // get daily ohlcvs
-        List<Ohlcv> ohlcvs = ohlcvClient.getOhlcvs(asset, Ohlcv.Type.DAILY, dateTimeFrom, dateTimeTo, Pageable.unpaged());
+        List<Ohlcv> ohlcvs = ohlcvClient.getOhlcvs(asset, Ohlcv.Type.DAILY, dateTimeFrom, dateTimeTo);
         // convert and save
         List<OhlcvEntity> dailyOhlcvEntities = ohlcvs.stream()
                 .map(ohlcv -> OhlcvEntity.builder()
@@ -132,7 +132,7 @@ public class OhlcvPastCollector extends AbstractScheduler {
             }
         }
         // get minute ohlcvs
-        List<Ohlcv> ohlcvs = ohlcvClient.getOhlcvs(asset, Ohlcv.Type.MINUTE, dateTimeFrom, dateTimeTo, Pageable.unpaged());
+        List<Ohlcv> ohlcvs = ohlcvClient.getOhlcvs(asset, Ohlcv.Type.MINUTE, dateTimeFrom, dateTimeTo);
         // convert and save
         List<OhlcvEntity> minuteOhlcvEntities = ohlcvs.stream()
                 .map(ohlcv -> OhlcvEntity.builder()

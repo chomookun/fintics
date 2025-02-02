@@ -152,7 +152,7 @@ public class SimpleOhlcvClient extends OhlcvClient implements YahooClientSupport
      * @return list of ohlcvs
      */
     @Override
-    public List<Ohlcv> getOhlcvs(Asset asset, Ohlcv.Type type, LocalDateTime dateTimeFrom, LocalDateTime dateTimeTo, Pageable pageable) {
+    public List<Ohlcv> getOhlcvs(Asset asset, Ohlcv.Type type, LocalDateTime dateTimeFrom, LocalDateTime dateTimeTo) {
         HttpHeaders headers = createYahooHeader();
 
         // yahoo symbol
@@ -232,14 +232,6 @@ public class SimpleOhlcvClient extends OhlcvClient implements YahooClientSupport
         ohlcvs.sort(Comparator
                 .comparing(Ohlcv::getDateTime)
                 .reversed());
-
-        // apply pageable (yahoo chart not support offset,limit)
-        if (pageable.isPaged()) {
-            long startIndex = pageable.getOffset();
-            long endIndex = Math.min(ohlcvs.size(), startIndex + pageable.getPageSize());
-            ohlcvs = ohlcvs.subList(Math.toIntExact(startIndex), Math.toIntExact(endIndex));
-        }
-
         // return
         return ohlcvs;
     }
