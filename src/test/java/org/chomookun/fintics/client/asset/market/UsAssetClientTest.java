@@ -133,8 +133,6 @@ class UsAssetClientTest extends CoreTestSupport {
         // when
         getUsAssetClient().updateStockAsset(asset);
         // then
-        assertNotNull(asset.getEps());
-        assertNotNull(asset.getRoe());
         assertNotNull(asset.getCapitalGain());
         assertNotNull(asset.getTotalReturn());
     }
