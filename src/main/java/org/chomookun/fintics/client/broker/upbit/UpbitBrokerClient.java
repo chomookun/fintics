@@ -186,6 +186,7 @@ public class UpbitBrokerClient extends BrokerClient {
                     }
                     ZoneId timezone = getDefinition().getTimezone();
                     return Ohlcv.builder()
+                            .assetId(asset.getAssetId())
                             .type(ohlcvType)
                             .dateTime(dateTime)
                             .timeZone(timezone)
@@ -451,7 +452,7 @@ public class UpbitBrokerClient extends BrokerClient {
     }
 
     @Override
-    public List<DividendProfit> getDividendHistories(LocalDate dateFrom, LocalDate dateTo) throws InterruptedException {
+    public List<DividendProfit> getDividendProfits(LocalDate dateFrom, LocalDate dateTo) throws InterruptedException {
         return new ArrayList<>();
     }
 

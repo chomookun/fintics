@@ -18,6 +18,7 @@ import org.chomookun.fintics.strategy.StrategyRunnerFactory;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.transaction.PlatformTransactionManager;
 import org.springframework.transaction.TransactionDefinition;
+import org.springframework.transaction.TransactionStatus;
 import org.springframework.transaction.support.DefaultTransactionDefinition;
 import org.springframework.transaction.support.TransactionTemplate;
 
@@ -43,6 +44,8 @@ public class TradeExecutor {
     private final AlarmService alarmService;
 
     private final StrategyRunnerFactory strategyRunnerFactory;
+
+    private final OhlcvCacheManager ohlcvCacheManager;
 
     @Setter
     private Logger log;
@@ -89,6 +92,7 @@ public class TradeExecutor {
         // checks buy condition
         for (BasketAsset basketAsset : basket.getBasketAssets()) {
             try {
+                // prevent mixed message by overhead
                 Thread.sleep(100);
 
                 // logging
@@ -99,11 +103,13 @@ public class TradeExecutor {
                 List<Ohlcv> dailyOhlcvs = brokerClient.getDailyOhlcvs(basketAsset);
                 List<Ohlcv> previousDailyOhlcvs = getPreviousDailyOhlcvs(basketAsset.getAssetId(), dailyOhlcvs, dateTime);
                 dailyOhlcvs.addAll(previousDailyOhlcvs);
+                TradeValidator.validateOhlcvs(dailyOhlcvs);
 
                 // minute ohlcvs
                 List<Ohlcv> minuteOhlcvs = brokerClient.getMinuteOhlcvs(basketAsset);
                 List<Ohlcv> previousMinuteOhlcvs = getPreviousMinuteOhlcvs(basketAsset.getAssetId(), minuteOhlcvs, dateTime);
                 minuteOhlcvs.addAll(previousMinuteOhlcvs);
+                TradeValidator.validateOhlcvs(minuteOhlcvs);
 
                 // creates trade asset
                 TradeAsset tradeAsset = tradeAssetStore.load(trade.getTradeId(), basketAsset.getAssetId())
@@ -141,8 +147,10 @@ public class TradeExecutor {
 
                 // order book
                 OrderBook orderBook = brokerClient.getOrderBook(basketAsset);
+                TradeValidator.validateOrderBook(orderBook);
 
                 // executes trade asset decider
+                log.info("[{} - {}] strategy start", basketAsset.getAssetId(), basketAsset.getName());
                 StrategyRunnerContext strategyRunnerContext = StrategyRunnerContext.builder()
                         .strategy(strategy)
                         .variables(trade.getStrategyVariables())
@@ -154,9 +162,9 @@ public class TradeExecutor {
                         .build();
                 StrategyRunner strategyRunner = strategyRunnerFactory.getObject(strategyRunnerContext);
                 strategyRunner.setLog(log);
-                Instant startTime = Instant.now();
+                Instant strategyStartTime = Instant.now();
                 StrategyResult strategyResult = strategyRunner.run();
-                log.info("[{} - {}] strategy execution elapsed:{}", basketAsset.getAssetId(), basketAsset.getName(), Duration.between(startTime, Instant.now()));
+                log.info("[{} - {}] strategy execution elapsed:{}", basketAsset.getAssetId(), basketAsset.getName(), Duration.between(strategyStartTime, Instant.now()));
                 log.info("[{} - {}] strategy result: {}", basketAsset.getAssetId(), basketAsset.getName(), strategyResult);
 
                 // save trade asset to store
@@ -288,14 +296,15 @@ public class TradeExecutor {
      * @return previous daily ohlcvs
      */
     private List<Ohlcv> getPreviousDailyOhlcvs(String assetId, List<Ohlcv> ohlcvs, LocalDateTime dateTime) {
-        LocalDateTime dateTimeFrom = dateTime.minusYears(1);
+        LocalDateTime dateTimeFrom = dateTime.minusYears(3);
         LocalDateTime dateTimeTo = ohlcvs.isEmpty()
                 ? dateTime
                 : ohlcvs.get(ohlcvs.size()-1).getDateTime().minusDays(1);
         if(dateTimeTo.isBefore(dateTimeFrom)) {
             return new ArrayList<>();
         }
-        return ohlcvService.getDailyOhlcvs(assetId, dateTimeFrom, dateTimeTo, PageRequest.of(0, 360));
+        return ohlcvCacheManager.getDailyOhlcvs(assetId, dateTimeFrom, dateTimeTo);
+//        return ohlcvService.getDailyOhlcvs(assetId, dateTimeFrom, dateTimeTo, PageRequest.of(0, 500));
     }
 
     /**
@@ -313,7 +322,8 @@ public class TradeExecutor {
         if(dateTimeTo.isBefore(dateTimeFrom)) {
             return new ArrayList<>();
         }
-        return ohlcvService.getMinuteOhlcvs(assetId, dateTimeFrom, dateTimeTo, PageRequest.of(0, 1000));
+        return ohlcvCacheManager.getMinuteOhlcvs(assetId, dateTimeFrom, dateTimeTo);
+//        return ohlcvService.getMinuteOhlcvs(assetId, dateTimeFrom, dateTimeTo, PageRequest.of(0, 6_000));
     }
 
     /**

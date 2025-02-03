@@ -59,7 +59,7 @@ class PythonStrategyRunnerTest extends CoreTestSupport {
         TradeAsset tradeAsset = TradeAsset.builder()
                 .tradeId("test")
                 .minuteOhlcvs(List.of(
-                        Ohlcv.of(basketAsset.getAssetId(), Ohlcv.Type.MINUTE, LocalDateTime.now(), null, 100, 100, 100, 100, 100, false)
+                        Ohlcv.of(basketAsset.getAssetId(), Ohlcv.Type.MINUTE, LocalDateTime.now(), null, 100, 100, 100, 100, 100)
                 ))
                 .build();
         // when
