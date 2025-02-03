@@ -1,10 +1,12 @@
 package org.chomookun.fintics.trade;
 
+import lombok.extern.slf4j.Slf4j;
 import org.chomookun.fintics.model.Ohlcv;
 import org.chomookun.fintics.model.OrderBook;
 
 import java.util.List;
 
+@Slf4j
 public class TradeValidator {
 
     /**
@@ -31,7 +33,9 @@ public class TradeValidator {
     public static void validateOrderBook(OrderBook orderBook) {
         // compares bid, ask price
         if (orderBook.getBidPrice().compareTo(orderBook.getAskPrice()) >= 0) {
-            throw new IllegalArgumentException("bid, ask price is invalid");
+            log.debug("orderBook: {}", orderBook);
+            // 미국 주식 호가 API 신규 추가로 변경 필요
+//            throw new IllegalArgumentException("bid, ask price is invalid");
         }
     }
 
