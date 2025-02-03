@@ -21,8 +21,6 @@ public class DividendProfitResponse {
 
     private LocalDate paymentDate;
 
-    private BigDecimal dividendPerShare;
-
     private BigDecimal holdingQuantity;
 
     private BigDecimal dividendAmount;
@@ -32,7 +30,6 @@ public class DividendProfitResponse {
                 .date(dividendHistory.getDate())
                 .symbol(dividendHistory.getSymbol())
                 .name(dividendHistory.getName())
-                .dividendPerShare(dividendHistory.getDividendPerShare())
                 .holdingQuantity(dividendHistory.getHoldingQuantity())
                 .dividendAmount(dividendHistory.getDividendAmount())
                 .paymentDate(dividendHistory.getPaymentDate())

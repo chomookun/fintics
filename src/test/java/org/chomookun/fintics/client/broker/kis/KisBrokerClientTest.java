@@ -11,6 +11,7 @@ import org.chomookun.fintics.FinticsConfiguration;
 import org.springframework.boot.test.context.SpringBootTest;
 
 import java.math.BigDecimal;
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Properties;
@@ -200,6 +201,18 @@ class KisBrokerClientTest extends CoreTestSupport {
 
         // when
         getKisClient().submitOrder(asset, order);
+    }
+
+    @Disabled
+    @Test
+    void getDividendProfits() throws InterruptedException {
+        // given
+        LocalDate dateFrom = LocalDate.now().minusYears(1);
+        LocalDate dateTo = LocalDate.now();
+        // when
+        List<DividendProfit> dividendProfits = getKisClient().getDividendProfits(dateFrom, dateTo);
+        // then
+        assertNotNull(dividendProfits);
     }
 
 }

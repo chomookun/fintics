@@ -20,8 +20,6 @@ public class DividendProfit {
 
     private LocalDate paymentDate;
 
-    private BigDecimal dividendPerShare;
-
     private BigDecimal holdingQuantity;
 
     private BigDecimal dividendAmount;

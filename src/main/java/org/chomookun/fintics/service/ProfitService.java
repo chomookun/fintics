@@ -38,7 +38,7 @@ public class ProfitService {
         List<DividendProfit> dividendHistories;
         try {
             realizedProfits = brokerClient.getRealizedProfits(dateFrom, dateTo);
-            dividendHistories = brokerClient.getDividendHistories(dateFrom, dateTo);
+            dividendHistories = brokerClient.getDividendProfits(dateFrom, dateTo);
         } catch (InterruptedException e) {
             throw new RuntimeException(e);
         }

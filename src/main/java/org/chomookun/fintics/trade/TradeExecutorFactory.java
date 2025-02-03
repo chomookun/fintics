@@ -28,6 +28,8 @@ public class TradeExecutorFactory {
 
     private final StrategyRunnerFactory strategyRunnerFactory;
 
+    private final OhlcvCacheManager ohlcvCacheManager;
+
     /**
      * gets trade executor
      * @return trade executor
@@ -41,6 +43,7 @@ public class TradeExecutorFactory {
                 .orderService(orderService)
                 .alarmService(alarmService)
                 .strategyRunnerFactory(strategyRunnerFactory)
+                .ohlcvCacheManager(ohlcvCacheManager)
                 .build();
     }
 

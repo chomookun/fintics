@@ -28,8 +28,6 @@ public class TradeRunnableFactory {
 
     private final TradeAssetStoreFactory tradeAssetStoreFactory;
 
-    private final PlatformTransactionManager transactionManager;
-
     /**
      * creates trade runnable
      * @param trade trade info
@@ -45,7 +43,6 @@ public class TradeRunnableFactory {
                 .tradeExecutor(tradeExecutorFactory.getObject())
                 .brokerClientFactory(brokerClientFactory)
                 .tradeAssetStoreFactory(tradeAssetStoreFactory)
-                .transactionManager(transactionManager)
                 .build();
     }
 

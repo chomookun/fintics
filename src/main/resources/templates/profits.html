@@ -264,7 +264,7 @@
                                 <tr th:data-duice-bind="|profitSearchMap.get('${broker.brokerId}')|"
                                     th:data-duice-if="|return profitSearchMap.get('${broker.brokerId}')._status === 'loading'|" hidden>
                                     <td colspan="100%" class="text-align--center padding--1rem">
-                                        <span data-th-text="#{web.global.itemLoading(#{fintics.RealizedProfit})}"></span>
+                                        <span class="blink" data-th-text="#{web.global.itemLoading(#{fintics.RealizedProfit})}"></span>
                                     </td>
                                 </tr>
                                 <tr th:data-duice-bind="|profitSearchMap.get('${broker.brokerId}')|"

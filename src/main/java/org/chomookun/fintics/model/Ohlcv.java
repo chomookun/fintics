@@ -36,6 +36,8 @@ public class Ohlcv {
 
     private boolean interpolated;
 
+    private boolean cached;
+
     public enum Type { MINUTE, DAILY }
 
     @Converter(autoApply = true)
@@ -52,10 +54,9 @@ public class Ohlcv {
      * @param low low price
      * @param close low close
      * @param volume volume
-     * @param interpolated whether interpolated or not
      * @return ohlcv
      */
-    public static Ohlcv of(String assetId, Ohlcv.Type type, LocalDateTime dateTime, ZoneId timeZone, double open, double high, double low, double close, double volume, boolean interpolated) {
+    public static Ohlcv of(String assetId, Ohlcv.Type type, LocalDateTime dateTime, ZoneId timeZone, double open, double high, double low, double close, double volume) {
         return Ohlcv.builder()
                 .assetId(assetId)
                 .type(type)
@@ -66,7 +67,6 @@ public class Ohlcv {
                 .low(BigDecimal.valueOf(low))
                 .close(BigDecimal.valueOf(close))
                 .volume(BigDecimal.valueOf(volume))
-                .interpolated(interpolated)
                 .build();
     }
 

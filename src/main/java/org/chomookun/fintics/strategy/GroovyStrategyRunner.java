@@ -32,25 +32,28 @@ public class GroovyStrategyRunner extends StrategyRunner {
     @Override
     public StrategyResult run() {
         ClassLoader classLoader = this.getClass().getClassLoader();
-        GroovyClassLoader groovyClassLoader = new GroovyClassLoader(classLoader);
-        Binding binding = new Binding();
-        binding.setVariable("variables", loadRuleConfigAsProperties(variables));
-        binding.setVariable("log", log);
-        binding.setVariable("dateTime", dateTime);
-        binding.setVariable("basketAsset", basketAsset);
-        binding.setVariable("tradeAsset", tradeAsset);
-        binding.setVariable("balanceAsset", balanceAsset);
-        binding.setVariable("orderBook", orderBook);
-        GroovyShell groovyShell = new GroovyShell(groovyClassLoader, binding);
-        Object result = groovyShell.evaluate(
-                "import " + StrategyResult.class.getName() + '\n' +
-                        "import " + StrategyResult.Action.class.getName().replaceAll("\\$",".") + '\n' +
-                        strategy.getScript()
-        );
-        if (result != null) {
-            return (StrategyResult) result;
+        try (GroovyClassLoader groovyClassLoader = new GroovyClassLoader(classLoader)) {
+            Binding binding = new Binding();
+            binding.setVariable("variables", loadRuleConfigAsProperties(variables));
+            binding.setVariable("log", log);
+            binding.setVariable("dateTime", dateTime);
+            binding.setVariable("basketAsset", basketAsset);
+            binding.setVariable("tradeAsset", tradeAsset);
+            binding.setVariable("balanceAsset", balanceAsset);
+            binding.setVariable("orderBook", orderBook);
+            GroovyShell groovyShell = new GroovyShell(groovyClassLoader, binding);
+            Object result = groovyShell.evaluate(
+                    "import " + StrategyResult.class.getName() + '\n' +
+                            "import " + StrategyResult.Action.class.getName().replaceAll("\\$", ".") + '\n' +
+                            strategy.getScript()
+            );
+            if (result != null) {
+                return (StrategyResult) result;
+            }
+            return null;
+        } catch (Throwable e) {
+            throw new RuntimeException(e);
         }
-        return null;
     }
 
 }
