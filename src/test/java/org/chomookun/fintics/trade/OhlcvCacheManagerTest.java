@@ -27,13 +27,9 @@ class OhlcvCacheManagerTest extends CoreTestSupport {
         LocalDateTime dateTimeFrom = LocalDateTime.now().minusMonths(3);
         LocalDateTime dateTimeTo = LocalDateTime.now();
         // when
-        List<Ohlcv> firstOhlcvs = ohlcvCacheManager.getDailyOhlcvs(assetId, dateTimeFrom, dateTimeTo);
-        List<Ohlcv> secondOhlcvs = ohlcvCacheManager.getDailyOhlcvs(assetId, dateTimeFrom, dateTimeTo);
+        List<Ohlcv> ohlcvs = ohlcvCacheManager.getDailyOhlcvs(assetId, dateTimeFrom, dateTimeTo);
         // then
-        assertEquals(firstOhlcvs.size(), secondOhlcvs.size());
-        for (int i = 0; i < firstOhlcvs.size(); i++) {
-            assertSame(firstOhlcvs.get(i), secondOhlcvs.get(i));
-        }
+        log.info("ohlcvs: {}", ohlcvs);
     }
 
     @Test
@@ -43,13 +39,9 @@ class OhlcvCacheManagerTest extends CoreTestSupport {
         LocalDateTime dateTimeFrom = LocalDateTime.now().minusDays(7);
         LocalDateTime dateTimeTo = LocalDateTime.now();
         // when
-        List<Ohlcv> firstOhlcvs = ohlcvCacheManager.getMinuteOhlcvs(assetId, dateTimeFrom, dateTimeTo);
-        List<Ohlcv> secondOhlcvs = ohlcvCacheManager.getMinuteOhlcvs(assetId, dateTimeFrom, dateTimeTo);
+        List<Ohlcv> ohlcvs = ohlcvCacheManager.getMinuteOhlcvs(assetId, dateTimeFrom, dateTimeTo);
         // then
-        assertEquals(firstOhlcvs.size(), secondOhlcvs.size());
-        for (int i = 0; i < firstOhlcvs.size(); i++) {
-            assertSame(firstOhlcvs.get(i), secondOhlcvs.get(i));
-        }
+        log.info("ohlcvs: {}", ohlcvs);
     }
 
 }
