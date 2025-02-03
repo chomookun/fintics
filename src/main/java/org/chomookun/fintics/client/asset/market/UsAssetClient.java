@@ -329,7 +329,7 @@ public class UsAssetClient extends AssetClient implements NasdaqClientSupport, Y
                 .setScale(2, RoundingMode.HALF_UP);
 
         // total return
-        totalReturn = capitalGain.add(dividendYield)
+        totalReturn = capitalGain.add(Optional.ofNullable(dividendYield).orElse(BigDecimal.ZERO))
                 .setScale(2, RoundingMode.HALF_UP);
 
         // update asset
@@ -401,7 +401,7 @@ public class UsAssetClient extends AssetClient implements NasdaqClientSupport, Y
                 .setScale(2, RoundingMode.HALF_UP);
 
         // total return
-        totalReturn = capitalGain.add(dividendYield)
+        totalReturn = capitalGain.add(Optional.ofNullable(dividendYield).orElse(BigDecimal.ZERO))
                 .setScale(2, RoundingMode.HALF_UP);
 
         // updates
