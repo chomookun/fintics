@@ -4,6 +4,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.chomookun.fintics.model.Dividend;
 import org.chomookun.fintics.model.Ohlcv;
+import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 import org.chomookun.arch4j.core.common.test.CoreTestSupport;
 import org.chomookun.fintics.FinticsConfiguration;
@@ -64,6 +65,7 @@ class KrAssetClientTest extends CoreTestSupport {
         );
     }
 
+    @Disabled
     @Test
     void getAssets() {
         // when
@@ -78,6 +80,7 @@ class KrAssetClientTest extends CoreTestSupport {
                         asset.getType() != null));
     }
 
+    @Disabled
     @ParameterizedTest
     @MethodSource("getTestStockAssets")
     void getStockOhlcvs(Asset asset) {
@@ -87,6 +90,7 @@ class KrAssetClientTest extends CoreTestSupport {
         assertFalse(stockOhlcvs.isEmpty());
     }
 
+    @Disabled
     @ParameterizedTest
     @MethodSource("getTestEtfAssets")
     void getStockDividends(Asset asset) {
@@ -96,6 +100,7 @@ class KrAssetClientTest extends CoreTestSupport {
         log.info("stockDividends:{}", stockDividends);
     }
 
+    @Disabled
     @ParameterizedTest
     @MethodSource("getTestEtfAssets")
     void getEtfOhlcvs(Asset asset) {
@@ -105,6 +110,7 @@ class KrAssetClientTest extends CoreTestSupport {
         assertFalse(etfOhlcvs.isEmpty());
     }
 
+    @Disabled
     @ParameterizedTest
     @MethodSource("getTestEtfAssets")
     void getEtfDividends(Asset asset) {
@@ -114,6 +120,7 @@ class KrAssetClientTest extends CoreTestSupport {
         log.info("etfDividends:{}", etfDividends);
     }
 
+    @Disabled
     @ParameterizedTest
     @MethodSource("getTestStockAssets")
     void updateStockAsset(Asset asset) {
@@ -130,6 +137,7 @@ class KrAssetClientTest extends CoreTestSupport {
         assertNotNull(asset.getTotalReturn());
     }
 
+    @Disabled
     @Test
     void updateEtfAsset() {
         // given

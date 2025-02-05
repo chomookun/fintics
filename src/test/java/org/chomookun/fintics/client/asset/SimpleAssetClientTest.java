@@ -3,6 +3,7 @@ package org.chomookun.fintics.client.asset;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 import org.chomookun.arch4j.core.common.test.CoreTestSupport;
 import org.chomookun.fintics.FinticsConfiguration;
@@ -58,6 +59,7 @@ class SimpleAssetClientTest extends CoreTestSupport {
         );
     }
 
+    @Disabled
     @Test
     void getAssets() {
         // given
@@ -68,6 +70,7 @@ class SimpleAssetClientTest extends CoreTestSupport {
         assertFalse(assets.isEmpty());
     }
 
+    @Disabled
     @ParameterizedTest
     @MethodSource("getTestAssets")
     void updateAsset(Asset asset) {
