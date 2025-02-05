@@ -44,7 +44,9 @@ class KisUsBrokerClientTest extends CoreTestSupport {
         accountNo = System.getenv("KIS_US_ACCOUNT_NO");
 
         // loads access token
-        KisBrokerClientTestUtils.loadAccessToken(apiUrl, appKey, appSecret);
+        if (apiUrl != null && appKey != null && appSecret != null && accountNo != null) {
+            KisBrokerClientTestUtils.loadAccessToken(apiUrl, appKey, appSecret);
+        }
     }
 
     static List<Asset> getStockAssets() {
