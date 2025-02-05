@@ -2,6 +2,7 @@ package org.chomookun.fintics.scheduler;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.lang.exception.ExceptionUtils;
 import org.chomookun.fintics.client.asset.AssetClient;
 import org.chomookun.fintics.dao.AssetEntity;
 import org.chomookun.fintics.dao.AssetRepository;
@@ -13,6 +14,8 @@ import org.springframework.stereotype.Component;
 import org.springframework.transaction.PlatformTransactionManager;
 
 import java.math.BigDecimal;
+import java.time.Duration;
+import java.time.Instant;
 import java.time.LocalDate;
 import java.util.*;
 
@@ -49,80 +52,120 @@ public class AssetCollector extends AbstractScheduler {
      * saves assets
      */
     void saveAssets() {
-        // basket 에 등록된 asset id 추출
-        List<String> basketAssetIds = new ArrayList<>();
-        basketRepository.findAll().forEach(basketEntity ->
-                basketAssetIds.addAll(basketEntity.getBasketAssets().stream()
-                        .map(BasketAssetEntity::getAssetId)
-                        .toList())
-        );
+        Instant start = Instant.now();
+        long totalCount = 0;
+        long failCount = 0;
+        Boolean result = null;
+        String error = null;
+        try {
+            log.info("AssetCollector - Start collect assets.");
 
-        // AssetClient 로 부터 Assets 조회
-        List<Asset> assetsFromClient = assetClient.getAssets();
+            // basket 에 등록된 asset id 추출
+            List<String> basketAssetIds = new ArrayList<>();
+            basketRepository.findAll().forEach(basketEntity ->
+                    basketAssetIds.addAll(basketEntity.getBasketAssets().stream()
+                            .map(BasketAssetEntity::getAssetId)
+                            .toList())
+            );
 
-        // basket 에 등록된 Asset 우선 처리 하도록 List 조합
-        List<Asset> assetsInBasket = new ArrayList<>();
-        List<Asset> assetsNotInBasket = new ArrayList<>();
-        assetsFromClient.forEach(it -> {
-            if (basketAssetIds.contains(it.getAssetId())) {
-                assetsInBasket.add(it);
-            } else {
-                assetsNotInBasket.add(it);
-            }
-        });
-        List<Asset> assets = new ArrayList<>();
-        assets.addAll(assetsInBasket);
-        assets.addAll(assetsNotInBasket);
+            // asset client 로 부터 asset 정보 조회
+            List<Asset> assetsFromClient = assetClient.getAssets();
 
-        // merge (상장 폐지 등 삭제 종목 제외는 skip)
-        for (Asset asset : assets) {
-
-            // Updates financial details
-            try {
-                AssetEntity assetEntity = assetRepository.findById(asset.getAssetId()).orElse(null);
-                if (assetEntity == null) {
-                    assetEntity = AssetEntity.builder()
-                            .assetId(asset.getAssetId())
-                            .build();
+            // basket 에 등록된 Asset 우선 처리 하도록 List 조합
+            List<Asset> assetsInBasket = new ArrayList<>();
+            List<Asset> assetsNotInBasket = new ArrayList<>();
+            assetsFromClient.forEach(it -> {
+                if (basketAssetIds.contains(it.getAssetId())) {
+                    assetsInBasket.add(it);
+                } else {
+                    assetsNotInBasket.add(it);
                 }
-                assetEntity.setName(asset.getName());
-                assetEntity.setMarket(asset.getMarket());
-                assetEntity.setExchange(asset.getExchange());
-                assetEntity.setType(asset.getType());
+            });
+            List<Asset> assets = new ArrayList<>();
+            assets.addAll(assetsInBasket);
+            assets.addAll(assetsNotInBasket);
 
-                // updates asset details
-                boolean needToUpdate = true;
-                // 주식 중 시가 총액이 0이거나 산출 되지 않은 기업은 제외
-                if (Objects.equals(asset.getType(), "STOCK")) {
-                    if (asset.getMarketCap() == null || asset.getMarketCap().compareTo(BigDecimal.ZERO) <= 0) {
-                        needToUpdate = false;
-                    }
-                }
-                if (needToUpdate) {
-                    assetClient.updateAsset(asset);
-                }
-                assetEntity.setUpdatedDate(LocalDate.now());
-                assetEntity.setPrice(asset.getPrice());
-                assetEntity.setVolume(asset.getVolume());
-                assetEntity.setMarketCap(asset.getMarketCap());
-                assetEntity.setEps(asset.getEps());
-                assetEntity.setRoe(asset.getRoe());
-                assetEntity.setPer(asset.getPer());
-                assetEntity.setDividendFrequency(asset.getDividendFrequency());
-                assetEntity.setDividendYield(asset.getDividendYield());
-                assetEntity.setCapitalGain(asset.getCapitalGain());
-                assetEntity.setTotalReturn(asset.getTotalReturn());
+            // merge (상장 폐지 등 삭제 종목 제외는 skip)
+            for (Asset asset : assets) {
+                totalCount++;
 
-                // saves
-                saveEntities("assetEntity", List.of(assetEntity), transactionManager, assetRepository);
-            } catch (Throwable t) {
-                log.warn(t.getMessage());
-            } finally {
-                // 블럭 당할수 있음 으로 유량 조절
+                // Updates financial details
                 try {
-                    Thread.sleep(3_000);
-                } catch(Throwable ignore){}
+                    AssetEntity assetEntity = assetRepository.findById(asset.getAssetId()).orElse(null);
+                    if (assetEntity == null) {
+                        assetEntity = AssetEntity.builder()
+                                .assetId(asset.getAssetId())
+                                .build();
+                    }
+                    assetEntity.setName(asset.getName());
+                    assetEntity.setMarket(asset.getMarket());
+                    assetEntity.setExchange(asset.getExchange());
+                    assetEntity.setType(asset.getType());
+
+                    // updates asset details
+                    boolean needToUpdate = true;
+                    // 주식 중 시가 총액이 0이거나 산출 되지 않은 기업은 제외
+                    if (Objects.equals(asset.getType(), "STOCK")) {
+                        if (asset.getMarketCap() == null || asset.getMarketCap().compareTo(BigDecimal.ZERO) <= 0) {
+                            needToUpdate = false;
+                        }
+                    }
+                    if (needToUpdate) {
+                        assetClient.updateAsset(asset);
+                    }
+                    assetEntity.setUpdatedDate(LocalDate.now());
+                    assetEntity.setPrice(asset.getPrice());
+                    assetEntity.setVolume(asset.getVolume());
+                    assetEntity.setMarketCap(asset.getMarketCap());
+                    assetEntity.setEps(asset.getEps());
+                    assetEntity.setRoe(asset.getRoe());
+                    assetEntity.setPer(asset.getPer());
+                    assetEntity.setDividendFrequency(asset.getDividendFrequency());
+                    assetEntity.setDividendYield(asset.getDividendYield());
+                    assetEntity.setCapitalGain(asset.getCapitalGain());
+                    assetEntity.setTotalReturn(asset.getTotalReturn());
+
+                    // saves
+                    saveEntities("assetEntity", List.of(assetEntity), transactionManager, assetRepository);
+                } catch (Throwable t) {
+                    log.warn(t.getMessage());
+                    failCount++;
+                } finally {
+                    // 블럭 당할수 있음 으로 유량 조절
+                    try {
+                        Thread.sleep(3_000);
+                    } catch (Throwable ignore) {}
+                }
             }
+
+            // checks fail percentage
+            if (failCount > totalCount * 0.1) {
+                throw new RuntimeException("AssetCollector - Fail count is over 10%.");
+            }
+
+            // result
+            result = true;
+
+        } catch (Throwable e) {
+            log.error(e.getMessage(), e);
+            result = false;
+            error = ExceptionUtils.getRootCauseMessage(e);
+            throw new RuntimeException(e);
+        } finally {
+            // send message
+            Duration elapsed = Duration.between(start, Instant.now());
+            StringBuilder message = new StringBuilder();
+            message.append("=".repeat(80)).append('\n');
+            message.append("AssetCollector - Complete collect asset.").append('\n');
+            message.append(String.format("- elapsed: %02d:%02d:%02d", elapsed.toHoursPart(), elapsed.toMinutesPart(), elapsed.toSecondsPart())).append('\n');
+            message.append(String.format("- totalCount: %d", totalCount)).append('\n');
+            message.append(String.format("- failCount: %d", failCount)).append('\n');
+            message.append(String.format("- result: %s", result)).append('\n');
+            message.append(String.format("- error: %s", error)).append('\n');
+            message.append("=".repeat(80)).append('\n');
+            log.info(message.toString());
+            sendSystemAlarm(this.getClass(), message.toString());
+            log.info("AssetCollector - Complete collect asset.");
         }
     }
 

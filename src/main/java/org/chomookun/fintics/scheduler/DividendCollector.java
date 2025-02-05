@@ -2,6 +2,7 @@ package org.chomookun.fintics.scheduler;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.lang.exception.ExceptionUtils;
 import org.chomookun.fintics.client.dividend.DividendClient;
 import org.chomookun.fintics.dao.DividendEntity;
 import org.chomookun.fintics.dao.DividendRepository;
@@ -13,8 +14,12 @@ import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.PlatformTransactionManager;
 
+import java.time.Duration;
+import java.time.Instant;
 import java.time.LocalDate;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 @Component
 @RequiredArgsConstructor
@@ -33,23 +38,70 @@ public class DividendCollector extends AbstractScheduler {
 
     @Scheduled(initialDelay = 60_000, fixedDelay = 86_400_000)
     public void collect() {
+        Instant start = Instant.now();
+        long totalCount = 0;
+        long failCount = 0;
+        Boolean result = null;
+        String error = null;
         try {
-            log.info("OhlcvCollector - Start collect ohlcv.");
+            log.info("DividendCollector - Start collect dividend.");
+
+            // gets baskets
             List<Basket> baskets = basketService.getBaskets(BasketSearch.builder().build(), Pageable.unpaged()).getContent();
-            for (Basket basket : baskets) {
-                for (BasketAsset basketAsset : basket.getBasketAssets()) {
+
+            // collects distinct asset ids
+            Set<String> assetIds = new HashSet<>();
+            baskets.forEach(basket -> {
+                basket.getBasketAssets().forEach(basketAsset -> {
+                    assetIds.add(basketAsset.getAssetId());
+                });
+            });
+
+            // collect and save dividend
+            for (String assetId : assetIds) {
+                totalCount ++;
+                try {
+                    Asset asset = assetService.getAsset(assetId).orElseThrow();
+                    saveDividends(asset);
+                } catch (Throwable e) {
+                    log.warn(e.getMessage());
+                    failCount ++;
+                } finally {
+                    // 블럭 당할수 있음 으로 유량 조절
                     try {
-                        Asset asset = assetService.getAsset(basketAsset.getAssetId()).orElseThrow();
-                        saveDividends(asset);
-                    } catch (Throwable e) {
-                        log.warn(e.getMessage());
-                    }
+                        Thread.sleep(3_000);
+                    } catch (Throwable ignore) {}
                 }
             }
+
+            // checks fail count
+            if (failCount > totalCount * 0.1) {
+                throw new RuntimeException("DividendCollector - Fail count is over 10%.");
+            }
+
+            // result
+            result = true;
+
         } catch (Throwable e) {
             log.error(e.getMessage(), e);
-            sendSystemAlarm(this.getClass(), e.getMessage());
+            result = false;
+            error = ExceptionUtils.getRootCauseMessage(e);
             throw new RuntimeException(e);
+        } finally {
+            // send message
+            Duration elapsed = Duration.between(start, Instant.now());
+            StringBuilder message = new StringBuilder();
+            message.append("=".repeat(80)).append('\n');
+            message.append("DividendCollector - Complete collect dividend.").append('\n');
+            message.append(String.format("- elapsed: %02d:%02d:%02d", elapsed.toHoursPart(), elapsed.toMinutesPart(), elapsed.toSecondsPart())).append('\n');
+            message.append(String.format("- totalCount: %d", totalCount)).append('\n');
+            message.append(String.format("- failCount: %d", failCount)).append('\n');
+            message.append(String.format("- result: %s", result)).append('\n');
+            message.append(String.format("- error: %s", error)).append('\n');
+            message.append("=".repeat(80)).append('\n');
+            log.info(message.toString());
+            sendSystemAlarm(this.getClass(), message.toString());
+            log.info("DividendCollector - Complete collect dividend.");
         }
     }
 
