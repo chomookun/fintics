@@ -93,7 +93,7 @@ public class DividendCollector extends AbstractScheduler {
             StringBuilder message = new StringBuilder();
             message.append("=".repeat(80)).append('\n');
             message.append("DividendCollector - Complete collect dividend.").append('\n');
-            message.append(String.format("- elapsed: %02d:%02d:%02d", elapsed.toHoursPart(), elapsed.toMinutesPart(), elapsed.toSecondsPart())).append('\n');
+            message.append(String.format("- elapsed: %d:%02d:%02d", elapsed.toHoursPart(), elapsed.toMinutesPart(), elapsed.toSecondsPart())).append('\n');
             message.append(String.format("- totalCount: %d", totalCount)).append('\n');
             message.append(String.format("- failCount: %d", failCount)).append('\n');
             message.append(String.format("- result: %s", result)).append('\n');
