@@ -5,7 +5,7 @@
       layout:decorate="_web.html">
 <th:block layout:fragment="_content">
     <script th:inline="javascript">
-        const strategyId = /*[[${strategyId}]]*/'';
+        const strategyId = new URL(location.href).searchParams.get('strategyId');
         const strategy = new duice.ObjectProxy({
             strategyId: null,
             name: null

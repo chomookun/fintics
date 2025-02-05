@@ -9,6 +9,7 @@ import org.chomookun.arch4j.core.common.support.RestTemplateBuilder;
 import org.chomookun.fintics.client.broker.BrokerClient;
 import org.chomookun.fintics.client.broker.BrokerClientDefinition;
 import org.chomookun.fintics.model.*;
+import org.chomookun.fintics.trade.TradeValidator;
 import org.springframework.core.ParameterizedTypeReference;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
@@ -122,7 +123,9 @@ public class KisBrokerClient extends BrokerClient {
      * checks holiday
      * @param dateTime date time
      * @return whether is holiday
-     * @see [국내휴장일조회[국내주식-040]](https://apiportal.koreainvestment.com/apiservice/apiservice-domestic-index-quotations#L_5c488ab2-59fd-486e-bf74-b68e813e35c0)
+     * @see <a href="https://apiportal.koreainvestment.com/apiservice/apiservice-domestic-index-quotations#L_5c488ab2-59fd-486e-bf74-b68e813e35c0">
+     *     국내휴장일조회[국내주식-040]
+     *     </a>
      */
     boolean isHoliday(LocalDateTime dateTime) throws InterruptedException {
         // 모의 투자는 휴장일 조회 API 제공 하지 않음
@@ -184,7 +187,9 @@ public class KisBrokerClient extends BrokerClient {
      * returns minute ohlcvs
      * @param asset asset
      * @return minute ohlcvs
-     * @see [주식당일분봉조회[v1_국내주식-022]](https://apiportal.koreainvestment.com/apiservice/apiservice-domestic-stock-quotations2#L_eddbb36a-1d55-461a-b242-3067ba1e5640)
+     * @see <a href="https://apiportal.koreainvestment.com/apiservice/apiservice-domestic-stock-quotations2#L_eddbb36a-1d55-461a-b242-3067ba1e5640">
+     *     주식당일분봉조회[v1_국내주식-022]
+     *     </a>
      */
     @Override
     public List<Ohlcv> getMinuteOhlcvs(Asset asset) throws InterruptedException {
@@ -259,7 +264,9 @@ public class KisBrokerClient extends BrokerClient {
      * return daily ohlcvs
      * @param asset asset
      * @return daily ohlcvs
-     * @see [국내주식기간별시세 - 일,주,월,년[v1_국내주식-016]](https://apiportal.koreainvestment.com/apiservice/apiservice-domestic-stock-quotations2#L_a08c3421-e50f-4f24-b1fe-64c12f723c77)
+     * @see <a href="https://apiportal.koreainvestment.com/apiservice/apiservice-domestic-stock-quotations2#L_a08c3421-e50f-4f24-b1fe-64c12f723c77">
+     *     국내주식기간별시세 - 일,주,월,년[v1_국내주식-016]
+     *     </a>
      */
     @Override
     public List<Ohlcv> getDailyOhlcvs(Asset asset) throws InterruptedException {
@@ -333,7 +340,9 @@ public class KisBrokerClient extends BrokerClient {
      * return order book
      * @param asset asset
      * @return order book
-     * @see [주식현재가 호가/예상체결[v1_국내주식-011]](https://apiportal.koreainvestment.com/apiservice/apiservice-domestic-stock-quotations2#L_af3d3794-92c0-4f3b-8041-4ca4ddcda5de)
+     * @see <a href="https://apiportal.koreainvestment.com/apiservice/apiservice-domestic-stock-quotations2#L_af3d3794-92c0-4f3b-8041-4ca4ddcda5de">
+     *     주식현재가 호가/예상체결[v1_국내주식-011]
+     *     </a>
      */
     @Override
     public OrderBook getOrderBook(Asset asset) throws InterruptedException {
@@ -370,11 +379,13 @@ public class KisBrokerClient extends BrokerClient {
         Map<String, String> output2 = objectMapper.convertValue(rootNode.path("output2"), new TypeReference<>() {});
 
         BigDecimal price = new BigDecimal(output2.get("stck_prpr"));
+        BigDecimal tickPrice = getTickPrice(asset, price);
         BigDecimal bidPrice = new BigDecimal(output1.get("bidp1"));
         BigDecimal askPrice = new BigDecimal(output1.get("askp1"));
 
         return OrderBook.builder()
                 .price(price)
+                .tickPrice(tickPrice)
                 .bidPrice(bidPrice)
                 .askPrice(askPrice)
                 .build();
@@ -382,10 +393,11 @@ public class KisBrokerClient extends BrokerClient {
 
     /**
      * 호가 단위 반환 (정책은 아래 주소를 참조)
-     * @see <a href="https://securities.koreainvestment.com/main/customer/notice/Notice.jsp?&cmd=TF04ga000002&currentPage=1&num=39930">주식 호가단위 정책</a>
+     * @see <a href="https://securities.koreainvestment.com/main/customer/notice/Notice.jsp?&cmd=TF04ga000002&currentPage=1&num=39930">
+     *     주식 호가단위 정책
+     *     </a>
      */
-    @Override
-    public BigDecimal getTickPrice(Asset asset, BigDecimal price) throws InterruptedException {
+    BigDecimal getTickPrice(Asset asset, BigDecimal price) throws InterruptedException {
         // etf, etn, elw
         if(Arrays.asList("ETF","ETN","ELW").contains(asset.getType())) {
             return BigDecimal.valueOf(5);
@@ -413,7 +425,9 @@ public class KisBrokerClient extends BrokerClient {
     /**
      * return account balance
      * @return balance
-     * @see <a href="https://apiportal.koreainvestment.com/apiservice/apiservice-domestic-stock-order#L_66c61080-674f-4c91-a0cc-db5e64e9a5e6)">주식잔고조회[v1_국내주식-006]</a>
+     * @see <a href="https://apiportal.koreainvestment.com/apiservice/apiservice-domestic-stock-order#L_66c61080-674f-4c91-a0cc-db5e64e9a5e6)">
+     *     주식잔고조회[v1_국내주식-006]
+     *     </a>
      */
     @Override
     public Balance getBalance() throws InterruptedException {
@@ -542,7 +556,9 @@ public class KisBrokerClient extends BrokerClient {
     /**
      * gets balance realized profit amount
      * @return realized profit amount
-     * @see [주식잔고조회_실현손익[v1_국내주식-041]](https://apiportal.koreainvestment.com/apiservice/apiservice-domestic-stock-order#L_ff79302e-6014-495e-a188-6dca69fc952e)
+     * @see <a href="https://apiportal.koreainvestment.com/apiservice/apiservice-domestic-stock-order#L_ff79302e-6014-495e-a188-6dca69fc952e">
+     *     주식잔고조회_실현손익[v1_국내주식-041]
+     *     </a>
      */
     private BigDecimal getBalanceRealizedProfitAmount() throws InterruptedException {
         String url = apiUrl + "/uapi/domestic-stock/v1/trading/inquire-balance-rlz-pl";
@@ -593,7 +609,9 @@ public class KisBrokerClient extends BrokerClient {
      * @param asset asset
      * @param order order
      * @return submitted order
-     * @see [주식주문 - 현금[v1_국내주식-001]](https://apiportal.koreainvestment.com/apiservice/apiservice-domestic-stock-order#L_aade4c72-5fb7-418a-9ff2-254b4d5f0ceb)
+     * @see <a href="https://apiportal.koreainvestment.com/apiservice/apiservice-domestic-stock-order#L_aade4c72-5fb7-418a-9ff2-254b4d5f0ceb">
+     *     주식주문 - 현금[v1_국내주식-001]
+     *     </a>
      */
     @Override
     public Order submitOrder(Asset asset, Order order) throws InterruptedException {
@@ -670,7 +688,9 @@ public class KisBrokerClient extends BrokerClient {
     /**
      * gets waiting orders
      * @return waiting orders
-     * @see [주식정정취소가능주문조회[v1_국내주식-004]](https://apiportal.koreainvestment.com/apiservice/apiservice-domestic-stock-order#L_d4537e9c-73f7-414c-9fb0-4eae3bc397d0)
+     * @see <a href="https://apiportal.koreainvestment.com/apiservice/apiservice-domestic-stock-order#L_d4537e9c-73f7-414c-9fb0-4eae3bc397d0">
+     *     주식정정취소가능주문조회[v1_국내주식-004]
+     *     </a>
      */
     @Override
     public List<Order> getWaitingOrders() throws InterruptedException {
@@ -747,11 +767,13 @@ public class KisBrokerClient extends BrokerClient {
     }
 
     /**
-     * amends order
+     * Amends order
      * @param asset asset
      * @param order order
      * @return amended order
-     * @see [주식주문 - 정정취소[v1_국내주식-003]](https://apiportal.koreainvestment.com/apiservice/apiservice-domestic-stock-order#L_4bfdfb2b-34a7-43f6-935a-e637724f960a)
+     * @see <a href="https://apiportal.koreainvestment.com/apiservice/apiservice-domestic-stock-order#L_4bfdfb2b-34a7-43f6-935a-e637724f960a">
+     *     주식주문 - 정정취소[v1_국내주식-003]
+     *     </a>
      */
     @Override
     public Order amendOrder(Asset asset, Order order) throws InterruptedException {
@@ -809,7 +831,9 @@ public class KisBrokerClient extends BrokerClient {
      * @param dateFrom date from
      * @param dateTo  date to
      * @return realized profits
-     * @see [기간별매매손익현황조회[v1_국내주식-060]](https://apiportal.koreainvestment.com/apiservice/apiservice-domestic-stock-order#L_4755efc7-31c4-411c-af45-3e6948611f0a)
+     * @see <a href="https://apiportal.koreainvestment.com/apiservice/apiservice-domestic-stock-order#L_4755efc7-31c4-411c-af45-3e6948611f0a">
+     *     기간별매매손익현황조회[v1_국내주식-060]
+     *     </a>
      */
     @Override
     public List<RealizedProfit> getRealizedProfits(LocalDate dateFrom, LocalDate dateTo) throws InterruptedException {
@@ -907,7 +931,9 @@ public class KisBrokerClient extends BrokerClient {
      * @param dateFrom date from
      * @param dateTo date to
      * @return 배당 내역
-     * @see <a href="https://apiportal.koreainvestment.com/apiservice/apiservice-domestic-stock-order#L_04275bfe-007a-45f6-8d4d-0682320a0741">기간별계좌권리현황조회 [국내주식-211]</a>
+     * @see <a href="https://apiportal.koreainvestment.com/apiservice/apiservice-domestic-stock-order#L_04275bfe-007a-45f6-8d4d-0682320a0741">
+     *     기간별계좌권리현황조회 [국내주식-211]
+     *     </a>
      */
     @Override
     public List<DividendProfit> getDividendProfits(LocalDate dateFrom, LocalDate dateTo) throws InterruptedException {

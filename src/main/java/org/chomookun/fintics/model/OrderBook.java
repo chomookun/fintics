@@ -12,8 +12,10 @@ public class OrderBook {
 
     private BigDecimal price;
 
-    private BigDecimal bidPrice;
+    private BigDecimal tickPrice;
 
     private BigDecimal askPrice;
+
+    private BigDecimal bidPrice;
 
 }

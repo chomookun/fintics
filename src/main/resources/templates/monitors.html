@@ -278,6 +278,15 @@
         }
 
         /**
+         * opens orders view
+         * @param tradeId trade id
+         * @param assetId asset id
+         */
+        function openOrders(tradeId, assetId) {
+            _openLink(`${_rootUrl}/orders?tradeId=${tradeId}&key=assetId&value=${assetId}`, '_blank');
+        }
+
+        /**
          * on DOM content loaded
          */
         document.addEventListener('DOMContentLoaded', () => {
@@ -553,7 +562,7 @@
                                         this.dataset.tradeId = '${trade.tradeId}';
                                         this.dataset.assetId = basketAsset.assetId;
                                         |"
-                                              onclick="_openLink(`${_rootUrl}/orders?tradeId=${this.dataset.tradeId}&assetId=${this.dataset.assetId}`, '_blank');">
+                                              onclick="openOrders(this.dataset.tradeId, this.dataset.assetId);">
                                         <span data-duice-bind="basketAsset" data-duice-if="return basketAsset.buyCount > 0;">
                                             <img class="icon" th:src="@{/static/image/icon-add.svg}" alt=""/>
                                             <span data-duice-bind="basketAsset" data-duice-property="buyCount" class="number"></span>

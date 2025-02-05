@@ -59,32 +59,27 @@
             document.location.href = `${_rootUrl}/basket`
         }
 
-        /**
-         * Push history
-         */
-        function pushHistory() {
-            _pushHistoryState({basketSearch: basketSearch});
+        function loadBasketSearch() {
+            duice.ObjectProxy.reset(basketSearch);
+            _loadUrlSearchParams(basketSearch, ['key', 'value', '_page', '_size']);
         }
 
-        // Handles DOMContentLoaded event
+        function pushBasketSearch() {
+            _pushUrlSearchParams(basketSearch, ['key', 'value', '_page', '_size']);
+        }
+
+        // On dom document loaded
         document.addEventListener('DOMContentLoaded', () => {
-            const stateBasketSearch = _getHistoryState()?.basketSearch;
-            if (stateBasketSearch) {
-                duice.ObjectProxy.assign(basketSearch, stateBasketSearch);
-            }
-            getBaskets();
-            _replaceHistoryState({basketSearch: basketSearch});
-        });
-
-        // Handle popstate event
-        window.addEventListener('popstate', () => {
-            const stateBasketSearch = _getHistoryState()?.basketSearch;
-            if (stateBasketSearch) {
-                duice.ObjectProxy.assign(basketSearch, stateBasketSearch);
-            }
+            loadBasketSearch();
             getBaskets();
         });
 
+        // history event
+        ['popstate', 'pageshow'].forEach(event => {
+            window.addEventListener(event, () => {
+                document.dispatchEvent(new CustomEvent('DOMContentLoaded'));
+            });
+        });
     </script>
     <style th:inline="css">
     </style>
@@ -126,7 +121,7 @@
                     </div>
                 </div>
                 <div class="flex--1 display--flex gap--1px justify-content--end s__justify-content--start">
-                    <button class="button" type="submit" onclick="getBaskets(0);">
+                    <button class="button" type="submit" onclick="getBaskets(0); pushBasketSearch();">
                         <img class="icon" th:src="@{/static/image/icon-search.svg}" alt="reset"/>
                         <span data-th-text="#{web.global.search}"></span>
                     </button>
@@ -213,7 +208,7 @@
                             data-duice-size-property="_size"
                             data-duice-page-property="_page"
                             data-duice-count-property="_count"
-                            data-duice-onclick="getBaskets(this.dataset.page); pushHistory();">
+                            data-duice-onclick="getBaskets(this.dataset.page); pushBasketSearch();">
                     </duice-pagination>
                 </div>
                 <div class="flex--1 display--flex justify-content--end">

@@ -30,7 +30,7 @@ class TradeValidatorTest {
         try {
             TradeValidator.validateOhlcvs(ohlcvs);
         } catch (IllegalArgumentException e) {
-//            fail();
+            fail();
         }
     }
 
@@ -45,17 +45,18 @@ class TradeValidatorTest {
         // when
         try {
             TradeValidator.validateOhlcvs(ohlcvs);
+            fail();
         } catch (IllegalArgumentException e) {
             return;
         }
-        // then
-//        fail();
     }
 
     @Test
-    void isValidOrderBookWithCorrect() {
+    void isValidOrderBookWithNormal() {
         // given
         OrderBook orderBook = OrderBook.builder()
+                .price(BigDecimal.valueOf(1000))
+                .tickPrice(BigDecimal.valueOf(10))
                 .askPrice(BigDecimal.valueOf(1000))
                 .bidPrice(BigDecimal.valueOf(990))
                 .build();
@@ -64,25 +65,46 @@ class TradeValidatorTest {
             TradeValidator.validateOrderBook(orderBook);
             log.info("order book is valid");
         } catch (IllegalArgumentException e) {
-//            fail();
+            fail();
         }
     }
 
     @Test
-    void isValidOrderBookWithError() {
+    void isValidOrderBookWithErrorAskBidPrice() {
         // given
         OrderBook orderBook = OrderBook.builder()
+                .price(BigDecimal.valueOf(1000))
+                .tickPrice(BigDecimal.valueOf(10))
                 .askPrice(BigDecimal.valueOf(1000))
                 .bidPrice(BigDecimal.valueOf(1000))
                 .build();
         // when
         try {
             TradeValidator.validateOrderBook(orderBook);
+            fail();
         } catch (IllegalArgumentException e) {
             log.info(e.getMessage());
             return;
         }
-//        fail();
+    }
+
+    @Test
+    void isValidOrderBookWithErrorTickPrice() {
+        // given
+        OrderBook orderBook = OrderBook.builder()
+                .price(BigDecimal.valueOf(1000))
+                .tickPrice(BigDecimal.valueOf(100))
+                .askPrice(BigDecimal.valueOf(1000))
+                .bidPrice(BigDecimal.valueOf(990))
+                .build();
+        // when
+        try {
+            TradeValidator.validateOrderBook(orderBook);
+            fail();
+        } catch (IllegalArgumentException e) {
+            log.info(e.getMessage());
+            return;
+        }
     }
 
 }

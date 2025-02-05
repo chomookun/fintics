@@ -25,6 +25,7 @@ public class KisAccessToken {
 
     private String accessToken;
 
+    @Setter
     private LocalDateTime expireDateTime;
 
     /**

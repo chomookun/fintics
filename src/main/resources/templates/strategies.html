@@ -58,33 +58,27 @@
             document.location.href = `${_rootUrl}/strategy`
         }
 
-        /**
-         * Pushes history
-         */
-        function pushHistory() {
-            console.warn('===pushHistory', strategySearch);
-            _pushHistoryState({strategySearch: strategySearch});
+        function loadStrategySearch() {
+            duice.ObjectProxy.reset(strategySearch);
+            _loadUrlSearchParams(strategySearch, ['key', 'value', '_page', '_size']);
+        }
+
+        function pushStrategySearch() {
+            _pushUrlSearchParams(strategySearch, ['key', 'value', '_page', '_size']);
         }
 
         // Handles DOMContentLoaded event
         document.addEventListener('DOMContentLoaded', () => {
-            const stateStrategySearch = _getHistoryState()?.strategySearch;
-            if (stateStrategySearch) {
-                duice.ObjectProxy.assign(strategySearch, stateStrategySearch);
-            }
-            getStrategies();
-            _replaceHistoryState({strategySearch: strategySearch});
-        });
-
-        // Handles popstate event
-        window.addEventListener('popstate', () => {
-            const stateStrategySearch = _getHistoryState()?.strategySearch;
-            if (stateStrategySearch) {
-                duice.ObjectProxy.assign(strategySearch, stateStrategySearch);
-            }
+            loadStrategySearch();
             getStrategies();
         });
 
+        // history event
+        ['popstate', 'pageshow'].forEach(event => {
+            window.addEventListener(event, () => {
+                document.dispatchEvent(new CustomEvent('DOMContentLoaded'));
+            });
+        });
     </script>
     <style th:inline="css">
     </style>
@@ -126,7 +120,7 @@
                     </div>
                 </div>
                 <div class="flex--1 display--flex justify-content--end gap--1px">
-                    <button class="button" type="submit" onclick="getStrategies();">
+                    <button class="button" type="submit" onclick="getStrategies(); pushStrategySearch();">
                         <img class="icon" th:src="@{/static/image/icon-search.svg}" alt="reset"/>
                         <span data-th-text="#{web.global.search}"></span>
                     </button>
@@ -193,7 +187,7 @@
                             data-duice-size-property="_size"
                             data-duice-page-property="_page"
                             data-duice-count-property="_count"
-                            data-duice-onclick="getStrategies(this.dataset.page); pushHistory();">
+                            data-duice-onclick="getStrategies(this.dataset.page); pushStrategySearch();">
                     </duice-pagination>
                 </div>
                 <div class="flex--1 display--flex justify-content--end">

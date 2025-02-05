@@ -59,14 +59,6 @@ public abstract class BrokerClient {
     public abstract OrderBook getOrderBook(Asset asset) throws InterruptedException;
 
     /**
-     * returns tick price
-     * @param asset asset
-     * @param price current asset price
-     * @return tick price
-     */
-    public abstract BigDecimal getTickPrice(Asset asset, BigDecimal price) throws InterruptedException;
-
-    /**
      * check available price and quantity
      * @param price price
      * @param quantity quantity

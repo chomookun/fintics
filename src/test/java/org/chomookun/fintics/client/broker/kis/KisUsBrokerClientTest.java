@@ -8,6 +8,8 @@ import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 import org.chomookun.arch4j.core.common.test.CoreTestSupport;
 import org.chomookun.fintics.FinticsConfiguration;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.MethodSource;
 import org.springframework.boot.test.context.SpringBootTest;
 
 import java.math.BigDecimal;
@@ -34,12 +36,38 @@ class KisUsBrokerClientTest extends CoreTestSupport {
     private static String accountNo;
 
     @BeforeAll
-    static void beforeAll() {
+    static void beforeAll() throws Exception {
         production = System.getenv("KIS_US_PRODUCTION");
         apiUrl = System.getenv("KIS_US_API_URL");
         appKey = System.getenv("KIS_US_APP_KEY");
         appSecret = System.getenv("KIS_US_APP_SECRET");
         accountNo = System.getenv("KIS_US_ACCOUNT_NO");
+
+        // loads access token
+        KisBrokerClientTestUtils.loadAccessToken(apiUrl, appKey, appSecret);
+    }
+
+    static List<Asset> getStockAssets() {
+        return List.of(
+                Asset.builder()
+                        .assetId("US.MSFT")
+                        .name("Microsoft Corporation Common Stock")
+                        .market("US")
+                        .exchange("XNAS")
+                        .type("STOCK")
+                        .build()
+        );
+    }
+
+    static List<Asset> getEtfAssets() {
+        return List.of(
+                Asset.builder()
+                        .assetId("US.SPY")
+                        .market("US")
+                        .exchange("XASE")
+                        .type("ETF")
+                        .build()
+        );
     }
 
     KisUsBrokerClient getKisUsClient() {
@@ -64,78 +92,58 @@ class KisUsBrokerClientTest extends CoreTestSupport {
     }
 
     @Disabled
-    @Test
-    void getOrderBook() throws InterruptedException {
-        // given
-        Asset tradeAsset = Asset.builder()
-                .assetId("US.TSLA")
-                .exchange("XNAS")
-                .build();
-
+    @ParameterizedTest
+    @MethodSource({"getStockAssets","getEtfAssets"})
+    void getMinuteOhlcvs(Asset asset) throws InterruptedException {
         // when
-        OrderBook orderBook = getKisUsClient().getOrderBook(tradeAsset);
-        log.info("== orderBook:{}", orderBook);
-
-        // then
-        assertNotNull(orderBook);
-    }
-
-
-    @Disabled
-    @Test
-    void getMinuteOhlcvs() throws InterruptedException {
-        // given
-        Asset tradeAsset = Asset.builder()
-                .assetId("US.TSLA")
-                .exchange("XNAS")
-                .build();
-
-        // when
-        List<Ohlcv> minuteOhlcvs = getKisUsClient().getMinuteOhlcvs(tradeAsset);
-
+        List<Ohlcv> minuteOhlcvs = getKisUsClient().getMinuteOhlcvs(asset);
         // then
         assertNotNull(minuteOhlcvs);
     }
 
     @Disabled
-    @Test
-    void getDailyOhlcvs() throws InterruptedException {
-        // given
-        Asset tradeAsset = Asset.builder()
-                .assetId("US.TSLA")
-                .exchange("XNAS")
-                .build();
-
+    @ParameterizedTest
+    @MethodSource({"getStockAssets","getEtfAssets"})
+    void getDailyOhlcvs(Asset asset) throws InterruptedException {
         // when
-        List<Ohlcv> dailyOhlcvs = getKisUsClient().getDailyOhlcvs(tradeAsset);
-
+        List<Ohlcv> dailyOhlcvs = getKisUsClient().getDailyOhlcvs(asset);
         // then
         assertNotNull(dailyOhlcvs);
     }
 
     @Disabled
-    @Test
-    void getBalance() throws InterruptedException {
-        // given
+    @ParameterizedTest
+    @MethodSource({"getStockAssets","getEtfAssets"})
+    void getOrderBook(Asset asset) throws InterruptedException {
         // when
-        Balance balance = getKisUsClient().getBalance();
-
+        OrderBook orderBook = getKisUsClient().getOrderBook(asset);
+        log.info("== orderBook:{}", orderBook);
         // then
-        assertNotNull(balance.getCashAmount());
+        assertNotNull(orderBook);
+        assertNotNull(orderBook.getPrice());
+        assertNotNull(orderBook.getTickPrice());
+        assertNotNull(orderBook.getAskPrice());
+        assertNotNull(orderBook.getAskPrice());
+    }
+
+    @Disabled
+    @ParameterizedTest
+    @MethodSource({"getStockAssets","getEtfAssets"})
+    void getTickPrice(Asset asset) throws InterruptedException {
+        // when
+        BigDecimal tickPrice = getKisUsClient().getTickPrice(asset, BigDecimal.ZERO);
+        // then
+        log.info("tickPrice: {}", tickPrice);
+        assertNotNull(tickPrice);
     }
 
     @Disabled
     @Test
-    void getTickPrice() throws InterruptedException {
-        // given
-        Asset asset = Asset.builder()
-                .assetId("US.TSLA")
-                .build();
+    void getBalance() throws InterruptedException {
         // when
-        BigDecimal tickPrice = getKisUsClient().getTickPrice(asset, BigDecimal.ZERO);
-
+        Balance balance = getKisUsClient().getBalance();
         // then
-        log.info("tickPrice: {}", tickPrice);
+        assertNotNull(balance.getCashAmount());
     }
 
     @Disabled
@@ -152,7 +160,6 @@ class KisUsBrokerClientTest extends CoreTestSupport {
                 .quantity(BigDecimal.valueOf(1))
                 .price(BigDecimal.valueOf(10))
                 .build();
-
         // when
         getKisUsClient().submitOrder(asset, order);
     }
@@ -171,7 +178,6 @@ class KisUsBrokerClientTest extends CoreTestSupport {
                 .quantity(BigDecimal.valueOf(1))
                 .price(BigDecimal.valueOf(1000))
                 .build();
-
         // when
         getKisUsClient().submitOrder(asset, order);
     }

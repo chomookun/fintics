@@ -168,7 +168,9 @@ public class KisUsBrokerClient extends BrokerClient {
      * gets minute ohlcvs
      * @param asset asset
      * @return minute ohlcvs
-     * @see [해외주식분봉조회[v1_해외주식-030]](https://apiportal.koreainvestment.com/apiservice/apiservice-oversea-stock-quotations#L_852d7e45-4f34-418b-b6a1-a4552bbcdf90)
+     * @see <a href="https://apiportal.koreainvestment.com/apiservice/apiservice-oversea-stock-quotations#L_852d7e45-4f34-418b-b6a1-a4552bbcdf90">
+     *     해외주식분봉조회[v1_해외주식-030]
+     *     </a>
      */
     @Override
     public List<Ohlcv> getMinuteOhlcvs(Asset asset) throws InterruptedException {
@@ -240,7 +242,9 @@ public class KisUsBrokerClient extends BrokerClient {
      * gets daily ohlcvs
      * @param asset asset
      * @return daily ohlcvs
-     * @see [해외주식 기간별시세[v1_해외주식-010]](https://apiportal.koreainvestment.com/apiservice/apiservice-oversea-stock-quotations#L_0e9fb2ba-bbac-4735-925a-a35e08c9a790)
+     * @see <a href="https://apiportal.koreainvestment.com/apiservice/apiservice-oversea-stock-quotations#L_0e9fb2ba-bbac-4735-925a-a35e08c9a790">
+     *     해외주식 기간별시세[v1_해외주식-010]
+     *     </a>
      */
     @Override
     public List<Ohlcv> getDailyOhlcvs(Asset asset) throws InterruptedException {
@@ -304,22 +308,22 @@ public class KisUsBrokerClient extends BrokerClient {
     }
 
     /**
-     * get order book
+     * Returns order book
      * @param asset asset
      * @return order book
-     * @see [해외주식 현재가상세[v1_해외주식-029]](https://apiportal.koreainvestment.com/apiservice/apiservice-oversea-stock-quotations#L_abc66a03-8103-4f6d-8ba8-450c2b935e14)
+     * @see <a href="https://apiportal.koreainvestment.com/apiservice/apiservice-oversea-stock-quotations#L_ed60877a-6183-433a-9a8c-ef56ed9bc679">
+     *     해외주식 현재가 10호가 [해외주식-033]
+     *     </a>
      */
     @Override
-    public OrderBook getOrderBook(Asset asset) throws InterruptedException {
-        String url = apiUrl + "/uapi/overseas-price/v1/quotations/price-detail";
+    public OrderBook getOrderBook(Asset asset) throws InterruptedException{
+        String url = apiUrl + "/uapi/overseas-price/v1/quotations/inquire-asking-price";
         HttpHeaders headers = createHeaders();
-        headers.add("tr_id", "HHDFS76200200");
-        String excd = getExcd(asset);
-        String symb = asset.getSymbol();
+        headers.add("tr_id", "HHDFS76200100");
         url = UriComponentsBuilder.fromUriString(url)
                 .queryParam("AUTH", "")
-                .queryParam("EXCD", excd)
-                .queryParam("SYMB", symb)
+                .queryParam("EXCD", getExcd(asset))
+                .queryParam("SYMB", asset.getSymbol())
                 .build()
                 .toUriString();
         RequestEntity<Void> requestEntity = RequestEntity
@@ -339,14 +343,19 @@ public class KisUsBrokerClient extends BrokerClient {
         if(!"0".equals(rtCd)) {
             throw new RuntimeException(msg1);
         }
-        JsonNode outputNode = rootNode.path("output");
-        Map<String, String> output = objectMapper.convertValue(outputNode, new TypeReference<>() {});
-        BigDecimal price = new BigDecimal(output.get("last"));
-
+        JsonNode output1Node = rootNode.path("output1");
+        JsonNode output2Node = rootNode.path("output2");
+        Map<String, String> output1 = objectMapper.convertValue(output1Node, new TypeReference<>() {});
+        Map<String, String> output2 = objectMapper.convertValue(output2Node, new TypeReference<>() {});
+        BigDecimal price = new BigDecimal(output1.get("last"));
+        BigDecimal tickPrice = getTickPrice(asset, price);
+        BigDecimal askPrice = new BigDecimal(output2.get("pask1"));
+        BigDecimal bidPrice = new BigDecimal(output2.get("pbid1"));
         return OrderBook.builder()
                 .price(price)
-                .bidPrice(price)
-                .askPrice(price)
+                .tickPrice(tickPrice)
+                .askPrice(askPrice)
+                .bidPrice(bidPrice)
                 .build();
     }
 
@@ -355,10 +364,11 @@ public class KisUsBrokerClient extends BrokerClient {
      * @param asset asset
      * @param price current asset price
      * @return tick price
-     * @see [해외주식 현재가상세[v1_해외주식-029]](https://apiportal.koreainvestment.com/apiservice/apiservice-oversea-stock-quotations#L_abc66a03-8103-4f6d-8ba8-450c2b935e14)
+     * @see <a href="https://apiportal.koreainvestment.com/apiservice/apiservice-oversea-stock-quotations#L_abc66a03-8103-4f6d-8ba8-450c2b935e14">
+     *     해외주식 현재가상세[v1_해외주식-029]
+     *     </a>
      */
-    @Override
-    public BigDecimal getTickPrice(Asset asset, BigDecimal price) throws InterruptedException {
+    BigDecimal getTickPrice(Asset asset, BigDecimal price) throws InterruptedException {
         String url = apiUrl + "/uapi/overseas-price/v1/quotations/price-detail";
         HttpHeaders headers = createHeaders();
         headers.add("tr_id", "HHDFS76200200");
@@ -389,14 +399,16 @@ public class KisUsBrokerClient extends BrokerClient {
         }
         JsonNode outputNode = rootNode.path("output");
         Map<String, String> output = objectMapper.convertValue(outputNode, new TypeReference<>() {});
-        String tickPrice = output.get("e_hogau");
+        String tickPrice = output.get("e_hogau");   // 호가 단위
         return new BigDecimal(tickPrice);
     }
 
     /**
      * get account balance
      * @return balance
-     * @see [해외주식 잔고[v1_해외주식-006]](https://apiportal.koreainvestment.com/apiservice/apiservice-oversea-stock-order#L_0482dfb1-154c-476c-8a3b-6fc1da498dbf)
+     * @see <a href="https://apiportal.koreainvestment.com/apiservice/apiservice-oversea-stock-order#L_0482dfb1-154c-476c-8a3b-6fc1da498dbf">
+     *     해외주식 잔고[v1_해외주식-006]
+     *     </a>
      */
     @Override
     public Balance getBalance() throws InterruptedException {
@@ -506,9 +518,11 @@ public class KisUsBrokerClient extends BrokerClient {
 
     /**
      * get balance cash amount
-     * 잔고조회에서 매도재사용가능금액를 알수 없음으로 해외주식 매수가능금액조회[v1_해외주식-014]로 조회 (Apple 로 조회)
+     * 잔고 조회 에서 매도 재사용 가능 금액을 알수 없음 으로 해외 주식 매수 가능 금액 조회 (Apple 로 조회)
      * @return cash amount
-     * @see [해외주식 매수가능금액조회[v1_해외주식-014]](https://apiportal.koreainvestment.com/apiservice/apiservice-oversea-stock-order#L_2a155fee-882f-4d80-8183-559f2f6983e9)
+     * @see <a href="https://apiportal.koreainvestment.com/apiservice/apiservice-oversea-stock-order#L_2a155fee-882f-4d80-8183-559f2f6983e9">
+     *     해외주식 매수가능금액조회[v1_해외주식-014]
+     *     </a>
      */
     private BigDecimal getBalanceCashAmount() throws InterruptedException {
         String url = apiUrl + "/uapi/overseas-stock/v1/trading/inquire-psamount";
@@ -550,7 +564,9 @@ public class KisUsBrokerClient extends BrokerClient {
      * @param asset asset
      * @param order order
      * @return submitted order
-     * @see [해외주식 주문[v1_해외주식-001]](https://apiportal.koreainvestment.com/apiservice/apiservice-oversea-stock-order#L_e4a7e5fd-eed5-4a85-93f0-f46b804dae5f)
+     * @see <a href="https://apiportal.koreainvestment.com/apiservice/apiservice-oversea-stock-order#L_e4a7e5fd-eed5-4a85-93f0-f46b804dae5f">
+     *     해외주식 주문[v1_해외주식-001]
+     *     </a>
      */
     @Override
     public Order submitOrder(Asset asset, Order order) throws InterruptedException {
@@ -558,16 +574,13 @@ public class KisUsBrokerClient extends BrokerClient {
         BigDecimal quantity = order.getQuantity()
                 .setScale(0, RoundingMode.FLOOR);
         order.setQuantity(quantity);
-
         // price
         BigDecimal price = order.getPrice()
                 .setScale(2, RoundingMode.FLOOR);
         order.setPrice(price);
-
         // rest template
         String url = apiUrl + "/uapi/overseas-stock/v1/trading/order";
         HttpHeaders headers = createHeaders();
-
         // order type
         String trId = null;
         switch(order.getType()) {
@@ -576,16 +589,13 @@ public class KisUsBrokerClient extends BrokerClient {
             default -> throw new RuntimeException("invalid order kind");
         }
         headers.add("tr_id", trId);
-
         // ovrsExcgCd
         String ovrsExcgCd = getOvrsExcgCd(asset);
-
         // sllType
         String sllType = null;
         if (order.getType() == Order.Type.SELL) {
             sllType = "00";
         }
-
         // request
         Map<String, String> payloadMap = new LinkedHashMap<>();
         payloadMap.put("CANO", accountNo.split("-")[0]);
@@ -604,20 +614,17 @@ public class KisUsBrokerClient extends BrokerClient {
                 .headers(headers)
                 .contentType(MediaType.APPLICATION_JSON)
                 .body(payloadMap);
-
         // exchange
         sleep();
         ResponseEntity<Map<String, Object>> responseEntity = createRestTemplate().exchange(requestEntity, new ParameterizedTypeReference<>() {});
         Map<String, Object> responseMap = Optional.ofNullable(responseEntity.getBody())
                 .orElseThrow();
-
         // response
         String rtCd = responseMap.getOrDefault("rt_cd", "").toString();
         String msg1 = responseMap.getOrDefault("msg1", "").toString();
         if(!"0".equals(rtCd)) {
             throw new RuntimeException(msg1);
         }
-
         // return
         return order;
     }
@@ -625,7 +632,9 @@ public class KisUsBrokerClient extends BrokerClient {
     /**
      * gets waiting orders
      * @return waiting orders
-     * @see [해외주식 미체결내역[v1_해외주식-005]](https://apiportal.koreainvestment.com/apiservice/apiservice-oversea-stock-order#L_60cae69d-c121-4dd9-902c-1112567fd88e)
+     * @see <a href="https://apiportal.koreainvestment.com/apiservice/apiservice-oversea-stock-order#L_60cae69d-c121-4dd9-902c-1112567fd88e">
+     *     해외주식 미체결내역[v1_해외주식-005]
+     *     </a>
      */
     @Override
     public List<Order> getWaitingOrders() throws InterruptedException {
@@ -645,10 +654,8 @@ public class KisUsBrokerClient extends BrokerClient {
                 .get(url)
                 .headers(headers)
                 .build();
-
         sleep();
         ResponseEntity<String> responseEntity = restTemplate.exchange(requestEntity, String.class);
-
         JsonNode rootNode;
         try {
             rootNode = objectMapper.readTree(responseEntity.getBody());
@@ -660,10 +667,8 @@ public class KisUsBrokerClient extends BrokerClient {
         if(!"0".equals(rtCd)) {
             throw new RuntimeException(msg1);
         }
-
         JsonNode outputNode = rootNode.path("output");
         List<Map<String, String>> output = objectMapper.convertValue(outputNode, new TypeReference<>(){});
-
         // return
         return output.stream()
                 .map(row -> {
@@ -696,7 +701,9 @@ public class KisUsBrokerClient extends BrokerClient {
      * @param asset asset
      * @param order order
      * @return amended order
-     * @see [해외주식 정정취소주문[v1_해외주식-003]](https://apiportal.koreainvestment.com/apiservice/apiservice-oversea-stock-order#L_4812f155-bdb5-47ac-a35b-a70d3d8f14c9)
+     * @see <a href="https://apiportal.koreainvestment.com/apiservice/apiservice-oversea-stock-order#L_4812f155-bdb5-47ac-a35b-a70d3d8f14c9">
+     *     해외주식 정정취소주문[v1_해외주식-003]
+     *     </a>
      */
     @Override
     public Order amendOrder(Asset asset, Order order) throws InterruptedException {
@@ -704,14 +711,11 @@ public class KisUsBrokerClient extends BrokerClient {
         String trId = (production ? "TTTT1004U" : "VTTT1004U");
         BigDecimal quantity = order.getQuantity();
         BigDecimal price = order.getPrice().setScale(2, RoundingMode.FLOOR);
-
         // request
         HttpHeaders headers = createHeaders();
         headers.add("tr_id", trId);
-
         // ovrsExcgCd
         String ovrsExcgCd = getOvrsExcgCd(asset);
-
         // payload
         Map<String, String> payloadMap = new LinkedHashMap<>();
         payloadMap.put("CANO", accountNo.split("-")[0]);
@@ -750,7 +754,9 @@ public class KisUsBrokerClient extends BrokerClient {
      * gets realized profit
      * 미국 실현 손익 조회
      * @return realized profits
-     * @see [해외주식 기간손익[v1_해외주식-032]](https://apiportal.koreainvestment.com/apiservice/apiservice-oversea-stock-order#L_147d1d34-3001-4958-b970-106935a19fe7)
+     * @see <a href="https://apiportal.koreainvestment.com/apiservice/apiservice-oversea-stock-order#L_147d1d34-3001-4958-b970-106935a19fe7">
+     *     해외주식 기간손익[v1_해외주식-032]
+     *     </a>
      */
     @Override
     public List<RealizedProfit> getRealizedProfits(LocalDate dateFrom, LocalDate dateTo) throws InterruptedException {
@@ -921,14 +927,15 @@ public class KisUsBrokerClient extends BrokerClient {
      * @param dateFrom date from
      * @param dateTo date to
      * @return distinct symbols
-     * @see [해외주식 주문체결내역[v1_해외주식-007]](https://apiportal.koreainvestment.com/apiservice/apiservice-oversea-stock-order#L_6d715b38-566f-4045-a08c-4a594d3a3314)
+     * @see <a href="https://apiportal.koreainvestment.com/apiservice/apiservice-oversea-stock-order#L_6d715b38-566f-4045-a08c-4a594d3a3314">
+     *     해외주식 주문체결내역[v1_해외주식-007]
+     *     </a>
      */
     private Set<String> getPeriodOrderedSymbols(LocalDate dateFrom, LocalDate dateTo) throws InterruptedException {
         // pagination key
         String trCont = "";
         String ctxAreaFk200 = "";
         String ctxAreaNk200 = "";
-
         // loop
         Set<String> periodOrderedSymbols = new HashSet<>();
         for (int i = 0; i < 100; i ++) {
@@ -966,17 +973,14 @@ public class KisUsBrokerClient extends BrokerClient {
             } catch (JsonProcessingException e) {
                 throw new RuntimeException(e);
             }
-
             String rtCd = objectMapper.convertValue(rootNode.path("rt_cd"), String.class);
             String msg1 = objectMapper.convertValue(rootNode.path("msg1"), String.class);
             if (!"0".equals(rtCd)) {
                 throw new RuntimeException(msg1);
             }
-
             JsonNode outputNode = rootNode.path("output");
             List<Map<String, String>> output = objectMapper.convertValue(outputNode, new TypeReference<>() {
             });
-
             List<String> distinctSymbols = output.stream()
                     .map(it -> it.get("pdno"))
                     .toList()
@@ -984,7 +988,6 @@ public class KisUsBrokerClient extends BrokerClient {
                     .distinct()
                     .toList();
             periodOrderedSymbols.addAll(distinctSymbols);
-
             // detects next page
             trCont = responseEntity.getHeaders().getFirst("tr_cont");
             ctxAreaFk200 = objectMapper.convertValue(rootNode.path("ctx_area_fk200"), String.class);
@@ -1005,7 +1008,9 @@ public class KisUsBrokerClient extends BrokerClient {
      * @param dateFrom date from
      * @param dateTo date to
      * @return list of period rights historios
-     * @see [해외주식 기간별권리조회 [해외주식-052]](https://apiportal.koreainvestment.com/apiservice/apiservice-oversea-stock-Manalysis#L_2151d14c-0fae-44a5-be38-c3f5ab8354bb)
+     * @see <a href="https://apiportal.koreainvestment.com/apiservice/apiservice-oversea-stock-Manalysis#L_2151d14c-0fae-44a5-be38-c3f5ab8354bb">
+     *     해외주식 기간별권리조회 [해외주식-052]
+     *     </a>
      */
     private List<Map<String,String>> getPeriodRights(String symbol, LocalDate dateFrom, LocalDate dateTo) throws InterruptedException {
         String url = apiUrl + "/uapi/overseas-price/v1/quotations/period-rights";
@@ -1056,7 +1061,9 @@ public class KisUsBrokerClient extends BrokerClient {
      * 기준 일자 시점 결제 잔고
      * @param date date
      * @return payment balance assets
-     * @see [해외주식 결제기준잔고 [해외주식-064]](https://apiportal.koreainvestment.com/apiservice/apiservice-oversea-stock-order#L_8e78ed2f-8c3d-424e-b400-82fc94ca4a6b)
+     * @see <a href="https://apiportal.koreainvestment.com/apiservice/apiservice-oversea-stock-order#L_8e78ed2f-8c3d-424e-b400-82fc94ca4a6b">
+     *     해외주식 결제기준잔고 [해외주식-064]
+     *     </a>
      */
     private Map<String, String> getPaymentBalanceAsset(LocalDate date, String symbol) throws InterruptedException {
         Map<String,String> paymentBalanceAsset = new HashMap<>();

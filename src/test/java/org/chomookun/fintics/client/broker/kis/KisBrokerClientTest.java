@@ -2,15 +2,22 @@ package org.chomookun.fintics.client.broker.kis;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.io.FileUtils;
+import org.chomookun.arch4j.core.common.data.IdGenerator;
 import org.chomookun.fintics.model.*;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 import org.chomookun.arch4j.core.common.test.CoreTestSupport;
 import org.chomookun.fintics.FinticsConfiguration;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.MethodSource;
 import org.springframework.boot.test.context.SpringBootTest;
 
 import java.math.BigDecimal;
+import java.nio.charset.StandardCharsets;
+import java.nio.file.Files;
+import java.nio.file.Path;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.List;
@@ -40,6 +47,9 @@ class KisBrokerClientTest extends CoreTestSupport {
         appKey = System.getenv("KIS_APP_KEY");
         appSecret = System.getenv("KIS_APP_SECRET");
         accountNo = System.getenv("KIS_ACCOUNT_NO");
+
+        // loads access token
+        KisBrokerClientTestUtils.loadAccessToken(apiUrl, appKey, appSecret);
     }
 
     KisBrokerClient getKisClient() {
@@ -50,6 +60,29 @@ class KisBrokerClientTest extends CoreTestSupport {
         properties.setProperty("appSecret", appSecret);
         properties.setProperty("accountNo", accountNo);
         return new KisBrokerClient(new KisBrokerClientDefinition(), properties);
+    }
+
+    static List<Asset> getStockAssets() {
+        return List.of(
+                Asset.builder()
+                        .assetId("KR.005930")
+                        .name("Samsung Electronics")
+                        .market("KR")
+                        .type("STOCK")
+                        .marketCap(BigDecimal.TEN)
+                        .build()
+        );
+    }
+
+    static List<Asset> getEtfAssets() {
+        return List.of(
+                Asset.builder()
+                        .assetId("KR.069500")
+                        .name("KODEX 200")
+                        .market("KR")
+                        .type("ETF")
+                        .build()
+        );
     }
 
     @Disabled
@@ -75,49 +108,38 @@ class KisBrokerClientTest extends CoreTestSupport {
     }
 
     @Disabled
-    @Test
-    void getOrderBook() throws InterruptedException {
-        // given
-        Asset tradeAsset = Asset.builder()
-                .assetId("KR.005930")
-                .build();
-
+    @ParameterizedTest
+    @MethodSource({"getStockAssets", "getEtfAssets"})
+    void getMinuteOhlcvs(Asset asset) throws InterruptedException {
         // when
-        OrderBook orderBook = getKisClient().getOrderBook(tradeAsset);
-        log.info("== orderBook:{}", orderBook);
-
-        // then
-        assertNotNull(orderBook);
-    }
-
-    @Disabled
-    @Test
-    void getMinuteOhlcvs() throws InterruptedException {
-        // given
-        Asset tradeAsset = Asset.builder()
-                .assetId("KR.005930")
-                .build();
-
-        // when
-        List<Ohlcv> minuteOhlcvs = getKisClient().getMinuteOhlcvs(tradeAsset);
-
+        List<Ohlcv> minuteOhlcvs = getKisClient().getMinuteOhlcvs(asset);
         // then
         assertNotNull(minuteOhlcvs);
     }
 
     @Disabled
-    @Test
-    void getDailyOhlcvs() throws InterruptedException {
-        // given
-        Asset tradeAsset = Asset.builder()
-                .assetId("KR.005930")
-                .build();
-
+    @ParameterizedTest
+    @MethodSource({"getStockAssets", "getEtfAssets"})
+    void getDailyOhlcvs(Asset asset) throws InterruptedException {
         // when
-        List<Ohlcv> dailyOhlcvs = getKisClient().getDailyOhlcvs(tradeAsset);
-
+        List<Ohlcv> dailyOhlcvs = getKisClient().getDailyOhlcvs(asset);
         // then
         assertNotNull(dailyOhlcvs);
+    }
+
+    @Disabled
+    @ParameterizedTest
+    @MethodSource({"getStockAssets", "getEtfAssets"})
+    void getOrderBook(Asset asset) throws InterruptedException {
+        // when
+        OrderBook orderBook = getKisClient().getOrderBook(asset);
+        log.info("== orderBook:{}", orderBook);
+        // then
+        assertNotNull(orderBook);
+        assertNotNull(orderBook.getPrice());
+        assertNotNull(orderBook.getTickPrice());
+        assertNotNull(orderBook.getAskPrice());
+        assertNotNull(orderBook.getAskPrice());
     }
 
     @Disabled
@@ -126,7 +148,6 @@ class KisBrokerClientTest extends CoreTestSupport {
         // given
         // when
         Balance balance = getKisClient().getBalance();
-
         // then
         assertNotNull(balance.getCashAmount());
     }
@@ -144,7 +165,6 @@ class KisBrokerClientTest extends CoreTestSupport {
                 .kind(Order.Kind.MARKET)
                 .quantity(BigDecimal.valueOf(1))
                 .build();
-
         // when
         getKisClient().submitOrder(asset, order);
     }
@@ -162,7 +182,6 @@ class KisBrokerClientTest extends CoreTestSupport {
                 .kind(Order.Kind.MARKET)
                 .quantity(BigDecimal.valueOf(1))
                 .build();
-
         // when
         getKisClient().submitOrder(asset, order);
     }
@@ -180,7 +199,6 @@ class KisBrokerClientTest extends CoreTestSupport {
                 .kind(Order.Kind.MARKET)
                 .quantity(BigDecimal.valueOf(1))
                 .build();
-
         // when
         getKisClient().submitOrder(asset, order);
     }

@@ -130,11 +130,6 @@ public class AlpacaBrokerClient extends BrokerClient {
     }
 
     @Override
-    public BigDecimal getTickPrice(Asset asset, BigDecimal price) throws InterruptedException {
-        return null;
-    }
-
-    @Override
     public Balance getBalance() throws InterruptedException {
         return null;
     }

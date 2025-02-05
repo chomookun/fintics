@@ -208,7 +208,7 @@ public class TradeService {
             Asset asset = assetService.getAsset(order.getAssetId()).orElseThrow();
             // price
             OrderBook orderBook = brokerClient.getOrderBook(asset);
-            BigDecimal tickPrice = brokerClient.getTickPrice(asset, orderBook.getPrice());
+            BigDecimal tickPrice = orderBook.getTickPrice();
             BigDecimal price = switch (order.getType()) {
                 case BUY -> orderBook.getBidPrice().add(tickPrice);
                 case SELL -> orderBook.getAskPrice().subtract(tickPrice);

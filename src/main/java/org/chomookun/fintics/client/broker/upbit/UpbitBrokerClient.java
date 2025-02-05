@@ -136,14 +136,10 @@ public class UpbitBrokerClient extends BrokerClient {
         Map<String, String> orderBookUnit = orderBookUnits.get(0);
         return OrderBook.builder()
                 .price(new BigDecimal(orderBookUnit.get("bid_price")))
+                .tickPrice(null)
                 .bidPrice(new BigDecimal(orderBookUnit.get("bid_price")))
                 .askPrice(new BigDecimal(orderBookUnit.get("ask_price")))
                 .build();
-    }
-
-    @Override
-    public BigDecimal getTickPrice(Asset asset, BigDecimal price) throws InterruptedException {
-        return null;
     }
 
     @Override

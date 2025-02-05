@@ -225,7 +225,7 @@ public class TradeExecutor {
                 if (action == StrategyResult.Action.BUY) {
                     BigDecimal buyAmount = positionAmount.subtract(currentOwnedAmount);
                     if (buyAmount.compareTo(BigDecimal.ZERO) > 0) {
-                        BigDecimal buyPrice = calculateBuyPrice(tradeAsset, orderBook, brokerClient);
+                        BigDecimal buyPrice = calculateBuyPrice(orderBook);
                         BigDecimal buyQuantity = buyAmount
                                 .divide(buyPrice, MathContext.DECIMAL64)
                                 .setScale(brokerClient.getQuantityScale(), RoundingMode.HALF_UP);
@@ -242,7 +242,7 @@ public class TradeExecutor {
                 if (action == StrategyResult.Action.SELL) {
                     BigDecimal sellAmount = currentOwnedAmount.subtract(positionAmount);
                     if (sellAmount.compareTo(BigDecimal.ZERO) > 0) {
-                        BigDecimal sellPrice = calculateSellPrice(tradeAsset, orderBook, brokerClient);
+                        BigDecimal sellPrice = calculateSellPrice(orderBook);
                         BigDecimal sellQuantity = sellAmount
                                 .divide(sellPrice, MathContext.DECIMAL64)
                                 .setScale(brokerClient.getQuantityScale(), RoundingMode.HALF_UP);
@@ -304,7 +304,6 @@ public class TradeExecutor {
             return new ArrayList<>();
         }
         return ohlcvCacheManager.getDailyOhlcvs(assetId, dateTimeFrom, dateTimeTo);
-//        return ohlcvService.getDailyOhlcvs(assetId, dateTimeFrom, dateTimeTo, PageRequest.of(0, 500));
     }
 
     /**
@@ -323,19 +322,16 @@ public class TradeExecutor {
             return new ArrayList<>();
         }
         return ohlcvCacheManager.getMinuteOhlcvs(assetId, dateTimeFrom, dateTimeTo);
-//        return ohlcvService.getMinuteOhlcvs(assetId, dateTimeFrom, dateTimeTo, PageRequest.of(0, 6_000));
     }
 
     /**
      * calculates buy price
-     * @param tradeAsset trade asset
      * @param orderBook order book
-     * @param brokerClient broker client
      * @return buy price
      */
-    private BigDecimal calculateBuyPrice(TradeAsset tradeAsset, OrderBook orderBook, BrokerClient brokerClient) throws InterruptedException {
+    private BigDecimal calculateBuyPrice(OrderBook orderBook) throws InterruptedException {
         BigDecimal price = orderBook.getAskPrice();
-        BigDecimal tickPrice = brokerClient.getTickPrice(tradeAsset, price);
+        BigDecimal tickPrice = orderBook.getTickPrice();
         // max competitive price (매도 호가 에서 1틱 유리한 가격 설정)
         if(tickPrice != null) {
             price = price.subtract(tickPrice);
@@ -345,14 +341,12 @@ public class TradeExecutor {
 
     /**
      * calculates sell price
-     * @param tradeAsset trade asset
      * @param orderBook order book
-     * @param brokerClient broker client
      * @return sell price
      */
-    private BigDecimal calculateSellPrice(TradeAsset tradeAsset, OrderBook orderBook, BrokerClient brokerClient) throws InterruptedException {
+    private BigDecimal calculateSellPrice(OrderBook orderBook) throws InterruptedException {
         BigDecimal price = orderBook.getBidPrice();
-        BigDecimal tickPrice = brokerClient.getTickPrice(tradeAsset, price);
+        BigDecimal tickPrice = orderBook.getTickPrice();
         // min competitive price (매수 호가 에서 1틱 유리한 가격 설정)
         if(tickPrice != null) {
             price = price.add(tickPrice);

@@ -24,14 +24,6 @@
         const trades = new duice.ArrayProxy(/*[[${trades}]]*/[]);
         const orders = new duice.ArrayProxy([]);
 
-        // url search params
-        let urlSearchParams = new URLSearchParams(window.location.search);
-        orderSearch.tradeId = urlSearchParams.get('tradeId') || null;
-        if (urlSearchParams.get('assetId')) {
-            orderSearch.key = 'assetId';
-            orderSearch.value = urlSearchParams.get('assetId');
-        }
-
         /**
          * gets orders
          * @param page page number
@@ -81,8 +73,26 @@
             getOrders();
         }
 
+        function loadOrderSearch() {
+            duice.ObjectProxy.reset(orderSearch);
+            _loadUrlSearchParams(orderSearch, ['orderAtFrom','orderAtTo','tradeId','type','result','key', 'value', '_page', '_size']);
+        }
+
+        function pushOrderSearch() {
+            _pushUrlSearchParams(orderSearch, ['orderAtFrom','orderAtTo','tradeId','type','result','key', 'value', '_page', '_size']);
+        }
+
+        // DOMContentLoaded event listener
         document.addEventListener('DOMContentLoaded', () => {
+            loadOrderSearch();
             getOrders();
+        });
+
+        // history event
+        ['popstate', 'pageshow'].forEach(event => {
+            window.addEventListener(event, () => {
+                document.dispatchEvent(new CustomEvent('DOMContentLoaded'));
+            });
         });
     </script>
     <style th:inline="css">
@@ -164,7 +174,7 @@
                     </div>
                 </div>
                 <div class="flex--1 display--flex gap--1px justify-content--end s__justify-content--start">
-                    <button class="button" type="submit" onclick="getOrders();">
+                    <button class="button" type="submit" onclick="getOrders(); pushOrderSearch();">
                         <img class="icon" th:src="@{/static/image/icon-search.svg}" alt="search"/>
                         <span data-th-text="#{web.global.search}"></span>
                     </button>
@@ -296,7 +306,7 @@
                             data-duice-size-property="_size"
                             data-duice-page-property="_page"
                             data-duice-count-property="_count"
-                            data-duice-onclick="getOrders(this.dataset.page);">
+                            data-duice-onclick="getOrders(this.dataset.page); pushOrderSearch();">
                     </duice-pagination>
                 </div>
                 <div class="flex--1">

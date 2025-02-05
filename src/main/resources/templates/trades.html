@@ -63,30 +63,26 @@
             document.location.href = `${_rootUrl}/trade`;
         }
 
-        /**
-         * Pushes history
-         */
-        function pushHistory() {
-            _pushHistoryState({tradeSearch: tradeSearch});
+        function loadTradeSearch() {
+            duice.ObjectProxy.reset(tradeSearch);
+            _loadUrlSearchParams(tradeSearch, ['key', 'value', '_page', '_size']);
+        }
+
+        function pushTradeSearch() {
+            _pushUrlSearchParams(tradeSearch, ['key', 'value', '_page', '_size']);
         }
 
         // Handles DOMContentLoaded event
         document.addEventListener('DOMContentLoaded', () => {
-            const stateTradeSearch = _getHistoryState()?.tradeSearch;
-            if (stateTradeSearch) {
-                duice.ObjectProxy.assign(tradeSearch, stateTradeSearch);
-            }
+            loadTradeSearch();
             getTrades();
-            _replaceHistoryState({tradeSearch: tradeSearch});
         });
 
-        // Handles popstate event
-        window.addEventListener('popstate', () => {
-            const stateTradeSearch = _getHistoryState()?.tradeSearch;
-            if (stateTradeSearch) {
-                duice.ObjectProxy.assign(tradeSearch, stateTradeSearch);
-            }
-            getTrades();
+        // history event
+        ['popstate', 'pageshow'].forEach(event => {
+            window.addEventListener(event, () => {
+                document.dispatchEvent(new CustomEvent('DOMContentLoaded'));
+            });
         });
     </script>
     <style th:inline="css">
@@ -128,7 +124,7 @@
                     </div>
                 </div>
                 <div class="flex--1 display--flex gap--1px justify-content--end s__justify-content--start">
-                    <button class="button" type="submit" onclick="getTrades();">
+                    <button class="button" type="submit" onclick="getTrades(); pushTradeSearch();">
                         <img class="icon" th:src="@{/static/image/icon-search.svg}" alt="reset"/>
                         <span data-th-text="#{web.global.search}"></span>
                     </button>
@@ -159,11 +155,11 @@
                         <th data-th-text="#{fintics.Broker.name}"></th>
                         <th data-th-text="#{fintics.Basket.name}"></th>
                         <th data-th-text="#{fintics.Strategy.name}"></th>
-                        <th data-th-text="#{fintics.Trade.investAmount}" class="text-align--right"></th>
-                        <th data-th-text="#{fintics.Trade.interval}" class="text-align--right"></th>
-                        <th data-th-text="#{fintics.Trade.threshold}" class="text-align--right"></th>
-                        <th data-th-text="#{fintics.Trade.enabled}" class="text-align--center"></th>
-                        <th data-th-text="#{fintics.Trade.cashAssetId}" class="text-align--center"></th>
+                        <th data-th-text="#{fintics.Trade.investAmount}"></th>
+                        <th data-th-text="#{fintics.Trade.interval}"></th>
+                        <th data-th-text="#{fintics.Trade.threshold}"></th>
+                        <th data-th-text="#{fintics.Trade.enabled}"></th>
+                        <th data-th-text="#{fintics.Trade.cashAssetId}"></th>
                     </tr>
                     </thead>
                     <tbody>
@@ -254,7 +250,7 @@
                             data-duice-size-property="_size"
                             data-duice-page-property="_page"
                             data-duice-count-property="_count"
-                            data-duice-onclick="getTrades(this.dataset.page); pushHistory();">
+                            data-duice-onclick="getTrades(this.dataset.page); pushTradeSearch();">
                     </duice-pagination>
                 </div>
                 <div class="flex--1 display--flex justify-content--end">

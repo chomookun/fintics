@@ -8,7 +8,7 @@
     <script th:src="@{/static/fintics.js?version={version}(version=${_scriptVersion})}"></script>
     <script th:inline="javascript">
         // defines
-        const basketId = /*[[${basketId}]]*/'';
+        const basketId = new URL(location.href).searchParams.get('basketId');
         const basket = new duice.ObjectProxy({
             basketId: null,
             name: null,

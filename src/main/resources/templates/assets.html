@@ -63,9 +63,26 @@
             getAssets();
         }
 
+        function loadAssetSearch() {
+            duice.ObjectProxy.reset(assetSearch);
+            _loadUrlSearchParams(assetSearch, ['market', 'type','key', 'value', '_page', '_size']);
+        }
+
+        function pushAssetSearch() {
+            _pushUrlSearchParams(assetSearch, ['market', 'type','key', 'value', '_page', '_size']);
+        }
+
         // DOM content loaded listener
         document.addEventListener('DOMContentLoaded',()=> {
+            loadAssetSearch();
             getAssets();
+        });
+
+        // history event
+        ['popstate', 'pageshow'].forEach(event => {
+            window.addEventListener(event, () => {
+                document.dispatchEvent(new CustomEvent('DOMContentLoaded'));
+            });
         });
     </script>
 
@@ -123,7 +140,7 @@
                     </div>
                 </div>
                 <div class="flex--1 display--flex gap--1px justify-content--end s__justify-content--start">
-                    <button class="button" type="submit" onclick="getAssets();">
+                    <button class="button" type="submit" onclick="getAssets(); pushAssetSearch();">
                         <img class="icon" th:src="@{/static/image/icon-search.svg}" alt="search"/>
                         <span data-th-text="#{web.global.search}"></span>
                     </button>
@@ -284,7 +301,7 @@
                             data-duice-size-property="_size"
                             data-duice-page-property="_page"
                             data-duice-count-property="_count"
-                            data-duice-onclick="getAssets(this.dataset.page);"
+                            data-duice-onclick="getAssets(this.dataset.page); pushAssetSearch();"
                             class="number">
                     </duice-pagination>
                 </div>
