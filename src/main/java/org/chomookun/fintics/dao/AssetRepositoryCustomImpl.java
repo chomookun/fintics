@@ -1,5 +1,9 @@
 package org.chomookun.fintics.dao;
 
+import com.querydsl.core.types.Order;
+import com.querydsl.core.types.OrderSpecifier;
+import com.querydsl.core.types.Path;
+import com.querydsl.core.types.dsl.ComparableExpressionBase;
 import com.querydsl.jpa.impl.JPAQuery;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 import lombok.RequiredArgsConstructor;
@@ -11,6 +15,7 @@ import org.springframework.stereotype.Repository;
 
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 @Repository
 @RequiredArgsConstructor
@@ -42,8 +47,25 @@ public class AssetRepositoryCustomImpl implements AssetRepositoryCustom {
                         Optional.ofNullable(assetSearch.getType())
                                 .map(qAssetEntity.type::eq)
                                 .orElse(null)
-                )
-                .orderBy(qAssetEntity.marketCap.desc());
+                );
+        // sort
+        List<OrderSpecifier<?>> orderSpecifiers = pageable.getSort().stream()
+                .map(sort -> {
+                    ComparableExpressionBase<?> expression = switch (sort.getProperty()) {
+                        case AssetEntity_.ROE -> qAssetEntity.roe;
+                        case AssetEntity_.PER -> qAssetEntity.per;
+                        case AssetEntity_.DIVIDEND_FREQUENCY -> qAssetEntity.dividendFrequency;
+                        case AssetEntity_.DIVIDEND_YIELD -> qAssetEntity.dividendYield;
+                        case AssetEntity_.CAPITAL_GAIN -> qAssetEntity.capitalGain;
+                        case AssetEntity_.TOTAL_RETURN -> qAssetEntity.totalReturn;
+                        default -> throw new IllegalStateException("Unexpected value: " + sort.getProperty());
+                    };
+                    Order direction = sort.isAscending() ? Order.ASC : Order.DESC;
+                    return new OrderSpecifier<>(direction, expression);
+                }).collect(Collectors.toList());
+        orderSpecifiers.add(new OrderSpecifier<>(Order.DESC, qAssetEntity.marketCap));
+        query.orderBy(orderSpecifiers.toArray(new OrderSpecifier[0]));
+
         // list
         List<AssetEntity> assetEntities = query.clone()
                 .limit(pageable.getPageSize())

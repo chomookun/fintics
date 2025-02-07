@@ -5,9 +5,10 @@
     <dialog id="_assetDialog" class="dialog">
         <style th:inline="css">
             #_assetDialog {
+                width: 800px;
             }
             #_assetDialogChart {
-                width: 600px;
+                width: 100%;
                 height: 200px;
             }
         </style>
@@ -195,23 +196,23 @@
                     <img class="icon" th:src="@{/static/image/icon-detail.svg}" alt="detail"/>
                     <span data-th-text="|#{fintics.Asset} #{web.global.detail}|" class="font-weight--bold"></span>
                 </div>
-                <table class="table width--100">
+                <table class="table width--100 table-layout--fixed">
                     <colgroup>
-                        <col class="width--20"/>
-                        <col class="width--30"/>
-                        <col class="width--20"/>
-                        <col class="width--30"/>
+                        <col class="width--15"/>
+                        <col class="width--35"/>
+                        <col class="width--15"/>
+                        <col class="width--35"/>
                     </colgroup>
                     <tbody>
                     <tr>
-                        <td data-th-text="#{fintics.Asset.symbol}" class="font-weight--bold"></td>
-                        <td data-duice-bind="_assetDialog.asset" data-duice-property="symbol" class="code font-weight--bold"></td>
                         <td data-th-text="#{fintics.Asset.name}" class="font-weight--bold"></td>
                         <td>
                             <img class="icon border-radius--50 font-size--large vertical-align--middle" data-duice-bind="_assetDialog.asset" data-duice-property="icon" th:onerror="|this.src='@{/static/image/icon-asset.svg}';|" alt=""/>
                             &nbsp;
                             <span class="vertical-align--middle" data-duice-bind="_assetDialog.asset" data-duice-property="name"></span>
                         </td>
+                        <td data-th-text="#{fintics.Asset.symbol}" class="font-weight--bold"></td>
+                        <td data-duice-bind="_assetDialog.asset" data-duice-property="symbol" class="code font-weight--bold"></td>
                     </tr>
                     <tr>
                         <td data-th-text="#{fintics.Asset.market}" class="font-weight--bold"></td>

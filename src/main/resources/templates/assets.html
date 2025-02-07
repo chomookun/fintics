@@ -14,7 +14,8 @@
             key: 'name',
             value: null,
             _page: 0,
-            _size: 10,
+            _size: 20,
+            _sort: [],
             _count: -1,
             _status: null
         });
@@ -24,22 +25,25 @@
          * gets assets
          * @param page page number
          */
-        function getAssets(page) {
+        async function getAssets(page) {
             if(page) {
                 assetSearch._page = page;
             }
             let url = new URL(`${_apiUrl}/v1/assets`, document.location.origin);
             if (assetSearch.market != null) {
-                url.searchParams.append('market', assetSearch.market);
+                url.searchParams.set('market', assetSearch.market);
             }
             if (assetSearch.type != null) {
-                url.searchParams.append('type', assetSearch.type);
+                url.searchParams.set('type', assetSearch.type);
             }
             if (assetSearch.key && assetSearch.value) {
-                url.searchParams.append(assetSearch.key, assetSearch.value);
+                url.searchParams.set(assetSearch.key, assetSearch.value);
             }
-            url.searchParams.append('_page', assetSearch._page);
-            url.searchParams.append('_size', assetSearch._size);
+            url.searchParams.set('_page', assetSearch._page);
+            url.searchParams.set('_size', assetSearch._size);
+            assetSearch._sort.forEach(it => {
+                url.searchParams.append('_sort', it);
+            });
             assetSearch._status = 'loading';
             duice.ArrayProxy.clear(assets);
             _fetch(url)
@@ -56,6 +60,57 @@
         }
 
         /**
+         * gets assets with sort
+         * @param property
+         * @param event
+         */
+        function getAssetsWithSort(property, event) {
+            let index = assetSearch._sort.findIndex(it => {
+                return it.split(',')[0] === property;
+            });
+            if (index < 0) {
+                assetSearch._sort.push(`${property},asc`);
+            } else {
+                let sortParts = assetSearch._sort[index].split(',');
+                let direction = sortParts[1];
+                if (direction === 'asc') {
+                    assetSearch._sort.splice(index, 1, `${property},desc`);
+                } else if (direction === 'desc') {
+                    assetSearch._sort.splice(index, 1);
+                }
+            }
+            // if not shift pressed, clears sort
+            if (!event.shiftKey) {
+                for (let i = assetSearch._sort.length - 1; i >= 0; i--) {
+                    if (assetSearch._sort[i].split(',')[0] !== property) {
+                        assetSearch._sort.splice(i, 1);
+                    }
+                }
+            }
+            // get assets
+            getAssets();
+        }
+
+        /**
+         * toggles asset sort
+         * @param element
+         * @param property
+         */
+        function toggleAssetSort(element, property) {
+            let index = assetSearch._sort.findIndex(it => {
+                return it.split(',')[0] === property;
+            });
+            if (index >= 0) {
+                let sortParts = assetSearch._sort[index].split(',');
+                let sortDirection = sortParts[1];
+                element.classList.toggle('asc', sortDirection === 'asc');
+                element.classList.toggle('desc', sortDirection === 'desc');
+            } else {
+                element.classList.remove('asc', 'desc');
+            }
+        }
+
+        /**
          * resets assets
          */
         function resetAssets() {
@@ -65,11 +120,11 @@
 
         function loadAssetSearch() {
             duice.ObjectProxy.reset(assetSearch);
-            _loadUrlSearchParams(assetSearch, ['market', 'type','key', 'value', '_page', '_size']);
+            _loadUrlSearchParams(assetSearch, ['market', 'type','key', 'value', '_page', '_size', '_sort']);
         }
 
         function pushAssetSearch() {
-            _pushUrlSearchParams(assetSearch, ['market', 'type','key', 'value', '_page', '_size']);
+            _pushUrlSearchParams(assetSearch, ['market', 'type','key', 'value', '_page', '_size', '_sort']);
         }
 
         // DOM content loaded listener
@@ -153,7 +208,16 @@
             <div class="overflow--auto box">
                 <table class="table width--100 border--none">
                     <colgroup>
-                        <col style="width:5rem;"/>
+                        <col style="min-width:5em;"/>
+                        <col style="min-width:7em;"/>
+                        <col/>
+                        <col/>
+                        <col/>
+                        <col/>
+                        <col/>
+                        <col/>
+                        <col/>
+                        <col/>
                         <col/>
                         <col/>
                         <col/>
@@ -165,15 +229,96 @@
                     </colgroup>
                     <thead>
                     <tr>
-                        <th data-th-text="#{web.global.no}" class="text-align--center"></th>
-                        <th data-th-text="#{fintics.Asset.symbol}" class="text-align--center"></th>
-                        <th data-th-text="#{fintics.Asset.name}"></th>
-                        <th data-th-text="#{fintics.Asset.market}" class="text-align--center"></th>
-                        <th data-th-text="#{fintics.Asset.exchange}" class="text-align--center"></th>
-                        <th data-th-text="#{fintics.Asset.type}" class="text-align--center"></th>
-                        <th data-th-text="#{fintics.Asset.updatedDate}" class="text-align--center"></th>
-                        <th></th>
-                        <th data-th-text="#{fintics.Asset.links}" class="text-align--center"></th>
+                        <th>
+                            <span data-th-text="#{web.global.no}"></span>
+                        </th>
+                        <th>
+                            <span data-th-text="#{fintics.Asset.symbol}"></span>
+                        </th>
+                        <th>
+                            <span data-th-text="#{fintics.Asset.name}"></span>
+                        </th>
+                        <th>
+                            <span data-th-text="#{fintics.Asset.links}"></span>
+                        </th>
+                        <th>
+                            <span data-th-text="#{fintics.Asset.market}"></span>
+                        </th>
+                        <th>
+                            <span data-th-text="#{fintics.Asset.exchange}"></span>
+                        </th>
+                        <th>
+                            <span data-th-text="#{fintics.Asset.type}"></span>
+                        </th>
+                        <th>
+                            <span data-th-text="#{fintics.Asset.updatedDate}"></span>
+                        </th>
+                        <th>
+                            <span data-th-text="#{fintics.Asset.price}"></span>
+                        </th>
+                        <th>
+                            <span data-th-text="#{fintics.Asset.volume}"></span>
+                        </th>
+                        <th>
+                            <span data-th-text="#{fintics.Asset.marketCap}"></span>
+                        </th>
+                        <th>
+                            <span data-th-text="#{fintics.Asset.eps}"></span>
+                        </th>
+                        <th>
+                            <a href="javascript:void(0);"
+                               data-duice-bind="assetSearch"
+                               data-duice-execute="toggleAssetSort(this, 'roe');"
+                               onclick="getAssetsWithSort('roe', event); pushAssetSearch();"
+                               class="tag-sortable">
+                                <span data-th-text="#{fintics.Asset.roe}"></span>
+                            </a>
+                        </th>
+                        <th>
+                            <a href="javascript:void(0);"
+                               data-duice-bind="assetSearch"
+                               data-duice-execute="toggleAssetSort(this, 'per');"
+                               onclick="getAssetsWithSort('per', event); pushAssetSearch();"
+                               class="tag-sortable">
+                                <span data-th-text="#{fintics.Asset.per}"></span>
+                            </a>
+                        </th>
+                        <th>
+                            <a href="javascript:void(0);"
+                               data-duice-bind="assetSearch"
+                               data-duice-execute="toggleAssetSort(this, 'dividendFrequency');"
+                               onclick="getAssetsWithSort('dividendFrequency', event); pushAssetSearch();"
+                               class="tag-sortable">
+                                <span data-th-text="#{fintics.Asset.dividendFrequency}"></span>
+                            </a>
+                        </th>
+                        <th>
+                            <a href="javascript:void(0);"
+                               data-duice-bind="assetSearch"
+                               data-duice-execute="toggleAssetSort(this, 'dividendYield');"
+                               onclick="getAssetsWithSort('dividendYield', event); pushAssetSearch();"
+                               class="tag-sortable">
+                                <span data-th-text="#{fintics.Asset.dividendYield}"></span>
+                            </a>
+                        </th>
+                        <th>
+                            <a href="javascript:void(0);"
+                               data-duice-bind="assetSearch"
+                               data-duice-execute="toggleAssetSort(this, 'capitalGain');"
+                               onclick="getAssetsWithSort('capitalGain', event); pushAssetSearch();"
+                               class="tag-sortable">
+                                <span data-th-text="#{fintics.Asset.capitalGain}"></span>
+                            </a>
+                        </th>
+                        <th>
+                            <a href="javascript:void(0);"
+                               data-duice-bind="assetSearch"
+                               data-duice-execute="toggleAssetSort(this, 'totalReturn');"
+                               onclick="getAssetsWithSort('totalReturn', event); pushAssetSearch();"
+                               class="tag-sortable">
+                                <span data-th-text="#{fintics.Asset.totalReturn}"></span>
+                            </a>
+                        </th>
                     </tr>
                     </thead>
                     <tbody>
@@ -188,77 +333,15 @@
                             <span data-duice-bind="asset" data-duice-property="symbol" class="code font-weight--bold"></span>
                         </td>
                         <td>
-                            <img class="icon border-radius--50 font-size--large" data-duice-bind="asset" data-duice-property="icon" th:onerror="|this.onerror=null; this.src='@{/static/image/icon-asset.svg}';|" alt=""/>
-                            &nbsp;
-                            <a href="javascript:void(0);"
-                               data-duice-bind="asset"
-                               data-duice-execute="this.dataset.assetId=asset.assetId;"
-                               onclick="_assetDialog.open(this.dataset.assetId);">
-                                <span data-duice-bind="asset" data-duice-property="name"></span>
-                            </a>
-                        </td>
-                        <td class="text-align--center">
-                            <span data-duice-bind="asset" data-duice-property="market" class="badge"></span>
-                        </td>
-                        <td class="text-align--center">
-                            <span data-duice-bind="asset" data-duice-property="exchange" class="badge"></span>
-                        </td>
-                        <td class="text-align--center">
-                            <span data-duice-bind="asset" data-duice-property="type" class="badge"></span>
-                        </td>
-                        <td class="text-align--center">
-                            <span data-duice-bind="asset" data-duice-property="updatedDate" class="date"></span>
-                        </td>
-                        <td>
-                            <div class="overflow-y--scroll box" style="line-height:1em; height:5em;">
-                                <table class="width--100 border--none font-size--smaller code">
-                                    <colgroup>
-                                        <col class="width--50"/>
-                                        <col class="width--50"/>
-                                    </colgroup>
-                                    <tbody>
-                                    <tr>
-                                        <td data-th-text="#{fintics.Asset.price}"></td>
-                                        <td data-duice-bind="asset" data-duice-property="price" data-duice-format="number()" class="text-align--right"></td>
-                                    </tr>
-                                    <tr>
-                                        <td data-th-text="#{fintics.Asset.volume}"></td>
-                                        <td data-duice-bind="asset" data-duice-property="volume" data-duice-format="number()" class="text-align--right"></td>
-                                    </tr>
-                                    <tr>
-                                        <td data-th-text="#{fintics.Asset.marketCap}"></td>
-                                        <td data-duice-bind="asset" data-duice-property="marketCap" data-duice-format="number()" class="text-align--right"></td>
-                                    </tr>
-                                    <tr data-duice-bind="asset" data-duice-if="return asset.type==='STOCK'">
-                                        <td data-th-text="#{fintics.Asset.eps}"></td>
-                                        <td data-duice-bind="asset" data-duice-property="eps" class="text-align--right"></td>
-                                    </tr>
-                                    <tr data-duice-bind="asset" data-duice-if="return asset.type==='STOCK'">
-                                        <td data-th-text="#{fintics.Asset.roe}"></td>
-                                        <td data-duice-bind="asset" data-duice-property="roe" class="text-align--right"></td>
-                                    </tr>
-                                    <tr data-duice-bind="asset" data-duice-if="return asset.type==='STOCK'">
-                                        <td data-th-text="#{fintics.Asset.per}"></td>
-                                        <td data-duice-bind="asset" data-duice-property="per" class="text-align--right"></td>
-                                    </tr>
-                                    <tr>
-                                        <td data-th-text="#{fintics.Asset.dividendFrequency}"></td>
-                                        <td data-duice-bind="asset" data-duice-property="dividendFrequency" class="text-align--right"></td>
-                                    </tr>
-                                    <tr>
-                                        <td data-th-text="#{fintics.Asset.dividendYield}"></td>
-                                        <td data-duice-bind="asset" data-duice-property="dividendYield" class="text-align--right"></td>
-                                    </tr>
-                                    <tr>
-                                        <td data-th-text="#{fintics.Asset.capitalGain}"></td>
-                                        <td data-duice-bind="asset" data-duice-property="capitalGain" class="text-align--right"></td>
-                                    </tr>
-                                    <tr>
-                                        <td data-th-text="#{fintics.Asset.totalReturn}"></td>
-                                        <td data-duice-bind="asset" data-duice-property="totalReturn" class="text-align--right"></td>
-                                    </tr>
-                                    </tbody>
-                                </table>
+                            <div class="text-truncate" style="width:25em;">
+                                <img class="icon border-radius--50 font-size--large" data-duice-bind="asset" data-duice-property="icon" th:onerror="|this.onerror=null; this.src='@{/static/image/icon-asset.svg}';|" alt=""/>
+                                &nbsp;
+                                <a href="javascript:void(0);"
+                                   data-duice-bind="asset"
+                                   data-duice-execute="this.dataset.assetId=asset.assetId;"
+                                   onclick="_assetDialog.open(this.dataset.assetId);">
+                                    <span data-duice-bind="asset" data-duice-property="name"></span>
+                                </a>
                             </div>
                         </td>
                         <td class="text-align--center">
@@ -268,10 +351,61 @@
                                         data-duice-option-value-property="url"
                                         data-duice-option-text-property="name"
                                         onchange="_openLink(this.value, '_blank'); this.value = '';"
-                                        class="code font-size--smaller">
+                                        class="code font-size--smaller width--100"
+                                        style="width:7em;">
                                     <option value>Link...</option>
                                 </select>
                             </label>
+                        </td>
+                        <td class="text-align--center">
+                            <span data-duice-bind="asset" data-duice-property="market" class="code badge"></span>
+                        </td>
+                        <td class="text-align--center">
+                            <span data-duice-bind="asset" data-duice-property="exchange" class="code badge"></span>
+                        </td>
+                        <td class="text-align--center">
+                            <span data-duice-bind="asset" data-duice-property="type" class="code badge"></span>
+                        </td>
+                        <td class="text-align--center">
+                            <span data-duice-bind="asset" data-duice-property="updatedDate" class="date"></span>
+                        </td>
+                        <td class="text-align--right">
+                            <span class="number" data-duice-bind="asset" data-duice-property="price" data-duice-format="number()"></span>
+                        </td>
+                        <td class="text-align--right">
+                            <span class="number" data-duice-bind="asset" data-duice-property="volume" data-duice-format="number()"></span>
+                        </td>
+                        <td class="text-align--right">
+                            <span class="number" data-duice-bind="asset" data-duice-property="marketCap" data-duice-format="number()"></span>
+                        </td>
+                        <td class="text-align--right">
+                            <span class="number" data-duice-bind="asset" data-duice-property="eps"></span>
+                        </td>
+                        <td class="text-align--right">
+                            <span class="number" data-duice-bind="asset" data-duice-property="roe"></span>
+                        </td>
+                        <td class="text-align--right">
+                            <span class="number" data-duice-bind="asset" data-duice-property="per"></span>
+                        </td>
+                        <td class="text-align--right">
+                            <span class="number" data-duice-bind="asset" data-duice-property="dividendFrequency"></span>
+                        </td>
+                        <td class="text-align--right">
+                            <span class="number" data-duice-bind="asset" data-duice-property="dividendYield"></span>
+                        </td>
+                        <td class="text-align--right">
+                            <span class="number font-weight--bold" data-duice-bind="asset" data-duice-property="capitalGain"
+                                  data-duice-execute="
+                                  this.classList.toggle('color--green', asset.capitalGain > 0);
+                                  this.classList.toggle('color--red', asset.capitalGain < 0);
+                                  "></span>
+                        </td>
+                        <td class="text-align--right">
+                            <span class="number font-weight--bold" data-duice-bind="asset" data-duice-property="totalReturn"
+                                data-duice-execute="
+                                this.classList.toggle('color--green', asset.totalReturn > 0);
+                                this.classList.toggle('color--red', asset.totalReturn < 0);
+                                "></span>
                         </td>
                     </tr>
                     <tr data-duice-bind="assetSearch"

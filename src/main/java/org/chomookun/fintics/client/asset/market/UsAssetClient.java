@@ -98,13 +98,18 @@ public class UsAssetClient extends AssetClient implements NasdaqClientSupport, Y
                         case "NYSE" -> exchangeMic = "XNYS";
                         case "AMEX" -> exchangeMic = "XASE";
                     }
+                    String marketCapString = row.get("marketCap");
+                    marketCapString = marketCapString == null || marketCapString.isBlank() ? "0" : marketCapString;
+                    BigDecimal marketCap = new BigDecimal(marketCapString)
+                            .divide(BigDecimal.valueOf(1_000_000), 2, RoundingMode.HALF_UP)
+                            .setScale(0, RoundingMode.HALF_UP);
                     return Asset.builder()
                             .assetId(toAssetId(MARKET_US, row.get("symbol")))
                             .name(row.get("name"))
                             .market(MARKET_US)
                             .exchange(exchangeMic)
                             .type("STOCK")
-                            .marketCap(new BigDecimal(StringUtils.defaultIfBlank(row.get("marketCap"), "0")))
+                            .marketCap(marketCap)
                             .build();
                 })
                 .collect(Collectors.toList());
@@ -260,7 +265,9 @@ public class UsAssetClient extends AssetClient implements NasdaqClientSupport, Y
                 volume = convertStringToNumber(value, null);
             }
             if (name.equals("MarketCap")) {
-                marketCap = convertStringToNumber(value, null);
+                marketCap = convertStringToNumber(value, null)
+                        .divide(BigDecimal.valueOf(1_000_000), 2, RoundingMode.HALF_UP)
+                        .setScale(0, RoundingMode.HALF_UP);
             }
             if (name.equals("EarningsPerShare")) {
                 eps = convertCurrencyToNumber(value, CURRENCY_USD, null);
@@ -380,7 +387,9 @@ public class UsAssetClient extends AssetClient implements NasdaqClientSupport, Y
                 price = convertCurrencyToNumber(value, CURRENCY_USD, null);
             }
             if (Objects.equals(name, "MarketCap")) {
-                marketCap = convertStringToNumber(value, null);
+                marketCap = convertStringToNumber(value, null)
+                        .divide(BigDecimal.valueOf(1_000_000), 2, RoundingMode.HALF_UP)
+                        .setScale(0, RoundingMode.HALF_UP);
             }
             if (Objects.equals(name, "Yield")) {
                 dividendYield = convertPercentageToNumber(value, null);

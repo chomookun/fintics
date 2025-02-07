@@ -252,10 +252,10 @@
                         <td class="text-align--right">
                             <span data-duice-bind="order" data-duice-property="price" data-duice-format="number()" class="number"></span>
                         </td>
-                        <td class="display--flex padding--1px">
-                        <textarea data-duice-bind="order"
-                                  data-duice-execute="this.value=JSON.stringify(order.strategyResult,null,2);"
-                                  class="height-100 width--100 font-size--smaller code"></textarea>
+                        <td class="display--flex">
+                            <textarea data-duice-bind="order"
+                                data-duice-execute="this.value=JSON.stringify(order.strategyResult,null,2);"
+                                class="height-100 width--100 font-size--smaller code"></textarea>
                         </td>
                         <td class="text-align--right">
                             <span data-duice-bind="order" data-duice-property="purchasePrice" data-duice-format="number()" class="number"></span>
@@ -270,10 +270,10 @@
                               this.classList.toggle('background-color--red', order.result === 'FAILED');
                               "></span>
                         </td>
-                        <td class="display--flex padding--1px">
-                        <textarea data-duice-bind="order"
-                                  data-duice-property="errorMessage"
-                                  class="height--100 width--100 font-size--smaller code" style="white-space:normal;"></textarea>
+                        <td class="display--flex">
+                            <textarea data-duice-bind="order"
+                                data-duice-property="errorMessage"
+                                class="height--100 width--100 font-size--smaller code" style="white-space:normal;"></textarea>
                         </td>
                     </tr>
                     <tr data-duice-bind="orderSearch"
