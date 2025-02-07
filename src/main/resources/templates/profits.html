@@ -162,9 +162,9 @@
                         <span th:data-duice-bind="|profitMap.get('${broker.brokerId}')|"
                               data-duice-property="profitAmount"
                               th:data-duice-execute="|
-                                let totalAmount = profitMap.get('${broker.brokerId}').totalAmount;
-                                this.classList.toggle('color--green', totalAmount > 0);
-                                this.classList.toggle('color--red', totalAmount < 0);
+                                let profitAmount = profitMap.get('${broker.brokerId}').profitAmount;
+                                this.classList.toggle('color--green', profitAmount > 0);
+                                this.classList.toggle('color--red', profitAmount < 0);
                               |"
                               data-duice-format="number()" class="number">
                             </span>
