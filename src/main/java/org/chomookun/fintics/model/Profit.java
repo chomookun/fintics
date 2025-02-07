@@ -12,11 +12,13 @@ import java.util.List;
 @AllArgsConstructor(access = AccessLevel.PRIVATE)
 public class Profit {
 
-    private BigDecimal totalAmount;
+    private String brokerId;
+
+    private BigDecimal profitAmount;
 
     private BigDecimal realizedProfitAmount;
 
-    private BigDecimal dividendAmount;
+    private BigDecimal dividendProfitAmount;
 
     @Builder.Default
     private List<RealizedProfit> realizedProfits = new ArrayList<>();

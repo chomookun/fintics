@@ -58,10 +58,11 @@ public class ProfitService {
 
         // returns
         return Profit.builder()
-                .totalAmount(totalAmount)
+                .brokerId(brokerId)
+                .profitAmount(totalAmount)
                 .realizedProfitAmount(realizedProfitAmount)
                 .realizedProfits(realizedProfits)
-                .dividendAmount(dividendAmount)
+                .dividendProfitAmount(dividendAmount)
                 .dividendProfits(dividendHistories)
                 .build();
     }

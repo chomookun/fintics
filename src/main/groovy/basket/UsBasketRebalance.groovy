@@ -51,10 +51,11 @@ List<Item> candidateItems = []
 //=======================================
 // ETF list
 def etfSymbols = [
-        'DGRO',     // iShares Core Dividend Growth ETF
         'DGRW',     // WisdomTree U.S. Quality Dividend Growth Fund
         'JEPI',     // JPMorgan Equity Premium Income ETF
         'DIVO',     // Amplify CWP Enhanced Dividend Income ETF
+        'RDVI',     // First Trust Rising Dividend Achievers ETF
+        'DGRO',     // iShares Core Dividend Growth ETF
         'SCHD',     // Schwab U.S. Dividend Equity ETF
         'MOAT',     // VanEck Morningstar Wide Moat ETF
 ]
@@ -105,18 +106,21 @@ List<Item> finalItems = candidateItems.findAll {
 
     //  ROE
     def roe = asset.getRoe() ?: 0.0
-    if (roe < 5.0) {    // ROE 5 이하는 수익성 없는 회사로 제외
+    if (roe < 10.0) {    // ROE 가 금리 * 2 이하는 수익성 없는 회사로 제외
         return false
     }
 
     // PER
-    def per = asset.getPer() ?: 100
+    def per = asset.getPer() ?: 9999
+    if (per > 30.0) {   // PER 가 ROE * 3 이상은 고 평가된 회사로 제외
+        return false
+    }
 
-    // dividendYield
+    // dividendYield - 미국은 자사주 매입/소각 등 주주 환원이 믿을수 있음 으로 배당은 따로 보지 않음
     def dividendYield = asset.getDividendYield() ?: 0.0
 
-    // score
-    it.score = roe + dividendYield
+    // score (ROE/PER 로 저평가 회사 우선)
+    it.score = roe/per
 
     // return
     return it

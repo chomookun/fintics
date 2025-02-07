@@ -15,8 +15,9 @@
             });
             profitSearchMap.set(broker.brokerId, profitSearch);
             const profit = new duice.ObjectProxy({
+                profitAmount: null,
                 realizedProfitAmount: null,
-                dividendAmount: null,
+                dividendProfitAmount: null,
                 realizedProfits: [],
                 dividendProfits: []
             });
@@ -157,9 +158,9 @@
                     </h2>
                     <div class="align-self--end padding-right--1em font-weight--bold">
                         <img class="icon" th:src="@{/static/image/icon-profit.svg}" alt="profit"/>
-                        <span data-th-text="#{fintics.Profit.totalAmount}"></span>:
+                        <span data-th-text="#{fintics.Profit.profitAmount}"></span>:
                         <span th:data-duice-bind="|profitMap.get('${broker.brokerId}')|"
-                              data-duice-property="totalAmount"
+                              data-duice-property="profitAmount"
                               th:data-duice-execute="|
                                 let totalAmount = profitMap.get('${broker.brokerId}').totalAmount;
                                 this.classList.toggle('color--green', totalAmount > 0);
@@ -281,9 +282,9 @@
                     <!-- start: dividend history -->
                     <div>
                         <div>
-                            <span data-th-text="#{fintics.Profit.dividendAmount}" class="font-weight--bold"></span>:
+                            <span data-th-text="#{fintics.Profit.dividendProfitAmount}" class="font-weight--bold"></span>:
                             <span th:data-duice-bind="|profitMap.get('${broker.brokerId}')|"
-                                  data-duice-property="dividendAmount"
+                                  data-duice-property="dividendProfitAmount"
                                   data-duice-format="number()"
                                   th:data-duice-execute="|
                                   let dividendAmount = profitMap.get('${broker.brokerId}').dividendAmount;

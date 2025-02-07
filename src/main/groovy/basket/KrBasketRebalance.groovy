@@ -50,12 +50,15 @@ List<Item> candidateItems = []
 //=======================================
 // ETF list
 def etfSymbols = [
+        // 지수
+        '337160',   // KODEX 200ESG
+        '226980',   // KODEX 200 중소형
+        // 배당
         '441800',   // TIMEFOLIO Korea플러스배당액티브
         '161510',   // PLUS 고배당주
         '279530',   // KODEX 고배당
         '104530',   // KOSEF 고배당
         '104530',   // KIWOOM 고배당
-        '495230',   // KoAct 코리아밸류업액티브
         '466940',   // TIGER 은행고배당플러스TOP10
         '211900',   // KODEX 배당성장
 ]
@@ -106,21 +109,24 @@ List<Item> finalItems = candidateItems.findAll {
 
     //  ROE
     def roe = asset.getRoe() ?: 0.0
-    if (roe < 5.0) {    // ROE 5 이하는 수익성 없는 회사로 제외
+    if (roe < 6.0) {    // ROE 가 금리 * 2 이하는 수익성 없는 회사로 제외
         return false
     }
 
     // PER
     def per = asset.getPer() ?: 9999
-    if (per > 20.0) {   // PER 20 이상은 고 평가된 회사로 제외
+    if (per > 18.0) {   // PER 가 ROE * 3 이상은 고 평가된 회사로 제외
         return false
     }
 
     // dividendYield
     def dividendYield = asset.getDividendYield() ?: 0.0
+    if (dividendYield < 0.0) {  // 한국은 배당 없는 회사 재무 재표는 믿을 수가 없다.
+        return false
+    }
 
-    // score
-    it.score = roe + dividendYield
+    // score (ROE/PER 로 저평가 회사 우선)
+    it.score = roe/per
 
     // return
     return it
