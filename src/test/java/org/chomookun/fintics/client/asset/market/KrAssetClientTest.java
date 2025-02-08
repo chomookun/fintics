@@ -61,8 +61,26 @@ class KrAssetClientTest extends CoreTestSupport {
                         .name("KODEX 200")
                         .market("KR")
                         .type("ETF")
+                        .build(),
+                Asset.builder()
+                        .assetId("KR.477080")
+                        .name("RISE CD금리액티브(합성)")
+                        .market("KR")
+                        .type("ETF")
+                        .build(),
+                Asset.builder()
+                        .assetId("KR.466920")
+                        .name("SOL 조선TOP3플러스")
+                        .market("KR")
+                        .type("ETF")
+                        .build(),
+                Asset.builder()
+                        .assetId("KR.487340")
+                        .name("ACE CD금리&초단기채권액티비")
+                        .market("KR")
+                        .type("ETF")
                         .build()
-        );
+                );
     }
 
     @Disabled
@@ -123,9 +141,9 @@ class KrAssetClientTest extends CoreTestSupport {
     @Disabled
     @ParameterizedTest
     @MethodSource("getTestStockAssets")
-    void updateStockAsset(Asset asset) {
+    void populateStockAsset(Asset asset) {
        // when
-        getKrAssetClient().updateStockAsset(asset);
+        getKrAssetClient().populateStockAsset(asset);
         // then
         log.info("asset:{}", asset);
         assertNotNull(asset.getEps());
@@ -138,18 +156,11 @@ class KrAssetClientTest extends CoreTestSupport {
     }
 
     @Disabled
-    @Test
-    void updateEtfAsset() {
-        // given
-        Asset asset = Asset.builder()
-                .assetId("KR.069500")
-                .name("KODEX 200")
-                .market("KR")
-                .type("ETF")
-                .marketCap(BigDecimal.TEN)
-                .build();
+    @ParameterizedTest
+    @MethodSource("getTestEtfAssets")
+    void populateEtfAsset(Asset asset) {
         // when
-        getKrAssetClient().updateEtfAsset(asset);
+        getKrAssetClient().populateEtfAsset(asset);
         // then
         log.info("asset: {}", asset);
         assertNotNull(asset.getDividendFrequency());

@@ -16,6 +16,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -54,6 +55,9 @@ public class AssetsRestController {
             @RequestParam(value = "type", required = false)
             @Parameter(name = "type", description = "STOCK|ETF")
                     String type,
+            @RequestParam(value = "favorite", required = false)
+            @Parameter(name = "favorite", description = "true|false")
+                    Boolean favorite,
             @Parameter(hidden = true)
                     Pageable pageable
     ) {
@@ -62,6 +66,7 @@ public class AssetsRestController {
                 .name(name)
                 .market(market)
                 .type(type)
+                .favorite(favorite)
                 .build();
         Page<Asset> assetPage = assetService.getAssets(assetSearch, pageable);
         List<AssetResponse> assetResponses = assetPage.getContent().stream()
@@ -89,6 +94,38 @@ public class AssetsRestController {
                 .map(AssetResponse::from)
                 .orElseThrow();
         return ResponseEntity.ok(assetResponse);
+    }
+
+    /**
+     * Sets favorite
+     * @param assetId asset id
+     */
+    @PostMapping("{assetId}/favorite")
+    @Operation(description = "Creates favorite")
+    @Transactional
+    public ResponseEntity<Void> createFavorite(
+            @PathVariable("assetId")
+            @Parameter(name = "asset id", description = "asset id", example = "US.AAPL")
+                    String assetId
+    ){
+        assetService.setFavorite(assetId, true);
+        return ResponseEntity.ok().build();
+    }
+
+    /**
+     * Deletes favorite
+     * @param assetId asset id
+     */
+    @DeleteMapping("{assetId}/favorite")
+    @Operation(description = "Deletes favorite")
+    @Transactional
+    public ResponseEntity<Void> deleteFavorite(
+            @PathVariable("assetId")
+            @Parameter(name = "asset id", description = "asset id", example = "US.AAPL")
+                    String assetId
+    ){
+        assetService.setFavorite(assetId, false);
+        return ResponseEntity.ok().build();
     }
 
 }

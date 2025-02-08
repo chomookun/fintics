@@ -202,10 +202,10 @@ public class KrAssetClient extends AssetClient implements SeibroClientSupport {
     }
 
     @Override
-    public void updateAsset(Asset asset) {
+    public void populateAsset(Asset asset) {
         switch(Optional.ofNullable(asset.getType()).orElse("")) {
-            case "STOCK" -> updateStockAsset(asset);
-            case "ETF" -> updateEtfAsset(asset);
+            case "STOCK" -> populateStockAsset(asset);
+            case "ETF" -> populateEtfAsset(asset);
             default -> throw new RuntimeException("Unsupported asset type");
         }
     }
@@ -214,7 +214,7 @@ public class KrAssetClient extends AssetClient implements SeibroClientSupport {
      * Updates stock asset
      * @param asset stock asset
      */
-    void updateStockAsset(Asset asset) {
+    void populateStockAsset(Asset asset) {
         BigDecimal price = null;
         BigDecimal volume = null;
         BigDecimal marketCap = asset.getMarketCap();
@@ -521,7 +521,7 @@ public class KrAssetClient extends AssetClient implements SeibroClientSupport {
         return dividends;
     }
 
-    void updateEtfAsset(Asset asset) {
+    void populateEtfAsset(Asset asset) {
         BigDecimal price;
         BigDecimal volume;
         BigDecimal marketCap = asset.getMarketCap();
@@ -538,7 +538,9 @@ public class KrAssetClient extends AssetClient implements SeibroClientSupport {
         // calculates dividend
         List<Dividend> dividends = getEtfDividends(asset);
         dividendFrequency = dividends.size();
-        BigDecimal dividendPerShare = dividends.get(0).getDividendPerShare();
+        BigDecimal dividendPerShare = dividends.stream()
+                .map(Dividend::getDividendPerShare)
+                .reduce(BigDecimal.ZERO, BigDecimal::add);
         dividendYield = dividendPerShare.divide(price, MathContext.DECIMAL32)
                 .multiply(BigDecimal.valueOf(100))
                 .setScale(2, RoundingMode.HALF_UP);

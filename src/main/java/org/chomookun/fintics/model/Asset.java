@@ -24,6 +24,8 @@ public class Asset {
 
     private String type;
 
+    private boolean favorite;
+
     private LocalDate updatedDate;
 
     private BigDecimal price;
@@ -70,6 +72,7 @@ public class Asset {
                 .market(assetEntity.getMarket())
                 .exchange(assetEntity.getExchange())
                 .type(assetEntity.getType())
+                .favorite(assetEntity.isFavorite())
                 .updatedDate(assetEntity.getUpdatedDate())
                 .price(assetEntity.getPrice())
                 .volume(assetEntity.getVolume())

@@ -13,6 +13,7 @@
             type: null,
             key: 'name',
             value: null,
+            favorite: false,
             _page: 0,
             _size: 20,
             _sort: [],
@@ -26,8 +27,8 @@
          * @param page page number
          */
         async function getAssets(page) {
-            if(page) {
-                assetSearch._page = page;
+            if(Number.isFinite(parseInt(page))) {
+                assetSearch._page = parseInt(page);
             }
             let url = new URL(`${_apiUrl}/v1/assets`, document.location.origin);
             if (assetSearch.market != null) {
@@ -38,6 +39,9 @@
             }
             if (assetSearch.key && assetSearch.value) {
                 url.searchParams.set(assetSearch.key, assetSearch.value);
+            }
+            if (assetSearch.favorite) {
+                url.searchParams.set('favorite', assetSearch.favorite);
             }
             url.searchParams.set('_page', assetSearch._page);
             url.searchParams.set('_size', assetSearch._size);
@@ -88,7 +92,7 @@
                 }
             }
             // get assets
-            getAssets();
+            getAssets(0);
         }
 
         /**
@@ -115,29 +119,42 @@
          */
         function resetAssets() {
             duice.ObjectProxy.reset(assetSearch);
-            getAssets();
+            getAssets(0);
+        }
+
+        /**
+         * marks asset
+         * @param assetId
+         * @param favorite
+         */
+        function setFavorite(assetId, favorite) {
+            let url = new URL(`${_apiUrl}/v1/assets/${assetId}/favorite`, document.location.origin);
+            let method = favorite ? 'POST' : 'DELETE';
+            _fetch(url, {
+                method: method
+            }).then(() => {
+                let index = assets.findIndex(it => it.assetId === assetId);
+                assets[index].favorite = favorite;
+            });
         }
 
         function loadAssetSearch() {
             duice.ObjectProxy.reset(assetSearch);
-            _loadUrlSearchParams(assetSearch, ['market', 'type','key', 'value', '_page', '_size', '_sort']);
+            _loadUrlSearchParams(assetSearch, ['market', 'type','key', 'value', 'favorite', '_page', '_size', '_sort']);
         }
 
         function pushAssetSearch() {
-            _pushUrlSearchParams(assetSearch, ['market', 'type','key', 'value', '_page', '_size', '_sort']);
+            _pushUrlSearchParams(assetSearch, ['market', 'type','key', 'value', 'favorite', '_page', '_size', '_sort']);
+        }
+
+        function deleteAssetSearch() {
+            _deleteUrlSearchParams(['market', 'type','key', 'value', 'favorite', '_page', '_size', '_sort']);
         }
 
         // DOM content loaded listener
         document.addEventListener('DOMContentLoaded',()=> {
             loadAssetSearch();
             getAssets();
-        });
-
-        // history event
-        ['popstate', 'pageshow'].forEach(event => {
-            window.addEventListener(event, () => {
-                document.dispatchEvent(new CustomEvent('DOMContentLoaded'));
-            });
         });
     </script>
 
@@ -193,13 +210,19 @@
                             <input type="text" data-duice-bind="assetSearch" data-duice-property="value"/>
                         </label>
                     </div>
+                    <div class="display--flex flex-wrap--nowrap">
+                        <label>
+                            <input type="checkbox" data-duice-bind="assetSearch" data-duice-property="favorite"/>
+                            <span>Favorite</span>
+                        </label>
+                    </div>
                 </div>
                 <div class="flex--1 display--flex gap--1px justify-content--end s__justify-content--start">
-                    <button class="button" type="submit" onclick="getAssets(); pushAssetSearch();">
+                    <button class="button" type="submit" onclick="getAssets(0); pushAssetSearch();">
                         <img class="icon" th:src="@{/static/image/icon-search.svg}" alt="search"/>
                         <span data-th-text="#{web.global.search}"></span>
                     </button>
-                    <button class="button" type="button" onclick="resetAssets();">
+                    <button class="button" type="button" onclick="resetAssets(); deleteAssetSearch();">
                         <img class="icon" th:src="@{/static/image/icon-reset.svg}" alt="reset"/>
                         <span data-th-text="#{web.global.reset}"></span>
                     </button>
@@ -208,8 +231,8 @@
             <div class="overflow--auto box">
                 <table class="table width--100 border--none">
                     <colgroup>
-                        <col style="min-width:5em;"/>
-                        <col style="min-width:7em;"/>
+                        <col/>
+                        <col/>
                         <col/>
                         <col/>
                         <col/>
@@ -236,9 +259,6 @@
                         </th>
                         <th>
                             <span data-th-text="#{fintics.Asset.name}"></span>
-                        </th>
-                        <th>
-                            <span data-th-text="#{fintics.Asset.links}"></span>
                         </th>
                         <th>
                             <span data-th-text="#{fintics.Asset.market}"></span>
@@ -315,6 +335,9 @@
                                 <span data-th-text="#{fintics.Asset.totalReturn}"></span>
                             </a>
                         </th>
+                        <th>
+                            <span data-th-text="#{fintics.Asset.links}"></span>
+                        </th>
                     </tr>
                     </thead>
                     <tbody>
@@ -329,7 +352,18 @@
                             <span data-duice-bind="asset" data-duice-property="symbol" class="code font-weight--bold"></span>
                         </td>
                         <td>
-                            <div class="text-truncate" style="width:25em;">
+                            <div class="text-truncate" style="width:22em;">
+                                <img th:src="@{/static/image/icon-bookmark-off.svg}" alt="bookmark" class="icon link font-size--large"
+                                    data-duice-bind="asset"
+                                    data-duice-execute="
+                                    this.dataset.assetId = asset.assetId;
+                                    this.dataset.favorite = asset.favorite;
+                                    if(asset.favorite) {
+                                        this.src='/static/image/icon-favorite-on.svg';
+                                    } else {
+                                        this.src='/static/image/icon-favorite-off.svg';
+                                    }"
+                                    onclick="setFavorite(this.dataset.assetId, !JSON.parse(this.dataset.favorite));"/>
                                 <img class="icon border-radius--50 font-size--large" data-duice-bind="asset" data-duice-property="icon" th:onerror="|this.onerror=null; this.src='@{/static/image/icon-asset.svg}';|" alt=""/>
                                 &nbsp;
                                 <a href="javascript:void(0);"
@@ -339,19 +373,6 @@
                                     <span data-duice-bind="asset" data-duice-property="name"></span>
                                 </a>
                             </div>
-                        </td>
-                        <td class="text-align--center">
-                            <label>
-                                <select data-duice-bind="asset"
-                                        data-duice-option="asset.links"
-                                        data-duice-option-value-property="url"
-                                        data-duice-option-text-property="name"
-                                        onchange="_openLink(this.value, '_blank'); this.value = '';"
-                                        class="code font-size--smaller width--100"
-                                        style="width:7em;">
-                                    <option value>Link...</option>
-                                </select>
-                            </label>
                         </td>
                         <td class="text-align--center">
                             <span data-duice-bind="asset" data-duice-property="market" class="code badge"></span>
@@ -399,6 +420,18 @@
                                 this.classList.toggle('color--green', asset.totalReturn > 0);
                                 this.classList.toggle('color--red', asset.totalReturn < 0);
                                 "></span>
+                        </td>
+                        <td class="text-align--center">
+                            <label>
+                                <select data-duice-bind="asset"
+                                        data-duice-option="asset.links"
+                                        data-duice-option-value-property="url"
+                                        data-duice-option-text-property="name"
+                                        onchange="_openLink(this.value, '_blank'); this.value = '';"
+                                        class="code font-size--smaller width--100">
+                                    <option value>Link...</option>
+                                </select>
+                            </label>
                         </td>
                     </tr>
                     <tr data-duice-bind="assetSearch"

@@ -27,8 +27,8 @@
         function getProfit(brokerId, dateFrom, dateTo) {
             let url = new URL(`${_apiUrl}/v1/profits/${brokerId}`, document.location.origin);
             if (dateFrom && dateTo) {
-                url.searchParams.append('dateFrom', dateFrom.toISOString().split('T')[0]);
-                url.searchParams.append('dateTo', dateTo.toISOString().split('T')[0]);
+                url.searchParams.set('dateFrom', dateFns.format(dateFrom, 'YYYY-MM-DD'));
+                url.searchParams.set('dateTo', dateFns.format(dateTo, 'YYYY-MM-DD'));
             }
             let profitSearch = profitSearchMap.get(brokerId);
             profitSearch._status = 'loading';

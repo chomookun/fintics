@@ -47,4 +47,15 @@ public class AssetService {
                 .map(Asset::from);
     }
 
+    /**
+     * Sets favorite
+     * @param assetId asset id
+     * @param favorite  favorite
+     */
+    public void setFavorite(String assetId, boolean favorite) {
+        AssetEntity assetEntity = assetRepository.findById(assetId).orElseThrow();
+        assetEntity.setFavorite(favorite);
+        assetRepository.save(assetEntity);
+    }
+
 }

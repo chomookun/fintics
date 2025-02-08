@@ -49,7 +49,7 @@ public class UpbitAssetClient extends AssetClient {
     }
 
     @Override
-    public void updateAsset(Asset asset) {
+    public void populateAsset(Asset asset) {
         // not supported
     }
 

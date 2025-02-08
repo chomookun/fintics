@@ -268,11 +268,31 @@
                         <td data-th-text="#{fintics.Asset.dividendYield}" class="font-weight--bold"></td>
                         <td class="text-align--right">
                             <span data-duice-bind="_assetDialog.asset" data-duice-property="dividendYield" class="number"></span>
-                            <span class="code">%</spanc>
                         </td>
                         <td data-th-text="#{fintics.Asset.dividendFrequency}" class="font-weight--bold"></td>
                         <td class="text-align--right">
                             <span data-duice-bind="_assetDialog.asset" data-duice-property="dividendFrequency" class="number"></span>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td data-th-text="#{fintics.Asset.capitalGain}" class="font-weight--bold"></td>
+                        <td class="text-align--right">
+                            <span data-duice-bind="_assetDialog.asset"
+                                  data-duice-property="capitalGain"
+                                  data-duice-execute="
+                                  this.classList.toggle('color--green', _assetDialog.asset.capitalGain > 0);
+                                  this.classList.toggle('color--red', _assetDialog.asset.capitalGain < 0);
+                                  " class="number font-weight--bold"></span>
+                        </td>
+                        <td data-th-text="#{fintics.Asset.totalReturn}" class="font-weight--bold"></td>
+                        <td class="text-align--right">
+                            <span data-duice-bind="_assetDialog.asset"
+                                  data-duice-property="totalReturn"
+                                  data-duice-execute="
+                                  this.classList.toggle('color--green', _assetDialog.asset.totalReturn > 0);
+                                  this.classList.toggle('color--red', _assetDialog.asset.totalReturn < 0);
+                                  "
+                                  class="number font-weight--bold"></span>
                         </td>
                     </tr>
                     </tbody>

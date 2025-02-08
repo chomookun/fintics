@@ -91,14 +91,12 @@ public class DividendCollector extends AbstractScheduler {
             // send message
             Duration elapsed = Duration.between(start, Instant.now());
             StringBuilder message = new StringBuilder();
-            message.append("=".repeat(80)).append('\n');
             message.append("DividendCollector - Complete collect dividend.").append('\n');
             message.append(String.format("- elapsed: %d:%02d:%02d", elapsed.toHoursPart(), elapsed.toMinutesPart(), elapsed.toSecondsPart())).append('\n');
             message.append(String.format("- totalCount: %d", totalCount)).append('\n');
             message.append(String.format("- failCount: %d", failCount)).append('\n');
             message.append(String.format("- result: %s", result)).append('\n');
             message.append(String.format("- error: %s", error)).append('\n');
-            message.append("=".repeat(80)).append('\n');
             log.info(message.toString());
             sendSystemAlarm(this.getClass(), message.toString());
             log.info("DividendCollector - Complete collect dividend.");

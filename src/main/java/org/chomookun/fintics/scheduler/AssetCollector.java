@@ -17,6 +17,7 @@ import java.math.BigDecimal;
 import java.time.Duration;
 import java.time.Instant;
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.*;
 
 @Component
@@ -68,7 +69,7 @@ public class AssetCollector extends AbstractScheduler {
                             .toList())
             );
 
-            // asset client 로 부터 asset 정보 조회
+            // Gets asset list from asset client
             List<Asset> assetsFromClient = assetClient.getAssets();
 
             // basket 에 등록된 Asset 우선 처리 하도록 List 조합
@@ -102,39 +103,61 @@ public class AssetCollector extends AbstractScheduler {
                     assetEntity.setExchange(asset.getExchange());
                     assetEntity.setType(asset.getType());
 
-                    // updates asset details
-                    boolean needToUpdate = true;
-                    // 주식 중 시가 총액이 0이거나 산출 되지 않은 기업은 제외
-                    if (Objects.equals(asset.getType(), "STOCK")) {
-                        if (asset.getMarketCap() == null || asset.getMarketCap().compareTo(BigDecimal.ZERO) <= 0) {
-                            needToUpdate = false;
+                    // populate asset
+                    try {
+                        // Checks skip
+                        boolean needToUpdate = true;
+
+                        // 최근 갱신 된 경우는 제외 (대상 건이 너무 많음)
+                        if (assetEntity.getUpdatedDate() != null) {
+                            LocalDate expireUpdateDate;
+                            // 현재 거래 중인 종목은 1일
+                            if (basketAssetIds.contains(asset.getAssetId())) {
+                                expireUpdateDate = LocalDate.now().minusDays(1);
+                            }
+                            // 그외 종목은 7일
+                            else {
+                                expireUpdateDate = LocalDate.now().minusDays(7);
+                            }
+                            // 갱신 일자가 최근인 경우 skip
+                            if (assetEntity.getUpdatedDate().isAfter(expireUpdateDate)) {
+                                needToUpdate = false;
+                            }
                         }
+
+                        // neet to update
+                        if (needToUpdate) {
+                            // populate asset
+                            assetClient.populateAsset(asset);
+                            // sets properties
+                            assetEntity.setUpdatedDate(LocalDate.now());
+                            assetEntity.setPrice(asset.getPrice());
+                            assetEntity.setVolume(asset.getVolume());
+                            assetEntity.setMarketCap(asset.getMarketCap());
+                            assetEntity.setEps(asset.getEps());
+                            assetEntity.setRoe(asset.getRoe());
+                            assetEntity.setPer(asset.getPer());
+                            assetEntity.setDividendFrequency(asset.getDividendFrequency());
+                            assetEntity.setDividendYield(asset.getDividendYield());
+                            assetEntity.setCapitalGain(asset.getCapitalGain());
+                            assetEntity.setTotalReturn(asset.getTotalReturn());
+
+                            // 블럭 당할수 있음 으로 유량 조절 (skip 인 경우는 그냥 진행 해야 됨으로 finally 에 작성 하지 않음)
+                            try {
+                                Thread.sleep(3_000);
+                            } catch (Throwable ignore) {}
+                        }
+                    } catch (Throwable t) {
+                        log.warn(t.getMessage());
+                        failCount++;
                     }
-                    if (needToUpdate) {
-                        assetClient.updateAsset(asset);
-                    }
-                    assetEntity.setUpdatedDate(LocalDate.now());
-                    assetEntity.setPrice(asset.getPrice());
-                    assetEntity.setVolume(asset.getVolume());
-                    assetEntity.setMarketCap(asset.getMarketCap());
-                    assetEntity.setEps(asset.getEps());
-                    assetEntity.setRoe(asset.getRoe());
-                    assetEntity.setPer(asset.getPer());
-                    assetEntity.setDividendFrequency(asset.getDividendFrequency());
-                    assetEntity.setDividendYield(asset.getDividendYield());
-                    assetEntity.setCapitalGain(asset.getCapitalGain());
-                    assetEntity.setTotalReturn(asset.getTotalReturn());
 
                     // saves
                     saveEntities("assetEntity", List.of(assetEntity), transactionManager, assetRepository);
+
                 } catch (Throwable t) {
                     log.warn(t.getMessage());
                     failCount++;
-                } finally {
-                    // 블럭 당할수 있음 으로 유량 조절
-                    try {
-                        Thread.sleep(3_000);
-                    } catch (Throwable ignore) {}
                 }
             }
 
@@ -155,14 +178,12 @@ public class AssetCollector extends AbstractScheduler {
             // send message
             Duration elapsed = Duration.between(start, Instant.now());
             StringBuilder message = new StringBuilder();
-            message.append("=".repeat(80)).append('\n');
             message.append("AssetCollector - Complete collect asset.").append('\n');
             message.append(String.format("- elapsed: %d:%02d:%02d", elapsed.toHoursPart(), elapsed.toMinutesPart(), elapsed.toSecondsPart())).append('\n');
             message.append(String.format("- totalCount: %d", totalCount)).append('\n');
             message.append(String.format("- failCount: %d", failCount)).append('\n');
             message.append(String.format("- result: %s", result)).append('\n');
             message.append(String.format("- error: %s", error)).append('\n');
-            message.append("=".repeat(80)).append('\n');
             log.info(message.toString());
             sendSystemAlarm(this.getClass(), message.toString());
             log.info("AssetCollector - Complete collect asset.");

@@ -44,6 +44,11 @@ class SimpleAssetClientTest extends CoreTestSupport {
                         .type("ETF")
                         .build(),
                 Asset.builder()
+                        .assetId("US.RDIV")
+                        .market("US")
+                        .type("ETF")
+                        .build(),
+                Asset.builder()
                         .assetId("KR.005930")
                         .name("Samsung Electronics")
                         .market("KR")
@@ -73,9 +78,9 @@ class SimpleAssetClientTest extends CoreTestSupport {
     @Disabled
     @ParameterizedTest
     @MethodSource("getTestAssets")
-    void updateAsset(Asset asset) {
+    void populateAsset(Asset asset) {
         // when
-        getSimpleAssetClient().updateAsset(asset);
+        getSimpleAssetClient().populateAsset(asset);
         // then
         log.info("asset: {}", asset);
     }

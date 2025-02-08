@@ -32,10 +32,10 @@ public abstract class AssetClient {
     public abstract List<Asset> getAssets();
 
     /**
-     * Updates asset
+     * Populates asset
      * @param asset asset
      */
-    public abstract void updateAsset(Asset asset);
+    public abstract void populateAsset(Asset asset);
 
     /**
      * convert to asset id

@@ -3,6 +3,9 @@ package org.chomookun.fintics.model;
 import lombok.*;
 import org.chomookun.fintics.dao.BrokerEntity;
 
+import java.time.ZoneId;
+import java.util.Currency;
+
 @Data
 @Builder
 @NoArgsConstructor
@@ -16,6 +19,12 @@ public class Broker {
     private String brokerClientId;
 
     private String brokerClientProperties;
+
+    private String market;
+
+    private ZoneId timezone;
+
+    private Currency currency;
 
     /**
      * from factory method

@@ -56,6 +56,13 @@ class UsAssetClientTest extends CoreTestSupport {
         return List.of(
                 Asset.builder()
                         .assetId("US.SPY")
+                        .name("SPDR S&P 500 ETF Trust")
+                        .market("US")
+                        .type("ETF")
+                        .build(),
+                Asset.builder()
+                        .assetId("US.RDVI")
+                        .name("FT Vest Rising Dividend Achievers Target Income ETF")
                         .market("US")
                         .type("ETF")
                         .build()
@@ -136,9 +143,9 @@ class UsAssetClientTest extends CoreTestSupport {
     @Disabled
     @ParameterizedTest
     @MethodSource("getTestStockAssets")
-    void updateStockAsset(Asset asset) {
+    void populateStockAsset(Asset asset) {
         // when
-        getUsAssetClient().updateStockAsset(asset);
+        getUsAssetClient().populateStockAsset(asset);
         // then
         assertNotNull(asset.getCapitalGain());
         assertNotNull(asset.getTotalReturn());
@@ -147,10 +154,12 @@ class UsAssetClientTest extends CoreTestSupport {
     @Disabled
     @ParameterizedTest
     @MethodSource("getTestEtfAssets")
-    void updateEtfAsset(Asset asset) {
+    void populateEtfAsset(Asset asset) {
         // when
-        getUsAssetClient().updateEtfAsset(asset);
+        getUsAssetClient().populateEtfAsset(asset);
         // then
+        assertNotNull(asset.getPrice());
+        assertNotNull(asset.getVolume());
         assertNotNull(asset.getCapitalGain());
         assertNotNull(asset.getTotalReturn());
     }

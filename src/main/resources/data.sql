@@ -67,11 +67,11 @@ insert into `core_menu`
     (`menu_id`,`system_required`,`parent_menu_id`,`name`,`link`,`target`,`sort`,`icon`)
 values
     ('monitors','Y',null,'Monitors','/monitors',null,1,'/static/image/icon-monitor.svg'),
-    ('baskets','Y',null,'Basket','/baskets',null,2,'/static/image/icon-basket.svg'),
-    ('strategies','Y',null,'Strategies','/strategies',null,3,'/static/image/icon-strategy.svg'),
-    ('brokers','Y',null,'Brokers','/brokers',null,4,'/static/image/icon-broker.svg'),
-    ('trades','Y',null,'Trades','/trades',null,5,'/static/image/icon-trade.svg'),
-    ('assets','Y',null,'Assets','/assets',null,6,'/static/image/icon-asset.svg'),
+    ('assets','Y',null,'Assets','/assets',null,2,'/static/image/icon-asset.svg'),
+    ('baskets','Y',null,'Basket','/baskets',null,3,'/static/image/icon-basket.svg'),
+    ('strategies','Y',null,'Strategies','/strategies',null,4,'/static/image/icon-strategy.svg'),
+    ('brokers','Y',null,'Brokers','/brokers',null,5,'/static/image/icon-broker.svg'),
+    ('trades','Y',null,'Trades','/trades',null,6,'/static/image/icon-trade.svg'),
     ('orders','Y',null,'Orders','/orders',null,7,'/static/image/icon-order.svg'),
     ('profits','Y',null,'Profits','/profits',null,8,'/static/image/icon-profit.svg'),
     ('admin','N',null,'Admin','/admin','_blank',99,'/static/image/icon-admin.svg');

@@ -3,6 +3,7 @@ package org.chomookun.fintics.service;
 import lombok.RequiredArgsConstructor;
 import org.chomookun.arch4j.core.common.data.IdGenerator;
 import org.chomookun.arch4j.core.common.pbe.PbePropertiesUtil;
+import org.chomookun.fintics.client.broker.BrokerClientDefinitionRegistry;
 import org.chomookun.fintics.dao.BrokerEntity;
 import org.chomookun.fintics.dao.BrokerRepository;
 import org.chomookun.fintics.dao.TradeRepository;
@@ -24,6 +25,8 @@ public class BrokerService {
 
     private final BrokerRepository brokerRepository;
 
+    private final BrokerClientDefinitionRegistry brokerClientDefinitionRegistry;
+
     private final TradeRepository tradeRepository;
 
     public Page<Broker> getBrokers(BrokerSearch brokerSearch, Pageable pageable) {
@@ -31,13 +34,26 @@ public class BrokerService {
         List<Broker> brokers = brokerEntityPage.getContent().stream()
                 .map(Broker::from)
                 .toList();
+        brokers.forEach(this::populateBroker);
         long total = brokerEntityPage.getTotalElements();
         return new PageImpl<>(brokers, pageable, total);
     }
 
     public Optional<Broker> getBroker(String brokerId) {
         return brokerRepository.findById(brokerId)
-                .map(Broker::from);
+                .map(brokerEntity -> {
+                    Broker broker = Broker.from(brokerEntity);
+                    populateBroker(broker);
+                    return broker;
+                });
+    }
+
+    void populateBroker(Broker broker) {
+        brokerClientDefinitionRegistry.getBrokerClientDefinition(broker.getBrokerClientId()).ifPresent(brokerClientDefinition -> {
+            broker.setMarket(brokerClientDefinition.getMarket());
+            broker.setTimezone(brokerClientDefinition.getTimezone());
+            broker.setCurrency(brokerClientDefinition.getCurrency());
+        });
     }
 
     @Transactional

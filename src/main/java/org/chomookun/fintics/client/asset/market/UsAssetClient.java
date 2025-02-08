@@ -213,15 +213,15 @@ public class UsAssetClient extends AssetClient implements NasdaqClientSupport, Y
     }
 
     @Override
-    public void updateAsset(Asset asset) {
+    public void populateAsset(Asset asset) {
         switch(Optional.ofNullable(asset.getType()).orElse("")) {
-            case "STOCK" -> updateStockAsset(asset);
-            case "ETF" -> updateEtfAsset(asset);
+            case "STOCK" -> populateStockAsset(asset);
+            case "ETF" -> populateEtfAsset(asset);
             default -> throw new RuntimeException("Unsupported asset type");
         }
     }
 
-    void updateStockAsset(Asset asset) {
+    void populateStockAsset(Asset asset) {
         BigDecimal price = null;
         BigDecimal volume = null;
         BigDecimal marketCap = null;
@@ -352,8 +352,9 @@ public class UsAssetClient extends AssetClient implements NasdaqClientSupport, Y
         asset.setTotalReturn(totalReturn);
     }
 
-    void updateEtfAsset(Asset asset) {
+    void populateEtfAsset(Asset asset) {
         BigDecimal price = null;
+        BigDecimal volume = null;
         BigDecimal marketCap = null;
         int dividendFrequency;
         BigDecimal dividendYield = null;
@@ -386,10 +387,13 @@ public class UsAssetClient extends AssetClient implements NasdaqClientSupport, Y
             if (Objects.equals(name, "PreviousClose")) {
                 price = convertCurrencyToNumber(value, CURRENCY_USD, null);
             }
+            if (Objects.equals(name, "ShareVolume")) {
+                volume = convertStringToNumber(value, null);
+            }
             if (Objects.equals(name, "MarketCap")) {
-                marketCap = convertStringToNumber(value, null)
-                        .divide(BigDecimal.valueOf(1_000_000), 2, RoundingMode.HALF_UP)
-                        .setScale(0, RoundingMode.HALF_UP);
+                marketCap = Optional.ofNullable(convertStringToNumber(value, null))
+                        .map(v -> v.divide(BigDecimal.valueOf(1_000_000), 2, RoundingMode.HALF_UP))
+                        .orElse(null);
             }
             if (Objects.equals(name, "Yield")) {
                 dividendYield = convertPercentageToNumber(value, null);
@@ -415,6 +419,7 @@ public class UsAssetClient extends AssetClient implements NasdaqClientSupport, Y
 
         // updates
         asset.setPrice(price);
+        asset.setVolume(volume);
         asset.setMarketCap(marketCap);
         asset.setDividendFrequency(dividendFrequency);
         asset.setDividendYield(dividendYield);
@@ -482,6 +487,8 @@ public class UsAssetClient extends AssetClient implements NasdaqClientSupport, Y
                     .build();
             ohlcvs.add(ohlcv);
         }
+        // sort
+        ohlcvs.sort(Comparator.comparing(Ohlcv::getDateTime).reversed());
         // returns
         return ohlcvs;
     }
@@ -518,17 +525,19 @@ public class UsAssetClient extends AssetClient implements NasdaqClientSupport, Y
         JsonNode eventsNode = resultNode.path("events").path("dividends");
         Map<String, Map<String,Double>> dividendsMap = objectMapper.convertValue(eventsNode, new TypeReference<>(){});
         List<Dividend> dividends = new ArrayList<>();
-        for (Map.Entry<String, Map<String,Double>> entry : dividendsMap.entrySet()) {
-            Map<String,Double> value = entry.getValue();
-            LocalDate date = Instant.ofEpochSecond(value.get("date").longValue())
-                    .atOffset(ZoneOffset.UTC)
-                    .toLocalDate();
-            BigDecimal dividendPerShare = BigDecimal.valueOf(value.get("amount"));
-            Dividend dividend = Dividend.builder()
-                    .date(date)
-                    .dividendPerShare(dividendPerShare)
-                    .build();
-            dividends.add(dividend);
+        if (dividendsMap != null) {
+            for (Map.Entry<String, Map<String,Double>> entry : dividendsMap.entrySet()) {
+                Map<String,Double> value = entry.getValue();
+                LocalDate date = Instant.ofEpochSecond(value.get("date").longValue())
+                        .atOffset(ZoneOffset.UTC)
+                        .toLocalDate();
+                BigDecimal dividendPerShare = BigDecimal.valueOf(value.get("amount"));
+                Dividend dividend = Dividend.builder()
+                        .date(date)
+                        .dividendPerShare(dividendPerShare)
+                        .build();
+                dividends.add(dividend);
+            }
         }
         // returns
         return dividends;

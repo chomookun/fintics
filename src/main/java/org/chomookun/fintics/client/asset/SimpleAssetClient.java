@@ -50,10 +50,10 @@ public class SimpleAssetClient extends AssetClient {
     }
 
     @Override
-    public void updateAsset(Asset asset) {
+    public void populateAsset(Asset asset) {
         for (AssetClient assetClient : assetClients) {
             if (assetClient.isSupport(asset)) {
-                assetClient.updateAsset(asset);
+                assetClient.populateAsset(asset);
                 return;
             }
         }

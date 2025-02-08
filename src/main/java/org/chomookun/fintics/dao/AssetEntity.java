@@ -1,13 +1,11 @@
 package org.chomookun.fintics.dao;
 
+import jakarta.persistence.*;
 import lombok.*;
 import lombok.experimental.SuperBuilder;
 import org.chomookun.arch4j.core.common.data.BaseEntity;
+import org.chomookun.arch4j.core.common.data.converter.BooleanConverter;
 
-import jakarta.persistence.Column;
-import jakarta.persistence.Entity;
-import jakarta.persistence.Id;
-import jakarta.persistence.Table;
 import java.math.BigDecimal;
 import java.time.LocalDate;
 
@@ -35,6 +33,10 @@ public class AssetEntity extends BaseEntity {
 
     @Column(name = "type", length = 16)
     private String type;
+
+    @Column(name = "favorite", length = 1)
+    @Convert(converter = BooleanConverter.class)
+    private boolean favorite;
 
     @Column(name = "updated_date")
     private LocalDate updatedDate;
