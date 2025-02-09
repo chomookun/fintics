@@ -9,6 +9,8 @@ import org.chomookun.fintics.dao.AssetRepository;
 import org.chomookun.fintics.dao.BasketAssetEntity;
 import org.chomookun.fintics.dao.BasketRepository;
 import org.chomookun.fintics.model.Asset;
+import org.chomookun.fintics.model.AssetSearch;
+import org.springframework.data.domain.Pageable;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.PlatformTransactionManager;
@@ -69,22 +71,32 @@ public class AssetCollector extends AbstractScheduler {
                             .toList())
             );
 
+            // favorite assets id 추출
+            List<String> favoriteAssetIds = assetRepository.findAll(AssetSearch.builder().favorite(true).build(), Pageable.unpaged())
+                    .getContent().stream()
+                    .map(AssetEntity::getAssetId)
+                    .toList();
+
             // Gets asset list from asset client
             List<Asset> assetsFromClient = assetClient.getAssets();
 
             // basket 에 등록된 Asset 우선 처리 하도록 List 조합
             List<Asset> assetsInBasket = new ArrayList<>();
-            List<Asset> assetsNotInBasket = new ArrayList<>();
+            List<Asset> assetsWithFavorite = new ArrayList<>();
+            List<Asset> assetsOthers = new ArrayList<>();
             assetsFromClient.forEach(it -> {
                 if (basketAssetIds.contains(it.getAssetId())) {
                     assetsInBasket.add(it);
-                } else {
-                    assetsNotInBasket.add(it);
+                } else if (favoriteAssetIds.contains(it.getAssetId())) {
+                    assetsWithFavorite.add(it);
+                }else {
+                    assetsOthers.add(it);
                 }
             });
             List<Asset> assets = new ArrayList<>();
-            assets.addAll(assetsInBasket);
-            assets.addAll(assetsNotInBasket);
+            assets.addAll(assetsInBasket);      // 현재 거래 중인 종목
+            assets.addAll(assetsWithFavorite);  // 관심 종목
+            assets.addAll(assetsOthers);        // 그외 종목
 
             // merge (상장 폐지 등 삭제 종목 제외는 skip)
             for (Asset asset : assets) {
