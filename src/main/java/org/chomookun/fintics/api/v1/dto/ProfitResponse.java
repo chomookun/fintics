@@ -26,6 +26,9 @@ public class ProfitResponse {
     @Builder.Default
     private List<DividendProfitResponse> dividendProfits = new ArrayList<>();
 
+    @Builder.Default
+    private List<BalanceHistoryResponse> balanceHistories = new ArrayList<>();
+
     /**
      * factory method
      * @param profit profit
@@ -42,6 +45,9 @@ public class ProfitResponse {
                         .toList())
                 .dividendProfits(profit.getDividendProfits().stream()
                         .map(DividendProfitResponse::from)
+                        .toList())
+                .balanceHistories(profit.getBalanceHistories().stream()
+                        .map(BalanceHistoryResponse::from)
                         .toList())
                 .build();
     }

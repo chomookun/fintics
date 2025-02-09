@@ -3,10 +3,8 @@ package org.chomookun.fintics.service;
 import lombok.RequiredArgsConstructor;
 import org.chomookun.fintics.client.broker.BrokerClient;
 import org.chomookun.fintics.client.broker.BrokerClientFactory;
-import org.chomookun.fintics.model.Broker;
-import org.chomookun.fintics.model.DividendProfit;
-import org.chomookun.fintics.model.Profit;
-import org.chomookun.fintics.model.RealizedProfit;
+import org.chomookun.fintics.dao.BalanceHistoryRepository;
+import org.chomookun.fintics.model.*;
 import org.springframework.stereotype.Service;
 
 import java.math.BigDecimal;
@@ -21,6 +19,8 @@ public class ProfitService {
     private final BrokerService brokerService;
 
     private final BrokerClientFactory brokerClientFactory;
+
+    private final BalanceHistoryRepository balanceHistoryRepository;
 
     /**
      * returns profit
@@ -54,16 +54,22 @@ public class ProfitService {
                 .reduce(BigDecimal.ZERO, BigDecimal::add);
 
         // total amount
-        BigDecimal totalAmount = realizedProfitAmount.add(dividendAmount);
+        BigDecimal profitAmount = realizedProfitAmount.add(dividendAmount);
+
+        // balance histories (+ 7 days)
+        List<BalanceHistory> balanceHistories = balanceHistoryRepository.findAllByBrokerId(brokerId, dateFrom.minusWeeks(1), dateTo).stream()
+                .map(BalanceHistory::from)
+                .toList();
 
         // returns
         return Profit.builder()
                 .brokerId(brokerId)
-                .profitAmount(totalAmount)
+                .profitAmount(profitAmount)
                 .realizedProfitAmount(realizedProfitAmount)
                 .realizedProfits(realizedProfits)
                 .dividendProfitAmount(dividendAmount)
                 .dividendProfits(dividendHistories)
+                .balanceHistories(balanceHistories)
                 .build();
     }
 

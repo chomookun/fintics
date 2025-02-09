@@ -26,4 +26,7 @@ public class Profit {
     @Builder.Default
     private List<DividendProfit> dividendProfits = new ArrayList<>();
 
+    @Builder.Default
+    private List<BalanceHistory> balanceHistories = new ArrayList<>();
+
 }

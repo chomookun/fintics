@@ -9,6 +9,7 @@
         const brokers = new duice.ArrayProxy(/*[[${brokers}]]*/[]);
         const profitSearchMap = new Map();
         const profitMap = new Map();
+        const balanceHistoriesChartMap = new Map();
         brokers.forEach(broker => {
             const profitSearch = new duice.ObjectProxy({
                 _status: null
@@ -19,10 +20,66 @@
                 realizedProfitAmount: null,
                 dividendProfitAmount: null,
                 realizedProfits: [],
-                dividendProfits: []
+                dividendProfits: [],
+                balanceHistories: []
             });
             profitMap.set(broker.brokerId, profit);
         });
+
+        function initializeBalanceHistoriesChart() {
+            Chart.register(ChartDataLabels);
+            brokers.forEach(broker => {
+                const chartId = `balanceHistoriesChart-${broker.brokerId}`;
+                const chartElement = document.getElementById(chartId);
+                const balanceHistoriesChart = new Chart(chartElement, {
+                    type: 'bar',
+                    data: {
+                        labels: [],
+                        datasets: []
+                    },
+                    options: {
+                        responsive: true,
+                        maintainAspectRatio: false,
+                        animation: false,
+                        plugins: {
+                            legend: {
+                                labels: {
+                                    font: {
+                                        size: 10,
+                                    }
+                                }
+                            },
+                        },
+                        scales: {
+                            x: {
+                                stacked: true,
+                                barPercentage: 0.1,
+                                categoryPercentage: 0.1,
+                                ticks: {
+                                    font: {
+                                        size: 8,
+                                        family: 'monospace'
+                                    }
+                                }
+                            },
+                            y: {
+                                stacked: true,
+                                ticks: {
+                                    font: {
+                                        size: 8,
+                                        family: 'monospace'
+                                    }
+                                },
+                                afterDataLimits: (axis) => {
+                                    axis.max = axis.max * 1.25;
+                                }
+                            }
+                        }
+                    }
+                });
+                balanceHistoriesChartMap.set(broker.brokerId, balanceHistoriesChart);
+            });
+        }
 
         function getProfit(brokerId, dateFrom, dateTo) {
             let url = new URL(`${_apiUrl}/v1/profits/${brokerId}`, document.location.origin);
@@ -33,10 +90,69 @@
             let profitSearch = profitSearchMap.get(brokerId);
             profitSearch._status = 'loading';
             duice.ObjectProxy.clear(profitMap.get(brokerId));
+
+            // clears balance histories chart
+            let balanceHistoriesChart = balanceHistoriesChartMap.get(brokerId);
+            balanceHistoriesChart.data.labels.length = 0;
+            balanceHistoriesChart.data.datasets.length = 0;
+            balanceHistoriesChart.update();
+
+            // fetches profit
             _fetch(url, {}, true)
             .then(response => response.json())
             .then(data => {
                 duice.ObjectProxy.assign(profitMap.get(brokerId), data);
+
+                // updates balance histories chart
+                balanceHistoriesChart.data.labels.length = 0;
+                balanceHistoriesChart.data.datasets.length = 0;
+                let labels = data.balanceHistories.map(row => dateFns.format(row.date, 'MM-DD')).reverse();
+                let totalAmounts = data.balanceHistories.map(row => row.totalAmount).reverse();
+                let cashAmounts = data.balanceHistories.map(row => row.cashAmount).reverse();
+                let valuationAmounts = data.balanceHistories.map(row => row.valuationAmount).reverse();
+                balanceHistoriesChart.data.labels.push(...labels);
+                balanceHistoriesChart.data.datasets.push({
+                    label: 'Cash Amount',
+                    data: cashAmounts,
+                    stack: 'group1',
+                    backgroundColor: 'rgba(0, 136, 136, 0.5)',
+                    fill: false,
+                    datalabels: { display: false }
+                }, {
+                    label: 'Valuation Amount',
+                    data: valuationAmounts,
+                    stack: 'group1',
+                    backgroundColor: 'rgba(0, 48, 136, 0.5)',
+                    fill: false,
+                    datalabels: { display: false }
+                }, {
+                    type: 'line',
+                    label: 'Total Amount',
+                    data: totalAmounts,
+                    borderColor: 'gray',
+                    borderWidth: 1,
+                    borderDash: [3, 1],
+                    fill: false,
+                    datalabels: {
+                        align: 'top',
+                        anchor: 'start',
+                        font: {
+                            family: 'monospace',
+                            size: 8,
+                            weight: 'bold'
+                        },
+                        color: 'gray',
+                        formatter: (value, context) => {
+                            const totalCount = context.chart.data.datasets[context.datasetIndex].data.length;
+                            const stepSize = Math.ceil(totalCount / 10);
+                            return context.dataIndex === totalCount - 1 ||
+                                (totalCount - context.dataIndex - 1) % stepSize === 0
+                                ? new Intl.NumberFormat().format(value)
+                                : null;
+                        }
+                    }
+                });
+                balanceHistoriesChart.update();
             })
             .finally(() => {
                 profitSearch._status = 'completed';
@@ -93,6 +209,7 @@
 
         // event listener
         document.addEventListener('DOMContentLoaded', () => {
+            initializeBalanceHistoriesChart();
             getProfitsDaily();
         });
     </script>
@@ -362,6 +479,16 @@
                         </div>
                     </div>
                     <!-- end: dividend history -->
+                    <!-- start: balance history -->
+                    <div>
+                        <div>
+                            <span data-th-text="#{fintics.BalanceHistory}" class="font-weight--bold"></span>
+                        </div>
+                        <div>
+                            <canvas th:id="|balanceHistoriesChart-${broker.brokerId}|"></canvas>
+                        </div>
+                    </div>
+                    <!-- end: balance history -->
                 </div>
             </div>
         </div>
