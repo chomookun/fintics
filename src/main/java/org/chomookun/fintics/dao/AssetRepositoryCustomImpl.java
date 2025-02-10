@@ -55,6 +55,7 @@ public class AssetRepositoryCustomImpl implements AssetRepositoryCustom {
         List<OrderSpecifier<?>> orderSpecifiers = pageable.getSort().stream()
                 .map(sort -> {
                     ComparableExpressionBase<?> expression = switch (sort.getProperty()) {
+                        case AssetEntity_.VOLUME -> qAssetEntity.volume;
                         case AssetEntity_.ROE -> qAssetEntity.roe;
                         case AssetEntity_.PER -> qAssetEntity.per;
                         case AssetEntity_.DIVIDEND_FREQUENCY -> qAssetEntity.dividendFrequency;

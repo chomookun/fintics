@@ -256,7 +256,13 @@
                             <span data-th-text="#{fintics.Asset.price}"></span>
                         </th>
                         <th>
-                            <span data-th-text="#{fintics.Asset.volume}"></span>
+                            <a href="javascript:void(0);"
+                               data-duice-bind="assetSearch"
+                               data-duice-execute="toggleAssetSort(this, 'volume');"
+                               onclick="getAssetsWithSort('volume', event); pushAssetSearch();"
+                               class="tag-sortable">
+                                <span data-th-text="#{fintics.Asset.volume}"></span>
+                            </a>
                         </th>
                         <th>
                             <span data-th-text="#{fintics.Asset.marketCap}"></span>
