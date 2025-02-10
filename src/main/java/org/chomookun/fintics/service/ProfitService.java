@@ -8,6 +8,8 @@ import org.chomookun.fintics.model.*;
 import org.springframework.stereotype.Service;
 
 import java.math.BigDecimal;
+import java.math.MathContext;
+import java.math.RoundingMode;
 import java.time.LocalDate;
 import java.util.List;
 import java.util.Optional;
@@ -45,10 +47,14 @@ public class ProfitService {
                     .map(BalanceHistory::from)
                     .toList();
             BigDecimal balanceProfitAmount = BigDecimal.ZERO;
+            BigDecimal balanceProfitPercentage = BigDecimal.ZERO;
             if (!balanceHistories.isEmpty()) {
                 BigDecimal startTotalAmount = balanceHistories.get(balanceHistories.size() - 1).getTotalAmount();
                 BigDecimal endTotalAmount = balanceHistories.get(0).getTotalAmount();
                 balanceProfitAmount = endTotalAmount.subtract(startTotalAmount);
+                balanceProfitPercentage = balanceProfitAmount.divide(startTotalAmount, MathContext.DECIMAL32)
+                        .multiply(BigDecimal.valueOf(100))
+                        .setScale(4, RoundingMode.FLOOR);
             }
 
             // realized profit
@@ -56,20 +62,29 @@ public class ProfitService {
             BigDecimal realizedProfitAmount = realizedProfits.stream()
                     .map(RealizedProfit::getProfitAmount)
                     .reduce(BigDecimal.ZERO, BigDecimal::add);
+            BigDecimal realizedProfitPercentage = realizedProfitAmount.divide(totalAmount, MathContext.DECIMAL32)
+                    .multiply(BigDecimal.valueOf(100))
+                    .setScale(4, RoundingMode.FLOOR);
 
             // dividend profit
             List<DividendProfit> dividendProfits = brokerClient.getDividendProfits(dateFrom, dateTo);
             BigDecimal dividendProfitAmount = dividendProfits.stream()
                     .map(DividendProfit::getDividendAmount)
                     .reduce(BigDecimal.ZERO, BigDecimal::add);
+            BigDecimal dividendProfitPercentage = dividendProfitAmount.divide(totalAmount, MathContext.DECIMAL32)
+                    .multiply(BigDecimal.valueOf(100))
+                    .setScale(4, RoundingMode.FLOOR);
 
             // returns
             return Profit.builder()
                     .brokerId(brokerId)
                     .totalAmount(totalAmount)
                     .balanceProfitAmount(balanceProfitAmount)
+                    .balanceProfitPercentage(balanceProfitPercentage)
                     .realizedProfitAmount(realizedProfitAmount)
+                    .realizedProfitPercentage(realizedProfitPercentage)
                     .dividendProfitAmount(dividendProfitAmount)
+                    .dividendProfitPercentage(dividendProfitPercentage)
                     .balanceHistories(balanceHistories)
                     .realizedProfits(realizedProfits)
                     .dividendProfits(dividendProfits)

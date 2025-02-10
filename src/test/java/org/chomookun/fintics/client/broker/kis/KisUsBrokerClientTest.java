@@ -16,6 +16,7 @@ import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Map;
 import java.util.Properties;
 
 import static org.junit.jupiter.api.Assertions.assertNotNull;
@@ -194,6 +195,18 @@ class KisUsBrokerClientTest extends CoreTestSupport {
         List<RealizedProfit> realizedProfits = getKisUsClient().getRealizedProfits(dateFrom, dateTo);
         // then
         log.info("realizedProfit:{}",  realizedProfits);
+    }
+
+    @Disabled
+    @Test
+    void getPaymentBalanceAsset() throws InterruptedException {
+        // given
+        LocalDate date = LocalDate.now().minusWeeks(4);
+        String symbol = "MSFT";
+        // when
+        Map<String,String> paymentBalanceAsset = getKisUsClient().getPaymentBalanceAsset(date, symbol);
+        // then
+        log.info("paymentBalanceAsset:{}", paymentBalanceAsset);
     }
 
 }

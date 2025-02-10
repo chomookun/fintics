@@ -1065,7 +1065,7 @@ public class KisUsBrokerClient extends BrokerClient {
      *     해외주식 결제기준잔고 [해외주식-064]
      *     </a>
      */
-    private Map<String, String> getPaymentBalanceAsset(LocalDate date, String symbol) throws InterruptedException {
+    Map<String, String> getPaymentBalanceAsset(LocalDate date, String symbol) throws InterruptedException {
         Map<String,String> paymentBalanceAsset = new HashMap<>();
         String url = apiUrl + "/uapi/overseas-stock/v1/trading/inquire-paymt-stdr-balance";
         HttpHeaders headers = createHeaders();

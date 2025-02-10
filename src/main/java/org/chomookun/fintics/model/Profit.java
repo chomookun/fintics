@@ -18,9 +18,15 @@ public class Profit {
 
     private BigDecimal balanceProfitAmount;
 
+    private BigDecimal balanceProfitPercentage;
+
     private BigDecimal realizedProfitAmount;
 
+    private BigDecimal realizedProfitPercentage;
+
     private BigDecimal dividendProfitAmount;
+
+    private BigDecimal dividendProfitPercentage;
 
     @Builder.Default
     private List<BalanceHistory> balanceHistories = new ArrayList<>();

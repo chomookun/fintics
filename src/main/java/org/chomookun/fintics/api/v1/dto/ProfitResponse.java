@@ -18,9 +18,15 @@ public class ProfitResponse {
 
     private BigDecimal balanceProfitAmount;
 
+    private BigDecimal balanceProfitPercentage;
+
     private BigDecimal realizedProfitAmount;
 
+    private BigDecimal realizedProfitPercentage;
+
     private BigDecimal dividendProfitAmount;
+
+    private BigDecimal dividendProfitPercentage;
 
     @Builder.Default
     private List<BalanceHistoryResponse> balanceHistories = new ArrayList<>();
@@ -41,8 +47,11 @@ public class ProfitResponse {
                 .brokerId(profit.getBrokerId())
                 .totalAmount(profit.getTotalAmount())
                 .balanceProfitAmount(profit.getBalanceProfitAmount())
+                .balanceProfitPercentage(profit.getBalanceProfitPercentage())
                 .realizedProfitAmount(profit.getRealizedProfitAmount())
+                .realizedProfitPercentage(profit.getRealizedProfitPercentage())
                 .dividendProfitAmount(profit.getDividendProfitAmount())
+                .dividendProfitPercentage(profit.getDividendProfitPercentage())
                 .balanceHistories(profit.getBalanceHistories().stream()
                         .map(BalanceHistoryResponse::from)
                         .toList())

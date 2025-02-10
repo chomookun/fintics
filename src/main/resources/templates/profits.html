@@ -287,7 +287,7 @@
                     <!-- start: balance history -->
                     <div>
                         <div>
-                            <span data-th-text="#{fintics.BalanceHistory}" class="font-weight--bold"></span>
+                            <span data-th-text="#{fintics.Profit.balanceProfitAmount}" class="font-weight--bold"></span>:
                             <span th:data-duice-bind="|profitMap.get('${broker.brokerId}')|"
                                   data-duice-property="balanceProfitAmount"
                                   data-duice-format="number()"
@@ -297,6 +297,15 @@
                                   this.classList.toggle('color--red', balanceProfitAmount < 0);
                                   |"
                                   class="font-weight--bold number"></span>
+                            <span th:data-duice-bind="|profitMap.get('${broker.brokerId}')|"
+                                  data-duice-format="number()"
+                                  th:data-duice-execute="|
+                                  let balanceProfitPercentage = profitMap.get('${broker.brokerId}').balanceProfitPercentage;
+                                  this.classList.toggle('color--green', balanceProfitPercentage > 0);
+                                  this.classList.toggle('color--red', balanceProfitPercentage < 0);
+                                  this.innerHTML = '(' + Intl.NumberFormat().format(balanceProfitPercentage) + '%)';
+                                  |"
+                                  class="number font-size--smaller"></span>
                         </div>
                         <div>
                             <canvas th:id="|balanceHistoriesChart-${broker.brokerId}|"></canvas>
@@ -316,6 +325,15 @@
                                     |"
                                   data-duice-format="number()"
                                   class="font-weight--bold number"></span>
+                            <span th:data-duice-bind="|profitMap.get('${broker.brokerId}')|"
+                                  data-duice-format="number()"
+                                  th:data-duice-execute="|
+                                  let realizedProfitPercentage = profitMap.get('${broker.brokerId}').realizedProfitPercentage;
+                                  this.classList.toggle('color--green', realizedProfitPercentage > 0);
+                                  this.classList.toggle('color--red', realizedProfitPercentage < 0);
+                                  this.innerHTML = '(' + Intl.NumberFormat().format(realizedProfitPercentage) + '%)';
+                                  |"
+                                  class="number font-size--smaller"></span>
                         </div>
                         <div class="overflow--scroll box" style="max-height:200px;">
                             <table class="table border--none" style="min-width:100%;">
@@ -424,6 +442,15 @@
                                   this.classList.toggle('color--red', dividendProfitAmount < 0);
                                   |"
                                   class="font-weight--bold number"></span>
+                            <span th:data-duice-bind="|profitMap.get('${broker.brokerId}')|"
+                                  data-duice-format="number()"
+                                  th:data-duice-execute="|
+                                  let dividendProfitPercentage = profitMap.get('${broker.brokerId}').dividendProfitPercentage;
+                                  this.classList.toggle('color--green', dividendProfitPercentage > 0);
+                                  this.classList.toggle('color--red', dividendProfitPercentage < 0);
+                                  this.innerHTML = '(' + Intl.NumberFormat().format(dividendProfitPercentage) + '%)';
+                                  |"
+                                  class="number font-size--smaller"></span>
                         </div>
                         <div class="overflow--scroll box" style="max-height:200px;">
                             <table class="table border--none" style="min-width:100%;">
