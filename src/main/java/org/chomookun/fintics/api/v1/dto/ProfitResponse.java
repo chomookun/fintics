@@ -14,20 +14,22 @@ public class ProfitResponse {
 
     private String brokerId;
 
-    private BigDecimal profitAmount;
+    private BigDecimal totalAmount;
+
+    private BigDecimal balanceProfitAmount;
 
     private BigDecimal realizedProfitAmount;
 
     private BigDecimal dividendProfitAmount;
 
     @Builder.Default
+    private List<BalanceHistoryResponse> balanceHistories = new ArrayList<>();
+
+    @Builder.Default
     private List<RealizedProfitResponse> realizedProfits = new ArrayList<>();
 
     @Builder.Default
     private List<DividendProfitResponse> dividendProfits = new ArrayList<>();
-
-    @Builder.Default
-    private List<BalanceHistoryResponse> balanceHistories = new ArrayList<>();
 
     /**
      * factory method
@@ -37,17 +39,18 @@ public class ProfitResponse {
     public static ProfitResponse from(Profit profit) {
         return ProfitResponse.builder()
                 .brokerId(profit.getBrokerId())
-                .profitAmount(profit.getProfitAmount())
+                .totalAmount(profit.getTotalAmount())
+                .balanceProfitAmount(profit.getBalanceProfitAmount())
                 .realizedProfitAmount(profit.getRealizedProfitAmount())
                 .dividendProfitAmount(profit.getDividendProfitAmount())
+                .balanceHistories(profit.getBalanceHistories().stream()
+                        .map(BalanceHistoryResponse::from)
+                        .toList())
                 .realizedProfits(profit.getRealizedProfits().stream()
                         .map(RealizedProfitResponse::from)
                         .toList())
                 .dividendProfits(profit.getDividendProfits().stream()
                         .map(DividendProfitResponse::from)
-                        .toList())
-                .balanceHistories(profit.getBalanceHistories().stream()
-                        .map(BalanceHistoryResponse::from)
                         .toList())
                 .build();
     }

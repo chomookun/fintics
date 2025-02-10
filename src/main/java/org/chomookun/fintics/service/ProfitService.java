@@ -34,43 +34,50 @@ public class ProfitService {
         dateTo = Optional.ofNullable(dateTo).orElse(LocalDate.now());
         Broker broker = brokerService.getBroker(brokerId).orElseThrow();
         BrokerClient brokerClient = brokerClientFactory.getObject(broker);
-        List<RealizedProfit> realizedProfits;
-        List<DividendProfit> dividendHistories;
         try {
-            realizedProfits = brokerClient.getRealizedProfits(dateFrom, dateTo);
-            dividendHistories = brokerClient.getDividendProfits(dateFrom, dateTo);
-        } catch (InterruptedException e) {
-            throw new RuntimeException(e);
+
+            // total amount
+            Balance balance = brokerClient.getBalance();
+            BigDecimal totalAmount = balance.getTotalAmount();
+
+            // balance histories (+ 1 days)
+            List<BalanceHistory> balanceHistories = balanceHistoryRepository.findAllByBrokerId(brokerId, dateFrom.minusDays(1), dateTo).stream()
+                    .map(BalanceHistory::from)
+                    .toList();
+            BigDecimal balanceProfitAmount = BigDecimal.ZERO;
+            if (!balanceHistories.isEmpty()) {
+                BigDecimal startTotalAmount = balanceHistories.get(balanceHistories.size() - 1).getTotalAmount();
+                BigDecimal endTotalAmount = balanceHistories.get(0).getTotalAmount();
+                balanceProfitAmount = endTotalAmount.subtract(startTotalAmount);
+            }
+
+            // realized profit
+            List<RealizedProfit> realizedProfits = brokerClient.getRealizedProfits(dateFrom, dateTo);
+            BigDecimal realizedProfitAmount = realizedProfits.stream()
+                    .map(RealizedProfit::getProfitAmount)
+                    .reduce(BigDecimal.ZERO, BigDecimal::add);
+
+            // dividend profit
+            List<DividendProfit> dividendProfits = brokerClient.getDividendProfits(dateFrom, dateTo);
+            BigDecimal dividendProfitAmount = dividendProfits.stream()
+                    .map(DividendProfit::getDividendAmount)
+                    .reduce(BigDecimal.ZERO, BigDecimal::add);
+
+            // returns
+            return Profit.builder()
+                    .brokerId(brokerId)
+                    .totalAmount(totalAmount)
+                    .balanceProfitAmount(balanceProfitAmount)
+                    .realizedProfitAmount(realizedProfitAmount)
+                    .dividendProfitAmount(dividendProfitAmount)
+                    .balanceHistories(balanceHistories)
+                    .realizedProfits(realizedProfits)
+                    .dividendProfits(dividendProfits)
+                    .build();
+
+        } catch (Throwable t) {
+            throw new RuntimeException(t);
         }
-
-        // realized profit amount
-        BigDecimal realizedProfitAmount = realizedProfits.stream()
-                .map(RealizedProfit::getProfitAmount)
-                .reduce(BigDecimal.ZERO, BigDecimal::add);
-
-        // dividend amount
-        BigDecimal dividendAmount = dividendHistories.stream()
-                .map(DividendProfit::getDividendAmount)
-                .reduce(BigDecimal.ZERO, BigDecimal::add);
-
-        // total amount
-        BigDecimal profitAmount = realizedProfitAmount.add(dividendAmount);
-
-        // balance histories (+ 7 days)
-        List<BalanceHistory> balanceHistories = balanceHistoryRepository.findAllByBrokerId(brokerId, dateFrom.minusWeeks(1), dateTo).stream()
-                .map(BalanceHistory::from)
-                .toList();
-
-        // returns
-        return Profit.builder()
-                .brokerId(brokerId)
-                .profitAmount(profitAmount)
-                .realizedProfitAmount(realizedProfitAmount)
-                .realizedProfits(realizedProfits)
-                .dividendProfitAmount(dividendAmount)
-                .dividendProfits(dividendHistories)
-                .balanceHistories(balanceHistories)
-                .build();
     }
 
 }

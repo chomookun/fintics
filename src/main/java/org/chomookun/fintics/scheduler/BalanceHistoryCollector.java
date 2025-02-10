@@ -29,7 +29,10 @@ public class BalanceHistoryCollector extends AbstractScheduler {
 
     private final PlatformTransactionManager transactionManager;
 
-    @Scheduled(initialDelay = 10_000, fixedDelay = 60 * 60 * 1_000)
+    /**
+     * Collects balance history
+     */
+    @Scheduled(initialDelay = 10_000, fixedDelay = 1_000 * 60 * 10)
     public void collect() {
         log.info("BalanceHistoryCollector - Start collect balance history.");
         List<Broker> brokers = brokerRepository.findAll().stream()
@@ -45,6 +48,10 @@ public class BalanceHistoryCollector extends AbstractScheduler {
         log.info("BalanceHistoryCollector - End collect balance history.");
     }
 
+    /**
+     * Saves balance history
+     * @param broker broker
+     */
     void saveBalanceHistory(Broker broker) throws Throwable {
         BrokerClient brokerClient = brokerClientFactory.getObject(broker);
         Balance balance = brokerClient.getBalance();

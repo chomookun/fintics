@@ -1,35 +1,31 @@
 package org.chomookun.fintics.basket;
 
 import ch.qos.logback.classic.Logger;
+import lombok.Builder;
 import lombok.Getter;
+import lombok.experimental.SuperBuilder;
 import org.chomookun.arch4j.core.common.pbe.PbePropertiesUtil;
-import org.chomookun.fintics.client.ohlcv.OhlcvClient;
 import org.chomookun.fintics.model.Basket;
 import org.chomookun.fintics.service.AssetService;
+import org.chomookun.fintics.service.OhlcvService;
 import org.chomookun.fintics.strategy.StrategyRunner;
 import org.slf4j.LoggerFactory;
 
 import java.util.List;
 import java.util.Properties;
 
+@SuperBuilder
+@Getter
 public abstract class BasketScriptRunner {
 
-    @Getter
-    protected final Basket basket;
+    private final Basket basket;
 
-    @Getter
-    protected final AssetService assetService;
+    private final AssetService assetService;
 
-    @Getter
-    protected final OhlcvClient ohlcvClient;
+    private final OhlcvService ohlcvService;
 
+    @Builder.Default
     protected Logger log = (Logger) LoggerFactory.getLogger(StrategyRunner.class);
-
-    protected BasketScriptRunner(Basket basket, AssetService assetService, OhlcvClient ohlcvClient) {
-        this.basket = basket;
-        this.assetService = assetService;
-        this.ohlcvClient = ohlcvClient;
-    }
 
     /**
      * sets logger

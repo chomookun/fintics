@@ -1,6 +1,7 @@
 package org.chomookun.fintics.service;
 
 import lombok.RequiredArgsConstructor;
+import org.chomookun.fintics.client.asset.AssetClient;
 import org.chomookun.fintics.dao.AssetEntity;
 import org.chomookun.fintics.dao.AssetRepository;
 import org.chomookun.fintics.model.Asset;
@@ -10,6 +11,7 @@ import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDate;
 import java.util.List;
 import java.util.Optional;
 
@@ -21,6 +23,8 @@ import java.util.Optional;
 public class AssetService {
 
     private final AssetRepository assetRepository;
+
+    private final AssetClient assetClient;
 
     /**
      * gets asset list
@@ -43,8 +47,19 @@ public class AssetService {
      * @return asset
      */
     public Optional<Asset> getAsset(String assetId) {
-        return assetRepository.findById(assetId)
-                .map(Asset::from);
+        Asset asset = assetRepository.findById(assetId)
+                .map(Asset::from)
+                .orElse(null);
+        // check updated date
+        if (asset != null) {
+            LocalDate updatedDate = asset.getUpdatedDate();
+            if (updatedDate == null || updatedDate.isBefore(LocalDate.now().minusWeeks(1))) {
+                try {
+                    assetClient.populateAsset(asset);
+                } catch (Throwable ignore) { }
+            }
+        }
+        return Optional.ofNullable(asset);
     }
 
     /**

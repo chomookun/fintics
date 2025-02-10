@@ -4,6 +4,7 @@ import lombok.RequiredArgsConstructor;
 import org.chomookun.fintics.client.ohlcv.OhlcvClient;
 import org.chomookun.fintics.model.Basket;
 import org.chomookun.fintics.service.AssetService;
+import org.chomookun.fintics.service.OhlcvService;
 import org.springframework.stereotype.Component;
 
 @Component
@@ -12,7 +13,7 @@ public class BasketScriptRunnerFactory {
 
     private final AssetService assetService;
 
-    private final OhlcvClient ohlcvClient;
+    private final OhlcvService ohlcvService;
 
     /**
      * gets object
@@ -25,14 +26,14 @@ public class BasketScriptRunnerFactory {
                 return GroovyBasketScriptRunner.builder()
                         .basket(basket)
                         .assetService(assetService)
-                        .ohlcvClient(ohlcvClient)
+                        .ohlcvService(ohlcvService)
                         .build();
             }
             case PYTHON -> {
                 return PythonBasketScriptRunner.builder()
                         .basket(basket)
                         .assetService(assetService)
-                        .ohlcvClient(ohlcvClient)
+                        .ohlcvService(ohlcvService)
                         .build();
             }
             default -> throw new RuntimeException("invalid basket.language");

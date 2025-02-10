@@ -4,6 +4,7 @@ import com.github.javaparser.utils.LineSeparator;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.io.IOUtils;
+import org.chomookun.fintics.service.OhlcvService;
 import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 import org.chomookun.arch4j.core.common.test.CoreTestSupport;
@@ -27,7 +28,7 @@ class GroovyBasketScriptRunnerTest extends CoreTestSupport {
 
     private final AssetService assetService;
 
-    private final OhlcvClient ohlcvClient;
+    private final OhlcvService ohlcvService;
 
     String loadGroovyFileAsString(String fileName) {
         String filePath = null;
@@ -59,7 +60,7 @@ class GroovyBasketScriptRunnerTest extends CoreTestSupport {
         GroovyBasketScriptRunner groovyBasketScriptRunner = GroovyBasketScriptRunner.builder()
                 .basket(basket)
                 .assetService(assetService)
-                .ohlcvClient(ohlcvClient)
+                .ohlcvService(ohlcvService)
                 .build();
         List<BasketRebalanceAsset> basketRebalanceResults = groovyBasketScriptRunner.run();
         // then
@@ -78,7 +79,7 @@ class GroovyBasketScriptRunnerTest extends CoreTestSupport {
         GroovyBasketScriptRunner groovyBasketScriptRunner = GroovyBasketScriptRunner.builder()
                 .basket(basket)
                 .assetService(assetService)
-                .ohlcvClient(ohlcvClient)
+                .ohlcvService(ohlcvService)
                 .build();
         List<BasketRebalanceAsset> basketRebalanceResults = groovyBasketScriptRunner.run();
         // then
