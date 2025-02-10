@@ -379,15 +379,15 @@ public class KisBrokerClient extends BrokerClient {
         Map<String, String> output2 = objectMapper.convertValue(rootNode.path("output2"), new TypeReference<>() {});
 
         BigDecimal price = new BigDecimal(output2.get("stck_prpr"));
-        BigDecimal tickPrice = getTickPrice(asset, price);
         BigDecimal bidPrice = new BigDecimal(output1.get("bidp1"));
         BigDecimal askPrice = new BigDecimal(output1.get("askp1"));
+        BigDecimal tickPrice = getTickPrice(asset, bidPrice);   // 매수 호가 기준 산출
 
         return OrderBook.builder()
                 .price(price)
-                .tickPrice(tickPrice)
                 .bidPrice(bidPrice)
                 .askPrice(askPrice)
+                .tickPrice(tickPrice)
                 .build();
     }
 
