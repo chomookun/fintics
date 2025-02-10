@@ -62,6 +62,7 @@ public class BasketAsset extends Asset {
             basketAsset.setMarket(assetEntity.getMarket());
             basketAsset.setExchange(assetEntity.getExchange());
             basketAsset.setType(assetEntity.getType());
+            basketAsset.setFavorite(assetEntity.isFavorite());
             basketAsset.setUpdatedDate(assetEntity.getUpdatedDate());
             basketAsset.setPrice(assetEntity.getPrice());
             basketAsset.setVolume(assetEntity.getVolume());

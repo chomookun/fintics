@@ -36,6 +36,7 @@ public class BasketAssetResponse extends AssetResponse {
                 .market(basketAsset.getMarket())
                 .exchange(basketAsset.getExchange())
                 .type(basketAsset.getType())
+                .favorite(basketAsset.isFavorite())
                 .updatedDate(basketAsset.getUpdatedDate())
                 .price(basketAsset.getPrice())
                 .volume(basketAsset.getVolume())

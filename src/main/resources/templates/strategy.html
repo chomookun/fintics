@@ -4,6 +4,7 @@
       xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
       layout:decorate="_web.html">
 <th:block layout:fragment="_content">
+    <th:block th:insert="_common.html"/>
     <script th:inline="javascript">
         const strategyId = new URL(location.href).searchParams.get('strategyId');
         const strategy = new duice.ObjectProxy({

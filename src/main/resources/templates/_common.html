@@ -1,497 +1,529 @@
-<th:block th:fragment="_assetDialog">
-    <!-- ====================================== -->
-    <!-- start: _assetDialog                    -->
-    <!-- ====================================== -->
-    <dialog id="_assetDialog" class="dialog">
-        <style th:inline="css">
-            #_assetDialog {
-                width: 800px;
-            }
-            #_assetDialogChart {
-                width: 100%;
-                height: 200px;
-            }
-        </style>
-        <script th:inline="javascript">
-            const _assetDialog = {
-                dialog: new duice.Dialog(document.getElementById('_assetDialog')),
-                assetId: null,
-                asset: new duice.ObjectProxy({}),
-                minuteOhlcvs: [],
-                dailyOhlcvs: [],
-                chart: null,
-                chartOptions: {
-                    layout: {
-                        background: { color: '#222' },
-                        textColor: '#ddd',
-                        attributionLogo: false
-                    },
-                    grid: {
-                        vertLines: { color: '#444' },
-                        horzLines: { color: '#444' },
-                    },
-                    timeScale: {
-                        timeVisible: true,
-                    },
-                    priceScale: {
-                        autoScale: true,
-                    },
+<script th:src="@{/static/lightweight-charts/lightweight-charts.js?version={version}(version=${_scriptVersion})}"></script>
+<script th:src="@{/static/fintics.js?version={version}(version=${_scriptVersion})}"></script>
+<script th:inline="javascript">
+    /**
+     * marks asset
+     */
+    const _applyAssetFavoriteIcon = function(imgElement, asset, editable) {
+        imgElement.classList.add('icon','font-size--large');
+        if (asset.favorite) {
+            imgElement.src = /*[[@{/static/image/icon-favorite-on.svg}]]*/'';
+        } else {
+            imgElement.src = /*[[@{/static/image/icon-favorite-off.svg}]]*/'';
+        }
+        if (editable) {
+            imgElement.classList.add('link');
+            imgElement.dataset.assetId = asset.assetId;
+            imgElement.dataset.favorite = asset.favorite;
+            imgElement.onclick = function() {
+                let assetId = this.dataset.assetId;
+                let favorite = !JSON.parse(this.dataset.favorite);
+                let url = new URL(`${_apiUrl}/v1/assets/${assetId}/favorite`, document.location.origin);
+                let method = favorite ? 'POST' : 'DELETE';
+                _fetch(url, {
+                    method: method
+                }).then(() => {
+                    asset.favorite = favorite;
+                });
+            };
+        }
+    }
+</script>
+
+<!-- ====================================== -->
+<!-- start: _assetDialog                    -->
+<!-- ====================================== -->
+<dialog id="_assetDialog" class="dialog">
+    <style th:inline="css">
+        #_assetDialog {
+            width: 800px;
+        }
+
+        #_assetDialogChart {
+            width: 100%;
+            height: 200px;
+        }
+    </style>
+    <script th:inline="javascript">
+        const _assetDialog = {
+            dialog: new duice.Dialog(document.getElementById('_assetDialog')),
+            assetId: null,
+            asset: new duice.ObjectProxy({}),
+            minuteOhlcvs: [],
+            dailyOhlcvs: [],
+            chart: null,
+            chartOptions: {
+                layout: {
+                    background: {color: '#222'},
+                    textColor: '#ddd',
+                    attributionLogo: false
                 },
-                candlestickSeries: null,
-                dividends: new duice.ArrayProxy([]),
-                open: async function(assetId) {
-                    this.assetId = assetId;
+                grid: {
+                    vertLines: { color: '#444' },
+                    horzLines: { color: '#444' },
+                },
+                timeScale: {
+                    timeVisible: true,
+                },
+                priceScale: {
+                    autoScale: true,
+                },
+            },
+            candlestickSeries: null,
+            dividends: new duice.ArrayProxy([]),
+            open: async function(assetId) {
+                this.assetId = assetId;
 
-                    // opens dialog
-                    let promise = this.dialog.open();
+                // opens dialog
+                let promise = this.dialog.open();
 
-                    // creates chart
-                    if (!this.chart) {
-                        this.chart = LightweightCharts.createChart(document.getElementById('_assetDialogChart'), this.chartOptions);
-                        this.candlestickSeries = this.chart.addCandlestickSeries({
-                            upColor: '#26a69a',
-                            downColor: '#ef5350',
-                            borderVisible: false,
-                            wickUpColor: '#26a69a',
-                            wickDownColor: '#ef5350'
-                        });
-                    }
-
-                    // clears data
-                    duice.ObjectProxy.clear(this.asset);
-                    this.minuteOhlcvs = [];
-                    this.dailyOhlcvs = [];
-                    this.candlestickSeries.setData([]);
-                    document.getElementsByName('_assetDialogChartPeriod').forEach(it => it.checked = false);
-                    duice.ArrayProxy.clear(this.dividends);
-
-                    // retrieves asset
-                    this.getAsset();
-
-                    // retrieves ohlcvs
-                    Promise.all([
-                        this.getOhlcvs('minute'),
-                        this.getOhlcvs('daily')
-                    ])
-                    .then(([minuteOhlcvs, dailyOhlcvs]) => {
-                        this.minuteOhlcvs = minuteOhlcvs;
-                        this.dailyOhlcvs = dailyOhlcvs;
-
-                        // draw default chart
-                        document.getElementsByName('_assetDialogChartPeriod')[0].checked = true;
-                        this.drawChart('daily', 1);
+                // creates chart
+                if (!this.chart) {
+                    this.chart = LightweightCharts.createChart(document.getElementById('_assetDialogChart'), this.chartOptions);
+                    this.candlestickSeries = this.chart.addCandlestickSeries({
+                        upColor: '#26a69a',
+                        downColor: '#ef5350',
+                        borderVisible: false,
+                        wickUpColor: '#26a69a',
+                        wickDownColor: '#ef5350'
                     });
-
-                    // retrieves dividends
-                    this.getDividends();
-
-                    // returns promise
-                    return promise;
-                },
-                getAsset: function() {
-                    let url = new URL(`${_apiUrl}/v1/assets/${this.assetId}`, document.location.href);
-                    _fetch(url).then(response => response.json())
-                    .then(responseBody => {
-                        duice.ObjectProxy.clear(this.asset);
-                        duice.ObjectProxy.assign(this.asset, responseBody);
-                    });
-                },
-                getOhlcvs: function(type) {
-                    let url = new URL(`${_apiUrl}/v1/ohlcvs/${this.assetId}/${type}`, document.location.href);
-                    url.searchParams.append('_size', 10000);
-                    return _fetch(url).then(response => response.json());
-                },
-                drawChart: function(type, period) {
-                    let ohlcvs;
-                    if (type === 'minute') {
-                        ohlcvs = this.minuteOhlcvs;
-                    }
-                    if (type === 'daily') {
-                        ohlcvs = this.dailyOhlcvs;
-                    }
-                    let ohlcvSeries = ohlcvs.map(it => {
-                        return {
-                            time: Math.floor(new Date(it.dateTime).getTime()/1000),
-                            open: it.open,
-                            high: it.high,
-                            low: it.low,
-                            close: it.close,
-                            volume: it.volume
-                        };
-                    }).reverse();
-
-                    // resample
-                    if (period> 1) {
-                        ohlcvSeries = this.resample(ohlcvSeries, period);
-                    }
-                    if (type === 'minute') {
-                        this.chartOptions.timeScale.timeVisible = true;
-                    }
-                    this.chart.applyOptions(this.chartOptions);
-
-                    // set chart data
-                    this.candlestickSeries.setData([]);
-                    this.candlestickSeries.setData(ohlcvSeries);
-                    this.chart.timeScale().fitContent();
-                },
-                resample(ohlcvSeries, period) {
-                    const resampledData = [];
-                    let currentCandle = null;
-
-                    ohlcvSeries.forEach(item => {
-                        const date = new Date(item.time * 1000);
-                        const minutes = date.getMinutes();
-
-                        // interval 분 단위로 새로운 캔들 시작
-                        if (minutes % period === 0 || !currentCandle) {
-                            if (currentCandle) {
-                                resampledData.push(currentCandle);
-                            }
-                            currentCandle = {
-                                time: item.time,
-                                open: item.open,
-                                high: item.high,
-                                low: item.low,
-                                close: item.close,
-                                volume: item.volume
-                            };
-                        } else {
-                            // 현재 캔들을 업데이트
-                            currentCandle.high = Math.max(currentCandle.high, item.high);
-                            currentCandle.low = Math.min(currentCandle.low, item.low);
-                            currentCandle.close = item.close;
-                            currentCandle.volume += item.volume;
-                        }
-                    });
-
-                    // 마지막 캔들을 추가
-                    if (currentCandle) {
-                        resampledData.push(currentCandle);
-                    }
-
-                    // returns
-                    return resampledData;
-                },
-                getDividends: function () {
-                    this.dividends._status = 'loading';
-                    duice.ArrayProxy.clear(this.dividends);
-                    let url = new URL(`${_apiUrl}/v1/dividends/${this.assetId}`, document.location.href);
-                    _fetch(url).then(response => response.json())
-                        .then(responseBody => {
-                            this.dividends._status = 'completed';
-                            duice.ArrayProxy.assign(this.dividends, responseBody);
-                        });
                 }
+
+                // clears data
+                duice.ObjectProxy.clear(this.asset);
+                this.minuteOhlcvs = [];
+                this.dailyOhlcvs = [];
+                this.candlestickSeries.setData([]);
+                document.getElementsByName('_assetDialogChartPeriod').forEach(it => it.checked = false);
+                duice.ArrayProxy.clear(this.dividends);
+
+                // retrieves asset
+                this.getAsset();
+
+                // retrieves ohlcvs
+                Promise.all([
+                    this.getOhlcvs('minute'),
+                    this.getOhlcvs('daily')
+                ])
+                .then(([minuteOhlcvs, dailyOhlcvs]) => {
+                    this.minuteOhlcvs = minuteOhlcvs;
+                    this.dailyOhlcvs = dailyOhlcvs;
+
+                    // draw default chart
+                    document.getElementsByName('_assetDialogChartPeriod')[0].checked = true;
+                    this.drawChart('daily', 1);
+                });
+
+                // retrieves dividends
+                this.getDividends();
+
+                // returns promise
+                return promise;
+            },
+            getAsset: function() {
+                let url = new URL(`${_apiUrl}/v1/assets/${this.assetId}`, document.location.href);
+                _fetch(url).then(response => response.json())
+                .then(responseBody => {
+                    duice.ObjectProxy.clear(this.asset);
+                    duice.ObjectProxy.assign(this.asset, responseBody);
+                });
+            },
+            getOhlcvs: function(type) {
+                let url = new URL(`${_apiUrl}/v1/ohlcvs/${this.assetId}/${type}`, document.location.href);
+                url.searchParams.append('_size', 10000);
+                return _fetch(url).then(response => response.json());
+            },
+            drawChart: function(type, period) {
+                let ohlcvs;
+                if (type === 'minute') {
+                    ohlcvs = this.minuteOhlcvs;
+                }
+                if (type === 'daily') {
+                    ohlcvs = this.dailyOhlcvs;
+                }
+                let ohlcvSeries = ohlcvs.map(it => {
+                    return {
+                        time: Math.floor(new Date(it.dateTime).getTime()/1000),
+                        open: it.open,
+                        high: it.high,
+                        low: it.low,
+                        close: it.close,
+                        volume: it.volume
+                    };
+                }).reverse();
+
+                // resample
+                if (period> 1) {
+                    ohlcvSeries = this.resample(ohlcvSeries, period);
+                }
+                if (type === 'minute') {
+                    this.chartOptions.timeScale.timeVisible = true;
+                }
+                this.chart.applyOptions(this.chartOptions);
+
+                // set chart data
+                this.candlestickSeries.setData([]);
+                this.candlestickSeries.setData(ohlcvSeries);
+                this.chart.timeScale().fitContent();
+            },
+            resample(ohlcvSeries, period) {
+                const resampledData = [];
+                let currentCandle = null;
+
+                ohlcvSeries.forEach(item => {
+                    const date = new Date(item.time * 1000);
+                    const minutes = date.getMinutes();
+
+                    // interval 분 단위로 새로운 캔들 시작
+                    if (minutes % period === 0 || !currentCandle) {
+                        if (currentCandle) {
+                            resampledData.push(currentCandle);
+                        }
+                        currentCandle = {
+                            time: item.time,
+                            open: item.open,
+                            high: item.high,
+                            low: item.low,
+                            close: item.close,
+                            volume: item.volume
+                        };
+                    } else {
+                        // 현재 캔들을 업데이트
+                        currentCandle.high = Math.max(currentCandle.high, item.high);
+                        currentCandle.low = Math.min(currentCandle.low, item.low);
+                        currentCandle.close = item.close;
+                        currentCandle.volume += item.volume;
+                    }
+                });
+
+                // 마지막 캔들을 추가
+                if (currentCandle) {
+                    resampledData.push(currentCandle);
+                }
+
+                // returns
+                return resampledData;
+            },
+            getDividends: function () {
+                this.dividends._status = 'loading';
+                duice.ArrayProxy.clear(this.dividends);
+                let url = new URL(`${_apiUrl}/v1/dividends/${this.assetId}`, document.location.href);
+                _fetch(url).then(response => response.json())
+                    .then(responseBody => {
+                        this.dividends._status = 'completed';
+                        duice.ArrayProxy.assign(this.dividends, responseBody);
+                    });
             }
-        </script>
-        <div class="dialog-title">
-            <h2>
-                <img class="icon" th:src="@{/static/image/icon-asset.svg}" alt="asset"/>
-                <span data-th-text="#{fintics.Asset}"></span>
-            </h2>
-        </div>
-        <div class="dialog-content">
+        }
+    </script>
+    <div class="dialog-title">
+        <h2>
+            <img class="icon" th:src="@{/static/image/icon-asset.svg}" alt="asset"/>
+            <span data-th-text="#{fintics.Asset}"></span>
+        </h2>
+    </div>
+    <div class="dialog-content">
+        <div>
             <div>
+                <img class="icon" th:src="@{/static/image/icon-detail.svg}" alt="detail"/>
+                <span data-th-text="|#{fintics.Asset} #{web.global.detail}|" class="font-weight--bold"></span>
+            </div>
+            <table class="table width--100 table-layout--fixed">
+                <colgroup>
+                    <col class="width--15"/>
+                    <col class="width--35"/>
+                    <col class="width--15"/>
+                    <col class="width--35"/>
+                </colgroup>
+                <tbody>
+                <tr>
+                    <td data-th-text="#{fintics.Asset.name}" class="font-weight--bold"></td>
+                    <td>
+                        <img class="icon border-radius--50 font-size--large vertical-align--middle" data-duice-bind="_assetDialog.asset" data-duice-property="icon" th:onerror="|this.src='@{/static/image/icon-asset.svg}';|" alt=""/>
+                        &nbsp;
+                        <span class="vertical-align--middle" data-duice-bind="_assetDialog.asset" data-duice-property="name"></span>
+                    </td>
+                    <td data-th-text="#{fintics.Asset.symbol}" class="font-weight--bold"></td>
+                    <td>
+                        <img data-duice-bind="_assetDialog.asset" data-duice-execute="_applyAssetFavoriteIcon(this, _assetDialog.asset, false);" alt="" disabled/>
+                        <span data-duice-bind="_assetDialog.asset" data-duice-property="symbol" class="code font-weight--bold"></span>
+                    </td>
+                </tr>
+                <tr>
+                    <td data-th-text="#{fintics.Asset.market}" class="font-weight--bold"></td>
+                    <td>
+                        <span data-duice-bind="_assetDialog.asset" data-duice-property="market" class="code badge"></span>
+                    </td>
+                    <td data-th-text="#{fintics.Asset.exchange}" class="font-weight--bold"></td>
+                    <td>
+                        <span data-duice-bind="_assetDialog.asset" data-duice-property="exchange" class="code badge"></span>
+                    </td>
+                </tr>
+                <tr>
+                    <td data-th-text="#{fintics.Asset.type}" class="font-weight--bold"></td>
+                    <td>
+                        <span data-duice-bind="_assetDialog.asset" data-duice-property="type" class="code badge"></span>
+                    </td>
+                    <td data-th-text="#{fintics.Asset.updatedDate}" class="font-weight--bold"></td>
+                    <td>
+                        <span data-duice-bind="_assetDialog.asset" data-duice-property="updatedDate" class="date"></span>
+                    </td>
+                </tr>
+                <tr>
+                    <td data-th-text="#{fintics.Asset.price}" class="font-weight--bold"></td>
+                    <td class="text-align--right">
+                        <span data-duice-bind="_assetDialog.asset" data-duice-property="price" data-duice-format="number()" class="number"></span>
+                    </td>
+                    <td data-th-text="#{fintics.Asset.volume}" class="font-weight--bold"></td>
+                    <td class="text-align--right">
+                        <span data-duice-bind="_assetDialog.asset" data-duice-property="volume" data-duice-format="number()" class="number"></span>
+                    </td>
+                </tr>
+                <tr>
+                    <td data-th-text="#{fintics.Asset.marketCap}" class="font-weight--bold"></td>
+                    <td class="text-align--right">
+                        <span data-duice-bind="_assetDialog.asset" data-duice-property="marketCap" data-duice-format="number()" class="number"></span>
+                    </td>
+                    <td data-th-text="#{fintics.Asset.eps}" class="font-weight--bold"></td>
+                    <td class="text-align--right">
+                        <span data-duice-bind="_assetDialog.asset" data-duice-property="eps" class="number"></span>
+                    </td>
+                </tr>
+                <tr>
+                    <td data-th-text="#{fintics.Asset.roe}" class="font-weight--bold"></td>
+                    <td class="text-align--right">
+                        <span data-duice-bind="_assetDialog.asset" data-duice-property="roe" class="number"></span>
+                    </td>
+                    <td data-th-text="#{fintics.Asset.per}" class="font-weight--bold"></td>
+                    <td class="text-align--right">
+                        <span data-duice-bind="_assetDialog.asset" data-duice-property="per" class="number"></span>
+                    </td>
+                </tr>
+                <tr>
+                    <td data-th-text="#{fintics.Asset.dividendYield}" class="font-weight--bold"></td>
+                    <td class="text-align--right">
+                        <span data-duice-bind="_assetDialog.asset" data-duice-property="dividendYield" class="number"></span>
+                    </td>
+                    <td data-th-text="#{fintics.Asset.dividendFrequency}" class="font-weight--bold"></td>
+                    <td class="text-align--right">
+                        <span data-duice-bind="_assetDialog.asset" data-duice-property="dividendFrequency" class="number"></span>
+                    </td>
+                </tr>
+                <tr>
+                    <td data-th-text="#{fintics.Asset.capitalGain}" class="font-weight--bold"></td>
+                    <td class="text-align--right">
+                        <span data-duice-bind="_assetDialog.asset"
+                              data-duice-property="capitalGain"
+                              data-duice-execute="
+                              this.classList.toggle('color--green', _assetDialog.asset.capitalGain > 0);
+                              this.classList.toggle('color--red', _assetDialog.asset.capitalGain < 0);
+                              " class="number font-weight--bold"></span>
+                    </td>
+                    <td data-th-text="#{fintics.Asset.totalReturn}" class="font-weight--bold"></td>
+                    <td class="text-align--right">
+                        <span data-duice-bind="_assetDialog.asset"
+                              data-duice-property="totalReturn"
+                              data-duice-execute="
+                              this.classList.toggle('color--green', _assetDialog.asset.totalReturn > 0);
+                              this.classList.toggle('color--red', _assetDialog.asset.totalReturn < 0);
+                              "
+                              class="number font-weight--bold"></span>
+                    </td>
+                </tr>
+                </tbody>
+            </table>
+        </div>
+        <div>
+            <div class="display--flex justify-content--space-between align-items--center">
                 <div>
-                    <img class="icon" th:src="@{/static/image/icon-detail.svg}" alt="detail"/>
-                    <span data-th-text="|#{fintics.Asset} #{web.global.detail}|" class="font-weight--bold"></span>
+                    <img class="icon" th:src="@{/static/image/icon-ohlcv.svg}" alt="ohlcv"/>
+                    <span data-th-text="#{fintics.Ohlcv}" class="font-weight--bold"></span>
                 </div>
-                <table class="table width--100 table-layout--fixed">
-                    <colgroup>
-                        <col class="width--15"/>
-                        <col class="width--35"/>
-                        <col class="width--15"/>
-                        <col class="width--35"/>
-                    </colgroup>
+                <div class="text-align--right code font-size--smaller">
+                    <div class="display--flex gap--1em code">
+                        <label>
+                            <input name="_assetDialogChartPeriod" type="radio" onclick="_assetDialog.drawChart('daily', 1);"/>
+                            1D
+                        </label>
+                        <label>
+                            <input name="_assetDialogChartPeriod" type="radio" onclick="_assetDialog.drawChart('minute', 60);"/>
+                            1H
+                        </label>
+                        <label>
+                            <input name="_assetDialogChartPeriod" type="radio" onclick="_assetDialog.drawChart('minute', 30);"/>
+                            30m
+                        </label>
+                        <label>
+                            <input name="_assetDialogChartPeriod" type="radio" onclick="_assetDialog.drawChart('minute', 10);"/>
+                            10m
+                        </label>
+                        <label>
+                            <input name="_assetDialogChartPeriod" type="radio" onclick="_assetDialog.drawChart('minute', 5);"/>
+                            5m
+                        </label>
+                        <label>
+                            <input name="_assetDialogChartPeriod" type="radio" onclick="_assetDialog.drawChart('minute', 3);"/>
+                            3m
+                        </label>
+                        <label>
+                            <input name="_assetDialogChartPeriod" type="radio" onclick="_assetDialog.drawChart('minute', 1);"/>
+                            1m
+                        </label>
+                    </div>
+                </div>
+            </div>
+            <div id="_assetDialogChart"></div>
+        </div>
+        <div>
+            <div>
+                <img class="icon" th:src="@{/static/image/icon-dividend.svg}" alt="detail"/>
+                <span data-th-text="#{fintics.Dividend}" class="font-weight--bold"></span>
+            </div>
+            <div class="width-100 box overflow--auto" style="max-height:15rem;">
+                <table class="table width--100 border--none">
+                    <thead>
+                    <tr>
+                        <th>
+                            <span th:text="#{fintics.Dividend.date}"></span>
+                        </th>
+                        <th>
+                            <span th:text="#{fintics.Dividend.dividendPerShare}"></span>
+                        </th>
+                    </tr>
+                    </thead>
                     <tbody>
-                    <tr>
-                        <td data-th-text="#{fintics.Asset.name}" class="font-weight--bold"></td>
-                        <td>
-                            <img class="icon border-radius--50 font-size--large vertical-align--middle" data-duice-bind="_assetDialog.asset" data-duice-property="icon" th:onerror="|this.src='@{/static/image/icon-asset.svg}';|" alt=""/>
-                            &nbsp;
-                            <span class="vertical-align--middle" data-duice-bind="_assetDialog.asset" data-duice-property="name"></span>
+                    <tr data-duice-bind="_assetDialog.dividends" data-duice-loop="dividend,status">
+                        <td class="text-align--center">
+                            <span data-duice-bind="dividend" data-duice-property="date" class="date"></span>
                         </td>
-                        <td data-th-text="#{fintics.Asset.symbol}" class="font-weight--bold"></td>
-                        <td data-duice-bind="_assetDialog.asset" data-duice-property="symbol" class="code font-weight--bold"></td>
-                    </tr>
-                    <tr>
-                        <td data-th-text="#{fintics.Asset.market}" class="font-weight--bold"></td>
-                        <td>
-                            <span data-duice-bind="_assetDialog.asset" data-duice-property="market" class="code badge"></span>
-                        </td>
-                        <td data-th-text="#{fintics.Asset.exchange}" class="font-weight--bold"></td>
-                        <td>
-                            <span data-duice-bind="_assetDialog.asset" data-duice-property="exchange" class="code badge"></span>
+                        <td class="text-align--right">
+                            <span data-duice-bind="dividend" data-duice-property="dividendPerShare" class="number"></span>
                         </td>
                     </tr>
-                    <tr>
-                        <td data-th-text="#{fintics.Asset.type}" class="font-weight--bold"></td>
-                        <td>
-                            <span data-duice-bind="_assetDialog.asset" data-duice-property="type" class="code badge"></span>
-                        </td>
-                        <td data-th-text="#{fintics.Asset.updatedDate}" class="font-weight--bold"></td>
-                        <td>
-                            <span data-duice-bind="_assetDialog.asset" data-duice-property="updatedDate" class="date"></span>
+                    <tr data-duice-bind="_assetDialog.dividends"
+                        data-duice-if="return _assetDialog.dividends._status === 'loading';">
+                        <td colspan="100%" class="text-align--center padding--1rem">
+                            <span class="blink" data-th-text="#{web.global.itemLoading(#{fintics.Dividend})}"></span>
                         </td>
                     </tr>
-                    <tr>
-                        <td data-th-text="#{fintics.Asset.price}" class="font-weight--bold"></td>
-                        <td class="text-align--right">
-                            <span data-duice-bind="_assetDialog.asset" data-duice-property="price" data-duice-format="number()" class="number"></span>
-                        </td>
-                        <td data-th-text="#{fintics.Asset.volume}" class="font-weight--bold"></td>
-                        <td class="text-align--right">
-                            <span data-duice-bind="_assetDialog.asset" data-duice-property="volume" data-duice-format="number()" class="number"></span>
-                        </td>
-                    </tr>
-                    <tr>
-                        <td data-th-text="#{fintics.Asset.marketCap}" class="font-weight--bold"></td>
-                        <td class="text-align--right">
-                            <span data-duice-bind="_assetDialog.asset" data-duice-property="marketCap" data-duice-format="number()" class="number"></span>
-                        </td>
-                        <td data-th-text="#{fintics.Asset.eps}" class="font-weight--bold"></td>
-                        <td class="text-align--right">
-                            <span data-duice-bind="_assetDialog.asset" data-duice-property="eps" class="number"></span>
-                        </td>
-                    </tr>
-                    <tr>
-                        <td data-th-text="#{fintics.Asset.roe}" class="font-weight--bold"></td>
-                        <td class="text-align--right">
-                            <span data-duice-bind="_assetDialog.asset" data-duice-property="roe" class="number"></span>
-                        </td>
-                        <td data-th-text="#{fintics.Asset.per}" class="font-weight--bold"></td>
-                        <td class="text-align--right">
-                            <span data-duice-bind="_assetDialog.asset" data-duice-property="per" class="number"></span>
-                        </td>
-                    </tr>
-                    <tr>
-                        <td data-th-text="#{fintics.Asset.dividendYield}" class="font-weight--bold"></td>
-                        <td class="text-align--right">
-                            <span data-duice-bind="_assetDialog.asset" data-duice-property="dividendYield" class="number"></span>
-                        </td>
-                        <td data-th-text="#{fintics.Asset.dividendFrequency}" class="font-weight--bold"></td>
-                        <td class="text-align--right">
-                            <span data-duice-bind="_assetDialog.asset" data-duice-property="dividendFrequency" class="number"></span>
-                        </td>
-                    </tr>
-                    <tr>
-                        <td data-th-text="#{fintics.Asset.capitalGain}" class="font-weight--bold"></td>
-                        <td class="text-align--right">
-                            <span data-duice-bind="_assetDialog.asset"
-                                  data-duice-property="capitalGain"
-                                  data-duice-execute="
-                                  this.classList.toggle('color--green', _assetDialog.asset.capitalGain > 0);
-                                  this.classList.toggle('color--red', _assetDialog.asset.capitalGain < 0);
-                                  " class="number font-weight--bold"></span>
-                        </td>
-                        <td data-th-text="#{fintics.Asset.totalReturn}" class="font-weight--bold"></td>
-                        <td class="text-align--right">
-                            <span data-duice-bind="_assetDialog.asset"
-                                  data-duice-property="totalReturn"
-                                  data-duice-execute="
-                                  this.classList.toggle('color--green', _assetDialog.asset.totalReturn > 0);
-                                  this.classList.toggle('color--red', _assetDialog.asset.totalReturn < 0);
-                                  "
-                                  class="number font-weight--bold"></span>
+                    <tr data-duice-bind="_assetDialog.dividends"
+                        data-duice-if="return _assetDialog.dividends._status === 'completed' && _assetDialog.dividends.length < 1;" hidden>
+                        <td colspan="100%" class="text-align--center padding--1rem">
+                            <span data-th-text="#{web.global.itemNotFound(#{fintics.Dividend})}"></span>
                         </td>
                     </tr>
                     </tbody>
                 </table>
             </div>
-            <div>
-                <div class="display--flex justify-content--space-between align-items--center">
-                    <div>
-                        <img class="icon" th:src="@{/static/image/icon-ohlcv.svg}" alt="ohlcv"/>
-                        <span data-th-text="#{fintics.Ohlcv}" class="font-weight--bold"></span>
-                    </div>
-                    <div class="text-align--right code font-size--smaller">
-                        <div class="display--flex gap--1em code">
-                            <label>
-                                <input name="_assetDialogChartPeriod" type="radio" onclick="_assetDialog.drawChart('daily', 1);"/>
-                                1D
-                            </label>
-                            <label>
-                                <input name="_assetDialogChartPeriod" type="radio" onclick="_assetDialog.drawChart('minute', 60);"/>
-                                1H
-                            </label>
-                            <label>
-                                <input name="_assetDialogChartPeriod" type="radio" onclick="_assetDialog.drawChart('minute', 30);"/>
-                                30m
-                            </label>
-                            <label>
-                                <input name="_assetDialogChartPeriod" type="radio" onclick="_assetDialog.drawChart('minute', 10);"/>
-                                10m
-                            </label>
-                            <label>
-                                <input name="_assetDialogChartPeriod" type="radio" onclick="_assetDialog.drawChart('minute', 5);"/>
-                                5m
-                            </label>
-                            <label>
-                                <input name="_assetDialogChartPeriod" type="radio" onclick="_assetDialog.drawChart('minute', 3);"/>
-                                3m
-                            </label>
-                            <label>
-                                <input name="_assetDialogChartPeriod" type="radio" onclick="_assetDialog.drawChart('minute', 1);"/>
-                                1m
-                            </label>
-                        </div>
-                    </div>
-                </div>
-                <div id="_assetDialogChart"></div>
-            </div>
-            <div>
-                <div>
-                    <img class="icon" th:src="@{/static/image/icon-dividend.svg}" alt="detail"/>
-                    <span data-th-text="#{fintics.Dividend}" class="font-weight--bold"></span>
-                </div>
-                <div class="width-100 box overflow--auto" style="max-height:15rem;">
-                    <table class="table width--100 border--none">
-                        <thead>
-                        <tr>
-                            <th>
-                                <span th:text="#{fintics.Dividend.date}"></span>
-                            </th>
-                            <th>
-                                <span th:text="#{fintics.Dividend.dividendPerShare}"></span>
-                            </th>
-                        </tr>
-                        </thead>
-                        <tbody>
-                        <tr data-duice-bind="_assetDialog.dividends" data-duice-loop="dividend,status">
-                            <td class="text-align--center">
-                                <span data-duice-bind="dividend" data-duice-property="date" class="date"></span>
-                            </td>
-                            <td class="text-align--right">
-                                <span data-duice-bind="dividend" data-duice-property="dividendPerShare" class="number"></span>
-                            </td>
-                        </tr>
-                        <tr data-duice-bind="_assetDialog.dividends"
-                            data-duice-if="return _assetDialog.dividends._status === 'loading';">
-                            <td colspan="100%" class="text-align--center padding--1rem">
-                                <span class="blink" data-th-text="#{web.global.itemLoading(#{fintics.Dividend})}"></span>
-                            </td>
-                        </tr>
-                        <tr data-duice-bind="_assetDialog.dividends"
-                            data-duice-if="return _assetDialog.dividends._status === 'completed' && _assetDialog.dividends.length < 1;" hidden>
-                            <td colspan="100%" class="text-align--center padding--1rem">
-                                <span data-th-text="#{web.global.itemNotFound(#{fintics.Dividend})}"></span>
-                            </td>
-                        </tr>
-                        </tbody>
-                    </table>
-                </div>
-            </div>
-       </div>
-    </dialog>
-    <!-- ====================================== -->
-    <!-- end: _assetDialog                      -->
-    <!-- ====================================== -->
-</th:block>
+        </div>
+   </div>
+</dialog>
+<!-- ====================================== -->
+<!-- end: _assetDialog                      -->
+<!-- ====================================== -->
 
-<th:block th:fragment="_submitOrderDialog">
-    <!-- ================================== -->
-    <!-- submit order dialog                -->
-    <!-- ================================== -->
-    <dialog class="dialog" id="_submitOrderDialog">
-        <style th:inline="css">
-            #_submitOrderDialog {
-                width: 400px;
-            }
-        </style>
-        <script th:inline="javascript">
-            const _submitOrderDialog = {
-                dialog: new duice.Dialog(document.getElementById('_submitOrderDialog')),
-                order: new duice.ObjectProxy({
-                    tradeId: null,
-                    tradeName: null,
-                    assetId: null,
-                    assetName: null,
-                    type: null,
-                    kind: 'MARKET',
-                    quantity: 1
-                }),
-                open: async function(trade, asset, type) {
-                    duice.ObjectProxy.reset(this.order);
-                    this.order.tradeId = trade.tradeId;
-                    this.order.tradeName = trade.name;
-                    this.order.assetId = asset.assetId;
-                    this.order.assetName = asset.name;
-                    this.order.type = type;
-                    return this.dialog.open();
-                },
-                confirm: async function() {
-                    if(!this.order.quantity) {
-                        await _alert(/*[[#{web.global.itemEmpty(#{fintics.Order.quantity})}]]*/'');
-                        duice.ObjectProxy.focus(this.order, 'quantity');
-                        return false;
-                    }
-                    _confirm(/*[[#{web.global.requestItemConfirm(#{fintics.Order})}]]*/'')
-                        .then(result => {
-                            let url = new URL(`${_apiUrl}/v1/trades/${this.order.tradeId}/orders`, document.location.origin);
-                            if (result) {
-                                _fetch(url, {
-                                    method: 'POST',
-                                    headers: {
-                                        'Content-Type': 'application/json'
-                                    },
-                                    body: JSON.stringify(this.order)
-                                }).then(response => response.json())
-                                    .then(data => {
-                                        _alert(/*[[#{web.global.requestItemComplete(#{fintics.Order})}]]*/'')
-                                            .then(() => {
-                                                this.dialog.close();
-                                            });
-                                    });
-                            }
-                        });
+<!-- ================================== -->
+<!-- submit order dialog                -->
+<!-- ================================== -->
+<dialog class="dialog" id="_submitOrderDialog">
+    <style th:inline="css">
+        #_submitOrderDialog {
+            width: 400px;
+        }
+    </style>
+    <script th:inline="javascript">
+        const _submitOrderDialog = {
+            dialog: new duice.Dialog(document.getElementById('_submitOrderDialog')),
+            order: new duice.ObjectProxy({
+                tradeId: null,
+                tradeName: null,
+                assetId: null,
+                assetName: null,
+                type: null,
+                kind: 'MARKET',
+                quantity: 1
+            }),
+            open: async function(trade, asset, type) {
+                duice.ObjectProxy.reset(this.order);
+                this.order.tradeId = trade.tradeId;
+                this.order.tradeName = trade.name;
+                this.order.assetId = asset.assetId;
+                this.order.assetName = asset.name;
+                this.order.type = type;
+                return this.dialog.open();
+            },
+            confirm: async function() {
+                if(!this.order.quantity) {
+                    await _alert(/*[[#{web.global.itemEmpty(#{fintics.Order.quantity})}]]*/'');
+                    duice.ObjectProxy.focus(this.order, 'quantity');
+                    return false;
                 }
+                _confirm(/*[[#{web.global.requestItemConfirm(#{fintics.Order})}]]*/'')
+                    .then(result => {
+                        let url = new URL(`${_apiUrl}/v1/trades/${this.order.tradeId}/orders`, document.location.origin);
+                        if (result) {
+                            _fetch(url, {
+                                method: 'POST',
+                                headers: {
+                                    'Content-Type': 'application/json'
+                                },
+                                body: JSON.stringify(this.order)
+                            }).then(response => response.json())
+                                .then(data => {
+                                    _alert(/*[[#{web.global.requestItemComplete(#{fintics.Order})}]]*/'')
+                                        .then(() => {
+                                            this.dialog.close();
+                                        });
+                                });
+                        }
+                    });
             }
-        </script>
-        <div class="dialog-title">
-            <h2>
-                <img class="icon" th:src="@{/static/image/icon-order.svg}" alt="asset"/>
-                <span data-th-text="#{fintics.Order}"></span>
-            </h2>
+        }
+    </script>
+    <div class="dialog-title">
+        <h2>
+            <img class="icon" th:src="@{/static/image/icon-order.svg}" alt="asset"/>
+            <span data-th-text="#{fintics.Order}"></span>
+        </h2>
+    </div>
+    <div class="dialog-content">
+        <form onsubmit="return false;" class="display--grid grid-template-columns--12fr gap--1rem">
+            <label class="grid-column--span-12">
+                <span data-th-text="#{fintics.Trade}" class="font-weight--bold"></span>
+                <input type="text" data-duice-bind="_submitOrderDialog.order" data-duice-property="tradeName" class="width--100"/>
+            </label>
+            <label class="grid-column--span-12">
+                <span data-th-text="#{fintics.Asset}" class="font-weight--bold"></span>
+                <input type="text" data-duice-bind="_submitOrderDialog.order" data-duice-property="assetName" class="width--100"/>
+            </label>
+            <label class="grid-column--span-12">
+                <span data-th-text="#{fintics.Order.type}" class="font-weight--bold"></span>
+                <select data-duice-bind="_submitOrderDialog.order" data-duice-property="type" class="width--100">
+                    <option value="BUY" data-th-text="#{fintics.Order.Type.BUY}"></option>
+                    <option value="SELL" data-th-text="#{fintics.Order.Type.SELL}"></option>
+                </select>
+            </label>
+            <label class="grid-column--span-12">
+                <span data-th-text="#{fintics.Order.kind}" class="font-weight--bold"></span>
+                <select data-duice-bind="_submitOrderDialog.order" data-duice-property="kind" class="width--100">
+                    <option value="MARKET" data-th-text="#{fintics.Order.Kind.MARKET}"></option>
+                    <option value="LIMIT" data-th-text="#{fintics.Order.Kind.LIMIT}"></option>
+                </select>
+            </label>
+            <label class="grid-column--span-12">
+                <span data-th-text="#{fintics.Order.quantity}" class="font-weight--bold"></span>
+                <input type="number" data-duice-bind="_submitOrderDialog.order" data-duice-property="quantity" class="width--100"/>
+            </label>
+        </form>
+        <div class="display--flex justify-content--end">
+            <button class="button" onclick="_submitOrderDialog.confirm();">
+                <img class="icon" th:src="@{/static/image/icon-confirm.svg}" alt="confirm"/>
+                <span data-th-text="#{web.global.confirm}"></span>
+            </button>
         </div>
-        <div class="dialog-content">
-            <form onsubmit="return false;" class="display--grid grid-template-columns--12fr gap--1rem">
-                <label class="grid-column--span-12">
-                    <span data-th-text="#{fintics.Trade}" class="font-weight--bold"></span>
-                    <input type="text" data-duice-bind="_submitOrderDialog.order" data-duice-property="tradeName" class="width--100"/>
-                </label>
-                <label class="grid-column--span-12">
-                    <span data-th-text="#{fintics.Asset}" class="font-weight--bold"></span>
-                    <input type="text" data-duice-bind="_submitOrderDialog.order" data-duice-property="assetName" class="width--100"/>
-                </label>
-                <label class="grid-column--span-12">
-                    <span data-th-text="#{fintics.Order.type}" class="font-weight--bold"></span>
-                    <select data-duice-bind="_submitOrderDialog.order" data-duice-property="type" class="width--100">
-                        <option value="BUY" data-th-text="#{fintics.Order.Type.BUY}"></option>
-                        <option value="SELL" data-th-text="#{fintics.Order.Type.SELL}"></option>
-                    </select>
-                </label>
-                <label class="grid-column--span-12">
-                    <span data-th-text="#{fintics.Order.kind}" class="font-weight--bold"></span>
-                    <select data-duice-bind="_submitOrderDialog.order" data-duice-property="kind" class="width--100">
-                        <option value="MARKET" data-th-text="#{fintics.Order.Kind.MARKET}"></option>
-                        <option value="LIMIT" data-th-text="#{fintics.Order.Kind.LIMIT}"></option>
-                    </select>
-                </label>
-                <label class="grid-column--span-12">
-                    <span data-th-text="#{fintics.Order.quantity}" class="font-weight--bold"></span>
-                    <input type="number" data-duice-bind="_submitOrderDialog.order" data-duice-property="quantity" class="width--100"/>
-                </label>
-            </form>
-            <div class="display--flex justify-content--end">
-                <button class="button" onclick="_submitOrderDialog.confirm();">
-                    <img class="icon" th:src="@{/static/image/icon-confirm.svg}" alt="confirm"/>
-                    <span data-th-text="#{web.global.confirm}"></span>
-                </button>
-            </div>
-        </div>
-    </dialog>
-    <!-- ================================== -->
-    <!-- submit order dialog                -->
-    <!-- ================================== -->
-</th:block>
+    </div>
+</dialog>
+<!-- ================================== -->
+<!-- submit order dialog                -->
+<!-- ================================== -->
 

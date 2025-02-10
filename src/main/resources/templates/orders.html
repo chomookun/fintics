@@ -4,8 +4,7 @@
       xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
       layout:decorate="_web.html">
 <th:block layout:fragment="_content">
-    <script th:src="@{/static/lightweight-charts/lightweight-charts.js?version={version}(version=${_scriptVersion})}"></script>
-    <script th:src="@{/static/fintics.js?version={version}(version=${_scriptVersion})}"></script>
+    <th:block th:insert="_common.html"/>
     <script th:inline="javascript">
         // defines
         const orderSearch = new duice.ObjectProxy({
@@ -317,7 +316,5 @@
     <!-- ================================== -->
     <!-- end: order                       -->
     <!-- ================================== -->
-
-    <th:block th:insert="_common.html :: _assetDialog"/>
 
 </th:block>

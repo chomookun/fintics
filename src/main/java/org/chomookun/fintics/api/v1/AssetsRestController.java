@@ -101,8 +101,9 @@ public class AssetsRestController {
      * @param assetId asset id
      */
     @PostMapping("{assetId}/favorite")
-    @Operation(description = "Creates favorite")
+    @PreAuthorize("hasAuthority('api.assets.edit')")
     @Transactional
+    @Operation(description = "Creates favorite")
     public ResponseEntity<Void> createFavorite(
             @PathVariable("assetId")
             @Parameter(name = "asset id", description = "asset id", example = "US.AAPL")
@@ -117,8 +118,9 @@ public class AssetsRestController {
      * @param assetId asset id
      */
     @DeleteMapping("{assetId}/favorite")
-    @Operation(description = "Deletes favorite")
+    @PreAuthorize("hasAuthority('api.assets.edit')")
     @Transactional
+    @Operation(description = "Deletes favorite")
     public ResponseEntity<Void> deleteFavorite(
             @PathVariable("assetId")
             @Parameter(name = "asset id", description = "asset id", example = "US.AAPL")

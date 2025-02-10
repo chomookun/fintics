@@ -4,8 +4,7 @@
       xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
       layout:decorate="_web.html">
 <th:block layout:fragment="_content">
-    <script th:src="@{/static/lightweight-charts/lightweight-charts.js?version={version}(version=${_scriptVersion})}"></script>
-    <script th:src="@{/static/fintics.js?version={version}(version=${_scriptVersion})}"></script>
+    <th:block th:insert="_common.html"/>
     <script th:inline="javascript">
         // defines
         const assetSearch = new duice.ObjectProxy({
@@ -120,22 +119,6 @@
         function resetAssets() {
             duice.ObjectProxy.reset(assetSearch);
             getAssets(0);
-        }
-
-        /**
-         * marks asset
-         * @param assetId
-         * @param favorite
-         */
-        function setFavorite(assetId, favorite) {
-            let url = new URL(`${_apiUrl}/v1/assets/${assetId}/favorite`, document.location.origin);
-            let method = favorite ? 'POST' : 'DELETE';
-            _fetch(url, {
-                method: method
-            }).then(() => {
-                let index = assets.findIndex(it => it.assetId === assetId);
-                assets[index].favorite = favorite;
-            });
         }
 
         function loadAssetSearch() {
@@ -348,22 +331,12 @@
                               class="number">
                         </span>
                         </td>
-                        <td class="text-align--center">
+                        <td>
+                            <img data-duice-bind="asset" data-duice-execute="_applyAssetFavoriteIcon(this, asset, true);" alt=""/>
                             <span data-duice-bind="asset" data-duice-property="symbol" class="code font-weight--bold"></span>
                         </td>
                         <td>
                             <div class="text-truncate" style="width:22em;">
-                                <img th:src="@{/static/image/icon-bookmark-off.svg}" alt="bookmark" class="icon link font-size--large"
-                                    data-duice-bind="asset"
-                                    data-duice-execute="
-                                    this.dataset.assetId = asset.assetId;
-                                    this.dataset.favorite = asset.favorite;
-                                    if(asset.favorite) {
-                                        this.src='/static/image/icon-favorite-on.svg';
-                                    } else {
-                                        this.src='/static/image/icon-favorite-off.svg';
-                                    }"
-                                    onclick="setFavorite(this.dataset.assetId, !JSON.parse(this.dataset.favorite));"/>
                                 <img class="icon border-radius--50 font-size--large" data-duice-bind="asset" data-duice-property="icon" th:onerror="|this.onerror=null; this.src='@{/static/image/icon-asset.svg}';|" alt=""/>
                                 &nbsp;
                                 <a href="javascript:void(0);"
@@ -473,7 +446,5 @@
     <!-- ================================== -->
     <!-- end: assets                        -->
     <!-- ================================== -->
-
-    <th:block th:insert="_common.html :: _assetDialog"/>
 
 </th:block>

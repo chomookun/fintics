@@ -9,6 +9,7 @@ insert into `core_authority`
     (`authority_id`,`system_required`,`name`)
 values
     ('api.assets','Y','Assets Access API Authority'),
+    ('api.assets.edit','Y','Assets Edit API Authority'),
     ('api.ohlcvs','Y','Ohlcvs API Authority'),
     ('api.dividends','Y','Dividends Access API Authority'),
     ('api.orders','Y','Orders API Authority'),

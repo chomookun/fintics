@@ -4,8 +4,7 @@
       xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
       layout:decorate="_web.html">
 <th:block layout:fragment="_content">
-    <script th:src="@{/static/lightweight-charts/lightweight-charts.js?version={version}(version=${_scriptVersion})}"></script>
-    <script th:src="@{/static/fintics.js?version={version}(version=${_scriptVersion})}"></script>
+    <th:block th:insert="_common.html"/>
     <script th:inline="javascript">
         const tradeId = new URL(location.href).searchParams.get('tradeId');
         const alarms = new duice.ArrayProxy(/*[[${alarms}]]*/[]);
@@ -546,7 +545,8 @@
                             <td class="text-align--center">
                                 <span data-duice-bind="status" data-duice-property="count" class="number"></span>
                             </td>
-                            <td class="text-align--center">
+                            <td>
+                                <img data-duice-bind="basketAsset" data-duice-execute="_applyAssetFavoriteIcon(this, basketAsset, true);" alt=""/>
                                 <span data-duice-bind="basketAsset" data-duice-property="symbol" class="code font-weight--bold"></span>
                             </td>
                             <td class="text-align--left">
@@ -1091,8 +1091,5 @@
     <!-- ====================================== -->
     <!-- end: cash asset dialog                 -->
     <!-- ====================================== -->
-
-    <th:block th:insert="_common.html :: _assetDialog"/>
-    <th:block th:insert="_common.html :: _submitOrderDialog"/>
 
 </th:block>
