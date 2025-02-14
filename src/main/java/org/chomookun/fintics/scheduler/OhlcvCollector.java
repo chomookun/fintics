@@ -2,6 +2,7 @@ package org.chomookun.fintics.scheduler;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.chomookun.arch4j.core.execution.model.Execution;
 import org.chomookun.fintics.client.broker.BrokerClient;
 import org.chomookun.fintics.client.broker.BrokerClientFactory;
 import org.chomookun.fintics.dao.BrokerRepository;
@@ -26,6 +27,8 @@ import java.util.Optional;
 @Slf4j
 public class OhlcvCollector extends AbstractScheduler {
 
+    private final static String TASK_NAME = "OhlcvCollector";
+
     private final TradeService tradeService;
 
     private final BasketService basketService;
@@ -41,10 +44,11 @@ public class OhlcvCollector extends AbstractScheduler {
     /**
      * schedule collect
      */
-    @Scheduled(initialDelay = 1_000, fixedDelay = 60_000)
+    @Scheduled(initialDelay = 1_000, fixedDelay = 1_000 * 60)
     public void collect() {
+        log.info("OhlcvCollector - Start collect ohlcv.");
+        Execution execution = startExecution(TASK_NAME);
         try {
-            log.info("OhlcvCollector - Start collect ohlcv.");
             // ohlcv is based on trade client
             List<Trade> trades = tradeService.getTrades(TradeSearch.builder().build(), Pageable.unpaged()).getContent();
             for (Trade trade : trades) {
@@ -57,20 +61,29 @@ public class OhlcvCollector extends AbstractScheduler {
                 }
                 List<BasketAsset> basketAssets = basket.getBasketAssets();
                 for (BasketAsset basketAsset : basketAssets) {
+                    execution.getTotalCount().incrementAndGet();
                     try {
                         saveMinuteOhlcvs(trade, basketAsset);
                         saveDailyOhlcvs(trade, basketAsset);
+                        execution.getSuccessCount().incrementAndGet();
                     } catch (Throwable e){
                         log.warn(e.getMessage());
+                        execution.getFailCount().incrementAndGet();
+                    } finally {
+                        updateExecution(execution);
                     }
                 }
             }
-            log.info("OhlcvCollector - End collect ohlcv");
+
+            // success execution
+            successExecution(execution);
         } catch (Throwable e) {
             log.error(e.getMessage(), e);
-            sendSystemAlarm(this.getClass(), e.getMessage());
+            failExecution(execution, e);
+            sendSystemAlarm(execution);
             throw new RuntimeException(e);
         }
+        log.info("OhlcvCollector - End collect ohlcv");
     }
 
     /**

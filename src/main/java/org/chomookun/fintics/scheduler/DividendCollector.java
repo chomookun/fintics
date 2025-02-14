@@ -2,7 +2,7 @@ package org.chomookun.fintics.scheduler;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.apache.commons.lang.exception.ExceptionUtils;
+import org.chomookun.arch4j.core.execution.model.Execution;
 import org.chomookun.fintics.client.dividend.DividendClient;
 import org.chomookun.fintics.dao.DividendEntity;
 import org.chomookun.fintics.dao.DividendRepository;
@@ -14,8 +14,6 @@ import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.PlatformTransactionManager;
 
-import java.time.Duration;
-import java.time.Instant;
 import java.time.LocalDate;
 import java.util.HashSet;
 import java.util.List;
@@ -25,6 +23,8 @@ import java.util.Set;
 @RequiredArgsConstructor
 @Slf4j
 public class DividendCollector extends AbstractScheduler {
+
+    private final static String SCHEDULER_ID = "DividendCollector";
 
     private final BasketService basketService;
 
@@ -36,16 +36,11 @@ public class DividendCollector extends AbstractScheduler {
 
     private final PlatformTransactionManager transactionManager;
 
-    @Scheduled(initialDelay = 60_000, fixedDelay = 86_400_000)
+    @Scheduled(initialDelay = 60_000, fixedDelay = 1_000 * 60 * 60 * 24)
     public void collect() {
-        Instant start = Instant.now();
-        long totalCount = 0;
-        long failCount = 0;
-        Boolean result = null;
-        String error = null;
+        log.info("DividendCollector - Start collect dividend.");
+        Execution execution = startExecution(SCHEDULER_ID);
         try {
-            log.info("DividendCollector - Start collect dividend.");
-
             // gets baskets
             List<Basket> baskets = basketService.getBaskets(BasketSearch.builder().build(), Pageable.unpaged()).getContent();
 
@@ -57,16 +52,21 @@ public class DividendCollector extends AbstractScheduler {
                 });
             });
 
+            // updates execution
+            execution.getTotalCount().set(assetIds.size());
+            updateExecution(execution);
+
             // collect and save dividend
             for (String assetId : assetIds) {
-                totalCount ++;
                 try {
                     Asset asset = assetService.getAsset(assetId).orElseThrow();
                     saveDividends(asset);
+                    execution.getSuccessCount().incrementAndGet();
                 } catch (Throwable e) {
                     log.warn(e.getMessage());
-                    failCount ++;
+                    execution.getFailCount().incrementAndGet();
                 } finally {
+                    updateExecution(execution);
                     // 블럭 당할수 있음 으로 유량 조절
                     try {
                         Thread.sleep(3_000);
@@ -75,32 +75,21 @@ public class DividendCollector extends AbstractScheduler {
             }
 
             // checks fail count
-            if (failCount > totalCount * 0.1) {
+            if (execution.getFailCount().longValue() > execution.getTotalCount().longValue() * 0.1) {
                 throw new RuntimeException("DividendCollector - Fail count is over 10%.");
             }
 
-            // result
-            result = true;
+            // success
+            successExecution(execution);
 
         } catch (Throwable e) {
             log.error(e.getMessage(), e);
-            result = false;
-            error = ExceptionUtils.getRootCauseMessage(e);
+            failExecution(execution, e);
             throw new RuntimeException(e);
         } finally {
-            // send message
-            Duration elapsed = Duration.between(start, Instant.now());
-            StringBuilder message = new StringBuilder();
-            message.append("DividendCollector - Complete collect dividend.").append('\n');
-            message.append(String.format("- elapsed: %d:%02d:%02d", elapsed.toHoursPart(), elapsed.toMinutesPart(), elapsed.toSecondsPart())).append('\n');
-            message.append(String.format("- totalCount: %d", totalCount)).append('\n');
-            message.append(String.format("- failCount: %d", failCount)).append('\n');
-            message.append(String.format("- result: %s", result)).append('\n');
-            message.append(String.format("- error: %s", error)).append('\n');
-            log.info(message.toString());
-            sendSystemAlarm(this.getClass(), message.toString());
-            log.info("DividendCollector - Complete collect dividend.");
+            sendSystemAlarm(execution);
         }
+        log.info("DividendCollector - Complete collect dividend.");
     }
 
     /**

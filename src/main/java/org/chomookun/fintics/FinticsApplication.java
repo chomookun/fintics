@@ -1,6 +1,6 @@
 package org.chomookun.fintics;
 
-import org.chomookun.arch4j.core.common.support.SpringApplicationInstaller;
+import org.chomookun.arch4j.core.common.cli.SpringApplicationInstaller;
 import org.springframework.boot.WebApplicationType;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.boot.builder.SpringApplicationBuilder;

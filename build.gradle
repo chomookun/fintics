@@ -32,10 +32,10 @@ repositories {
     if(project.mavenUrl) {
         maven {
             allowInsecureProtocol = true
-            url project.mavenUrl
+            url = project.mavenUrl
             credentials {
-                username project.mavenUsername
-                password project.mavenPassword
+                username = project.mavenUsername
+                password = project.mavenPassword
             }
         }
     }
@@ -76,7 +76,7 @@ test {
     useJUnitPlatform()
     testLogging {
         events 'failed'
-        exceptionFormat 'full'
+        exceptionFormat = 'full'
     }
 }
 
@@ -99,10 +99,10 @@ publishing {
     repositories {
         maven {
             allowInsecureProtocol = true
-            url project.publishingMavenUrl
+            url = project.publishingMavenUrl
             credentials {
-                username project.publishingMavenUsername
-                password project.publishingMavenPassword
+                username = project.publishingMavenUsername
+                password = project.publishingMavenPassword
             }
         }
     }

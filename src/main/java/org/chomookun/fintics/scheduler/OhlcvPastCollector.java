@@ -2,13 +2,13 @@ package org.chomookun.fintics.scheduler;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.chomookun.arch4j.core.execution.model.Execution;
 import org.chomookun.fintics.FinticsProperties;
 import org.chomookun.fintics.client.ohlcv.OhlcvClient;
 import org.chomookun.fintics.dao.OhlcvEntity;
 import org.chomookun.fintics.dao.OhlcvRepository;
 import org.chomookun.fintics.model.*;
 import org.chomookun.fintics.service.BasketService;
-import org.chomookun.fintics.service.TradeService;
 import org.springframework.data.domain.Pageable;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
@@ -26,14 +26,14 @@ import java.util.stream.Collectors;
 @Slf4j
 public class OhlcvPastCollector extends AbstractScheduler {
 
+    private final static String SCHEDULER_ID = "OhlcvPastCollector";
+
     private final FinticsProperties finticsProperties;
 
     @PersistenceContext
     private final EntityManager entityManager;
 
     private final PlatformTransactionManager transactionManager;
-
-    private final TradeService tradeService;
 
     private final BasketService basketService;
 
@@ -44,10 +44,11 @@ public class OhlcvPastCollector extends AbstractScheduler {
     /**
      * schedule collect
      */
-    @Scheduled(initialDelay = 10_000, fixedDelay = 600_000)
+    @Scheduled(initialDelay = 10_000, fixedDelay = 1_000 * 60 * 10)
     public void collect() {
+        log.info("OhlcvPastCollector - Start collect past ohlcv.");
+        Execution execution = startExecution(SCHEDULER_ID);
         try {
-            log.info("OhlcvPastCollector - Start collect past ohlcv.");
             // expired date time
             LocalDateTime expiredDateTime = LocalDateTime.now()
                     .minusMonths(finticsProperties.getDataRetentionMonths());
@@ -56,23 +57,32 @@ public class OhlcvPastCollector extends AbstractScheduler {
             for (Basket basket : baskets) {
                 List<BasketAsset> basketAssets = basket.getBasketAssets();
                 for (BasketAsset basketAsset : basketAssets) {
+                    execution.getTotalCount().incrementAndGet();
                     try {
                         if (ohlcvClient.isSupported(basketAsset)) {
                             collectPastDailyOhlcvs(basketAsset, expiredDateTime);
                             collectPastMinuteOhlcvs(basketAsset, expiredDateTime);
                         }
+                        execution.getSuccessCount().incrementAndGet();
                     } catch (Throwable e) {
                         log.warn(e.getMessage());
-                        sendSystemAlarm(this.getClass(), String.format("[%s] %s - %s", basket.getName(), basketAsset.getName(), e.getMessage()));
+                        execution.getFailCount().incrementAndGet();
+                    } finally {
+                        updateExecution(execution);
                     }
                 }
             }
-            log.info("OhlcvPastCollector - End collect past ohlcv");
+
+            // success execution
+            successExecution(execution);
+
         } catch(Throwable e) {
             log.error(e.getMessage(), e);
-            sendSystemAlarm(this.getClass(), e.getMessage());
+            failExecution(execution, e);
+            sendSystemAlarm(execution);
             throw new RuntimeException(e);
         }
+        log.info("OhlcvPastCollector - End collect past ohlcv");
     }
 
     /**

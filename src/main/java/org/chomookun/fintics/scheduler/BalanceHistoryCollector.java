@@ -2,6 +2,7 @@ package org.chomookun.fintics.scheduler;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.chomookun.arch4j.core.execution.model.Execution;
 import org.chomookun.fintics.client.broker.BrokerClient;
 import org.chomookun.fintics.client.broker.BrokerClientFactory;
 import org.chomookun.fintics.dao.BalanceHistoryEntity;
@@ -21,6 +22,8 @@ import java.util.List;
 @Slf4j
 public class BalanceHistoryCollector extends AbstractScheduler {
 
+    private static final String SCHEDULER_ID = "BalanceHistoryCollector";
+
     private final BrokerRepository brokerRepository;
 
     private final BrokerClientFactory brokerClientFactory;
@@ -35,15 +38,27 @@ public class BalanceHistoryCollector extends AbstractScheduler {
     @Scheduled(initialDelay = 10_000, fixedDelay = 1_000 * 60 * 10)
     public void collect() {
         log.info("BalanceHistoryCollector - Start collect balance history.");
-        List<Broker> brokers = brokerRepository.findAll().stream()
-                .map(Broker::from)
-                .toList();
-        for (Broker broker : brokers) {
-            try {
-                saveBalanceHistory(broker);
-            } catch (Throwable e) {
-                log.warn(e.getMessage(), e);
+        Execution execution = startExecution(SCHEDULER_ID);
+        try {
+            List<Broker> brokers = brokerRepository.findAll().stream()
+                    .map(Broker::from)
+                    .toList();
+            execution.getTotalCount().set(brokers.size());
+            for (Broker broker : brokers) {
+                try {
+                    saveBalanceHistory(broker);
+                    execution.getSuccessCount().incrementAndGet();
+                } catch (Throwable e) {
+                    log.warn(e.getMessage(), e);
+                    execution.getFailCount().incrementAndGet();
+                }
             }
+            successExecution(execution);
+        } catch (Throwable e) {
+            log.error(e.getMessage(), e);
+            failExecution(execution, e);
+            sendSystemAlarm(execution);
+            throw new RuntimeException(e);
         }
         log.info("BalanceHistoryCollector - End collect balance history.");
     }

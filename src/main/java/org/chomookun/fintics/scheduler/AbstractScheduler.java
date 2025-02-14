@@ -2,6 +2,8 @@ package org.chomookun.fintics.scheduler;
 
 import lombok.extern.slf4j.Slf4j;
 import org.chomookun.arch4j.core.alarm.service.AlarmService;
+import org.chomookun.arch4j.core.execution.model.Execution;
+import org.chomookun.arch4j.core.execution.service.ExecutionService;
 import org.chomookun.fintics.FinticsProperties;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.jpa.repository.JpaRepository;
@@ -21,6 +23,34 @@ public abstract class AbstractScheduler {
     @Autowired
     private AlarmService alarmService;
 
+    @Autowired
+    private ExecutionService executionService;
+
+    protected final Execution startExecution(String schedulerId) {
+        return executionService.start(schedulerId);
+    }
+
+    protected final void updateExecution(Execution execution) {
+        executionService.update(execution);
+    }
+
+    protected final void successExecution(Execution execution) {
+        executionService.success(execution);
+    }
+
+    protected final void failExecution(Execution execution, Throwable e) {
+        executionService.fail(execution, e);
+    }
+
+    protected final void sendSystemAlarm(Execution execution) {
+        String alarmId = finticsProperties.getSystemAlarmId();
+        String subject = String.format("%s[%s]", execution.getTaskName(), execution.getExecutionId());
+        String content = execution.toString();
+        if (alarmId != null) {
+            alarmService.sendAlarm(alarmId, subject, content);
+        }
+    }
+
     /**
      * chunk save entities via specified repository
      * @param unitName unit name
@@ -30,7 +60,7 @@ public abstract class AbstractScheduler {
      * @param <T> entity type
      * @param <P> id class type
      */
-    protected <T, P> void saveEntities(String unitName, List<T> entities, PlatformTransactionManager transactionManager, JpaRepository<T,P> jpaRepository) {
+    protected final <T, P> void saveEntities(String unitName, List<T> entities, PlatformTransactionManager transactionManager, JpaRepository<T,P> jpaRepository) {
         if (entities.isEmpty()) {
             return;
         }
@@ -63,7 +93,7 @@ public abstract class AbstractScheduler {
         }
     }
 
-    protected void runWithTransaction(PlatformTransactionManager transactionManager, Runnable runnable) {
+    protected final void runWithTransaction(PlatformTransactionManager transactionManager, Runnable runnable) {
         DefaultTransactionDefinition definition = new DefaultTransactionDefinition(TransactionDefinition.PROPAGATION_REQUIRED);
         definition.setIsolationLevel(TransactionDefinition.ISOLATION_READ_UNCOMMITTED);
         TransactionStatus status = transactionManager.getTransaction(definition);
@@ -82,13 +112,5 @@ public abstract class AbstractScheduler {
         }
     }
 
-    /**
-     * send system alarm
-     * @param classType class type
-     * @param content message content
-     */
-    protected void sendSystemAlarm(Class<?> classType, String content) {
-        alarmService.sendAlarm(finticsProperties.getSystemAlarmId(), classType.getSimpleName(), content);
-    }
 
 }

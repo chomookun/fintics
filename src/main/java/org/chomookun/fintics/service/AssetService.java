@@ -1,6 +1,7 @@
 package org.chomookun.fintics.service;
 
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.chomookun.fintics.client.asset.AssetClient;
 import org.chomookun.fintics.dao.AssetEntity;
 import org.chomookun.fintics.dao.AssetRepository;
@@ -20,6 +21,7 @@ import java.util.Optional;
  */
 @Service
 @RequiredArgsConstructor
+@Slf4j
 public class AssetService {
 
     private final AssetRepository assetRepository;
@@ -50,13 +52,15 @@ public class AssetService {
         Asset asset = assetRepository.findById(assetId)
                 .map(Asset::from)
                 .orElse(null);
-        // check updated date
+        // check updated date (last updated date is older than 1 week)
         if (asset != null) {
             LocalDate updatedDate = asset.getUpdatedDate();
             if (updatedDate == null || updatedDate.isBefore(LocalDate.now().minusWeeks(1))) {
                 try {
                     assetClient.populateAsset(asset);
-                } catch (Throwable ignore) { }
+                } catch (Throwable ignore) {
+                    log.warn("failed to populate asset: {}", assetId);
+                }
             }
         }
         return Optional.ofNullable(asset);

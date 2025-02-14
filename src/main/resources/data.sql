@@ -22,6 +22,7 @@ values
     ('api.brokers','Y','Brokers API Access Authority'),
     ('api.brokers.edit','Y','Brokers Edit API Authority'),
     ('api.profits','Y','Profits Access Authority'),
+    ('api.schedulers','Y','Schedulers Access Authority'),
     ('monitors','Y','Monitor Access Authority'),
     ('assets','Y','Assets Access Authority'),
     ('baskets','Y','Baskets Access Authority'),
@@ -36,7 +37,8 @@ values
     ('trade','Y','Trade Access Authority'),
     ('trade.edit','Y','Trade Edit Authority'),
     ('orders','Y','Orders Access Authority'),
-    ('profits','Y','Profits Access Authority');
+    ('profits','Y','Profits Access Authority'),
+    ('schedulers','Y','Schedulers Access Authority');
 
 -- core_role_authority
 insert into `core_role_authority`
@@ -51,6 +53,7 @@ values
     ('USER','api.brokers'),
     ('USER','api.trades'),
     ('USER','api.profits'),
+    ('USER','api.schedulers'),
     ('USER','monitors'),
     ('USER','assets'),
     ('USER','baskets'),
@@ -61,7 +64,8 @@ values
     ('USER','trades'),
     ('USER','trade'),
     ('USER','orders'),
-    ('USER','profits');
+    ('USER','profits'),
+    ('USER','schedulers');
 
 -- core_menu
 insert into `core_menu`
