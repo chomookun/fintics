@@ -1,0 +1,68 @@
+plugins {
+    id 'java'
+    id 'java-library'
+    id 'io.freefair.lombok' version '8.10'
+    id 'org.springframework.boot' version '3.4.1'
+    id 'maven-publish'
+    id 'application'
+}
+
+dependencies {
+    // subproject
+    implementation platform(project(":fintics-dependencies"))
+    annotationProcessor platform(project(":fintics-dependencies"))
+    implementation project(":fintics-core")
+
+    // arch4j-shell
+    implementation "org.chomookun.arch4j:arch4j-shell:1.0.0-SNAPSHOT"
+}
+
+test {
+    useJUnitPlatform()
+    testLogging {
+        events 'failed'
+        exceptionFormat = 'full'
+    }
+}
+
+jar {
+    enabled = true
+    archiveClassifier = ''
+}
+
+bootJar {
+    enabled = true
+    archiveClassifier = 'boot'
+}
+
+springBoot {
+    buildInfo()
+}
+
+publishing {
+    publications {
+        mavenJava(MavenPublication) {
+            from components.java
+        }
+    }
+}
+
+distTar {
+    enabled = false
+}
+
+distZip {
+    enabled = false
+}
+
+bootDistZip {
+    into("${project.name}-boot-${project.version}") {
+        from 'src/dist/'
+    }
+}
+
+bootDistTar {
+    into("${project.name}-boot-${project.version}") {
+        from 'src/dist/'
+    }
+}

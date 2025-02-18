@@ -1,0 +1,65 @@
+plugins {
+    id 'java'
+    id 'java-library'
+    id 'io.freefair.lombok' version '8.10'
+    id 'org.springframework.boot' version '3.4.1'
+    id 'maven-publish'
+}
+
+dependencies {
+    // subproject
+    implementation platform(project(":fintics-dependencies"))
+    annotationProcessor platform(project(":fintics-dependencies"))
+
+    // arch4j-core
+    implementation "org.chomookun.arch4j:arch4j-core:1.0.0-SNAPSHOT"
+
+    // spring boot configuration processor
+    implementation 'org.springframework.boot:spring-boot-configuration-processor'
+    annotationProcessor "org.springframework.boot:spring-boot-configuration-processor"
+
+    // query dsl
+    annotationProcessor "jakarta.persistence:jakarta.persistence-api"
+    annotationProcessor 'com.querydsl:querydsl-apt::jakarta'
+    annotationProcessor 'org.hibernate:hibernate-jpamodelgen'
+
+    // https://mvnrepository.com/artifact/com.mitchtalmadge/ascii-data
+    implementation 'com.mitchtalmadge:ascii-data'
+
+    // groovy http builder
+    implementation 'org.codehaus.groovy.modules.http-builder:http-builder'
+
+    // graalpy
+    implementation "org.graalvm.polyglot:polyglot"
+    implementation "org.graalvm.polyglot:python"
+
+}
+
+test {
+    useJUnitPlatform()
+    testLogging {
+        events 'failed'
+        exceptionFormat = 'full'
+    }
+}
+
+jar {
+    enabled = true
+    archiveClassifier = ''
+}
+
+bootJar {
+    enabled = false
+}
+
+springBoot {
+    buildInfo()
+}
+
+publishing {
+    publications {
+        mavenJava(MavenPublication) {
+            from components.java
+        }
+    }
+}

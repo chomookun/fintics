@@ -1,0 +1,35 @@
+# logging
+logging:
+  level:
+    org.springframework.web.socket: DEBUG
+    org.springframework.messaging.simp.stomp: DEBUG
+
+# server
+server:
+  tomcat:
+    threads:
+      max: 200
+      min-spare: 100
+
+# spring
+spring:
+  thymeleaf:
+    cache: false
+  datasource:
+    hikari:
+      transaction-isolation: TRANSACTION_READ_UNCOMMITTED
+      leakDetectionThreshold: 300000
+
+# core
+core:
+  security:
+    security-policy: AUTHENTICATED
+    signing-key: ahD3N&nctCE&aDenBKHu)tav7FyqMw6vPHXRtw7)WbWIvX8Xdtrs4fu*E9UXN58L
+    expire-minutes: 60
+
+# web
+web:
+  brand: <img src="/static/image/fintics-icon.svg"/><img src="/static/image/fintics-title.svg"/>
+  favicon: /static/image/fintics-icon.svg
+  title: Fintics
+  index: monitors

@@ -1,0 +1,270 @@
+<!DOCTYPE html>
+<html lang="en"
+      xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="_web.html">
+<th:block layout:fragment="_content">
+    <th:block th:insert="common/common.html"/>
+    <script th:inline="javascript">
+        const tradeSearch = new duice.ObjectProxy({
+            key: 'name',
+            value: null,
+            _page: 0,
+            _size: 20,
+            _count: -1,
+            _status: null
+        });
+        const trades = new duice.ArrayProxy([]);
+        duice.ArrayProxy.setReadonlyAll(trades, true);
+        const brokers = new duice.ArrayProxy(/*[[${brokers}]]*/[]);
+        const baskets = new duice.ArrayProxy(/*[[${baskets}]]*/[]);
+        const strategies = new duice.ArrayProxy(/*[[${strategies}]]*/[]);
+
+        /**
+         * gets trades
+         * @param page page number
+         */
+        function getTrades(page) {
+            if (page) {
+                tradeSearch._page = page;
+            }
+            let url = new URL(`${_apiUrl}/v1/trades`, document.location.origin);
+            if (tradeSearch.key != null && tradeSearch.value != null) {
+                url.searchParams.append(tradeSearch.key, tradeSearch.value);
+            }
+            url.searchParams.append('_page', tradeSearch._page);
+            url.searchParams.append('_size', tradeSearch._size);
+            tradeSearch._status = 'loading';
+            duice.ArrayProxy.clear(trades);
+            _fetch(url)
+                .then(response => {
+                    tradeSearch._count = _parseTotalCount(response);
+                    return response.json();
+                })
+                .then(data => {
+                    duice.ArrayProxy.assign(trades, data);
+                })
+                .finally(() => {
+                    tradeSearch._status = 'completed';
+                });
+        }
+
+        /**
+         * resets trades
+         */
+        function resetTrades() {
+            duice.ObjectProxy.reset(tradeSearch);
+            getTrades();
+        }
+
+        /**
+         * creates trade
+         */
+        function createTrade() {
+            document.location.href = `${_rootUrl}/trade`;
+        }
+
+        function loadTradeSearch() {
+            duice.ObjectProxy.reset(tradeSearch);
+            _loadUrlSearchParams(tradeSearch, ['key', 'value', '_page', '_size']);
+        }
+
+        function pushTradeSearch() {
+            _pushUrlSearchParams(tradeSearch, ['key', 'value', '_page', '_size']);
+        }
+
+        // Handles DOMContentLoaded event
+        document.addEventListener('DOMContentLoaded', () => {
+            loadTradeSearch();
+            getTrades();
+        });
+
+        // history event
+        ['popstate', 'pageshow'].forEach(event => {
+            window.addEventListener(event, () => {
+                document.dispatchEvent(new CustomEvent('DOMContentLoaded'));
+            });
+        });
+    </script>
+    <style th:inline="css">
+    </style>
+
+    <!-- ====================================== -->
+    <!-- start: title                           -->
+    <!-- ====================================== -->
+    <h1 id="title">
+        <img class="icon" th:src="@{/static/image/icon-trade.svg}" alt="variable"/>
+        <span data-th-text="#{fintics.core.trade.Trade}"></span>
+    </h1>
+    <!-- ====================================== -->
+    <!-- end: title                             -->
+    <!-- ====================================== -->
+
+    <!-- ================================== -->
+    <!-- start: trades                      -->
+    <!-- ================================== -->
+    <div class="panel">
+        <div class="panel-title">
+            <h2>
+                <img class="icon" th:src="@{/static/image/icon-list.svg}" alt="list"/>
+                <span data-th-text="|#{fintics.core.trade.Trade} #{web.global.list}|"></span>
+            </h2>
+        </div>
+        <div class="panel-content">
+            <form onsubmit="return false;" class="display--flex justify-content--space-between">
+                <div class="display--flex gap--1px">
+                    <div class="display--flex flex-wrap--nowrap gap--1px">
+                        <label>
+                            <select data-duice-bind="tradeSearch" data-duice-property="key">
+                                <option value="name" data-th-text="#{fintics.core.trade.Trade.name}"></option>
+                            </select>
+                        </label>
+                        <label>
+                            <input type="text" data-duice-bind="tradeSearch" data-duice-property="value" th:placeholder="#{web.global.keyword}"/>
+                        </label>
+                    </div>
+                </div>
+                <div class="flex--1 display--flex gap--1px justify-content--end s__justify-content--start">
+                    <button class="button" type="submit" onclick="getTrades(); pushTradeSearch();">
+                        <img class="icon" th:src="@{/static/image/icon-search.svg}" alt="reset"/>
+                        <span data-th-text="#{web.global.search}"></span>
+                    </button>
+                    <button class="button" type="button" onclick="resetTrades();">
+                        <img class="icon" th:src="@{/static/image/icon-reset.svg}" alt="reset"/>
+                        <span data-th-text="#{web.global.reset}"></span>
+                    </button>
+                </div>
+            </form>
+            <div class="box overflow--auto">
+                <table class="table width--100 border--none">
+                    <colgroup>
+                        <col style="width:5rem;"/>
+                        <col/>
+                        <col/>
+                        <col/>
+                        <col/>
+                        <col/>
+                        <col/>
+                        <col/>
+                        <col/>
+                        <col/>
+                    </colgroup>
+                    <thead>
+                    <tr>
+                        <th data-th-text="#{web.global.no}" class="text-align--center"></th>
+                        <th data-th-text="#{fintics.core.trade.Trade.name}"></th>
+                        <th data-th-text="#{fintics.core.broker.Broker.name}"></th>
+                        <th data-th-text="#{fintics.core.basket.Basket.name}"></th>
+                        <th data-th-text="#{fintics.core.strategy.Strategy.name}"></th>
+                        <th data-th-text="#{fintics.core.trade.Trade.investAmount}"></th>
+                        <th data-th-text="#{fintics.core.trade.Trade.interval}"></th>
+                        <th data-th-text="#{fintics.core.trade.Trade.threshold}"></th>
+                        <th data-th-text="#{fintics.core.trade.Trade.enabled}"></th>
+                        <th data-th-text="#{fintics.core.trade.Trade.cashAssetId}"></th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    <tr data-duice-bind="trades" data-duice-loop="trade,status">
+                        <td class="text-align--center">
+                        <span data-duice-bind="status"
+                              data-duice-execute="this.innerHTML=tradeSearch._size*tradeSearch._page + status.count;"
+                              class="number">
+                        </span>
+                        </td>
+                        <td>
+                            <a href="" data-duice-bind="trade" data-duice-execute="this.href=`${_rootUrl}/trade?tradeId=${trade.tradeId}`;">
+                                <span class="font-weight--bold" data-duice-bind="trade" data-duice-property="name"></span>
+                            </a>
+                        </td>
+                        <td>
+                            <span data-duice-bind="trade"
+                                  data-duice-execute="
+                          let brokerName = brokers.find(it => it.brokerId === trade.brokerId)?.name;
+                          this.innerHTML = brokerName;
+                          "></span>
+                        </td>
+                        <td>
+                           <span data-duice-bind="trade"
+                                 data-duice-execute="
+                          let basketName = baskets.find(it => it.basketId === trade.basketId)?.name;
+                          this.innerHTML = basketName;
+                          "></span>
+                        </td>
+                        <td>
+                            <span data-duice-bind="trade"
+                                data-duice-execute="
+                          let strategyName = strategies.find(it => it.strategyId === trade.strategyId)?.name;
+                          this.innerHTML = strategyName;
+                          "></span>
+                        </td>
+                        <td class="text-align--right">
+                            <span data-duice-bind="trade" data-duice-property="investAmount" data-duice-format="number()" class="number"></span>
+                        </td>
+                        <td class="text-align--right">
+                            <span data-duice-bind="trade" data-duice-property="interval" class="number"></span>
+                        </td>
+                        <td class="text-align--right">
+                            <span data-duice-bind="trade" data-duice-property="threshold" class="number"></span>
+                        </td>
+                        <td class="text-align--center">
+                            <label>
+                                <input type="checkbox" data-duice-bind="trade" data-duice-property="enabled"/>
+                            </label>
+                        </td>
+                        <td class="text-align--center">
+                            <span class="code" data-duice-bind="trade" data-duice-property="cashAssetId"></span>
+                            <span class="number"
+                                  data-duice-bind="trade"
+                                  data-duice-execute="
+                                  if (trade.cashBufferWeight) {
+                                    this.innerHTML = ' (' + trade.cashBufferWeight + '%)';
+                                  }
+                                  ">
+                            </span>
+                        </td>
+                    </tr>
+                    <tr data-duice-bind="tradeSearch"
+                        data-duice-if="return tradeSearch._status === 'loading';">
+                        <td colspan="100%" class="text-align--center padding--1rem">
+                            <span class="blink" data-th-text="#{web.global.itemLoading(#{fintics.core.trade.Trade})}"></span>
+                        </td>
+                    </tr>
+                    <tr data-duice-bind="tradeSearch"
+                        data-duice-if="return tradeSearch._status === 'completed' && trades.length < 1;" hidden>
+                        <td colspan="100%" class="text-align--center padding--1rem">
+                            <span data-th-text="#{web.global.itemNotFound(#{fintics.core.trade.Trade})}"></span>
+                        </td>
+                    </tr>
+                    </tbody>
+                </table>
+            </div>
+            <div class="display--flex justify-content--space-between">
+                <div class="flex--1">
+                    <span data-th-text="#{web.global.total}"></span>
+                    <span data-duice-bind="tradeSearch" data-duice-property="_count" data-duice-format="number(0)" class="number"></span>
+                    <span data-th-text="#{web.global.rows}"></span>
+                </div>
+                <div class="flex--1 display--flex justify-content--center">
+                    <duice-pagination
+                            class="number"
+                            data-duice-bind="tradeSearch"
+                            data-duice-size-property="_size"
+                            data-duice-page-property="_page"
+                            data-duice-count-property="_count"
+                            data-duice-onclick="getTrades(this.dataset.page); pushTradeSearch();">
+                    </duice-pagination>
+                </div>
+                <div class="flex--1 display--flex justify-content--end">
+                    <button class="button" type="button" onclick="createTrade();">
+                        <img class="icon" th:src="@{/static/image/icon-create.svg}" alt="create"/>
+                        <span data-th-text="#{web.global.create}"></span>
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+    <!-- ================================== -->
+    <!-- end: trades                        -->
+    <!-- ================================== -->
+
+</th:block>

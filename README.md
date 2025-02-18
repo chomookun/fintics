@@ -2,7 +2,7 @@
 
 Don't do it. If you mess up, you'll be in big trouble.
 
-![](docs/gambling-raccon.gif)
+![](docs/assets/image/gambling-raccon.gif)
 
-![](docs/gambling-dog.gif)
+![](docs/assets/image/gambling-dog.gif)
 

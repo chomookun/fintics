@@ -1,0 +1,35 @@
+plugins {
+    id "java-platform"
+    id "maven-publish"
+}
+
+javaPlatform {
+    allowDependencies()
+}
+
+dependencies {
+
+    // spring boot dependencies
+    api platform("org.chomookun.arch4j:arch4j-dependencies:1.0.0-SNAPSHOT")
+
+    constraints {
+        // https://mvnrepository.com/artifact/com.mitchtalmadge/ascii-data
+        api 'com.mitchtalmadge:ascii-data:1.4.0'
+
+        // groovy http builder
+        api 'org.codehaus.groovy.modules.http-builder:http-builder:0.7.1'
+
+        // graalpy
+        api "org.graalvm.polyglot:polyglot:24.1.0"
+        api "org.graalvm.polyglot:python:24.1.0"
+    }
+
+}
+
+publishing {
+    publications {
+        myPlatform(MavenPublication) {
+            from components.javaPlatform
+        }
+    }
+}

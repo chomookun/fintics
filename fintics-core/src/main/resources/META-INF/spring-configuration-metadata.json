@@ -1,0 +1,40 @@
+{
+  "properties": [
+    {
+      "name": "core.data.crypto.crypto-key-provider.bean",
+      "type": "java.lang.String",
+      "description": "The bean for the crypto key provider in the data crypto.",
+      "sourceType": "org.chomookun.arch4j.core.common.crpyto.CryptoKeyProviderProperties"
+    },
+    {
+      "name": "core.data.crypto.crypto-key-provider.properties.password",
+      "type": "java.lang.String",
+      "description": "The password property for the crypto key provider in the data crypto.",
+      "sourceType": "org.chomookun.arch4j.core.common.crpyto.CryptoKeyProviderProperties"
+    },
+    {
+      "name": "core.data.crypto.crypto-key-provider.properties.salt",
+      "type": "java.lang.String",
+      "description": "The salt property for the crypto key provider in the data crypto.",
+      "sourceType": "org.chomookun.arch4j.core.common.crpyto.CryptoKeyProviderProperties"
+    },
+    {
+      "name": "core.storage.storage-client.bean",
+      "type": "java.lang.String",
+      "description": "The bean for the storage client in the storage.",
+      "sourceType": "org.chomookun.arch4j.core.common.storage.StorageClientProperties"
+    },
+    {
+      "name": "core.storage.storage-client.properties",
+      "type": "java.lang.String",
+      "description": "The location property for the storage client in the storage.",
+      "sourceType": "org.chomookun.arch4j.core.common.storage.StorageClientProperties"
+    },
+    {
+      "name": "core.git.location",
+      "type": "java.lang.String",
+      "description": "The location for the git.",
+      "sourceType": "org.chomookun.arch4j.core.git.GitProperties"
+    }
+  ]
+}

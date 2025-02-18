@@ -1,0 +1,106 @@
+plugins {
+    id 'java'
+    id 'java-library'
+    id 'io.freefair.lombok' version '8.10'
+    id 'org.springframework.boot' version '3.4.1'
+    id 'maven-publish'
+    id 'com.google.cloud.tools.jib' version '3.4.0'
+    id 'application'
+}
+
+dependencies {
+    // subproject
+    implementation platform(project(":fintics-dependencies"))
+    annotationProcessor platform(project(":fintics-dependencies"))
+    implementation project(":fintics-core")
+
+    // arch4j-web
+    implementation "org.chomookun.arch4j:arch4j-web:1.0.0-SNAPSHOT"
+
+}
+
+
+test {
+    useJUnitPlatform()
+    testLogging {
+        events 'failed'
+        exceptionFormat = 'full'
+    }
+}
+
+jar {
+    enabled = true
+    archiveClassifier = ''
+}
+
+bootJar {
+    enabled = true
+    archiveClassifier = 'boot'
+}
+
+springBoot {
+    buildInfo()
+}
+
+publishing {
+    publications {
+        mavenJava(MavenPublication) {
+            from components.java
+        }
+    }
+}
+
+jib {
+    System.setProperty("sendCredentialsOverHttp", "true");
+    allowInsecureRegistries = true
+    from {
+        image = project.jibFromImage
+        auth {
+            username = project.jibFromAuthUsername
+            password = project.jibFromAuthPassword
+        }
+    }
+    to {
+        image = "${project.jibToImageNamespace}/${project.name}"
+        auth {
+            username = project.jibToAuthUsername
+            password = project.jibToAuthPassword
+        }
+        tags = [project.jibToTags]
+    }
+    containerizingMode = "packaged"
+    container {
+        format = 'OCI'
+        creationTime = "USE_CURRENT_TIMESTAMP"
+        ports = ['8080']
+        jvmFlags = ["-Dfile.encoding=UTF-8"]
+    }
+    extraDirectories {
+        paths {
+            path {
+                from = file('src/dist/config')
+                into = '/config'
+            }
+        }
+    }
+}
+
+distTar {
+    enabled = false
+}
+
+distZip {
+    enabled = false
+}
+
+bootDistZip {
+    into("${project.name}-boot-${project.version}") {
+        from 'src/dist'
+    }
+}
+
+bootDistTar {
+    into("${project.name}-boot-${project.version}") {
+        from 'src/dist'
+    }
+}
