@@ -86,12 +86,11 @@ pipeline {
             steps {
                 sh '''
                     kubectl \
-                    rollout restart deployment/fintics \
-                    -o yaml
+                    rollout restart deployment/fintics-daemon
                 '''.stripIndent()
                 sh '''
                     kubectl \
-                    rollout status deployment/fintics
+                    rollout status deployment/fintics-web
                 '''.stripIndent()
             }
         }
