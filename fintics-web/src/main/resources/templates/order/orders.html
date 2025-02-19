@@ -103,7 +103,7 @@
     <!-- ====================================== -->
     <h1 id="title">
         <img class="icon" th:src="@{/static/image/icon-order.svg}" alt="order"/>
-        <span data-th-text="#{fintics.core.broker.Order}"></span>
+        <span data-th-text="#{fintics.core.order.Order}"></span>
     </h1>
     <!-- ====================================== -->
     <!-- end: title                             -->
@@ -116,7 +116,7 @@
         <div class="panel-title">
             <h2>
                 <img class="icon" th:src="@{/static/image/icon-list.svg}" alt="list"/>
-                <span data-th-text="|#{fintics.core.broker.Order} #{web.global.list}|"></span>
+                <span data-th-text="|#{fintics.core.order.Order} #{web.global.list}|"></span>
             </h2>
         </div>
         <div class="panel-content">
@@ -146,7 +146,7 @@
                     <div>
                         <label>
                             <select data-duice-bind="orderSearch" data-duice-property="type">
-                                <option value="" data-th-text="|#{fintics.core.broker.Order.type}...|"></option>
+                                <option value="" data-th-text="|#{fintics.core.order.Order.type}...|"></option>
                                 <option value="BUY">BUY</option>
                                 <option value="SELL">SELL</option>
                             </select>
@@ -155,7 +155,7 @@
                     <div>
                         <label>
                             <select data-duice-bind="orderSearch" data-duice-property="result">
-                                <option value="" data-th-text="|#{fintics.core.broker.Order.result}...|"></option>
+                                <option value="" data-th-text="|#{fintics.core.order.Order.result}...|"></option>
                                 <option value="COMPLETED">COMPLETED</option>
                                 <option value="FAILED">FAILED</option>
                             </select>
@@ -164,8 +164,8 @@
                     <div class="display--flex flex-wrap--nowrap gap--1px">
                         <label class="flex--1">
                             <select data-duice-bind="orderSearch" data-duice-property="key">
-                                <option value="assetName" th:text="#{fintics.core.broker.Order.assetName}"></option>
-                                <option value="assetId" th:text="#{fintics.core.broker.Order.assetId}"></option>
+                                <option value="assetName" th:text="#{fintics.core.order.Order.assetName}"></option>
+                                <option value="assetId" th:text="#{fintics.core.order.Order.assetId}"></option>
                             </select>
                         </label>
                         <label class="flex--2">
@@ -203,17 +203,17 @@
                     <thead>
                     <tr>
                         <th data-th-text="#{web.global.no}"></th>
-                        <th data-th-text="#{fintics.core.broker.Order.orderAt}"></th>
-                        <th data-th-text="#{fintics.core.broker.Order.type}"></th>
+                        <th data-th-text="#{fintics.core.order.Order.orderAt}"></th>
+                        <th data-th-text="#{fintics.core.order.Order.type}"></th>
                         <th data-th-text="#{fintics.core.trade.Trade.name}"></th>
                         <th data-th-text="#{fintics.core.asset.Asset.name}"></th>
-                        <th data-th-text="#{fintics.core.broker.Order.quantity}"></th>
-                        <th data-th-text="#{fintics.core.broker.Order.price}"></th>
+                        <th data-th-text="#{fintics.core.order.Order.quantity}"></th>
+                        <th data-th-text="#{fintics.core.order.Order.price}"></th>
                         <th data-th-text="#{fintics.core.strategy.StrategyResult}"></th>
-                        <th data-th-text="#{fintics.core.broker.Order.purchasePrice}"></th>
-                        <th data-th-text="#{fintics.core.broker.Order.realizedProfitAmount}"></th>
-                        <th data-th-text="#{fintics.core.broker.Order.result}"></th>
-                        <th data-th-text="#{fintics.core.broker.Order.errorMessage}"></th>
+                        <th data-th-text="#{fintics.core.order.Order.purchasePrice}"></th>
+                        <th data-th-text="#{fintics.core.order.Order.realizedProfitAmount}"></th>
+                        <th data-th-text="#{fintics.core.order.Order.result}"></th>
+                        <th data-th-text="#{fintics.core.order.Order.errorMessage}"></th>
                     </tr>
                     </thead>
                     <tbody>
@@ -280,14 +280,14 @@
                         data-duice-if="return orderSearch._status === 'loading';"
                         hidden>
                         <td colspan="100%" class="text-align--center padding--1rem">
-                            <span class="blink" data-th-text="#{web.global.itemLoading(#{fintics.core.broker.Order})}"></span>
+                            <span class="blink" data-th-text="#{web.global.itemLoading(#{fintics.core.order.Order})}"></span>
                         </td>
                     </tr>
                     <tr data-duice-bind="orderSearch"
                         data-duice-if="return orderSearch._status === 'completed' && orders.length < 1;"
                         hidden>
                         <td colspan="100%" class="text-align--center padding--1rem">
-                            <span data-th-text="#{web.global.itemNotFound(#{fintics.core.broker.Order})}"></span>
+                            <span data-th-text="#{web.global.itemNotFound(#{fintics.core.order.Order})}"></span>
                         </td>
                     </tr>
                     </tbody>

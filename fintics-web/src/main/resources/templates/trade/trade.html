@@ -449,7 +449,7 @@
                         <span class="font-weight--bold tag-required" data-th-text="#{fintics.core.trade.Trade.orderKind}"></span>
                         <select class="width--100" data-duice-bind="trade" data-duice-property="orderKind">
                             <option data-th-text="|#{web.global.select}...|"></option>
-                            <option th:each="orderKind : ${orderKinds}" th:value="${orderKind}" th:text="#{'fintics.Order.Kind.'+${orderKind}}"></option>
+                            <option th:each="orderKind : ${orderKinds}" th:value="${orderKind}" th:text="#{'fintics.core.order.Order.Kind.'+${orderKind}}"></option>
                         </select>
                     </label>
                 </div>
@@ -880,7 +880,7 @@
                                             onclick="sellBalanceAsset(this.dataset.assetId);"
                                             th:classappend="!${#authorization.expression('hasAuthority(''trade.edit'')')}?'locked'">
                                         <img class="icon" th:src="@{/static/image/icon-order-sell.svg}" alt="sell"/>
-                                        <span data-th-text="#{fintics.core.broker.Order.Type.SELL}"></span>
+                                        <span data-th-text="#{fintics.core.order.Order.Type.SELL}"></span>
                                     </button>
                                 </td>
                             </tr>

@@ -505,7 +505,7 @@
                                 <div data-th-text="#{fintics.core.broker.BalanceAsset.profitPercentage}"></div>
                             </th>
                             <th>
-                                <span data-th-text="#{fintics.core.broker.Order}"></span>
+                                <span data-th-text="#{fintics.core.order.Order}"></span>
                             </th>
                         </tr>
                         </thead>
@@ -629,7 +629,7 @@
                                             th:attr="onclick=|monitorMap.get('${trade.tradeId}').buyTradeAsset(this.dataset.assetId);|"
                                             th:classappend="!${#authorization.expression('hasAuthority(''trade.edit'')')}?'locked'">
                                         <img class="icon" th:src="@{/static/image/icon-add.svg}" alt="buy"/>
-                                        <span data-th-text="#{fintics.core.broker.Order.Type.BUY}"></span>
+                                        <span data-th-text="#{fintics.core.order.Order.Type.BUY}"></span>
                                     </button>
                                     <button class="button" type="button"
                                             data-duice-bind="basketAsset"
@@ -637,7 +637,7 @@
                                             th:attr="onclick=|monitorMap.get('${trade.tradeId}').sellTradeAsset(this.dataset.assetId);|"
                                             th:classappend="!${#authorization.expression('hasAuthority(''trade.edit'')')}?'locked'">
                                         <img class="icon" th:src="@{/static/image/icon-remove.svg}" alt="sell"/>
-                                        <span data-th-text="#{fintics.core.broker.Order.Type.SELL}"></span>
+                                        <span data-th-text="#{fintics.core.order.Order.Type.SELL}"></span>
                                     </button>
                                 </div>
                             </td>

@@ -59,7 +59,7 @@
     <div class="dialog-title">
         <h2>
             <img class="icon" th:src="@{/static/image/icon-order.svg}" alt="asset"/>
-            <span data-th-text="#{fintics.core.broker.Order}"></span>
+            <span data-th-text="#{fintics.core.order.Order}"></span>
         </h2>
     </div>
     <div class="dialog-content">
@@ -73,21 +73,21 @@
                 <input type="text" data-duice-bind="_submitOrderDialog.order" data-duice-property="assetName" class="width--100"/>
             </label>
             <label class="grid-column--span-12">
-                <span data-th-text="#{fintics.core.broker.Order.type}" class="font-weight--bold"></span>
+                <span data-th-text="#{fintics.core.order.Order.type}" class="font-weight--bold"></span>
                 <select data-duice-bind="_submitOrderDialog.order" data-duice-property="type" class="width--100">
-                    <option value="BUY" data-th-text="#{fintics.core.broker.Order.Type.BUY}"></option>
-                    <option value="SELL" data-th-text="#{fintics.core.broker.Order.Type.SELL}"></option>
+                    <option value="BUY" data-th-text="#{fintics.core.order.Order.Type.BUY}"></option>
+                    <option value="SELL" data-th-text="#{fintics.core.order.Order.Type.SELL}"></option>
                 </select>
             </label>
             <label class="grid-column--span-12">
-                <span data-th-text="#{fintics.core.broker.Order.kind}" class="font-weight--bold"></span>
+                <span data-th-text="#{fintics.core.order.Order.kind}" class="font-weight--bold"></span>
                 <select data-duice-bind="_submitOrderDialog.order" data-duice-property="kind" class="width--100">
-                    <option value="MARKET" data-th-text="#{fintics.core.broker.Order.Kind.MARKET}"></option>
-                    <option value="LIMIT" data-th-text="#{fintics.core.broker.Order.Kind.LIMIT}"></option>
+                    <option value="MARKET" data-th-text="#{fintics.core.order.Order.Kind.MARKET}"></option>
+                    <option value="LIMIT" data-th-text="#{fintics.core.order.Order.Kind.LIMIT}"></option>
                 </select>
             </label>
             <label class="grid-column--span-12">
-                <span data-th-text="#{fintics.core.broker.Order.quantity}" class="font-weight--bold"></span>
+                <span data-th-text="#{fintics.core.order.Order.quantity}" class="font-weight--bold"></span>
                 <input type="number" data-duice-bind="_submitOrderDialog.order" data-duice-property="quantity" class="width--100"/>
             </label>
         </form>
