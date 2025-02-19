@@ -212,14 +212,6 @@ insecure=true
 where broker_id in ('ca5f55cd88694715bcb4c478710d9a68','961eb9c68c9547ce9ae61bbe3be7f037');
 
 update fintics_strategy set script = '
-import org.chomookun.fintics.model.Ohlcv
-import org.chomookun.fintics.model.TradeAsset
-import org.chomookun.fintics.model.Strategy
-import org.chomookun.fintics.strategy.StrategyResult
-import org.chomookun.fintics.strategy.StrategyResult.Action
-import org.chomookun.fintics.daemon.Tools
-import org.chomookun.fintics.indicator.*
-
 def ohlcvs = tradeAsset.getOhlcvs(Ohlcv.Type.MINUTE, 1)
 def ohlcv = ohlcvs.first()
 def smas = Tools.indicators(ohlcvs, SmaContext.of(5));

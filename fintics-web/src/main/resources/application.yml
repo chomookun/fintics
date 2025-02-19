@@ -1,25 +1,3 @@
-# logging
-logging:
-  level:
-    org.springframework.web.socket: DEBUG
-    org.springframework.messaging.simp.stomp: DEBUG
-
-# server
-server:
-  tomcat:
-    threads:
-      max: 200
-      min-spare: 100
-
-# spring
-spring:
-  thymeleaf:
-    cache: false
-  datasource:
-    hikari:
-      transaction-isolation: TRANSACTION_READ_UNCOMMITTED
-      leakDetectionThreshold: 300000
-
 # core
 core:
   security:

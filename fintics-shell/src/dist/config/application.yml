@@ -13,8 +13,11 @@ spring:
       jdbc-url: jdbc:mariadb://192.168.0.2:3306/fintics?useUnicode=true&characterEncoding=UTF-8
       username: fintics
       password: ENC(isMDWx6SPsHeZNBO/dAtcVlU9Akq0MSl)
-      minimum-idle: 20
-      maximum-pool-size: 20
+  data:
+    redis:
+      host: 192.168.0.2
+      port: 6379
+      password: ~
   mail:
     host: smtp.gmail.com
     port: 587
@@ -37,18 +40,10 @@ core:
         properties:
           password: ENC(QyzCISjurYg1lGaTDNUfPP4/DtbMkM5Z3UTCInz5daqp3mJ0/O7RiR5DzkALIJKpOFO5Hn2FnTetAVJOQ1eYXl57VQUjC0PAAC2B8RhoXEA=)
           salt: ENC(BfWWzNsezrykOn0EFRPCHPkwEcMnEvbAoSBe4yFP9SQ9XApGgUEjZD76RBuIt/4S)
+  security:
+    authentication-token:
+      signing-key: ENC(GgF+YM6Oc307CxjpiHf/6HsH6mo2Y7JJY03ai2nHQy4LpTQsSryiFzwKTPfXyt50cCWA/zaOcrCpX5Hqo6InUXxRdqtVui643lnVW7SwFq0=)
   storage:
     storage-client:
       properties:
-        location: /nfs/fintics/storage/
-  git:
-    location: /.tmp/fintics/git/
-
-# web
-web:
-  security-signing-key: ENC(GgF+YM6Oc307CxjpiHf/6HsH6mo2Y7JJY03ai2nHQy4LpTQsSryiFzwKTPfXyt50cCWA/zaOcrCpX5Hqo6InUXxRdqtVui643lnVW7SwFq0=)
-
-# fintics
-fintics:
-  system-alarm-id: fintics
-  data-retention-months: 36
+        location: /data/fintics/storage/

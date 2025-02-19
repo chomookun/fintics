@@ -28,13 +28,11 @@ public class TradeLogHandler implements MessageListener {
 
     @PostConstruct
     public void init() {
-        log.info("MessageTest initialized");
         container.addMessageListener(this, TradeChannels.TRADE_LOG);
     }
 
     @Override
     public void onMessage(Message message, byte[] pattern) {
-        log.info("Message received: {}", message.toString());
         TradeLog tradeLog;
         try {
             tradeLog = objectMapper.readValue(message.getBody(), TradeLog.class);

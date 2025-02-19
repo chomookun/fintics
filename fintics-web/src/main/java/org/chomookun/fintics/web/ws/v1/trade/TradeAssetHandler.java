@@ -29,13 +29,11 @@ public class TradeAssetHandler implements MessageListener {
 
     @PostConstruct
     public void init() {
-        log.info("MessageTest initialized");
         container.addMessageListener(this, TradeChannels.TRADE_ASSET);
     }
 
     @Override
     public void onMessage(Message message, byte[] pattern) {
-        log.info("Message received: {}", message.toString());
         TradeAsset tradeAsset;
         try {
             tradeAsset = objectMapper.readValue(message.getBody(), TradeAsset.class);
