@@ -17,6 +17,10 @@ import java.util.stream.Collectors;
 @RequiredArgsConstructor
 public class OhlcvCacheManager {
 
+    private final static int DAILY_OHLCVS_CACHE_EXPIRE_MINUTES = 60;
+
+    private final static int MINUTE_OHLCVS_CACHE_EXPIRE_MINUTES = 10;
+
     private final OhlcvService ohlcvService;
 
     private final Object dailyOhlcvsLock = new Object();
@@ -47,7 +51,7 @@ public class OhlcvCacheManager {
             // check and clear cache
             if (LocalDateTime.now().isAfter(dailyOhlcvsExpireDateTime)) {
                 dailyOhlcvsCache = new ConcurrentHashMap<>();   // clear causes overhead, so delegate it to GC
-                dailyOhlcvsExpireDateTime = LocalDateTime.now().plusMinutes(10);
+                dailyOhlcvsExpireDateTime = LocalDateTime.now().plusMinutes(DAILY_OHLCVS_CACHE_EXPIRE_MINUTES);
             }
             // load cache
             cachedDailyOhlcvs = dailyOhlcvsCache.get(assetId);
@@ -82,7 +86,7 @@ public class OhlcvCacheManager {
             // check and clear cache
             if (LocalDateTime.now().isAfter(minuteOhlcvsExpireDateTime)) {
                 minuteOhlcvsCache = new ConcurrentHashMap<>();  // clear causes overhead, so delegate it to GC
-                minuteOhlcvsExpireDateTime = LocalDateTime.now().plusMinutes(5);
+                minuteOhlcvsExpireDateTime = LocalDateTime.now().plusMinutes(MINUTE_OHLCVS_CACHE_EXPIRE_MINUTES);
             }
             // load cache
             cachedMinuteOhlcvs = minuteOhlcvsCache.get(assetId);
