@@ -85,12 +85,12 @@ pipeline {
         stage("deploy") {
             steps {
                 sh '''
-                    kubectl \
-                    rollout restart deployment/fintics-daemon
+                    kubectl delete pod -l app=fintics-daemon
+                    kubectl wait --for=condition=Ready pod -l app=fintics-daemon --timeout=60s
                 '''.stripIndent()
                 sh '''
-                    kubectl \
-                    rollout status deployment/fintics-web
+                    kubectl rollout restart deployment/fintics-web
+                    kubectl rollout status deployment/fintics-web
                 '''.stripIndent()
             }
         }
