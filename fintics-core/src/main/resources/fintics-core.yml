@@ -1,0 +1,19 @@
+# fintics
+fintics:
+  core:
+    system-alarm-id: fintics
+    asset:
+      asset-client:
+        class-name: org.chomookun.fintics.core.asset.client.SimpleAssetClient
+        properties:
+          name: value
+    ohlcv:
+      ohlcv-client:
+        class-name: org.chomookun.fintics.core.ohlcv.client.SimpleOhlcvClient
+        properties:
+          name: value
+    dividend:
+      dividend-client:
+        class-name: org.chomookun.fintics.core.dividend.client.SimpleDividendClient
+        properties:
+          name: value

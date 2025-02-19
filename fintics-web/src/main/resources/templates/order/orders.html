@@ -1,0 +1,321 @@
+<!DOCTYPE html>
+<html lang="en"
+      xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="_web.html">
+<th:block layout:fragment="_content">
+    <th:block th:insert="common/common.html"/>
+    <th:block th:insert="common/asset-dialog.html"/>
+    <script th:inline="javascript">
+        // defines
+        const orderSearch = new duice.ObjectProxy({
+            orderAtFrom: null,
+            orderAtTo: null,
+            tradeId: null,
+            type: null,
+            result: null,
+            key: 'assetName',
+            value: null,
+            _page: 0,
+            _size: 10,
+            _count: -1,
+            _status: null
+        });
+        const trades = new duice.ArrayProxy(/*[[${trades}]]*/[]);
+        const orders = new duice.ArrayProxy([]);
+
+        /**
+         * gets orders
+         * @param page page number
+         */
+        function getOrders(page) {
+            if(page) {
+                orderSearch._page = page;
+            }
+            let url = new URL(`${_apiUrl}/v1/orders`, document.location.origin);
+            if (orderSearch.tradeId) {
+                url.searchParams.append('tradeId', orderSearch.tradeId);
+            }
+            if (orderSearch.assetId) {
+                url.searchParams.append('assetId', orderSearch.assetId);
+            }
+            if (orderSearch.type) {
+                url.searchParams.append('type', orderSearch.type);
+            }
+            if (orderSearch.result) {
+                url.searchParams.append('result', orderSearch.result);
+            }
+            if (orderSearch.key && orderSearch.value) {
+                url.searchParams.append(orderSearch.key, orderSearch.value);
+            }
+            url.searchParams.append('_page', orderSearch._page);
+            url.searchParams.append('_size', orderSearch._size);
+            orderSearch._status = 'loading';
+            duice.ArrayProxy.clear(orders);
+            _fetch(url)
+                .then(response => {
+                    orderSearch._count = _parseTotalCount(response);
+                    return response.json();
+                })
+                .then(data => {
+                    duice.ArrayProxy.assign(orders, data);
+                })
+                .finally(() => {
+                    orderSearch._status = 'completed';
+                });
+        }
+
+        /**
+         * resets orders
+         */
+        function resetOrders() {
+            duice.ObjectProxy.reset(orderSearch);
+            getOrders();
+        }
+
+        function loadOrderSearch() {
+            duice.ObjectProxy.reset(orderSearch);
+            _loadUrlSearchParams(orderSearch, ['orderAtFrom','orderAtTo','tradeId','type','result','key', 'value', '_page', '_size']);
+        }
+
+        function pushOrderSearch() {
+            _pushUrlSearchParams(orderSearch, ['orderAtFrom','orderAtTo','tradeId','type','result','key', 'value', '_page', '_size']);
+        }
+
+        // DOMContentLoaded event listener
+        document.addEventListener('DOMContentLoaded', () => {
+            loadOrderSearch();
+            getOrders();
+        });
+
+        // history event
+        ['popstate', 'pageshow'].forEach(event => {
+            window.addEventListener(event, () => {
+                document.dispatchEvent(new CustomEvent('DOMContentLoaded'));
+            });
+        });
+    </script>
+    <style th:inline="css">
+    </style>
+
+    <!-- ====================================== -->
+    <!-- start: title                           -->
+    <!-- ====================================== -->
+    <h1 id="title">
+        <img class="icon" th:src="@{/static/image/icon-order.svg}" alt="order"/>
+        <span data-th-text="#{fintics.core.broker.Order}"></span>
+    </h1>
+    <!-- ====================================== -->
+    <!-- end: title                             -->
+    <!-- ====================================== -->
+
+    <!-- ================================== -->
+    <!-- start: order                       -->
+    <!-- ================================== -->
+    <div class="panel">
+        <div class="panel-title">
+            <h2>
+                <img class="icon" th:src="@{/static/image/icon-list.svg}" alt="list"/>
+                <span data-th-text="|#{fintics.core.broker.Order} #{web.global.list}|"></span>
+            </h2>
+        </div>
+        <div class="panel-content">
+            <form onsubmit="return false;" class="display--flex justify-content--space-between gap--1px flex-wrap--wrap">
+                <div class="display--flex flex-wrap--wrap gap--1px">
+                    <div>
+                        <label>
+                            <input type="datetime-local" data-duice-bind="orderSearch" data-duice-property="orderAtFrom"/>
+                        </label>
+                    </div>
+                    <div>
+                        <label>
+                            <input type="datetime-local" data-duice-bind="orderSearch" data-duice-property="orderAtTo"/>
+                        </label>
+                    </div>
+                    <div>
+                        <label>
+                            <select data-duice-bind="orderSearch"
+                                    data-duice-property="tradeId"
+                                    data-duice-option="trades"
+                                    data-duice-option-value-property="tradeId"
+                                    data-duice-option-text-property="name">
+                                <option value="" data-th-text="|#{fintics.core.trade.Trade}...|"></option>
+                            </select>
+                        </label>
+                    </div>
+                    <div>
+                        <label>
+                            <select data-duice-bind="orderSearch" data-duice-property="type">
+                                <option value="" data-th-text="|#{fintics.core.broker.Order.type}...|"></option>
+                                <option value="BUY">BUY</option>
+                                <option value="SELL">SELL</option>
+                            </select>
+                        </label>
+                    </div>
+                    <div>
+                        <label>
+                            <select data-duice-bind="orderSearch" data-duice-property="result">
+                                <option value="" data-th-text="|#{fintics.core.broker.Order.result}...|"></option>
+                                <option value="COMPLETED">COMPLETED</option>
+                                <option value="FAILED">FAILED</option>
+                            </select>
+                        </label>
+                    </div>
+                    <div class="display--flex flex-wrap--nowrap gap--1px">
+                        <label class="flex--1">
+                            <select data-duice-bind="orderSearch" data-duice-property="key">
+                                <option value="assetName" th:text="#{fintics.core.broker.Order.assetName}"></option>
+                                <option value="assetId" th:text="#{fintics.core.broker.Order.assetId}"></option>
+                            </select>
+                        </label>
+                        <label class="flex--2">
+                            <input type="text" data-duice-bind="orderSearch" data-duice-property="value"/>
+                        </label>
+                    </div>
+                </div>
+                <div class="flex--1 display--flex gap--1px justify-content--end s__justify-content--start">
+                    <button class="button" type="submit" onclick="getOrders(); pushOrderSearch();">
+                        <img class="icon" th:src="@{/static/image/icon-search.svg}" alt="search"/>
+                        <span data-th-text="#{web.global.search}"></span>
+                    </button>
+                    <button class="button" type="button" onclick="resetOrders();">
+                        <img class="icon" th:src="@{/static/image/icon-reset.svg}" alt="reset"/>
+                        <span data-th-text="#{web.global.reset}"></span>
+                    </button>
+                </div>
+            </form>
+            <div class="overflow-x--scroll">
+                <table class="width--100">
+                    <colgroup>
+                        <col/>
+                        <col style="width:10em;"/>
+                        <col style="width:5em;"/>
+                        <col/>
+                        <col/>
+                        <col/>
+                        <col/>
+                        <col/>
+                        <col/>
+                        <col/>
+                        <col/>
+                        <col style="width:20em;"/>
+                    </colgroup>
+                    <thead>
+                    <tr>
+                        <th data-th-text="#{web.global.no}"></th>
+                        <th data-th-text="#{fintics.core.broker.Order.orderAt}"></th>
+                        <th data-th-text="#{fintics.core.broker.Order.type}"></th>
+                        <th data-th-text="#{fintics.core.trade.Trade.name}"></th>
+                        <th data-th-text="#{fintics.core.asset.Asset.name}"></th>
+                        <th data-th-text="#{fintics.core.broker.Order.quantity}"></th>
+                        <th data-th-text="#{fintics.core.broker.Order.price}"></th>
+                        <th data-th-text="#{fintics.core.strategy.StrategyResult}"></th>
+                        <th data-th-text="#{fintics.core.broker.Order.purchasePrice}"></th>
+                        <th data-th-text="#{fintics.core.broker.Order.realizedProfitAmount}"></th>
+                        <th data-th-text="#{fintics.core.broker.Order.result}"></th>
+                        <th data-th-text="#{fintics.core.broker.Order.errorMessage}"></th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    <tr data-duice-bind="orders" data-duice-loop="order,status">
+                        <td class="text-align--center">
+                            <span class="number"
+                                  data-duice-bind="status"
+                                  data-duice-execute="this.innerHTML=orderSearch._count - (orderSearch._size*orderSearch._page + status.count) + 1;">
+                            </span>
+                        </td>
+                        <td>
+                        <span data-duice-bind="order"
+                              data-duice-property="orderAt"
+                              data-duice-format="date('yyyy-MM-dd HH:mm:ss')"
+                              class="date"></span>
+                        </td>
+                        <td class="text-align--center">
+                        <span data-duice-bind="order" data-duice-property="type" class="badge"
+                              data-duice-execute="
+                              this.classList.toggle('background-color--green', order.type === 'BUY');
+                              this.classList.toggle('background-color--blue', order.type === 'SELL');
+                              "></span>
+                        </td>
+                        <td>
+                            <span data-duice-bind="order" data-duice-property="tradeName"></span>
+                        </td>
+                        <td>
+                            <span data-duice-bind="order" data-duice-property="assetName"
+                                data-duice-execute="this.dataset.assetId=order.assetId;"
+                                onclick="_assetDialog.open(this.dataset.assetId);"
+                                class="link"></span>
+                        </td>
+                        <td class="text-align--right">
+                            <span data-duice-bind="order" data-duice-property="quantity" data-duice-format="number()" class="number"></span>
+                        </td>
+                        <td class="text-align--right">
+                            <span data-duice-bind="order" data-duice-property="price" data-duice-format="number()" class="number"></span>
+                        </td>
+                        <td class="display--flex">
+                            <textarea data-duice-bind="order"
+                                data-duice-execute="this.value=JSON.stringify(order.strategyResult,null,2);"
+                                class="height-100 width--100 font-size--smaller code"></textarea>
+                        </td>
+                        <td class="text-align--right">
+                            <span data-duice-bind="order" data-duice-property="purchasePrice" data-duice-format="number()" class="number"></span>
+                        </td>
+                        <td class="text-align--right">
+                            <span data-duice-bind="order" data-duice-property="realizedProfitAmount" data-duice-format="number()" class="number"></span>
+                        </td>
+                        <td class="text-align--center">
+                        <span data-duice-bind="order" data-duice-property="result" class="badge"
+                              data-duice-execute="
+                              this.classList.toggle('background-color--green', order.result === 'COMPLETED');
+                              this.classList.toggle('background-color--red', order.result === 'FAILED');
+                              "></span>
+                        </td>
+                        <td class="display--flex">
+                            <textarea data-duice-bind="order"
+                                data-duice-property="errorMessage"
+                                class="height--100 width--100 font-size--smaller code" style="white-space:normal;"></textarea>
+                        </td>
+                    </tr>
+                    <tr data-duice-bind="orderSearch"
+                        data-duice-if="return orderSearch._status === 'loading';"
+                        hidden>
+                        <td colspan="100%" class="text-align--center padding--1rem">
+                            <span class="blink" data-th-text="#{web.global.itemLoading(#{fintics.core.broker.Order})}"></span>
+                        </td>
+                    </tr>
+                    <tr data-duice-bind="orderSearch"
+                        data-duice-if="return orderSearch._status === 'completed' && orders.length < 1;"
+                        hidden>
+                        <td colspan="100%" class="text-align--center padding--1rem">
+                            <span data-th-text="#{web.global.itemNotFound(#{fintics.core.broker.Order})}"></span>
+                        </td>
+                    </tr>
+                    </tbody>
+                </table>
+            </div>
+            <div class="display--flex justify-content--space-between">
+                <div class="flex--1">
+                    <span data-th-text="#{web.global.total}"></span>
+                    <span data-duice-bind="orderSearch" data-duice-property="_count" data-duice-format="number(0)" class="number"></span>
+                    <span data-th-text="#{web.global.rows}"></span>
+                </div>
+                <div class="flex--1 display--flex justify-content--center">
+                    <duice-pagination
+                            class="number"
+                            data-duice-bind="orderSearch"
+                            data-duice-size-property="_size"
+                            data-duice-page-property="_page"
+                            data-duice-count-property="_count"
+                            data-duice-onclick="getOrders(this.dataset.page); pushOrderSearch();">
+                    </duice-pagination>
+                </div>
+                <div class="flex--1">
+                </div>
+            </div>
+        </div>
+    </div>
+    <!-- ================================== -->
+    <!-- end: order                       -->
+    <!-- ================================== -->
+
+</th:block>

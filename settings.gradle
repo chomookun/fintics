@@ -1,0 +1,6 @@
+rootProject.name = 'fintics'
+include 'fintics-dependencies'
+include 'fintics-core'
+include 'fintics-daemon'
+include 'fintics-web'
+include 'fintics-shell'
