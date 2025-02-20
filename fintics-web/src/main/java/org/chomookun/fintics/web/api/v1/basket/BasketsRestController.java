@@ -6,12 +6,15 @@ import ch.qos.logback.classic.LoggerContext;
 import ch.qos.logback.classic.PatternLayout;
 import ch.qos.logback.classic.spi.ILoggingEvent;
 import ch.qos.logback.core.OutputStreamAppender;
+import de.vandermeer.asciitable.AsciiTable;
+import de.vandermeer.asciitable.CWC_LongestLine;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.exception.ExceptionUtils;
+import org.chomookun.arch4j.core.common.support.texttable.TextTable;
 import org.chomookun.arch4j.web.common.data.PageableUtils;
 import org.chomookun.fintics.web.api.v1.basket.dto.BasketRequest;
 import org.chomookun.fintics.web.api.v1.basket.dto.BasketResponse;
@@ -36,7 +39,10 @@ import org.springframework.web.servlet.mvc.method.annotation.StreamingResponseBo
 
 import java.nio.charset.StandardCharsets;
 import java.util.List;
+import java.util.Map;
+import java.util.function.IntUnaryOperator;
 import java.util.stream.Collectors;
+import java.util.stream.IntStream;
 
 @RestController
 @RequestMapping("/api/v1/baskets")
@@ -211,7 +217,11 @@ public class BasketsRestController {
                 BasketScriptRunner basketRebalanceRunner = basketScriptRunnerFactory.getObject(basket);
                 basketRebalanceRunner.setLog(logger);
                 List<BasketRebalanceAsset> basketRebalanceAssets = basketRebalanceRunner.run();
-                logger.info("result: {}", basketRebalanceAssets);
+
+                // prints results
+                TextTable textTable = TextTable.valueOf(basketRebalanceAssets);
+                logger.info("# Basket Rebalance Assets [{}]", basketRebalanceAssets.size());
+                logger.info("{}", textTable);
 
                 // Flush after logging to ensure logs are sent
                 outputStream.flush();
@@ -229,6 +239,18 @@ public class BasketsRestController {
         return ResponseEntity.ok()
                 .contentType(MediaType.TEXT_PLAIN)
                 .body(stream);
+    }
+
+    public static String toFullWidth(String text) {
+        StringBuilder sb = new StringBuilder();
+        for (char ch : text.toCharArray()) {
+            if (ch >= 33 && ch <= 126) { // 영문, 숫자, 특수문자 범위
+                sb.append((char) (ch + 0xFEE0)); // 전각 문자로 변환
+            } else {
+                sb.append(ch); // 한글 및 기타 문자는 그대로 유지
+            }
+        }
+        return sb.toString();
     }
 
 }

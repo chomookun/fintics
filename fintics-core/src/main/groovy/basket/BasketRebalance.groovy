@@ -1,9 +1,7 @@
 import groovy.json.JsonSlurper
 import groovy.transform.ToString
 import groovy.transform.builder.Builder
-import org.jsoup.Jsoup
-import org.chomookun.fintics.basket.BasketRebalanceAsset
-import org.chomookun.fintics.model.Asset
+import org.springframework.data.domain.Pageable
 
 /**
  * item
@@ -13,16 +11,24 @@ import org.chomookun.fintics.model.Asset
 class Item {
     String symbol
     String name
-    String etfSymbol
+    String remark
     BigDecimal score
 }
 
+static List<Item> getEtfItems(market, etfSymbol) {
+    return switch(market) {
+        case "US" -> getUsEtfItems(etfSymbol)
+        case "KR" -> getKrEtfItems(etfSymbol)
+        default -> throw new RuntimeException("Unsupported market: ${market}")
+    }
+}
+
 /**
- * gets ETF holdings
+ * gets US ETF holdings
  * @param etfSymbol
  * @return
  */
-static List<Item> getEtfItems(etfSymbol) {
+static List<Item> getUsEtfItems(etfSymbol) {
     def url= new URL("https://finviz.com/api/etf_holdings/${etfSymbol}/top_ten")
     def responseJson= url.text
     def jsonSlurper = new JsonSlurper()
@@ -30,13 +36,37 @@ static List<Item> getEtfItems(etfSymbol) {
     def top10Holdings = responseMap.get('rowData')
     // 결과 값이 이상할 경우(10개 이하인 경우) 에러 처리
     if (top10Holdings == null || top10Holdings.size() < 10) {
-        throw new NoSuchElementException("Top 10 holdings data is incomplete or missing - ${etfSymbol}")
+        return []
     }
     return top10Holdings.collect{
         Item.builder()
                 .symbol(it.ticker as String)
                 .name(it.name as String)
-                .etfSymbol(etfSymbol)
+                .remark(etfSymbol)
+                .build()
+    }
+}
+
+/**
+ * gets KR etf items
+ * @param etfSymbol
+ * @return
+ */
+static List<Item> getKrEtfItems(etfSymbol) {
+    def url= new URL("https://m.stock.naver.com/api/stock/${etfSymbol}/etfAnalysis")
+    def responseJson= url.text
+    def jsonSlurper = new JsonSlurper()
+    def responseMap = jsonSlurper.parseText(responseJson)
+    def top10Holdings = responseMap.get('etfTop10MajorConstituentAssets')
+    // 결과 값이 이상할 경우(10개 이하인 경우) 에러 처리
+    if (top10Holdings == null) {
+        return []
+    }
+    return top10Holdings.collect{
+        Item.builder()
+                .symbol(it.itemCode as String)
+                .name(it.itemName as String)
+                .remark(etfSymbol)
                 .build()
     }
 }
@@ -44,26 +74,48 @@ static List<Item> getEtfItems(etfSymbol) {
 //=======================================
 // defines
 //=======================================
+def market = variables.market
+BigDecimal roeLimit = variables.roeLimit as BigDecimal
+BigDecimal perLimit = variables.perLimit as BigDecimal
 List<Item> candidateItems = []
 
 //=======================================
 // collect etf items
 //=======================================
 // ETF list
-def etfSymbols = [
-        'DGRW',     // WisdomTree U.S. Quality Dividend Growth Fund
-        'JEPI',     // JPMorgan Equity Premium Income ETF
-        'DIVO',     // Amplify CWP Enhanced Dividend Income ETF
-        'RDVI',     // First Trust Rising Dividend Achievers ETF
-        'DGRO',     // iShares Core Dividend Growth ETF
-        'SCHD',     // Schwab U.S. Dividend Equity ETF
-        'MOAT',     // VanEck Morningstar Wide Moat ETF
-]
+def etfSymbols = assetService.getAssets(AssetSearch.builder()
+        .market(market)
+        .type("ETF")
+        .favorite(true)
+        .build(), Pageable.unpaged())
+        .getContent()
+        .collect{it.getSymbol()};
 etfSymbols.each{
-    def etfItems = getEtfItems(it)
+    def etfItems = getEtfItems(market, it)
     println ("etfItems[${it}]: ${etfItems}")
     candidateItems.addAll(etfItems)
 }
+
+//========================================
+// Favorite stocks
+//========================================
+def stockItems = assetService.getAssets(AssetSearch.builder()
+        .market(market)
+        .type("STOCK")
+        .favorite(true)
+        .build(), Pageable.unpaged())
+        .getContent()
+        .collect{
+            Item.builder()
+                    .symbol(it.getSymbol())
+                    .name(it.getName())
+                    .build()
+        }
+stockItems.each{
+    println ("stockItems: ${it}")
+    candidateItems.add(it)
+}
+
 
 //========================================
 // distinct items
@@ -72,12 +124,12 @@ candidateItems = candidateItems
         .groupBy { it.symbol }
         .collect { symbol, items ->
             def item = items[0]
-            def etfSymbol = items*.etfSymbol.join(',')
+            def remark = items*.remark.join(',')
             return Item.builder()
-                    .symbol(item.symbol)
-                    .name(item.name)
-                    .etfSymbol(etfSymbol)
-                    .build();
+                .symbol(item.symbol)
+                .name(item.name)
+                .remark(remark)
+                .build();
         }
 log.info("candidateItems: ${candidateItems}")
 
@@ -94,7 +146,8 @@ List<Item> finalItems = candidateItems.findAll {
     }
 
     // check asset
-    Asset asset = assetService.getAsset("US.${it.symbol}").orElse(null)
+    def assetId = "${market}.${it.symbol}"
+    Asset asset = assetService.getAsset(assetId).orElse(null)
     if (asset == null) {
         return false
     }
@@ -106,18 +159,24 @@ List<Item> finalItems = candidateItems.findAll {
 
     //  ROE
     def roe = asset.getRoe() ?: 0.0
-    if (roe < 10.0) {    // ROE 가 금리 * 2 이하는 수익성 없는 회사로 제외
+    if (roe < roeLimit) {    // ROE 가 금리 * 2 이하는 수익성 없는 회사로 제외
         return false
     }
 
     // PER
     def per = asset.getPer() ?: 9999
-    if (per > 30.0) {   // PER 가 ROE * 3 이상은 고 평가된 회사로 제외
+    if (per > perLimit) {   // PER 가 ROE * 3 이상은 고 평가된 회사로 제외
         return false
     }
 
-    // dividendYield - 미국은 자사주 매입/소각 등 주주 환원이 믿을수 있음 으로 배당은 따로 보지 않음
+    // dividendYield
     def dividendYield = asset.getDividendYield() ?: 0.0
+    if (dividendYield < 0.0) {  // 한국은 배당 없는 회사 재무 재표는 믿을 수가 없다.
+        return false
+    }
+
+    // adds remark
+    it.remark = "ROE:${roe}, PER:${per}, etc:${it.remark}"
 
     // score (ROE/PER 로 저평가 회사 우선)
     it.score = roe/per
@@ -142,7 +201,7 @@ finalItems = finalItems
 // return
 //=========================================
 List<BasketRebalanceAsset> basketRebalanceResults = finalItems.collect{
-    BasketRebalanceAsset.of(it.symbol, it.name, holdingWeightPerAsset, it.etfSymbol)
+    BasketRebalanceAsset.of(it.symbol, it.name, holdingWeightPerAsset, it.remark)
 }
 log.info("basketRebalanceResults: ${basketRebalanceResults}")
 return basketRebalanceResults
