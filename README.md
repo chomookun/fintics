@@ -10,6 +10,23 @@ Don't do it. If you mess up, you'll be in big trouble.
 ## Starts applications
 
 ### Starts fintics-daemon
+
+Adds private maven repository
+```shell
+vim ~/.gradle/init.gradle
+...
+allprojects {
+    repositories {
+        // ...
+        maven {
+            url = "https://nexus.chomookun.org/repository/maven-public/"
+        }
+        // ...
+    }
+}
+...
+```
+
 Runs the trading daemon application.
 ```shell
 # starts fintics-daemon
