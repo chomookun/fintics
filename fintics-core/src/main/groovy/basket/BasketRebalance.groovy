@@ -29,21 +29,26 @@ static List<Item> getEtfItems(market, etfSymbol) {
  * @return
  */
 static List<Item> getUsEtfItems(etfSymbol) {
-    def url= new URL("https://finviz.com/api/etf_holdings/${etfSymbol}/top_ten")
-    def responseJson= url.text
-    def jsonSlurper = new JsonSlurper()
-    def responseMap = jsonSlurper.parseText(responseJson)
-    def top10Holdings = responseMap.get('rowData')
-    // 결과 값이 이상할 경우(10개 이하인 경우) 에러 처리
-    if (top10Holdings == null || top10Holdings.size() < 10) {
+    try {
+        def url= new URL("https://finviz.com/api/etf_holdings/${etfSymbol}/top_ten")
+        def responseJson= url.text
+        def jsonSlurper = new JsonSlurper()
+        def responseMap = jsonSlurper.parseText(responseJson)
+        def top10Holdings = responseMap.get('rowData')
+        // 결과 값이 이상할 경우(10개 이하인 경우) 에러 처리
+        if (top10Holdings == null || top10Holdings.size() < 10) {
+            return []
+        }
+        return top10Holdings.collect{
+            Item.builder()
+                    .symbol(it.ticker as String)
+                    .name(it.name as String)
+                    .remark(etfSymbol)
+                    .build()
+        }
+    } catch (Exception e) {
+        println(e.getMessage())
         return []
-    }
-    return top10Holdings.collect{
-        Item.builder()
-                .symbol(it.ticker as String)
-                .name(it.name as String)
-                .remark(etfSymbol)
-                .build()
     }
 }
 
@@ -53,21 +58,26 @@ static List<Item> getUsEtfItems(etfSymbol) {
  * @return
  */
 static List<Item> getKrEtfItems(etfSymbol) {
-    def url= new URL("https://m.stock.naver.com/api/stock/${etfSymbol}/etfAnalysis")
-    def responseJson= url.text
-    def jsonSlurper = new JsonSlurper()
-    def responseMap = jsonSlurper.parseText(responseJson)
-    def top10Holdings = responseMap.get('etfTop10MajorConstituentAssets')
-    // 결과 값이 이상할 경우(10개 이하인 경우) 에러 처리
-    if (top10Holdings == null) {
+    try {
+        def url = new URL("https://m.stock.naver.com/api/stock/${etfSymbol}/etfAnalysis")
+        def responseJson = url.text
+        def jsonSlurper = new JsonSlurper()
+        def responseMap = jsonSlurper.parseText(responseJson)
+        def top10Holdings = responseMap.get('etfTop10MajorConstituentAssets')
+        // 결과 값이 이상할 경우(10개 이하인 경우) 에러 처리
+        if (top10Holdings == null) {
+            return []
+        }
+        return top10Holdings.collect {
+            Item.builder()
+                    .symbol(it.itemCode as String)
+                    .name(it.itemName as String)
+                    .remark(etfSymbol)
+                    .build()
+        }
+    }catch (Exception e) {
+        println(e.getMessage())
         return []
-    }
-    return top10Holdings.collect{
-        Item.builder()
-                .symbol(it.itemCode as String)
-                .name(it.itemName as String)
-                .remark(etfSymbol)
-                .build()
     }
 }
 
@@ -162,24 +172,35 @@ List<Item> finalItems = candidateItems.findAll {
     if (roe < roeLimit) {    // ROE 가 금리 * 2 이하는 수익성 없는 회사로 제외
         return false
     }
+    if (roe > 100) {        // ROE 가 100% 이상은 이상치 로 제외 (자사주 매입, 회계상 조정 등의 사유로 발생함)
+        return false
+    }
 
     // PER
     def per = asset.getPer() ?: 9999
-    if (per > perLimit) {   // PER 가 ROE * 3 이상은 고 평가된 회사로 제외
+    if (per > perLimit) {   // PER 가 perLimit 이상은 고 평가된 회사로 제외
+        return false
+    }
+    if (per < 1) {      // PER 가 1 이하인 경우 회계상 이상 또는 다른 구조 적인 문제가 있는 경우 이므로 제외
         return false
     }
 
-    // dividendYield
+    // dividendYield 가 ROE 를 초과 하는 경우 자본 잠식 가능성 있음 으로 제외
     def dividendYield = asset.getDividendYield() ?: 0.0
-    if (dividendYield < 0.0) {  // 한국은 배당 없는 회사 재무 재표는 믿을 수가 없다.
+    if (dividendYield >= roe) {
         return false
     }
+
+    // score
+    def score = BigDecimal.ZERO
+    score += roe                // 기본 ROE
+    score += dividendYield      // 배당률 에 가중치
+
+    // score / PER 로 저평가 회사 우선
+    it.score = score/per
 
     // adds remark
-    it.remark = "ROE:${roe}, PER:${per}, etc:${it.remark}"
-
-    // score (ROE/PER 로 저평가 회사 우선)
-    it.score = roe/per
+    it.remark = "ROE:${roe}, PER:${per}, dividendYield:${dividendYield}, etc:${it.remark}"
 
     // return
     return it
