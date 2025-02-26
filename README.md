@@ -1,6 +1,8 @@
 # FINTICS (Financial System Trading Application)
 
-Don't do it. If you mess up, you'll be in big trouble.
+If you don't have your own investment strategy and philosophy, Don't do it. 
+If you mess up, you'll be in big trouble.
+This program only automates your own investment strategy and philosophy.
 
 ![](docs/assets/image/gambling-raccon.gif)
 
