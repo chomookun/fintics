@@ -42,17 +42,23 @@ Runs the UI management web application.
 ./gradlew :fintics:fintics-web:bootRun
 ```
 
-## My Passive EMP(ETF Managed Portfolio)
+## My passive EMP(ETF Managed Portfolio)
 
-**Concept**
+### Concept
 - Seeking a Balance Between Growth and Dividend
 - Hedging Through a Balanced Allocation of Growth, Dividends, and Bonds
 - Targeting Stable Cash Flow via Monthly Income Distributions
 
-### 1. US Market (50%)
+### Rebalance Strategy
+- Buying at oversold level.
+- Selling at overbought level.
+
+ps. Technical Indicator: RSI, CCI, Stochastic Slow, Williams %R 
+
+### 1. US Market <small>(Growth 35% + Dividend 35% + Bond 30%)</small>
 
 #### [35%] Growth Equity ETF
-| Symbol   | Name                                             | Holding weight | Reference                                                                  |
+| Symbol   | Name                                             | Holding weight | Reference |
 |----------|--------------------------------------------------|----------------|----------------------------------------------------------------------------|
 | **JEPQ** | JPMorgan Nasdaq Equity Premium Income ETF        | 7% | [Nasdaq](https://www.nasdaq.com/market-activity/etf/jepq/dividend-history) |
 | **GPIQ** | Goldman Sachs Nasdaq-100 Core Premium Income ETF | 7% | [Nasdaq](https://www.nasdaq.com/market-activity/etf/gpiq/dividend-history) |
@@ -61,7 +67,7 @@ Runs the UI management web application.
 | **GPIX** | Goldman Sachs S&P 500 Core Premium Income ETF | 7% | [Nasdaq](https://www.nasdaq.com/market-activity/etf/gpix/dividend-history) |
 
 #### [35%] Dividend Equity ETF
-| Symbol   | Name                                         | Holding weight |                                                                            |
+| Symbol   | Name                                         | Holding weight | Reference |
 |----------|----------------------------------------------|----------------|----------------------------------------------------------------------------|
 | **DGRW** | WisdomTree U.S. Quality Dividend Growth Fund | 8.75% | [Nasdaq](https://www.nasdaq.com/market-activity/etf/dgrw/dividend-history) |
 | **DIVO** | Amplify CPW Enhanced Dividend Income ETF | 8.75% | [Nasdaq](https://www.nasdaq.com/market-activity/etf/divo/dividend-history) |
@@ -69,7 +75,7 @@ Runs the UI management web application.
 | **RDVI** | FT Vest Rising Dividend Achievers Target Income ETF | 8.75% | [Nasdaq](https://www.nasdaq.com/market-activity/etf/rdvi/dividend-history) |
 
 #### [30%] Bond ETF
-| Symbol   | Name                                        | Holding weight | Reference                                                                   |
+| Symbol   | Name                                        | Holding weight | Reference |
 |----------|---------------------------------------------|----------------|-----------------------------------------------------------------------------|
 | **GOVI** | Invesco Equal Weight 0-30 Year Treasury ETF | 6% | [Nasdaq](https://www.nasdaq.com/market-activity/etf/govi/dividend-history)  |
 | **FBND** | Fidelity Total Bond ETF  | 6% | [Nasdaq](https://www.nasdaq.com/market-activity/etf/fbnd/dividend-history)  |
@@ -78,10 +84,10 @@ Runs the UI management web application.
 | **PYLD** | PIMCO Multisector Bond Active ETF | 6% | [Nasdaq](https://www.nasdaq.com/market-activity/pyld/dgrw/dividend-history) |
 
 
-### 2. KR Market (50%)
+### 2. KR Market <small>(US Growth 17.5% + US Dividend 17.5% + KR Growth 17.5% + KR Dividend 17.5% + US Bond 30%)</small>
 
 #### [17.5%] US Growth Equity ETF
-| Symbol     | Name | Holding weight | Reference                                  |
+| Symbol     | Name | Holding weight | Reference |
 |------------|----|----------------|--------------------------------------------|
 | **474220** | TIGER 미국테크TOP10타겟커버드콜 | 4.37% | [K-ETF](https://www.k-etf.com/etf/474220) |
 | **486290** | TIGER 미국나스닥100타겟데일리커버드콜 | 4.37% | [K-ETF](https://www.k-etf.com/etf/486290) |
@@ -116,6 +122,10 @@ Runs the UI management web application.
 | **468370** | KODEX iShares미국인플레이션국채액티브 | 6% | [K-ETF](https://www.k-etf.com/etf/468370) |
 | **468630** | KODEX iShares미국투자등급회사채액티브 | 6% | [K-ETF](https://www.k-etf.com/etf/468630) |
 | **468380** | KODEX iShares미국하이일드액티브 | 6% | [K-ETF](https://www.k-etf.com/etf/468380) |
+
+
+
+## My active portfolio for trading
 
 
 
