@@ -55,7 +55,8 @@ Runs the UI management web application.
 
 ps. Technical Indicator: RSI, CCI, Stochastic Slow, Williams %R 
 
-### 1. US Market <small>(Growth 35% + Dividend 35% + Bond 30%)</small>
+### 1. US Market (50% of passive)
+Growth 35% + Dividend 35% + Bond 30%
 
 #### [35%] Growth Equity ETF
 | Symbol   | Name                                             | Holding weight | Reference |
@@ -84,7 +85,8 @@ ps. Technical Indicator: RSI, CCI, Stochastic Slow, Williams %R
 | **PYLD** | PIMCO Multisector Bond Active ETF | 6% | [Nasdaq](https://www.nasdaq.com/market-activity/pyld/dgrw/dividend-history) |
 
 
-### 2. KR Market <small>(US Growth 17.5% + US Dividend 17.5% + KR Growth 17.5% + KR Dividend 17.5% + US Bond 30%)</small>
+### 2. KR Market (50% of passive)
+US Growth 17.5% + US Dividend 17.5% + KR Growth 17.5% + KR Dividend 17.5% + US Bond 30%
 
 #### [17.5%] US Growth Equity ETF
 | Symbol     | Name | Holding weight | Reference |
