@@ -11,8 +11,7 @@ This program only automates your own investment strategy and philosophy.
 
 ## Starts applications
 
-### Starts fintics-daemon
-
+### Configures Gradle 
 Adds private maven repository
 ```shell
 vim ~/.gradle/init.gradle
@@ -29,6 +28,7 @@ allprojects {
 ...
 ```
 
+### Starts fintics-daemon
 Runs the trading daemon application.
 ```shell
 # starts fintics-daemon
