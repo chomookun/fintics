@@ -127,7 +127,7 @@ US Growth 17.5% + US Dividend 17.5% + KR Growth 17.5% + KR Dividend 17.5% + US B
 
 
 
-## My active portfolio for trading
+## TODO - My active portfolio for trading
 
 
 
