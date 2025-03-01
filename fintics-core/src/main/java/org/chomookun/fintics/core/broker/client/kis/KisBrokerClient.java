@@ -57,7 +57,7 @@ public class KisBrokerClient extends BrokerClient {
     private final ObjectMapper objectMapper;
 
     /**
-     * constructor
+     * Constructor
      * @param definition broker definition
      * @param properties broker properties
      */
@@ -71,16 +71,12 @@ public class KisBrokerClient extends BrokerClient {
         this.insecure = Optional.ofNullable(properties.getProperty("insecure"))
                 .map(Boolean::parseBoolean)
                 .orElse(Boolean.FALSE);
-
-        // rest template
         this.restTemplate = createRestTemplate();
-
-        // object mapper
         this.objectMapper = new ObjectMapper();
     }
 
     /**
-     * creates rest template
+     * Creates rest template
      * @return rest template
      */
     RestTemplate createRestTemplate() {
@@ -91,7 +87,7 @@ public class KisBrokerClient extends BrokerClient {
     }
 
     /**
-     * creates headers
+     * Creates headers
      * @return headers
      */
     HttpHeaders createHeaders() throws InterruptedException {
@@ -105,7 +101,7 @@ public class KisBrokerClient extends BrokerClient {
     }
 
     /**
-     * force sleep
+     * Forces to sleep
      */
     private synchronized void sleep() throws InterruptedException {
         synchronized (LOCK_OBJECT) {
@@ -114,6 +110,11 @@ public class KisBrokerClient extends BrokerClient {
         }
     }
 
+    /**
+     * Returns market is open
+     * @param datetime datetime
+     * @return whether market is open
+     */
     @Override
     public boolean isOpened(LocalDateTime datetime) throws InterruptedException {
         // check weekend
@@ -141,7 +142,6 @@ public class KisBrokerClient extends BrokerClient {
         String url = apiUrl + "/uapi/domestic-stock/v1/quotations/chk-holiday";
         HttpHeaders headers = createHeaders();
         headers.add("tr_id", "CTCA0903R");
-
         // convert date time
         String baseDt = dateTime.format(DateTimeFormatter.ofPattern("yyyyMMdd"));
         url = UriComponentsBuilder.fromUriString(url)
@@ -162,13 +162,11 @@ public class KisBrokerClient extends BrokerClient {
         } catch (JsonProcessingException e) {
             throw new RuntimeException(e);
         }
-
         String rtCd = objectMapper.convertValue(rootNode.path("rt_cd"), String.class);
         String msg1 = objectMapper.convertValue(rootNode.path("msg1"), String.class);
         if(!"0".equals(rtCd)) {
             throw new RuntimeException(msg1);
         }
-
         List<Map<String, String>> output = objectMapper.convertValue(rootNode.path("output"), new TypeReference<>(){});
         Map<String, String> matchedRow = output.stream()
                 .filter(row -> {
@@ -177,7 +175,6 @@ public class KisBrokerClient extends BrokerClient {
                 })
                 .findFirst()
                 .orElse(null);
-
         // define holiday
         boolean holiday = false;
         if(matchedRow != null) {
@@ -190,7 +187,7 @@ public class KisBrokerClient extends BrokerClient {
     }
 
     /**
-     * returns minute ohlcvs
+     * Returns minute ohlcvs
      * @param asset asset
      * @return minute ohlcvs
      * @see <a href="https://apiportal.koreainvestment.com/apiservice/apiservice-domestic-stock-quotations2#L_eddbb36a-1d55-461a-b242-3067ba1e5640">
@@ -205,7 +202,6 @@ public class KisBrokerClient extends BrokerClient {
         LocalTime time = ZonedDateTime.now(getDefinition().getTimezone()).toLocalTime();
         LocalTime closeTime = LocalTime.of(15,30);
         LocalTime fidInputHour1Time = (time.isAfter(closeTime) ? closeTime : time);
-
         String url = apiUrl + "/uapi/domestic-stock/v1/quotations/inquire-time-itemchartprice";
         HttpHeaders headers = createHeaders();
         headers.add("tr_id", "FHKST03010200");
@@ -231,13 +227,11 @@ public class KisBrokerClient extends BrokerClient {
         } catch (JsonProcessingException e) {
             throw new RuntimeException(e);
         }
-
         String rtCd = objectMapper.convertValue(rootNode.path("rt_cd"), String.class);
         String msg1 = objectMapper.convertValue(rootNode.path("msg1"), String.class);
         if(!"0".equals(rtCd)) {
             throw new RuntimeException(msg1);
         }
-
         List<Map<String, String>> output2 = objectMapper.convertValue(rootNode.path("output2"), new TypeReference<>(){});
         return output2.stream()
                 .map(row -> {
@@ -267,7 +261,7 @@ public class KisBrokerClient extends BrokerClient {
     }
 
     /**
-     * return daily ohlcvs
+     * Return daily ohlcvs
      * @param asset asset
      * @return daily ohlcvs
      * @see <a href="https://apiportal.koreainvestment.com/apiservice/apiservice-domestic-stock-quotations2#L_a08c3421-e50f-4f24-b1fe-64c12f723c77">
@@ -306,15 +300,12 @@ public class KisBrokerClient extends BrokerClient {
         } catch (JsonProcessingException e) {
             throw new RuntimeException(e);
         }
-
         String rtCd = objectMapper.convertValue(rootNode.path("rt_cd"), String.class);
         String msg1 = objectMapper.convertValue(rootNode.path("msg1"), String.class);
         if(!"0".equals(rtCd)) {
             throw new RuntimeException(msg1);
         }
-
         List<Map<String, String>> output2 = objectMapper.convertValue(rootNode.path("output2"), new TypeReference<>(){});
-
         return output2.stream()
                 .filter(row -> !row.isEmpty())  // 신규 종목의 경우 값 없이 {}로 반환 되는 경우가 있음
                 .map(row -> {
@@ -343,7 +334,7 @@ public class KisBrokerClient extends BrokerClient {
     }
 
     /**
-     * return order book
+     * Return order book
      * @param asset asset
      * @return order book
      * @see <a href="https://apiportal.koreainvestment.com/apiservice/apiservice-domestic-stock-quotations2#L_af3d3794-92c0-4f3b-8041-4ca4ddcda5de">
@@ -374,21 +365,17 @@ public class KisBrokerClient extends BrokerClient {
         } catch (JsonProcessingException e) {
             throw new RuntimeException(e);
         }
-
         String rtCd = objectMapper.convertValue(rootNode.path("rt_cd"), String.class);
         String msg1 = objectMapper.convertValue(rootNode.path("msg1"), String.class);
         if(!"0".equals(rtCd)) {
             throw new RuntimeException(msg1);
         }
-
         Map<String, String> output1 = objectMapper.convertValue(rootNode.path("output1"), new TypeReference<>() {});
         Map<String, String> output2 = objectMapper.convertValue(rootNode.path("output2"), new TypeReference<>() {});
-
         BigDecimal price = new BigDecimal(output2.get("stck_prpr"));
         BigDecimal bidPrice = new BigDecimal(output1.get("bidp1"));
         BigDecimal askPrice = new BigDecimal(output1.get("askp1"));
         BigDecimal tickPrice = getTickPrice(asset, bidPrice);   // 매수 호가 기준 산출
-
         return OrderBook.builder()
                 .price(price)
                 .bidPrice(bidPrice)
@@ -429,7 +416,7 @@ public class KisBrokerClient extends BrokerClient {
     }
 
     /**
-     * return account balance
+     * Return account balance
      * @return balance
      * @see <a href="https://apiportal.koreainvestment.com/apiservice/apiservice-domestic-stock-order#L_66c61080-674f-4c91-a0cc-db5e64e9a5e6)">
      *     주식잔고조회[v1_국내주식-006]
@@ -439,12 +426,10 @@ public class KisBrokerClient extends BrokerClient {
     public Balance getBalance() throws InterruptedException {
         Balance balance = new Balance();
         List<BalanceAsset> balanceAssets = new ArrayList<>();
-
         // pagination key
         String trCont = "";
         String ctxAreaFk100 = "";
         String ctxAreaNk100 = "";
-
         // loop
         for (int i = 0; i < 10; i ++) {
             String url = apiUrl + "/uapi/domestic-stock/v1/trading/inquire-balance";
@@ -478,21 +463,15 @@ public class KisBrokerClient extends BrokerClient {
             } catch (JsonProcessingException e) {
                 throw new RuntimeException(e);
             }
-
             String rtCd = objectMapper.convertValue(rootNode.path("rt_cd"), String.class);
             String msg1 = objectMapper.convertValue(rootNode.path("msg1"), String.class);
             if (!"0".equals(rtCd)) {
                 throw new RuntimeException(msg1);
             }
-
             JsonNode output1Node = rootNode.path("output1");
-            List<Map<String, String>> output1 = objectMapper.convertValue(output1Node, new TypeReference<>() {
-            });
-
+            List<Map<String, String>> output1 = objectMapper.convertValue(output1Node, new TypeReference<>() {});
             JsonNode output2Node = rootNode.path("output2");
-            List<Map<String, String>> output2 = objectMapper.convertValue(output2Node, new TypeReference<>() {
-            });
-
+            List<Map<String, String>> output2 = objectMapper.convertValue(output2Node, new TypeReference<>() {});
             // balance
             if (i == 0) {
                 balance = Balance.builder()
@@ -503,7 +482,6 @@ public class KisBrokerClient extends BrokerClient {
                         .valuationAmount(new BigDecimal(output2.get(0).get("evlu_amt_smtl_amt")))
                         .build();
             }
-
             // page balance assets
             List<BalanceAsset> pageBalanceAssets = output1.stream()
                     .map(row -> {
@@ -528,7 +506,6 @@ public class KisBrokerClient extends BrokerClient {
                     .filter(balanceAsset -> balanceAsset.getQuantity().intValue() > 0)
                     .collect(Collectors.toList());
             balanceAssets.addAll(pageBalanceAssets);
-
             // detects next page
             trCont = responseEntity.getHeaders().getFirst("tr_cont");
             ctxAreaFk100 = objectMapper.convertValue(rootNode.path("ctx_area_fk100"), String.class);
@@ -539,28 +516,24 @@ public class KisBrokerClient extends BrokerClient {
             }
             trCont = "N";
         }
-
         // adds balance assets
         balance.setBalanceAssets(balanceAssets);
-
         // calculates profit amount
         BigDecimal profitAmount = balanceAssets.stream()
                 .map(BalanceAsset::getProfitAmount)
                 .reduce(BigDecimal.ZERO, BigDecimal::add);
         balance.setProfitAmount(profitAmount);
-
         // calculates realized profit amount (모의 투자는 지원 하지 않음)
         if(production) {
             BigDecimal realizedProfitAmount = getBalanceRealizedProfitAmount();
             balance.setRealizedProfitAmount(realizedProfitAmount);
         }
-
         // return
         return balance;
     }
 
     /**
-     * gets balance realized profit amount
+     * Gets balance realized profit amount
      * @return realized profit amount
      * @see <a href="https://apiportal.koreainvestment.com/apiservice/apiservice-domestic-stock-order#L_ff79302e-6014-495e-a188-6dca69fc952e">
      *     주식잔고조회_실현손익[v1_국내주식-041]
@@ -598,20 +571,18 @@ public class KisBrokerClient extends BrokerClient {
         } catch (JsonProcessingException e) {
             throw new RuntimeException(e);
         }
-
         String rtCd = objectMapper.convertValue(rootNode.path("rt_cd"), String.class);
         String msg1 = objectMapper.convertValue(rootNode.path("msg1"), String.class);
         if(!"0".equals(rtCd)) {
             throw new RuntimeException(msg1);
         }
-
         JsonNode output2Node = rootNode.path("output2");
         List<Map<String, String>> output2 = objectMapper.convertValue(output2Node, new TypeReference<>(){});
         return new BigDecimal(output2.get(0).get("rlzt_pfls"));
     }
 
     /**
-     * submit order
+     * Submits order
      * @param asset asset
      * @param order order
      * @return submitted order
@@ -624,15 +595,12 @@ public class KisBrokerClient extends BrokerClient {
         // quantity with check
         BigDecimal quantity = order.getQuantity().setScale(0, RoundingMode.FLOOR);
         order.setQuantity(quantity);
-
         // price
         BigDecimal price = order.getPrice().setScale(0, RoundingMode.FLOOR);
         order.setPrice(price);
-
         // api url
         String url = apiUrl + "/uapi/domestic-stock/v1/trading/order-cash";
         HttpHeaders headers = createHeaders();
-
         // order type
         String trId;
         switch(order.getType()) {
@@ -641,7 +609,6 @@ public class KisBrokerClient extends BrokerClient {
             default -> throw new RuntimeException("invalid order kind");
         }
         headers.add("tr_id", trId);
-
         // order kind
         String ordDvsn;
         String ordUnpr;
@@ -656,10 +623,8 @@ public class KisBrokerClient extends BrokerClient {
             }
             default -> throw new RuntimeException("invalid order type");
         }
-
         // order quantity
         String ordQty = String.valueOf(quantity.intValue());
-
         // request
         Map<String, String> payloadMap = new LinkedHashMap<>();
         payloadMap.put("CANO", accountNo.split("-")[0]);
@@ -673,26 +638,23 @@ public class KisBrokerClient extends BrokerClient {
                 .headers(headers)
                 .contentType(MediaType.APPLICATION_JSON)
                 .body(payloadMap);
-
         // exchange
         sleep();
         ResponseEntity<Map<String, Object>> responseEntity = createRestTemplate().exchange(requestEntity, new ParameterizedTypeReference<>(){});
         Map<String, Object> responseMap = Optional.ofNullable(responseEntity.getBody())
                 .orElseThrow();
-
         // response
         String rtCd = responseMap.getOrDefault("rt_cd", "").toString();
         String msg1 = responseMap.getOrDefault("msg1", "").toString();
         if(!"0".equals(rtCd)) {
             throw new RuntimeException(msg1);
         }
-
         // return
         return order;
     }
 
     /**
-     * gets waiting orders
+     * Gets waiting orders
      * @return waiting orders
      * @see <a href="https://apiportal.koreainvestment.com/apiservice/apiservice-domestic-stock-order#L_d4537e9c-73f7-414c-9fb0-4eae3bc397d0">
      *     주식정정취소가능주문조회[v1_국내주식-004]
@@ -720,7 +682,6 @@ public class KisBrokerClient extends BrokerClient {
                 .get(url)
                 .headers(headers)
                 .build();
-
         sleep();
         ResponseEntity<String> responseEntity = restTemplate.exchange(requestEntity, String.class);
         JsonNode rootNode;
@@ -729,16 +690,13 @@ public class KisBrokerClient extends BrokerClient {
         } catch (JsonProcessingException e) {
             throw new RuntimeException(e);
         }
-
         String rtCd = objectMapper.convertValue(rootNode.path("rt_cd"), String.class);
         String msg1 = objectMapper.convertValue(rootNode.path("msg1"), String.class);
         if(!"0".equals(rtCd)) {
             throw new RuntimeException(msg1);
         }
-
         JsonNode outputNode = rootNode.path("output");
         List<Map<String, String>> output = objectMapper.convertValue(outputNode, new TypeReference<>(){});
-
         // return
         return output.stream()
                 .map(row -> {
@@ -785,11 +743,9 @@ public class KisBrokerClient extends BrokerClient {
     public Order amendOrder(Asset asset, Order order) throws InterruptedException {
         String url = apiUrl + "/uapi/domestic-stock/v1/trading/order-rvsecncl";
         HttpHeaders headers = createHeaders();
-
         // trId
         String trId = (production ? "TTTC0803U" : "VTTC0803U");
         headers.add("tr_id", trId);
-
         // order type
         String ordDvsn;
         switch(order.getKind()) {
@@ -797,7 +753,6 @@ public class KisBrokerClient extends BrokerClient {
             case MARKET -> ordDvsn = "01";
             default -> throw new RuntimeException("invalid order type");
         }
-
         // request
         Map<String, String> payloadMap = new LinkedHashMap<>();
         payloadMap.put("CANO", accountNo.split("-")[0]);
@@ -814,26 +769,23 @@ public class KisBrokerClient extends BrokerClient {
                 .headers(headers)
                 .contentType(MediaType.APPLICATION_JSON)
                 .body(payloadMap);
-
         // exchange
         sleep();
         ResponseEntity<Map<String, Object>> responseEntity = createRestTemplate().exchange(requestEntity, new ParameterizedTypeReference<>(){});
         Map<String, Object> responseMap = Optional.ofNullable(responseEntity.getBody())
                 .orElseThrow();
-
         // response
         String rtCd = responseMap.getOrDefault("rt_cd", "").toString();
         String msg1 = responseMap.getOrDefault("msg1", "").toString();
         if(!"0".equals(rtCd)) {
             throw new RuntimeException(msg1);
         }
-
         // return
         return order;
     }
 
     /**
-     * gets realized profits
+     * Gets realized profits
      * @param dateFrom date from
      * @param dateTo  date to
      * @return realized profits
@@ -847,16 +799,13 @@ public class KisBrokerClient extends BrokerClient {
         if (!this.production) {
             throw new UnsupportedOperationException();
         }
-
         // defines
         List<RealizedProfit> realizedProfits = new ArrayList<>();
         HttpHeaders headers = createHeaders();
         headers.add("tr_id", "TTTC8715R");
-
         // pagination key
         String ctxAreaFk100 = "";
         String ctxAreaNk100 = "";
-
         // loop for pagination
         for (int i = 0; i < 100; i ++) {
             String url = apiUrl + "/uapi/domestic-stock/v1/trading/inquire-period-trade-profit";
@@ -878,10 +827,8 @@ public class KisBrokerClient extends BrokerClient {
                     .get(url)
                     .headers(headers)
                     .build();
-
             sleep();
             ResponseEntity<String> responseEntity = restTemplate.exchange(requestEntity, String.class);
-
             JsonNode rootNode;
             try {
                 rootNode = objectMapper.readTree(responseEntity.getBody());
@@ -893,7 +840,6 @@ public class KisBrokerClient extends BrokerClient {
             if (!"0".equals(rtCd)) {
                 throw new RuntimeException(msg1);
             }
-
             // temp list
             List<Map<String, String>> output1 = objectMapper.convertValue(rootNode.path("output1"), new TypeReference<>() {});
             List<RealizedProfit> tempRealizedProfits = output1.stream()
@@ -914,10 +860,8 @@ public class KisBrokerClient extends BrokerClient {
                                 .build();
                     })
                     .collect(Collectors.toList());
-
             // adds final list
             realizedProfits.addAll(tempRealizedProfits);
-
             // detects pagination
             ctxAreaFk100 = objectMapper.convertValue(rootNode.path("ctx_area_fk100"), String.class);
             ctxAreaNk100 = objectMapper.convertValue(rootNode.path("ctx_area_nk100"), String.class);
@@ -927,7 +871,6 @@ public class KisBrokerClient extends BrokerClient {
             headers.set("tr_cont", "N");
             ctxAreaFk100 = ctxAreaNk100;
         }
-
         // return
         return realizedProfits;
     }
@@ -947,16 +890,13 @@ public class KisBrokerClient extends BrokerClient {
         if (!this.production) {
             throw new UnsupportedOperationException();
         }
-
         // defines
         List<DividendProfit> dividendProfits = new ArrayList<>();
         HttpHeaders headers = createHeaders();
         headers.add("tr_id", "CTRGA011R");
-
         // pagination key
         String ctxAreaFk100 = "";
         String ctxAreaNk100 = "";
-
         // loop for pagination
         for (int i = 0; i < 100; i ++) {
             String url = apiUrl + "/uapi/domestic-stock/v1/trading/period-rights";
@@ -981,10 +921,8 @@ public class KisBrokerClient extends BrokerClient {
                     .get(url)
                     .headers(headers)
                     .build();
-
             sleep();
             ResponseEntity<String> responseEntity = restTemplate.exchange(requestEntity, String.class);
-
             JsonNode rootNode;
             try {
                 rootNode = objectMapper.readTree(responseEntity.getBody());
@@ -996,7 +934,6 @@ public class KisBrokerClient extends BrokerClient {
             if (!"0".equals(rtCd)) {
                 throw new RuntimeException(msg1);
             }
-
             // temp list
             List<Map<String, String>> output = objectMapper.convertValue(rootNode.path("output"), new TypeReference<>() {});
             List<DividendProfit> tempDividendProfits = output.stream()
@@ -1034,10 +971,8 @@ public class KisBrokerClient extends BrokerClient {
                                 .build();
                     })
                     .collect(Collectors.toList());
-
             // adds final list
             dividendProfits.addAll(tempDividendProfits);
-
             // check next page
             HttpHeaders responseHeaders = responseEntity.getHeaders();
             String responseTrCont = null;
@@ -1049,13 +984,11 @@ public class KisBrokerClient extends BrokerClient {
             if (!"M".equals(responseTrCont) || tempDividendProfits.isEmpty()) {
                 break;
             }
-
             // next page request
             ctxAreaFk100 = objectMapper.convertValue(rootNode.path("ctx_area_fk100"), String.class);
             ctxAreaNk100 = objectMapper.convertValue(rootNode.path("ctx_area_nk100"), String.class);
             headers.set("tr_cont", "N");
         }
-
         // return
         return dividendProfits;
     }

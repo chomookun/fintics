@@ -18,7 +18,7 @@ public class Dividend {
     private BigDecimal dividendPerShare;
 
     /**
-     * factory method
+     * Converts dividend entity to dividend
      * @param dividendEntity dividend entity
      * @return dividend
      */

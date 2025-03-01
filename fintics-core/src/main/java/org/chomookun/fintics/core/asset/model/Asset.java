@@ -61,9 +61,9 @@ public class Asset {
     }
 
     /**
-     * asset factory method
+     * Converts asset entity to model
      * @param assetEntity asset entity
-     * @return asset
+     * @return asset model
      */
     public static Asset from(AssetEntity assetEntity) {
         return Asset.builder()

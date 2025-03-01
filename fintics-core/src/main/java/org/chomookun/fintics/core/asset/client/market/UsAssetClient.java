@@ -39,18 +39,23 @@ public class UsAssetClient extends AssetClient implements NasdaqClientSupport, Y
 
     private final ObjectMapper objectMapper;
 
+    /**
+     * Constructor
+     * @param assetClientProperties asset client properties
+     * @param objectMapper object mapper
+     */
     public UsAssetClient(AssetClientProperties assetClientProperties, ObjectMapper objectMapper) {
         super(assetClientProperties);
-
-        // rest template
         this.restTemplate = RestTemplateBuilder.create()
                 .httpRequestRetryStrategy(new DefaultHttpRequestRetryStrategy())
                 .build();
-
-        // object mapper
         this.objectMapper = objectMapper;
     }
 
+    /**
+     * Gets assets
+     * @return assets
+     */
     @Override
     public List<Asset> getAssets() {
         List<Asset> assets = new ArrayList<>();
@@ -62,7 +67,7 @@ public class UsAssetClient extends AssetClient implements NasdaqClientSupport, Y
     }
 
     /**
-     * gets stock assets
+     * Gets stock assets
      * @param exchange exchange code
      * @return list of stock asset
      */
@@ -81,15 +86,13 @@ public class UsAssetClient extends AssetClient implements NasdaqClientSupport, Y
         }
         JsonNode rowsNode = rootNode.path("data").path("rows");
         List<Map<String, String>> rows = objectMapper.convertValue(rowsNode, new TypeReference<>() {});
-
         // sort
         rows.sort((o1, o2) -> {
             BigDecimal o1MarketCap = new BigDecimal(StringUtils.defaultIfBlank(o1.get("marketCap"), "0"));
             BigDecimal o2MarketCap = new BigDecimal(StringUtils.defaultIfBlank(o2.get("marketCap"),"0"));
             return o2MarketCap.compareTo(o1MarketCap);
         });
-
-        // return
+        // converts and returns
         return rows.stream()
                 .map(row -> {
                     String exchangeMic = null;
@@ -116,7 +119,7 @@ public class UsAssetClient extends AssetClient implements NasdaqClientSupport, Y
     }
 
     /**
-     * gets list of ETF
+     * Gets list of ETF
      * @see <a href="https://www.nasdaq.com/market-activity/etf/screener">Nasdaq Symbol Screener</a>
      * @return list of etf asset
      */
@@ -135,7 +138,6 @@ public class UsAssetClient extends AssetClient implements NasdaqClientSupport, Y
         }
         JsonNode rowsNode = rootNode.path("data").path("data").path("rows");
         List<Map<String, String>> rows = objectMapper.convertValue(rowsNode, new TypeReference<>() {});
-
         // sort
         rows.sort((o1, o2) -> {
             try {
@@ -147,7 +149,6 @@ public class UsAssetClient extends AssetClient implements NasdaqClientSupport, Y
                 return 0;
             }
         });
-
         List<Asset> assets = rows.stream()
                 .map(row -> Asset.builder()
                         .assetId(toAssetId(MARKET_US, row.get("symbol")))
@@ -156,18 +157,16 @@ public class UsAssetClient extends AssetClient implements NasdaqClientSupport, Y
                         .type("ETF")
                         .build())
                 .collect(Collectors.toList());
-
         // fill exchange
         List<String> symbols = assets.stream().map(Asset::getSymbol).toList();
         Map<String, String> exchangeMap = getExchangeMap(symbols);
         assets.forEach(asset -> asset.setExchange(exchangeMap.get(asset.getSymbol())));
-
         // return
         return assets;
     }
 
     /**
-     * gets exchange map
+     * Gets exchange map
      * @param symbols list of symbols to retrieve
      * @return exchange map
      */
@@ -212,6 +211,10 @@ public class UsAssetClient extends AssetClient implements NasdaqClientSupport, Y
         return asset.getAssetId().startsWith("US.");
     }
 
+    /**
+     * Populates asset
+     * @param asset asset
+     */
     @Override
     public void populateAsset(Asset asset) {
         switch(Optional.ofNullable(asset.getType()).orElse("")) {
@@ -221,6 +224,10 @@ public class UsAssetClient extends AssetClient implements NasdaqClientSupport, Y
         }
     }
 
+    /**
+     * Populates stock asset
+     * @param asset stock asset
+     */
     void populateStockAsset(Asset asset) {
         BigDecimal price = null;
         BigDecimal volume = null;
@@ -234,7 +241,6 @@ public class UsAssetClient extends AssetClient implements NasdaqClientSupport, Y
         int dividendFrequency;
         BigDecimal capitalGain;
         BigDecimal totalReturn;
-
         // calls summary api
         HttpHeaders headers = createNasdaqHeaders();
         String summaryUrl = String.format(
@@ -253,7 +259,6 @@ public class UsAssetClient extends AssetClient implements NasdaqClientSupport, Y
         }
         JsonNode summaryDataNode = summaryRootNode.path("data").path("summaryData");
         HashMap<String, Map<String,String>> summaryDataMap = objectMapper.convertValue(summaryDataNode, new TypeReference<>() {});
-
         // price, market cap
         for(String name : summaryDataMap.keySet()) {
             Map<String, String> map = summaryDataMap.get(name);
@@ -279,7 +284,6 @@ public class UsAssetClient extends AssetClient implements NasdaqClientSupport, Y
                 dividendYield = convertPercentageToNumber(value, null);
             }
         }
-
         // calls financial api
         String financialUrl = String.format(
                 "https://api.nasdaq.com/api/company/%s/financials?frequency=1", // frequency 2 is quarterly
@@ -299,7 +303,6 @@ public class UsAssetClient extends AssetClient implements NasdaqClientSupport, Y
         List<Map<String,String>> balanceSheetTableRows = objectMapper.convertValue(balanceSheetTableRowsNode, new TypeReference<>(){});
         JsonNode incomeStatementTableRowsNode = financialRootNode.path("data").path("incomeStatementTable").path("rows");
         List<Map<String,String>> incomeStatementTableRows = objectMapper.convertValue(incomeStatementTableRowsNode, new TypeReference<>(){});
-
         for(Map<String,String> row : balanceSheetTableRows) {
             String key = row.get("value1");
             String value = row.get("value2");
@@ -307,7 +310,6 @@ public class UsAssetClient extends AssetClient implements NasdaqClientSupport, Y
                 totalEquity = convertCurrencyToNumber(value, CURRENCY_USD, null);
             }
         }
-
         for(Map<String,String> row : incomeStatementTableRows) {
             String key = row.get("value1");
             String value = row.get("value2");
@@ -315,17 +317,14 @@ public class UsAssetClient extends AssetClient implements NasdaqClientSupport, Y
                 netIncome = convertCurrencyToNumber(value, CURRENCY_USD, null);
             }
         }
-
         // roe
         if(netIncome != null && totalEquity != null) {
             roe = netIncome.divide(totalEquity, 8, RoundingMode.HALF_UP)
                     .multiply(BigDecimal.valueOf(100));
         }
-
         // dividend frequency
         List<Dividend> dividends = getDividends(asset);
         dividendFrequency = dividends.size();
-
         // capital gain
         List<Ohlcv> ohlcvs = getOhlcvs(asset);
         BigDecimal startPrice = ohlcvs.get(ohlcvs.size() - 1).getClose();
@@ -334,11 +333,9 @@ public class UsAssetClient extends AssetClient implements NasdaqClientSupport, Y
                 .divide(startPrice, MathContext.DECIMAL32)
                 .multiply(BigDecimal.valueOf(100))
                 .setScale(2, RoundingMode.HALF_UP);
-
         // total return
         totalReturn = capitalGain.add(Optional.ofNullable(dividendYield).orElse(BigDecimal.ZERO))
                 .setScale(2, RoundingMode.HALF_UP);
-
         // update asset
         asset.setPrice(price);
         asset.setVolume(volume);
@@ -352,6 +349,10 @@ public class UsAssetClient extends AssetClient implements NasdaqClientSupport, Y
         asset.setTotalReturn(totalReturn);
     }
 
+    /**
+     * Populates ETF asset
+     * @param asset ETF asset
+     */
     void populateEtfAsset(Asset asset) {
         BigDecimal price = null;
         BigDecimal volume = null;
@@ -360,7 +361,6 @@ public class UsAssetClient extends AssetClient implements NasdaqClientSupport, Y
         BigDecimal dividendYield = null;
         BigDecimal capitalGain;
         BigDecimal totalReturn;
-
         // calls summary api
         HttpHeaders headers = createNasdaqHeaders();
         String summaryUrl = String.format(
@@ -379,7 +379,6 @@ public class UsAssetClient extends AssetClient implements NasdaqClientSupport, Y
         }
         JsonNode summaryDataNode = summaryRootNode.path("data").path("summaryData");
         HashMap<String, Map<String,String>> summaryDataMap = objectMapper.convertValue(summaryDataNode, new TypeReference<>() {});
-
         // price, market cap
         for(String name : summaryDataMap.keySet()) {
             Map<String, String> map = summaryDataMap.get(name);
@@ -399,11 +398,9 @@ public class UsAssetClient extends AssetClient implements NasdaqClientSupport, Y
                 dividendYield = convertPercentageToNumber(value, null);
             }
         }
-
         // dividend frequency
         List<Dividend> dividends = getDividends(asset);
         dividendFrequency = dividends.size();
-
         // capital gain
         List<Ohlcv> ohlcvs = getOhlcvs(asset);
         BigDecimal startPrice = ohlcvs.get(ohlcvs.size() - 1).getClose();
@@ -412,11 +409,9 @@ public class UsAssetClient extends AssetClient implements NasdaqClientSupport, Y
                 .divide(startPrice, MathContext.DECIMAL32)
                 .multiply(BigDecimal.valueOf(100))
                 .setScale(2, RoundingMode.HALF_UP);
-
         // total return
         totalReturn = capitalGain.add(Optional.ofNullable(dividendYield).orElse(BigDecimal.ZERO))
                 .setScale(2, RoundingMode.HALF_UP);
-
         // updates
         asset.setPrice(price);
         asset.setVolume(volume);

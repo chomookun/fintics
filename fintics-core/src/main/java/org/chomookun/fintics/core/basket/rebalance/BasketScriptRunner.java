@@ -36,13 +36,13 @@ public abstract class BasketScriptRunner {
     }
 
     /**
-     * get basket rebalance results
+     * Gets basket rebalance results
      * @return rebalance results
      */
     public abstract List<BasketRebalanceAsset> run();
 
     /**
-     * loads properties string to properties object
+     * Loads properties string to properties object
      * @param propertiesString property string
      * @return properties
      */

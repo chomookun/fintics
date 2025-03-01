@@ -47,10 +47,9 @@ class KisBrokerClientTest extends CoreTestSupport {
         appKey = System.getenv("KIS_APP_KEY");
         appSecret = System.getenv("KIS_APP_SECRET");
         accountNo = System.getenv("KIS_ACCOUNT_NO");
-
         // loads access token
         if (apiUrl != null && appKey != null && appSecret != null && accountNo != null) {
-            KisBrokerClientTestUtils.loadAccessToken(apiUrl, appKey, appSecret);
+            KisBrokerClientTestUtil.loadAccessToken(apiUrl, appKey, appSecret);
         }
     }
 
@@ -218,7 +217,6 @@ class KisBrokerClientTest extends CoreTestSupport {
                 .kind(Order.Kind.MARKET)
                 .quantity(BigDecimal.valueOf(1))
                 .build();
-
         // when
         getKisClient().submitOrder(asset, order);
     }

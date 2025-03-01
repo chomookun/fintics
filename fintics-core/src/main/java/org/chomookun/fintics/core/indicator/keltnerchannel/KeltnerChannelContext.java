@@ -16,6 +16,13 @@ public class KeltnerChannelContext extends IndicatorContext {
 
     private final double multiplier;
 
+    /**
+     * Creates keltner channel context
+     * @param period period
+     * @param atrPeriod atr period
+     * @param multiplier multiplier
+     * @return keltner channel context
+     */
     public static KeltnerChannelContext of(int period, int atrPeriod, double multiplier) {
         return KeltnerChannelContext.builder()
                 .period(period)

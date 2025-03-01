@@ -19,11 +19,8 @@ public class ObvCalculatorTest extends AbstractCalculatorTest {
     @Test
     void calculate() {
         // given
-        String filePath = getPackageTestResourcesDir(this.getClass()) + "ObvCalculatorTest.tsv";
-        List<Map<String,String>> inputRows = readTsv(
-                filePath,
-                new String[]{"dateTime","open","high","low","close","volume","OBV","Signal"}
-        );
+        String[] columnNames = new String[]{"dateTime","open","high","low","close","volume","OBV","Signal"};
+        List<Map<String,String>> inputRows = readTestResourceAsTsv(this.getClass().getPackage(), "ObvCalculatorTest.tsv", columnNames);
         List<Ohlcv> ohlcvs = inputRows.stream()
                 .map(row -> {
                     return Ohlcv.builder()
@@ -34,10 +31,8 @@ public class ObvCalculatorTest extends AbstractCalculatorTest {
                 .collect(Collectors.toList());
         Collections.reverse(inputRows);
         Collections.reverse(ohlcvs);
-
         // when
         List<Obv> obvs = new ObvCalculator(ObvContext.DEFAULT).calculate(ohlcvs);
-
         // then
         for(int i = 0, size = obvs.size(); i < size; i ++) {
             Obv obv = obvs.get(i);
@@ -47,14 +42,12 @@ public class ObvCalculatorTest extends AbstractCalculatorTest {
             BigDecimal originVolume = new BigDecimal(inputRow.get("volume").replaceAll(",",""));
             BigDecimal originObv = new BigDecimal(inputRow.get("OBV").replaceAll(",",""));
             BigDecimal originSignal = new BigDecimal(inputRow.get("Signal").replaceAll(",", ""));
-
             log.info("[{}] {},{},{}({}) / {},{},{}({})", i,
                     originClosePrice, originVolume, originObv, originSignal,
                     ohlcv.getClose(), ohlcv.getVolume(), obv.getValue(), obv.getSignal());
             assertEquals(originObv.doubleValue(), obv.getValue().doubleValue(), 1.0);
             assertEquals(originSignal.doubleValue(), obv.getSignal().doubleValue(), 1.0);
         }
-
     }
 
 }

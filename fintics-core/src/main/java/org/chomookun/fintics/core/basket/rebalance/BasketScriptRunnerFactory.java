@@ -15,7 +15,7 @@ public class BasketScriptRunnerFactory {
     private final OhlcvService ohlcvService;
 
     /**
-     * gets object
+     * Gets object
      * @param basket basket
      * @return strategy runner
      */
@@ -35,7 +35,7 @@ public class BasketScriptRunnerFactory {
                         .ohlcvService(ohlcvService)
                         .build();
             }
-            default -> throw new RuntimeException("invalid basket.language");
+            default -> throw new IllegalArgumentException(String.format("invalid basket.language:%s", basket.getLanguage()));
         }
     }
 

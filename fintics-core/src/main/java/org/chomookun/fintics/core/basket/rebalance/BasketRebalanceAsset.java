@@ -20,6 +20,14 @@ public class BasketRebalanceAsset {
 
     private String remark;
 
+    /**
+     * Creates new instance of basket rebalance asset
+     * @param symbol symbol
+     * @param name name
+     * @param holdingWeight holding weight
+     * @param remark remark
+     * @return basket asset
+     */
     public static BasketRebalanceAsset of(String symbol, String name, BigDecimal holdingWeight, String remark) {
         return BasketRebalanceAsset.builder()
                 .symbol(symbol)

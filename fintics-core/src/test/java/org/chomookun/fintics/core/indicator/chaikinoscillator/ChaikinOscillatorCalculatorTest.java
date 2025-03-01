@@ -19,11 +19,8 @@ public class ChaikinOscillatorCalculatorTest extends AbstractCalculatorTest {
     @Test
     void calculate() {
         // given
-        String filePath = getPackageTestResourcesDir(this.getClass()) + "ChaikinOscillatorCalculatorTest.tsv";
-        List<Map<String,String>> inputRows = readTsv(
-                filePath,
-                new String[]{"dateTime","open","high","low","close","volume","CO","Signal"}
-        );
+        String[] columnNames = new String[]{"dateTime","open","high","low","close","volume","CO","Signal"};
+        List<Map<String,String>> inputRows = readTestResourceAsTsv(this.getClass().getPackage(), "ChaikinOscillatorCalculatorTest.tsv", columnNames);
         List<Ohlcv> ohlcvs = inputRows.stream()
                 .map(row -> {
                     return Ohlcv.builder()
@@ -37,11 +34,9 @@ public class ChaikinOscillatorCalculatorTest extends AbstractCalculatorTest {
                 .collect(Collectors.toList());
         Collections.reverse(inputRows);
         Collections.reverse(ohlcvs);
-
         // when
         List<ChaikinOscillator> chaikinOscillators = new ChaikinOscillatorCalculator(ChaikinOscillatorContext.DEFAULT)
                 .calculate(ohlcvs);
-
         // then
         for(int i = 0, size = chaikinOscillators.size(); i < size; i ++) {
             ChaikinOscillator chaikinOscillator = chaikinOscillators.get(i);
@@ -54,12 +49,9 @@ public class ChaikinOscillatorCalculatorTest extends AbstractCalculatorTest {
             BigDecimal originVolume = new BigDecimal(inputRow.get("volume").replaceAll(",",""));
             BigDecimal originCo = new BigDecimal(inputRow.get("CO").replaceAll(",",""));
             BigDecimal originSignal = new BigDecimal(inputRow.get("Signal").replaceAll(",",""));
-
             log.info("[{}] {},{},{},{},{},{},{} / {},{},{},{},{},{},{}", i,
                     originOpenPrice, originHighPrice, originLowPrice, originClosePrice, originVolume, originCo, originSignal,
                     ohlcv.getOpen(), ohlcv.getHigh(), ohlcv.getLow(), ohlcv.getClose(), ohlcv.getVolume(), chaikinOscillator.getValue(), chaikinOscillator.getSignal());
-
-            // assert
             assertEquals(originCo.doubleValue(), chaikinOscillator.getValue().doubleValue(), 0.1);
             assertEquals(originSignal.doubleValue(), chaikinOscillator.getSignal().doubleValue(), 0.1);
         }

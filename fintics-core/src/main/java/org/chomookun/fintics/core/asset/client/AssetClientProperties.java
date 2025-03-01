@@ -16,6 +16,11 @@ public class AssetClientProperties {
 
     private Map<String, String> properties;
 
+    /**
+     * Gets specified property value
+     * @param name property name
+     * @return property value
+     */
     public Optional<String> getProperty(String name) {
         return Optional.ofNullable(properties.get(name));
     }

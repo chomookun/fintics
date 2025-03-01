@@ -30,17 +30,19 @@ public class BasketRebalanceTask {
 
     private final BasketScriptRunnerFactory basketScriptRunnerFactory;
 
+    /**
+     * Executes basket rebalance task
+     * @return basket rebalance result
+     */
     public BasketRebalanceResult execute() {
         // defines
         List<BasketAsset> addedBasketAssets = new ArrayList<>();
         List<BasketAsset> removedBasketAssets = new ArrayList<>();
-
         // executes basket script runner
         BasketScriptRunner basketRebalanceRunner = basketScriptRunnerFactory.getObject(basket);
         basketRebalanceRunner.setLog((Logger)log);
         List<BasketRebalanceAsset> basketRebalanceAssets = basketRebalanceRunner.run();
         log.info("basketRebalanceAssets: {}", basketRebalanceAssets);
-
         //================================================
         // 0. 베스켓 사용 중인 트레이드 + 잔고 조회
         //================================================
@@ -58,7 +60,6 @@ public class BasketRebalanceTask {
                 })
                 .filter(Objects::nonNull)
                 .toList();
-
         //===========================================
         // 1. 신규 리밸런싱 종목 추가
         //===========================================
@@ -88,7 +89,6 @@ public class BasketRebalanceTask {
                 }
             }
         }
-
         //===========================================
         // 2. 기존 종목 삭제
         //===========================================
@@ -116,12 +116,10 @@ public class BasketRebalanceTask {
                 }
             }
         }
-
         //=============================================
         // 3. 최종 변경 사항 저장 처리
         //=============================================
         basketService.saveBasket(basket);
-
         // returns
         return BasketRebalanceResult.builder()
                 .basketRebalanceAssets(basketRebalanceAssets)
@@ -131,7 +129,7 @@ public class BasketRebalanceTask {
     }
 
     /**
-     * checks owned asset
+     * Checks owned asset
      * @param assetId asset id
      * @param balances balances
      * @return whether owned or not

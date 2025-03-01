@@ -27,7 +27,7 @@ public class OrderService {
     private final ObjectMapper objectMapper;
 
     /**
-     * gets order history
+     * Gets order history
      * @param orderSearch order search condition
      * @param pageable pageable
      * @return page of order
@@ -42,7 +42,7 @@ public class OrderService {
     }
 
     /**
-     * saves order history
+     * Saves order history
      * @param order order
      * @return saved order
      */
@@ -68,7 +68,6 @@ public class OrderService {
         orderEntity.setBrokerOrderId(order.getBrokerOrderId());
         orderEntity.setResult(order.getResult());
         orderEntity.setErrorMessage(order.getErrorMessage());
-
         // strategy result
         try {
             String strategyResultData = objectMapper.writeValueAsString(order.getStrategyResult());

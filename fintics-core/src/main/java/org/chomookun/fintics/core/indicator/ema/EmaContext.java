@@ -14,12 +14,23 @@ public class EmaContext extends IndicatorContext {
 
     private final int period;
 
+    /**
+     * Creates ema context
+     * @param period period
+     * @return ema context
+     */
     public static EmaContext of(int period) {
         return EmaContext.builder()
                 .period(period)
                 .build();
     }
 
+    /**
+     * Creates ema context with math context
+     * @param period period
+     * @param mathContext math context
+     * @return ema context
+     */
     public static EmaContext of(int period, MathContext mathContext) {
         return EmaContext.builder()
                 .period(period)

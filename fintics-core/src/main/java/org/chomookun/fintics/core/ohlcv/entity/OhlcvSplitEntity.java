@@ -4,6 +4,8 @@ import lombok.*;
 import org.chomookun.arch4j.core.common.data.converter.ZoneIdConverter;
 
 import jakarta.persistence.*;
+import org.hibernate.annotations.Comment;
+
 import java.io.Serializable;
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
@@ -29,20 +31,25 @@ public class OhlcvSplitEntity {
 
     @Id
     @Column(name = "asset_id")
+    @Comment("Asset ID")
     private String assetId;
 
     @Id
     @Column(name = "date_time")
+    @Comment("Date Time")
     private LocalDateTime dateTime;
 
     @Column(name = "time_zone")
     @Convert(converter = ZoneIdConverter.class)
+    @Comment("Time Zone")
     private ZoneId timeZone;
 
     @Column(name = "split_from")
+    @Comment("Split From")
     private BigDecimal splitFrom;
 
     @Column(name = "split_to")
+    @Comment("Split To")
     private BigDecimal splitTo;
 
 }

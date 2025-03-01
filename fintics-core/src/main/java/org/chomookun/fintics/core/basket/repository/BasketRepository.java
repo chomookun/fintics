@@ -21,27 +21,20 @@ public interface BasketRepository extends JpaRepository<BasketEntity, String>, J
      * @return page of basket entities
      */
     default Page<BasketEntity> findAll(BasketSearch basketSearch, Pageable pageable) {
-        // where
+        // specification
         Specification<BasketEntity> specification = Specification.where(null);
-
-        // like name
         if (basketSearch.getName() != null) {
             specification = specification.and((root, query, criteriaBuilder) ->
                     criteriaBuilder.like(root.get(BasketEntity_.NAME), '%' + basketSearch.getName() + '%')
             );
         }
-
         // sort
-        Sort sort = Sort.by(BasketEntity_.NAME).ascending();
-
-        // find
-        if (pageable.isPaged()) {
-            pageable = PageRequest.of(pageable.getPageNumber(), pageable.getPageSize(), sort);
-            return findAll(specification, pageable);
-        } else {
-            List<BasketEntity> basketEntities = findAll(specification, sort);
-            return new PageImpl<>(basketEntities, pageable, basketEntities.size());
-        }
+        Sort sort = pageable.getSort().and(Sort.by(BasketEntity_.NAME).ascending());
+        Pageable finalPageable = pageable.isUnpaged()
+                ? Pageable.unpaged(sort)
+                : PageRequest.of(pageable.getPageNumber(), pageable.getPageSize(), sort);
+        // finds all
+        return findAll(specification, finalPageable);
     }
 
 }

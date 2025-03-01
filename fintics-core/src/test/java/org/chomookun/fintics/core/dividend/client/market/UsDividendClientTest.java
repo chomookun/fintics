@@ -20,11 +20,15 @@ import java.util.List;
 @Slf4j
 class UsDividendClientTest extends CoreTestSupport {
 
-    private final DividendClientProperties dividendClientProperties;
+    final DividendClientProperties dividendClientProperties;
 
-    private final ObjectMapper objectMapper;
+    final ObjectMapper objectMapper;
 
-    public UsDividendClient getUsDividendClient() {
+    /**
+     * Creates US dividend client
+     * @return us dividend client
+     */
+    public UsDividendClient createUsDividendClient() {
         return new UsDividendClient(dividendClientProperties, objectMapper);
     }
 
@@ -56,7 +60,7 @@ class UsDividendClientTest extends CoreTestSupport {
         LocalDate dateFrom = LocalDate.now().minusYears(3);
         LocalDate dateTo = LocalDate.now();
         // when
-        List<Dividend> dividends = getUsDividendClient().getDividends(asset, dateFrom, dateTo);
+        List<Dividend> dividends = createUsDividendClient().getDividends(asset, dateFrom, dateTo);
         // then
         log.info("dividends:{}", dividends);
     }
@@ -68,7 +72,7 @@ class UsDividendClientTest extends CoreTestSupport {
         LocalDate dateFrom = LocalDate.now().minusYears(3);
         LocalDate dateTo = LocalDate.now();
         // when
-        List<Dividend> dividends = getUsDividendClient().getDividends(asset, dateFrom, dateTo);
+        List<Dividend> dividends = createUsDividendClient().getDividends(asset, dateFrom, dateTo);
         // then
         log.info("dividends:{}", dividends);
     }
@@ -80,7 +84,7 @@ class UsDividendClientTest extends CoreTestSupport {
         LocalDate dateFrom = LocalDate.now().minusYears(3);
         LocalDate dateTo = LocalDate.now();
         // when
-        List<Dividend> dividends = getUsDividendClient().getDividends(asset, dateFrom, dateTo);
+        List<Dividend> dividends = createUsDividendClient().getDividends(asset, dateFrom, dateTo);
         // then
         log.info("dividends:{}", dividends);
     }

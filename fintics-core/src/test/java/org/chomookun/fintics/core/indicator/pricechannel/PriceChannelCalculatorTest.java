@@ -22,11 +22,8 @@ public class PriceChannelCalculatorTest extends AbstractCalculatorTest {
     @Test
     void calculate() {
         // given
-        String filePath = getPackageTestResourcesDir(this.getClass()) + "PriceChannelCalculatorTest.tsv";
-        List<Map<String,String>> inputRows = readTsv(
-                filePath,
-                new String[]{"dateTime","open","high","low","close","upper","lower"}
-        );
+        String[] columnNames = new String[]{"dateTime","open","high","low","close","upper","lower"};
+        List<Map<String,String>> inputRows = readTestResourceAsTsv(this.getClass().getPackage(), "PriceChannelCalculatorTest.tsv", columnNames);
         List<Ohlcv> ohlcvs = inputRows.stream()
                 .map(row -> {
                     return Ohlcv.builder()
@@ -40,11 +37,9 @@ public class PriceChannelCalculatorTest extends AbstractCalculatorTest {
                 .collect(Collectors.toList());
         Collections.reverse(inputRows);
         Collections.reverse(ohlcvs);
-
         // when
         List<PriceChannel> priceChannels = new PriceChannelCalculator(PriceChannelContext.DEFAULT)
                 .calculate(ohlcvs);
-
         // then
         for(int i = 0, size = priceChannels.size(); i < size; i ++) {
             PriceChannel priceChannel = priceChannels.get(i);
@@ -57,24 +52,20 @@ public class PriceChannelCalculatorTest extends AbstractCalculatorTest {
             BigDecimal originClose = new BigDecimal(inputRow.get("close").replaceAll(",",""));
             BigDecimal originUpper = new BigDecimal(inputRow.get("upper").replaceAll(",",""));
             BigDecimal originLower = new BigDecimal(inputRow.get("lower").replaceAll(",",""));
-
             log.info("[{}/{}] {},{},{},{} - {},{} / {},{}",
                     originDateTime, priceChannel.getDateTime().format(DateTimeFormatter.ofPattern("yyyy/MM/dd")),
                     originOpen, originHigh, originLow, originClose,
                     originUpper, originLower,
                     priceChannel.getUpper().setScale(2, RoundingMode.HALF_UP),
                     priceChannel.getLower().setScale(2, RoundingMode.HALF_UP));
-
             // skip initial block
             if (i <= PriceChannelContext.DEFAULT.getPeriod()) {
                 continue;
             }
-
             // assert
             assertEquals(originUpper.doubleValue(), priceChannel.getUpper().doubleValue(), 0.1);
             assertEquals(originLower.doubleValue(), priceChannel.getLower().doubleValue(), 0.1);
         }
-
     }
 
 }

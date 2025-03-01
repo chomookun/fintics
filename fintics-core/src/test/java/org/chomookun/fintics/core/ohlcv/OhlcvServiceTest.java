@@ -168,7 +168,6 @@ public class OhlcvServiceTest extends CoreTestSupport {
         assertEquals(10, dailyOhlcvs.get(1).getClose().doubleValue());
     }
 
-
     @Test
     void getDailyOhlcvWithAVGOSplit() {
         // given

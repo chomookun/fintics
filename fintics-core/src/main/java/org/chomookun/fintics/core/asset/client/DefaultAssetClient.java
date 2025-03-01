@@ -13,13 +13,18 @@ import java.util.ArrayList;
 import java.util.List;
 
 @Component
-@ConditionalOnProperty(prefix = "fintics.core.asset.asset-client", name = "class-name", havingValue="org.chomookun.fintics.core.asset.client.SimpleAssetClient")
+@ConditionalOnProperty(prefix = "fintics.core.asset.asset-client", name = "class-name", havingValue="org.chomookun.fintics.core.asset.client.DefaultAssetClient")
 @Slf4j
-public class SimpleAssetClient extends AssetClient {
+public class DefaultAssetClient extends AssetClient {
 
     private final List<AssetClient> assetClients = new ArrayList<>();
 
-    protected SimpleAssetClient(AssetClientProperties assetClientProperties, ObjectMapper objectMapper) {
+    /**
+     * Simple asset client constructor
+     * @param assetClientProperties asset client properties
+     * @param objectMapper object mapper
+     */
+    protected DefaultAssetClient(AssetClientProperties assetClientProperties, ObjectMapper objectMapper) {
         super(assetClientProperties);
         assetClients.add(new UsAssetClient(assetClientProperties, objectMapper));
         assetClients.add(new KrAssetClient(assetClientProperties));

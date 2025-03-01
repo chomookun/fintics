@@ -6,7 +6,7 @@ import java.util.Currency;
 public interface ClientSupport {
 
     /**
-     * converts string to number
+     * Converts string to number
      * @param value string
      * @return number
      */
@@ -24,7 +24,7 @@ public interface ClientSupport {
     }
 
     /**
-     * converts currency string to number
+     * Converts currency string to number
      * @param value currency string
      * @return currency number
      */
@@ -41,7 +41,7 @@ public interface ClientSupport {
     }
 
     /**
-     * converts percentage string to number
+     * Converts percentage string to number
      * @param value percentage string
      * @return percentage number
      */

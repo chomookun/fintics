@@ -14,6 +14,12 @@ public class AtrContext extends IndicatorContext {
 
     private final int signalPeriod;
 
+    /**
+     * Creates atr context
+     * @param period period
+     * @param signalPeriod signal period
+     * @return atr context
+     */
     public static AtrContext of(int period, int signalPeriod) {
         return AtrContext.builder()
                 .period(period)

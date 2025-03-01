@@ -10,10 +10,19 @@ import java.util.List;
 
 public class ChaikinOscillatorCalculator extends IndicatorCalculator<ChaikinOscillatorContext, ChaikinOscillator> {
 
+    /**
+     * Constructor
+     * @param context chaikin oscillator context
+     */
     public ChaikinOscillatorCalculator(ChaikinOscillatorContext context) {
         super(context);
     }
 
+    /**
+     * Calculates chaikin's oscillator
+     * @param series series
+     * @return chaikin's oscillator
+     */
     @Override
     public List<ChaikinOscillator> calculate(List<Ohlcv> series) {
         // ad values
@@ -34,7 +43,6 @@ public class ChaikinOscillatorCalculator extends IndicatorCalculator<ChaikinOsci
             adValue = adValue.add(mfVolume);
             adValues.add(new BigDecimal(adValue.unscaledValue(), adValue.scale()));
         }
-
         // values
         List<BigDecimal> shortEmas = emas(adValues, getContext().getShortPeriod(), getContext().getMathContext());
         List<BigDecimal> longEmas = emas(adValues, getContext().getLongPeriod(), getContext().getMathContext());
@@ -43,10 +51,8 @@ public class ChaikinOscillatorCalculator extends IndicatorCalculator<ChaikinOsci
             BigDecimal value = shortEmas.get(i).subtract(longEmas.get(i));
             values.add(value);
         }
-
         // signal
         List<BigDecimal> signals = emas(values, getContext().getSignalPeriod(), getContext().getMathContext());
-
         // chaikin's oscillator
         List<ChaikinOscillator> cos = new ArrayList<>();
         for(int i = 0; i < values.size(); i ++) {

@@ -55,7 +55,6 @@ public class BasketAsset extends Asset {
                 .holdingWeight(basketAssetEntity.getHoldingWeight())
                 .variables(basketAssetEntity.getVariables())
                 .build();
-
         // asset entity
         AssetEntity assetEntity = basketAssetEntity.getAssetEntity();
         if(assetEntity != null) {
@@ -76,7 +75,6 @@ public class BasketAsset extends Asset {
             basketAsset.setCapitalGain(assetEntity.getCapitalGain());
             basketAsset.setTotalReturn(assetEntity.getTotalReturn());
         }
-
         // return
         return basketAsset;
     }

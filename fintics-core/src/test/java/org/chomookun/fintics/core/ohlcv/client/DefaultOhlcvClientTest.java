@@ -21,14 +21,14 @@ import static org.junit.jupiter.api.Assertions.*;
 @SpringBootTest(classes = FinticsCoreConfiguration.class)
 @RequiredArgsConstructor
 @Slf4j
-class SimpleOhlcvClientTest extends CoreTestSupport {
+class DefaultOhlcvClientTest extends CoreTestSupport {
 
     private final OhlcvClientProperties ohlcvClientProperties;
 
     private final ObjectMapper objectMapper;
 
-    SimpleOhlcvClient getSimpleOhlcvClient() {
-        return new SimpleOhlcvClient(ohlcvClientProperties, objectMapper);
+    DefaultOhlcvClient createDefaultOhlcvClient() {
+        return new DefaultOhlcvClient(ohlcvClientProperties, objectMapper);
     }
 
     static List<Asset> getTestUsStockAssets() {
@@ -88,7 +88,7 @@ class SimpleOhlcvClientTest extends CoreTestSupport {
         LocalDateTime dateTimeTo = LocalDateTime.now();
         Pageable pageable = Pageable.unpaged();
         // when
-        List<Ohlcv> dailyOhlcvs = getSimpleOhlcvClient().getOhlcvs(asset, type, dateTimeFrom, dateTimeTo);
+        List<Ohlcv> dailyOhlcvs = createDefaultOhlcvClient().getOhlcvs(asset, type, dateTimeFrom, dateTimeTo);
         // then
         log.info("dailyOhlcvs:{}", dailyOhlcvs);
         assertFalse(dailyOhlcvs.isEmpty());
@@ -103,7 +103,7 @@ class SimpleOhlcvClientTest extends CoreTestSupport {
         LocalDateTime dateTimeTo = LocalDateTime.now();
         Pageable pageable = Pageable.unpaged();
         // when
-        List<Ohlcv> minuteOhlcvs = getSimpleOhlcvClient().getOhlcvs(asset, type, dateTimeFrom, dateTimeTo);
+        List<Ohlcv> minuteOhlcvs = createDefaultOhlcvClient().getOhlcvs(asset, type, dateTimeFrom, dateTimeTo);
         // then
         log.info("minuteOhlcvs:{}", minuteOhlcvs);
         assertFalse(minuteOhlcvs.isEmpty());

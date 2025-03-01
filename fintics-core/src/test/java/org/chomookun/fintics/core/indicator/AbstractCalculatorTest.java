@@ -2,13 +2,12 @@ package org.chomookun.fintics.core.indicator;
 
 import org.apache.commons.csv.CSVFormat;
 import org.apache.commons.csv.CSVParser;
+import org.chomookun.arch4j.core.common.test.CoreTestUtil;
 import org.chomookun.fintics.core.ohlcv.model.Ohlcv;
-import org.jetbrains.annotations.NotNull;
 
 import java.io.InputStream;
 import java.math.BigDecimal;
 import java.nio.charset.StandardCharsets;
-import java.nio.file.Path;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.time.LocalDateTime;
@@ -18,18 +17,21 @@ import java.util.stream.Collectors;
 
 public abstract class AbstractCalculatorTest {
 
-    protected final String getPackageTestResourcesDir(@NotNull Class<?> clazz) {
-        return clazz.getPackage().getName().replace(".", "/") + "/";
-    }
-
-    protected final List<Map<String,String>> readTsv(String filePath, String[] columnNames) {
+    /**
+     * Read test resource as TSV
+     * @param pkg resource package
+     * @param fileName file name
+     * @param columnNames column names
+     * @return TSV map list
+     */
+    protected final List<Map<String,String>> readTestResourceAsTsv(Package pkg, String fileName, String[] columnNames) {
         CSVFormat format = CSVFormat.Builder.create()
                 .setDelimiter("\t")
                 .setHeader(columnNames)
                 .setSkipHeaderRecord(true)
                 .build();
         List<Map<String,String>> list = new ArrayList<>();
-        try (InputStream inputStream = this.getClass().getClassLoader().getResourceAsStream(filePath)) {
+        try (InputStream inputStream = CoreTestUtil.readTestResourceAsStream(pkg, fileName)) {
             CSVParser.parse(inputStream, StandardCharsets.UTF_8, format).stream()
                     .forEach(record -> {
                         Map<String,String> map = new LinkedHashMap<>();
@@ -39,12 +41,23 @@ public abstract class AbstractCalculatorTest {
                         }
                         list.add(map);
                     });
+            return list;
         } catch(Throwable e) {
             throw new RuntimeException(e);
         }
-        return list;
     }
 
+    /**
+     * Convert ohlcvs
+     * @param rows rows
+     * @param datetimeNameAndPattern data time name and pattern
+     * @param openName open name
+     * @param highName high name
+     * @param lowName low name
+     * @param closeName close name
+     * @param volumeName volume name
+     * @return list of ohlcv
+     */
     protected final List<Ohlcv> convertOhlcvs(List<Map<String,String>> rows, String datetimeNameAndPattern, String openName, String highName, String lowName, String closeName, String volumeName) {
         String datetimeName = null;
         String datetimePattern = null;

@@ -12,6 +12,11 @@ public class PriceChannelContext extends IndicatorContext {
 
     private final int period;
 
+    /**
+     * Creates price channel context
+     * @param period period
+     * @return price channel context
+     */
     public static PriceChannelContext of(int period) {
         return PriceChannelContext.builder()
                 .period(period)

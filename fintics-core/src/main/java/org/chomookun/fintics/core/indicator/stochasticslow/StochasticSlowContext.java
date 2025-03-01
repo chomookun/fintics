@@ -16,6 +16,13 @@ public class StochasticSlowContext extends IndicatorContext {
 
     private final int periodD;
 
+    /**
+     * Creates stochastic slow context
+     * @param period period
+     * @param periodK period K
+     * @param periodD period D
+     * @return stochastic slow context
+     */
     public static StochasticSlowContext of(int period, int periodK, int periodD) {
         return StochasticSlowContext.builder()
                 .period(period)

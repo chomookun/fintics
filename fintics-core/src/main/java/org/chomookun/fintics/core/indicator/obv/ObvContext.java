@@ -14,6 +14,12 @@ public class ObvContext extends IndicatorContext {
 
     private final int signalPeriod;
 
+    /**
+     * Creates obv context
+     * @param period period
+     * @param signalPeriod signal period
+     * @return obv context
+     */
     public static ObvContext of(int period, int signalPeriod) {
         return ObvContext.builder()
                 .period(period)

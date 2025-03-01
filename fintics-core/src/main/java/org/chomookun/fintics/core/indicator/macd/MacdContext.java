@@ -16,6 +16,13 @@ public class MacdContext extends IndicatorContext {
 
     private final int signalPeriod;
 
+    /**
+     * Creates macd context
+     * @param shortPeriod short period
+     * @param longPeriod long period
+     * @param signalPeriod signal period
+     * @return macd context
+     */
     public static MacdContext of(int shortPeriod, int longPeriod, int signalPeriod) {
         return MacdContext.builder()
                 .shortPeriod(shortPeriod)

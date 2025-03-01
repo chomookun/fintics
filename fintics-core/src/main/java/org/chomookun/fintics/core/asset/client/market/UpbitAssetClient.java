@@ -19,22 +19,28 @@ public class UpbitAssetClient extends AssetClient {
 
     private final RestTemplate restTemplate;
 
+    /**
+     * Constructor
+     * @param assetClientProperties asset client properties
+     */
     public UpbitAssetClient(AssetClientProperties assetClientProperties) {
         super(assetClientProperties);
-
         // rest template
         this.restTemplate = RestTemplateBuilder.create()
                 .httpRequestRetryStrategy(new DefaultHttpRequestRetryStrategy())
                 .build();
     }
 
+    /**
+     * Gets assets
+     * @return assets
+     */
     @Override
     public List<Asset> getAssets() {
         RequestEntity<Void> requestEntity = RequestEntity
                 .get("https://api.upbit.com/v1/market/all")
                 .build();
-        ResponseEntity<List<Map<String, String>>> responseEntity = restTemplate.exchange(requestEntity, new ParameterizedTypeReference<>() {
-        });
+        ResponseEntity<List<Map<String, String>>> responseEntity = restTemplate.exchange(requestEntity, new ParameterizedTypeReference<>() {});
         List<Map<String,String>> responseBody = Optional.ofNullable(responseEntity.getBody()).orElseThrow();
         return responseBody.stream()
                 .filter(map -> map.get("market").startsWith("KRW-"))

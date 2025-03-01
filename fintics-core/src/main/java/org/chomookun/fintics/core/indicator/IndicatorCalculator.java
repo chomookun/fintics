@@ -18,14 +18,14 @@ public abstract class IndicatorCalculator<C extends IndicatorContext, R extends 
     }
 
     /**
-     * calculate abstract method
+     * Calculate abstract method
      * @param series series
      * @return list of indicator
      */
     public abstract List<R> calculate(List<Ohlcv> series);
 
     /**
-     * calculates exponential moving average
+     * Calculates exponential moving average
      * @param series series
      * @param period period
      * @param mathContext math context
@@ -48,7 +48,7 @@ public abstract class IndicatorCalculator<C extends IndicatorContext, R extends 
     }
 
     /**
-     * calculates simple moving average
+     * Calculates simple moving average
      * @param series series
      * @param period period
      * @param mathContext math context
@@ -57,16 +57,11 @@ public abstract class IndicatorCalculator<C extends IndicatorContext, R extends 
     public static List<BigDecimal> smas(List<BigDecimal> series, int period, MathContext mathContext) {
         List<BigDecimal> smas = new ArrayList<>();
         for(int i = 0; i < series.size(); i ++) {
-            List<BigDecimal> periodSeries = series.subList(
-                    Math.max(i - period + 1, 0),
-                    i + 1
-            );
-
+            List<BigDecimal> periodSeries = series.subList(Math.max(i - period + 1, 0), i + 1);
             BigDecimal sum = BigDecimal.ZERO;
             for(BigDecimal value : periodSeries) {
                 sum = sum.add(value);
             }
-
             BigDecimal sma = sum.divide(BigDecimal.valueOf(periodSeries.size()), mathContext);
             smas.add(sma);
         }
@@ -74,7 +69,7 @@ public abstract class IndicatorCalculator<C extends IndicatorContext, R extends 
     }
 
     /**
-     * calculates standard deviation
+     * Calculates standard deviation
      * @param series series
      * @param period period
      * @param mathContext math context
@@ -83,10 +78,7 @@ public abstract class IndicatorCalculator<C extends IndicatorContext, R extends 
     public static List<BigDecimal> sds(List<BigDecimal> series, int period, MathContext mathContext) {
         List<BigDecimal> stds = new ArrayList<>();
         for (int i = 0; i < series.size(); i ++) {
-            List<BigDecimal> periodSeries = series.subList(
-                    Math.max(i - period + 1, 0),
-                    i + 1
-            );
+            List<BigDecimal> periodSeries = series.subList(Math.max(i - period + 1, 0), i + 1);
             BigDecimal mean = periodSeries.stream()
                     .reduce(BigDecimal.ZERO, BigDecimal::add)
                     .divide(BigDecimal.valueOf(periodSeries.size()), mathContext);
@@ -102,7 +94,7 @@ public abstract class IndicatorCalculator<C extends IndicatorContext, R extends 
     }
 
     /**
-     * calculates absolute deviation
+     * Calculates absolute deviation
      * @param series series
      * @param period period
      * @param mathContext math context
@@ -111,10 +103,7 @@ public abstract class IndicatorCalculator<C extends IndicatorContext, R extends 
     public static List<BigDecimal> ads(List<BigDecimal> series, int period, MathContext mathContext) {
         List<BigDecimal> ads = new ArrayList<>();
         for (int i = 0; i < series.size(); i ++) {
-            List<BigDecimal> periodSeries = series.subList(
-                    Math.max(i - period + 1, 0),
-                    i + 1
-            );
+            List<BigDecimal> periodSeries = series.subList(Math.max(i - period + 1, 0), i + 1);
             BigDecimal sum = periodSeries.stream().reduce(BigDecimal.ZERO, BigDecimal::add);
             BigDecimal mean = sum.divide(BigDecimal.valueOf(periodSeries.size()), mathContext);
             BigDecimal sumOfAbsoluteDifferences = periodSeries.stream()

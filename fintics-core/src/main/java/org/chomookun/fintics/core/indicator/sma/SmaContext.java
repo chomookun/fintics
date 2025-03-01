@@ -12,6 +12,11 @@ public class SmaContext extends IndicatorContext {
 
     private final int period;
 
+    /**
+     * Creates sma context
+     * @param period period
+     * @return sma context
+     */
     public static SmaContext of(int period) {
         return SmaContext.builder()
                 .period(period)

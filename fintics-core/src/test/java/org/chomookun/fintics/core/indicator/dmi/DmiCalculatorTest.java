@@ -18,17 +18,13 @@ class DmiCalculatorTest extends AbstractCalculatorTest {
 
     void calculate(String fileName) {
         // given
-        String filePath = getPackageTestResourcesDir(this.getClass()) + fileName;
-        List<Map<String,String>> rows = readTsv(
-                filePath,
-                new String[]{"time","open","high","low","close","adx","pdi","mdi"});
+        String[] columnNames = new String[]{"time","open","high","low","close","adx","pdi","mdi"};
+        List<Map<String,String>> rows = readTestResourceAsTsv(this.getClass().getPackage(), fileName, columnNames);
         List<Ohlcv> ohlcvs = convertOhlcvs(rows, "time^MM/dd,HH:mm", "open", "high", "low", "close", "volume");
         Collections.reverse(rows);
         Collections.reverse(ohlcvs);
-
         // when
         List<Dmi> dmis = new DmiCalculator(DmiContext.DEFAULT).calculate(ohlcvs);
-
         // then
         for(int i = 0; i < dmis.size(); i ++) {
             Map<String,String> row  = rows.get(i);

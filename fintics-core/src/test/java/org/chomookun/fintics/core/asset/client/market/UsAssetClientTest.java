@@ -29,7 +29,11 @@ class UsAssetClientTest extends CoreTestSupport {
 
     private final ObjectMapper objectMapper;
 
-    public UsAssetClient getUsAssetClient() {
+    /**
+     * Creates us asset client
+     * @return us asset client
+     */
+    UsAssetClient createUsAssetClient() {
         return new UsAssetClient(assetClientProperties, objectMapper);
     }
 
@@ -73,7 +77,7 @@ class UsAssetClientTest extends CoreTestSupport {
     @Test
     void getAssets() {
         // when
-        List<Asset> assets = getUsAssetClient().getAssets();
+        List<Asset> assets = createUsAssetClient().getAssets();
         // then
         assertFalse(assets.isEmpty());
         assertTrue(assets.stream().allMatch(asset ->
@@ -92,7 +96,7 @@ class UsAssetClientTest extends CoreTestSupport {
         // when
         List<Asset> assets = new ArrayList<>();
         exchanges.forEach(exchange -> {
-            List<Asset> exchangeAssets = getUsAssetClient().getStockAssets(exchange);
+            List<Asset> exchangeAssets = createUsAssetClient().getStockAssets(exchange);
             assets.addAll(exchangeAssets);
         });
         // then
@@ -109,7 +113,7 @@ class UsAssetClientTest extends CoreTestSupport {
     @Test
     void getEtfAssets() {
         // when
-        List<Asset> assets = getUsAssetClient().getEtfAssets();
+        List<Asset> assets = createUsAssetClient().getEtfAssets();
         // then
         assertFalse(assets.isEmpty());
         assertTrue(assets.stream().allMatch(asset ->
@@ -125,7 +129,7 @@ class UsAssetClientTest extends CoreTestSupport {
     @MethodSource({"getTestStockAssets", "getTestEtfAssets"})
     void getOhlcvs(Asset asset) {
         // when
-        List<Ohlcv> ohlcvs = getUsAssetClient().getOhlcvs(asset);
+        List<Ohlcv> ohlcvs = createUsAssetClient().getOhlcvs(asset);
         // then
         assertFalse(ohlcvs.isEmpty());
     }
@@ -135,7 +139,7 @@ class UsAssetClientTest extends CoreTestSupport {
     @MethodSource({"getTestStockAssets", "getTestEtfAssets"})
     void getDividends(Asset asset) {
         // when
-        List<Dividend> dividends = getUsAssetClient().getDividends(asset);
+        List<Dividend> dividends = createUsAssetClient().getDividends(asset);
         // then
         log.info("dividends:{}", dividends);
     }
@@ -145,7 +149,7 @@ class UsAssetClientTest extends CoreTestSupport {
     @MethodSource("getTestStockAssets")
     void populateStockAsset(Asset asset) {
         // when
-        getUsAssetClient().populateStockAsset(asset);
+        createUsAssetClient().populateStockAsset(asset);
         // then
         assertNotNull(asset.getCapitalGain());
         assertNotNull(asset.getTotalReturn());
@@ -156,7 +160,7 @@ class UsAssetClientTest extends CoreTestSupport {
     @MethodSource("getTestEtfAssets")
     void populateEtfAsset(Asset asset) {
         // when
-        getUsAssetClient().populateEtfAsset(asset);
+        createUsAssetClient().populateEtfAsset(asset);
         // then
         assertNotNull(asset.getPrice());
         assertNotNull(asset.getVolume());

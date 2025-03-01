@@ -5,7 +5,7 @@ import org.springframework.http.HttpHeaders;
 public interface NasdaqClientSupport extends ClientSupport{
 
     /**
-     * creates nasdaq http headers
+     * Creates nasdaq http headers
      * @return http headers
      */
     default HttpHeaders createNasdaqHeaders() {

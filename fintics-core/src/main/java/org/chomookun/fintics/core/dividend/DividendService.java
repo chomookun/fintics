@@ -34,12 +34,10 @@ public class DividendService {
         List<Dividend> dividends = dividendRepository.findByAssetIdAndDateBetweenOrderByDateDesc(assetId, dateFrom, dateTo).stream()
                 .map(Dividend::from)
                 .toList();
-
         // dividend client
         if (dividends.isEmpty()) {
             Asset asset = assetService.getAsset(assetId).orElseThrow();
             dividends = dividendClient.getDividends(asset, dateFrom, dateTo);
-
             // apply pageable (client not support pagination)
             if (pageable.isPaged()) {
                 long startIndex = pageable.getOffset();

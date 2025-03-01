@@ -26,7 +26,7 @@ public class AssetRepositoryCustomImpl implements AssetRepositoryCustom {
     private final JPAQueryFactory jpaQueryFactory;
 
     /**
-     * find asset entities
+     * Finds asset entities
      * @param assetSearch asset search criteria
      * @param pageable pageable
      * @return page of asset entities
@@ -70,10 +70,8 @@ public class AssetRepositoryCustomImpl implements AssetRepositoryCustom {
                     return new OrderSpecifier<>(direction, expression);
                 }).collect(Collectors.toList());
         orderSpecifiers.add(new OrderSpecifier<>(Order.DESC, qAssetEntity.marketCap));
-
         // order by
         query.orderBy(orderSpecifiers.toArray(new OrderSpecifier[0]));
-
         // list
         JPAQuery<AssetEntity> listQuery = query.clone();
         if (pageable.isPaged()) {
@@ -81,7 +79,6 @@ public class AssetRepositoryCustomImpl implements AssetRepositoryCustom {
                     .offset(pageable.getOffset());
         }
         List<AssetEntity> assetEntities = listQuery.fetch();
-
         // total
         JPAQuery<AssetEntity> totalQuery = query.clone();
         totalQuery.getMetadata().clearOrderBy();

@@ -20,16 +20,24 @@ import static org.junit.jupiter.api.Assertions.*;
 @SpringBootTest(classes = FinticsCoreConfiguration.class)
 @RequiredArgsConstructor
 @Slf4j
-class SimpleAssetClientTest extends CoreTestSupport {
+class DefaultAssetClientTest extends CoreTestSupport {
 
     private final AssetClientProperties assetClientProperties;
 
     private final ObjectMapper objectMapper;
 
-    SimpleAssetClient getSimpleAssetClient() {
-        return new SimpleAssetClient(assetClientProperties, objectMapper);
+    /**
+     * Creates default asset client
+     * @return default asset client
+     */
+    DefaultAssetClient getDefaultAssetClient() {
+        return new DefaultAssetClient(assetClientProperties, objectMapper);
     }
 
+    /**
+     * Gets assets for test
+     * @return assets for test
+     */
     static List<Asset> getTestAssets() {
         return List.of(
                 Asset.builder()
@@ -67,9 +75,8 @@ class SimpleAssetClientTest extends CoreTestSupport {
     @Disabled
     @Test
     void getAssets() {
-        // given
         // when
-        List<Asset> assets = getSimpleAssetClient().getAssets();
+        List<Asset> assets = getDefaultAssetClient().getAssets();
         // then
         log.info("assets: {}", assets);
         assertFalse(assets.isEmpty());
@@ -80,7 +87,7 @@ class SimpleAssetClientTest extends CoreTestSupport {
     @MethodSource("getTestAssets")
     void populateAsset(Asset asset) {
         // when
-        getSimpleAssetClient().populateAsset(asset);
+        getDefaultAssetClient().populateAsset(asset);
         // then
         log.info("asset: {}", asset);
     }

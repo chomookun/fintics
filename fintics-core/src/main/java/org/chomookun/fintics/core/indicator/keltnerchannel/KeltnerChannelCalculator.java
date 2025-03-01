@@ -10,10 +10,19 @@ import java.util.List;
 
 public class KeltnerChannelCalculator extends IndicatorCalculator<KeltnerChannelContext, KeltnerChannel> {
 
+    /**
+     * Constructor
+     * @param context
+     */
     public KeltnerChannelCalculator(KeltnerChannelContext context) {
         super(context);
     }
 
+    /**
+     * Calculate Keltner Channel
+     * @param series ohlcv series
+     * @return keltner channel series
+     */
     @Override
     public List<KeltnerChannel> calculate(List<Ohlcv> series) {
         KeltnerChannelContext context = getContext();
@@ -21,14 +30,12 @@ public class KeltnerChannelCalculator extends IndicatorCalculator<KeltnerChannel
         int period = context.getPeriod();
         int atrPeriod = context.getAtrPeriod();
         double multiplier = context.getMultiplier();
-
         // closes
         List<BigDecimal> closes = series.stream()
                 .map(Ohlcv::getClose)
                 .toList();
         // ema
         List<BigDecimal> emas = emas(closes, period, mathContext);
-
         // atr
         List<BigDecimal> trs = new ArrayList<>();
         for(int i = 0; i < series.size(); i ++ ) {
@@ -42,7 +49,6 @@ public class KeltnerChannelCalculator extends IndicatorCalculator<KeltnerChannel
             trs.add(tr);
         }
         List<BigDecimal> atrs = emas(trs, atrPeriod, mathContext);
-
         // keltner channel
         List<KeltnerChannel> keltnerChannels = new ArrayList<>();
         for (int i = context.getAtrPeriod(); i < series.size(); i++) {
@@ -56,7 +62,6 @@ public class KeltnerChannelCalculator extends IndicatorCalculator<KeltnerChannel
                     .build();
             keltnerChannels.add(keltnerChannel);
         }
-
         // return
         return keltnerChannels;
     }

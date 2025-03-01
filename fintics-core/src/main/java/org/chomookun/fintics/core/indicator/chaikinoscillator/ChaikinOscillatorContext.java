@@ -20,6 +20,13 @@ public class ChaikinOscillatorContext extends IndicatorContext {
 
     private final int signalPeriod;
 
+    /**
+     * Creates chaikin oscillator context
+     * @param shortPeriod short period
+     * @param longPeriod long period
+     * @param signalPeriod signal period
+     * @return chaikin oscillator context
+     */
     public static ChaikinOscillatorContext of(int shortPeriod, int longPeriod, int signalPeriod) {
         return ChaikinOscillatorContext.builder()
                 .shortPeriod(shortPeriod)

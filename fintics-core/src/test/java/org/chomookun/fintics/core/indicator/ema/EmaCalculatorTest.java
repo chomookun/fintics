@@ -20,14 +20,11 @@ class EmaCalculatorTest {
                     .close(BigDecimal.valueOf(Math.random() * (12000-1000) + 1000))
                     .build());
         }
-
         // when
         List<Ema> emas = new EmaCalculator(EmaContext.of(10))
                 .calculate(series);
-
         // then
         emas.forEach(ema -> log.debug("{}", ema));
     }
-
 
 }

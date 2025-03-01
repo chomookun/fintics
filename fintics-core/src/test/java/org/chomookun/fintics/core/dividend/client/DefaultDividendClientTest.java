@@ -18,14 +18,18 @@ import java.util.List;
 @SpringBootTest(classes = FinticsCoreConfiguration.class)
 @RequiredArgsConstructor
 @Slf4j
-class SimpleDividendClientTest extends CoreTestSupport {
+class DefaultDividendClientTest extends CoreTestSupport {
 
     private final DividendClientProperties dividendClientProperties;
 
     private final ObjectMapper objectMapper;
 
-    SimpleDividendClient getSimpleDividendClient() {
-        return new SimpleDividendClient(dividendClientProperties, objectMapper);
+    /**
+     * Creates default dividend client
+     * @return default dividend client
+     */
+    DefaultDividendClient createDefaultDividendClient() {
+        return new DefaultDividendClient(dividendClientProperties, objectMapper);
     }
 
     static List<Asset> getTestAssets() {
@@ -64,7 +68,7 @@ class SimpleDividendClientTest extends CoreTestSupport {
         LocalDate dateFrom = LocalDate.now().minusYears(3);
         LocalDate dateTo = LocalDate.now();
         // when
-        List<Dividend> dividends = getSimpleDividendClient().getDividends(asset, dateFrom, dateTo);
+        List<Dividend> dividends = createDefaultDividendClient().getDividends(asset, dateFrom, dateTo);
         // then
         log.info("dividends:{}", dividends);
     }

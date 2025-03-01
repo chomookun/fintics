@@ -9,13 +9,22 @@ import java.util.List;
 
 public class AtrCalculator extends IndicatorCalculator<AtrContext, Atr> {
 
+    /**
+     * Constructor
+     * @param context atr context
+     */
     public AtrCalculator(AtrContext context) {
         super(context);
     }
 
+    /**
+     * Calculates atr
+     * @param series series
+     * @return
+     */
     @Override
     public List<Atr> calculate(List<Ohlcv> series) {
-        // tr
+        // true ranges
         List<BigDecimal> trs = new ArrayList<>();
         for(int i = 0; i < series.size(); i ++ ) {
             BigDecimal high = series.get(i).getHigh();
@@ -27,11 +36,9 @@ public class AtrCalculator extends IndicatorCalculator<AtrContext, Atr> {
             BigDecimal tr = hl.abs().max(hc.abs()).max(cl.abs());
             trs.add(tr);
         }
-
-        // average tr, signal
+        // average true ranges, signals
         List<BigDecimal> values = smas(trs, getContext().getPeriod(), getContext().getMathContext());
         List<BigDecimal> signals = emas(values, getContext().getSignalPeriod(), getContext().getMathContext());
-
         // atr list
         List<Atr> atrs = new ArrayList<>();
         for(int i = 0; i < series.size(); i ++) {
@@ -41,7 +48,6 @@ public class AtrCalculator extends IndicatorCalculator<AtrContext, Atr> {
                     .signal(signals.get(i))
                     .build());
         }
-
         // return
         return atrs;
     }

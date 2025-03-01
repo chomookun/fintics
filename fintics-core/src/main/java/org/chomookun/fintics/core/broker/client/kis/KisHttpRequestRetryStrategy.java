@@ -13,7 +13,7 @@ public class KisHttpRequestRetryStrategy extends DefaultHttpRequestRetryStrategy
     private final static int RETRY_COUNT = 3;
 
     /**
-     * constructor
+     * Constructor
      */
     public KisHttpRequestRetryStrategy() {
         super(RETRY_COUNT,  TimeValue.ofMilliseconds(100L));
@@ -25,7 +25,6 @@ public class KisHttpRequestRetryStrategy extends DefaultHttpRequestRetryStrategy
         if (execCount >  RETRY_COUNT) {
             return false;
         }
-
         // SSLException 발생 시에도 재시도 수행
         // 한국투자증권 서버가 Legacy 웹서버(JEUSE) 이고
         // java.io.EOFException SSL peer shut down incorrectly
@@ -33,7 +32,6 @@ public class KisHttpRequestRetryStrategy extends DefaultHttpRequestRetryStrategy
         if (exception instanceof SSLException || exception instanceof EOFException) {
             return true;
         }
-
         // 기본 적인 retry 조건을 유지
         return super.retryRequest(request, exception, execCount, context);
     }

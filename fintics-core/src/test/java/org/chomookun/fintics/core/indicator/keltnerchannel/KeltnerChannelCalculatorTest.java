@@ -20,11 +20,8 @@ public class KeltnerChannelCalculatorTest extends AbstractCalculatorTest {
     @Test
     void calculate() {
         // given
-        String filePath = getPackageTestResourcesDir(this.getClass()) + "KeltnerChannelCalculatorTest.tsv";
-        List<Map<String,String>> inputRows = readTsv(
-                filePath,
-                new String[]{"dateTime","open","high","low","close","volume","center","upper","lower"}
-        );
+        String[] columnNames = new String[]{"dateTime","open","high","low","close","volume","center","upper","lower"};
+        List<Map<String,String>> inputRows = readTestResourceAsTsv(this.getClass().getPackage(), "KeltnerChannelCalculatorTest.tsv", columnNames);
         List<Ohlcv> ohlcvs = inputRows.stream()
                 .map(row -> {
                     return Ohlcv.builder()
@@ -38,11 +35,9 @@ public class KeltnerChannelCalculatorTest extends AbstractCalculatorTest {
                 .collect(Collectors.toList());
         Collections.reverse(inputRows);
         Collections.reverse(ohlcvs);
-
         // when
         List<KeltnerChannel> keltnerChannels = new KeltnerChannelCalculator(KeltnerChannelContext.DEFAULT)
                 .calculate(ohlcvs);
-
         // then
         for(int i = 0, size = keltnerChannels.size(); i < size; i ++) {
             KeltnerChannel keltnerChannel = keltnerChannels.get(i);
@@ -55,19 +50,16 @@ public class KeltnerChannelCalculatorTest extends AbstractCalculatorTest {
             BigDecimal originCenter = new BigDecimal(inputRow.get("center").replaceAll(",",""));
             BigDecimal originUpper = new BigDecimal(inputRow.get("upper").replaceAll(",",""));
             BigDecimal originLower = new BigDecimal(inputRow.get("lower").replaceAll(",",""));
-
             log.info("[{}] {},{},{},{} - {},{},{} / {},{},{}",
                     i, originOpen, originHigh, originLow, originClose,
                     originCenter, originUpper, originLower,
                     keltnerChannel.getCenter().setScale(2, RoundingMode.HALF_UP),
                     keltnerChannel.getUpper().setScale(2, RoundingMode.HALF_UP),
                     keltnerChannel.getLower().setScale(2, RoundingMode.HALF_UP));
-
             // skip initial block
             if (i <= 20) {
                 continue;
             }
-
             // assert (테스트 데이터 를 구할수 없음)
             // assertEquals(originCenter.doubleValue(), keltnerChannel.getUpper().doubleValue(), 0.1);
             // assertEquals(originUpper.doubleValue(), keltnerChannel.getUpper().doubleValue(), 0.1);

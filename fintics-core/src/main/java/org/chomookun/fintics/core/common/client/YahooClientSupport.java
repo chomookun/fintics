@@ -5,7 +5,7 @@ import org.springframework.http.HttpHeaders;
 public interface YahooClientSupport extends ClientSupport {
 
     /**
-     * creates yahoo finance http headers
+     * Creates yahoo finance http headers
      * @return http headers
      */
     default HttpHeaders createYahooHeader() {

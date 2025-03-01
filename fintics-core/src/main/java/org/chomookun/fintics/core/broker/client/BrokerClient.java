@@ -27,7 +27,7 @@ public abstract class BrokerClient {
     private final Properties properties;
 
     /**
-     * constructor
+     * Constructor
      * @param definition definition
      * @param properties properties
      */
@@ -37,35 +37,35 @@ public abstract class BrokerClient {
     }
 
     /**
-     * check open datetime
+     * Checks open datetime
      * @param datetime datetime
      * @return is opened
      */
     public abstract boolean isOpened(LocalDateTime datetime) throws InterruptedException;
 
     /**
-     * returns minute ohlcvs
+     * Returns minute ohlcvs
      * @param asset asset
      * @return minute ohlcvs
      */
     public abstract List<Ohlcv> getMinuteOhlcvs(Asset asset) throws InterruptedException;
 
     /**
-     * returns daily ohlcvs
+     * Returns daily ohlcvs
      * @param asset asset
      * @return daily ohlcvs
      */
     public abstract List<Ohlcv> getDailyOhlcvs(Asset asset) throws InterruptedException;
 
     /**
-     * returns order book
+     * Returns order book
      * @param asset asset
      * @return order book
      */
     public abstract OrderBook getOrderBook(Asset asset) throws InterruptedException;
 
     /**
-     * check available price and quantity
+     * Check available price and quantity
      * @param price price
      * @param quantity quantity
      * @return whether price and quantity is available or not
@@ -82,7 +82,7 @@ public abstract class BrokerClient {
     }
 
     /**
-     * returns quantity scale
+     * Returns quantity scale
      * @return quantity scale
      */
     public int getQuantityScale() {
@@ -90,13 +90,13 @@ public abstract class BrokerClient {
     }
 
     /**
-     * returns balance
+     * Returns balance
      * @return balance
      */
     public abstract Balance getBalance() throws InterruptedException;
 
     /**
-     * submits order
+     * Submits order
      * @param asset asset
      * @param order order
      * @return submitted order
@@ -104,13 +104,13 @@ public abstract class BrokerClient {
     public abstract Order submitOrder(Asset asset, Order order) throws InterruptedException;
 
     /**
-     * returns waiting orders
+     * Returns waiting orders
      * @return list of waiting order
      */
     public abstract List<Order> getWaitingOrders() throws InterruptedException;
 
     /**
-     * amends order
+     * Amends order
      * @param asset asset
      * @param order order
      * @return amended order
@@ -118,7 +118,7 @@ public abstract class BrokerClient {
     public abstract Order amendOrder(Asset asset, Order order) throws InterruptedException;
 
     /**
-     * returns realized profits
+     * Returns realized profits
      * @param dateFrom date from
      * @param dateTo  date to
      * @return realized profits
@@ -126,7 +126,7 @@ public abstract class BrokerClient {
     public abstract List<RealizedProfit> getRealizedProfits(LocalDate dateFrom, LocalDate dateTo) throws InterruptedException;
 
     /**
-     * returns dividend histories
+     * Returns dividend histories
      * @param dateFrom date from
      * @param dateTo date to
      * @return dividend histories
@@ -134,7 +134,7 @@ public abstract class BrokerClient {
     public abstract List<DividendProfit> getDividendProfits(LocalDate dateFrom, LocalDate dateTo) throws InterruptedException;
 
     /**
-     * convert to asset id
+     * Converts symbol to asset id
      * @param symbol symbol
      * @return asset id
      */

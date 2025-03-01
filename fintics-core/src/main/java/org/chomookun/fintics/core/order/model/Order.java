@@ -4,7 +4,7 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.*;
 import lombok.extern.slf4j.Slf4j;
-import org.chomookun.arch4j.core.common.data.converter.AbstractEnumConverter;
+import org.chomookun.arch4j.core.common.data.converter.GenericEnumConverter;
 import org.chomookun.arch4j.core.common.support.ObjectMapperHolder;
 import org.chomookun.fintics.core.order.entity.OrderEntity;
 import org.chomookun.fintics.core.strategy.runner.StrategyResult;
@@ -66,17 +66,17 @@ public class Order {
     public enum Type { BUY, SELL }
 
     @Converter(autoApply = true)
-    public static class TypeConverter extends AbstractEnumConverter<Type> {}
+    public static class TypeConverter extends GenericEnumConverter<Type> {}
 
     public enum Kind { LIMIT, MARKET }
 
     @Converter(autoApply = true)
-    public static class KindConverter extends AbstractEnumConverter<Kind> {}
+    public static class KindConverter extends GenericEnumConverter<Kind> {}
 
     public enum Result { COMPLETED, FAILED }
 
     @Converter(autoApply = true)
-    public static class ResultConverter extends AbstractEnumConverter<Result> {}
+    public static class ResultConverter extends GenericEnumConverter<Result> {}
 
     public static Order from(OrderEntity orderEntity) {
         ObjectMapper objectMapper = ObjectMapperHolder.getObject();

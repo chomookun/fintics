@@ -21,7 +21,11 @@ class UpbitAssetClientTest extends CoreTestSupport {
 
     private final AssetClientProperties assetClientProperties;
 
-    public UpbitAssetClient getUpbitAssetClient() {
+    /**
+     * Creates upbit asset client
+     * @return upbit asset client
+     */
+    UpbitAssetClient createUpbitAssetClient() {
         return new UpbitAssetClient(assetClientProperties);
     }
 
@@ -29,7 +33,7 @@ class UpbitAssetClientTest extends CoreTestSupport {
     @Test
     void getAssets() {
         // when
-        List<Asset> assets = getUpbitAssetClient().getAssets();
+        List<Asset> assets = createUpbitAssetClient().getAssets();
         // then
         log.info("assets: {}", assets);
         assertFalse(assets.isEmpty());

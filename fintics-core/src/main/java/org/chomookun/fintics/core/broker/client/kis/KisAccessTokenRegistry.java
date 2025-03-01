@@ -13,7 +13,7 @@ import java.time.format.DateTimeFormatter;
 import java.util.*;
 
 /**
- * kis access token registry in memory
+ * Kis access token registry in memory
  */
 @Slf4j
 public class KisAccessTokenRegistry {
@@ -23,7 +23,7 @@ public class KisAccessTokenRegistry {
     private final static Object LOCK_OBJECT = new Object();
 
     /**
-     * returns rest template
+     * Returns rest template
      * @return rest template
      */
     static RestTemplate getRestTemplate() {
@@ -33,7 +33,7 @@ public class KisAccessTokenRegistry {
     }
 
     /**
-     * gets access token
+     * Gets access token
      * @param apiUrl api url
      * @param appKey api key
      * @param appSecret api secret
@@ -48,7 +48,6 @@ public class KisAccessTokenRegistry {
                                     && Objects.equals(element.getAppSecret(), appSecret))
                     .findFirst()
                     .orElse(null);
-
             if (accessToken == null || accessToken.isExpired()) {
                 // 한국 투자 증권 정책 상 1분에 1회 호출 가능함(호출 시 무조건 카운팅 됨)
                 try {
@@ -70,7 +69,6 @@ public class KisAccessTokenRegistry {
                 }
                 saveAccessToken(accessToken);
             }
-
             // return
             return accessToken;
         }

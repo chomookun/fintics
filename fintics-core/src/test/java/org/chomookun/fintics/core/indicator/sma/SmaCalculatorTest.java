@@ -20,10 +20,8 @@ public class SmaCalculatorTest {
             add(Ohlcv.builder().close(BigDecimal.valueOf(200)).build());
             add(Ohlcv.builder().close(BigDecimal.valueOf(300)).build());
         }};
-
         // when
         List<Sma> smas = new SmaCalculator(SmaContext.of(3)).calculate(ohlcvs);
-
         // then
         smas.forEach(sma -> log.debug("{}", sma));
     }

@@ -64,16 +64,12 @@ public class UpbitBrokerClient extends BrokerClient {
         this.insecure = Optional.ofNullable(properties.getProperty("insecure"))
                 .map(Boolean::parseBoolean)
                 .orElse(Boolean.FALSE);
-
-        // rest template
         this.restTemplate = createRestTemplate();
-
-        // object mapper
         this.objectMapper = new ObjectMapper();
     }
 
     /**
-     * creates rest template
+     * Creates rest template
      * @return rest template
      */
     RestTemplate createRestTemplate() {
@@ -92,12 +88,16 @@ public class UpbitBrokerClient extends BrokerClient {
         Thread.sleep(300);
     }
 
+    /**
+     * Creates headers
+     * @param queryString query string
+     * @return headers
+     */
     HttpHeaders createHeaders(String queryString) {
         // check null
         if(queryString == null) {
             queryString = "";
         }
-
         // query hash
         String queryHash;
         try {
@@ -107,7 +107,6 @@ public class UpbitBrokerClient extends BrokerClient {
         } catch(Throwable e) {
             throw new RuntimeException(e);
         }
-
         // jwt token
         Algorithm algorithm = Algorithm.HMAC256(secretKey);
         String jwtToken = JWT.create()
@@ -116,7 +115,6 @@ public class UpbitBrokerClient extends BrokerClient {
                 .withClaim("query_hash", queryHash)
                 .withClaim("query_hash_alg", "SHA512")
                 .sign(algorithm);
-
         // http header
         HttpHeaders httpHeaders = new HttpHeaders();
         httpHeaders.add("Authorization", String.format("Bearer %s", jwtToken));
@@ -171,7 +169,6 @@ public class UpbitBrokerClient extends BrokerClient {
                 .get(url + "?" + queryString)
                 .headers(createHeaders(queryString))
                 .build();
-
         sleep();
         ResponseEntity<String> responseEntity = restTemplate.exchange(requestEntity, String.class);
         List<Map<String, String>> rows;
@@ -209,17 +206,14 @@ public class UpbitBrokerClient extends BrokerClient {
                 .get(API_URL + "/v1/accounts")
                 .headers(createHeaders(null))
                 .build();
-
         sleep();
         ResponseEntity<String> responseEntity = restTemplate.exchange(requestEntity, String.class);
-
         List<Map<String, String>> rows;
         try {
             rows = objectMapper.readValue(responseEntity.getBody(), new TypeReference<>(){});
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
-
         BigDecimal totalAmount = BigDecimal.ZERO;
         BigDecimal cacheAmount = BigDecimal.ZERO;
         BigDecimal purchaseAmount = BigDecimal.ZERO;
@@ -240,7 +234,6 @@ public class UpbitBrokerClient extends BrokerClient {
                 BigDecimal assetPurchaseAmount = assetAverageBuyPrice.multiply(assetBalance)
                         .setScale(0, RoundingMode.CEILING);
                 purchaseAmount = purchaseAmount.add(assetPurchaseAmount);
-
                 // upbit 의 경우 평가 금액 확인 불가로 order book 재조회 후 산출
                 Asset asset = Asset.builder()
                         .assetId(toAssetId(symbol))
@@ -251,12 +244,10 @@ public class UpbitBrokerClient extends BrokerClient {
                         .setScale(2, RoundingMode.CEILING);
                 valuationAmount = valuationAmount.add(assetValuationAmount);
                 totalAmount = totalAmount.add(assetValuationAmount);
-
                 // profit amount
                 BigDecimal assetProfitAmount = assetValuationAmount.subtract(assetPurchaseAmount)
                         .setScale(2, RoundingMode.CEILING);
                 profitAmount = profitAmount.add(assetProfitAmount);
-
                 // add
                 BalanceAsset balanceAsset = BalanceAsset.builder()
                         .assetId(toAssetId(symbol))
@@ -325,7 +316,6 @@ public class UpbitBrokerClient extends BrokerClient {
             }
             default -> throw new RuntimeException("Invalid order kind");
         }
-
         // url payload
         String url = API_URL + "/v1/orders";
         HashMap<String,String> payloadMap = new HashMap<>();
@@ -339,14 +329,12 @@ public class UpbitBrokerClient extends BrokerClient {
         }
         payloadMap.put("ord_type", ordType);
         payloadMap.put("identifier", IdGenerator.uuid());
-
         // query string
         ArrayList<String> queryElements = new ArrayList<>();
         for(Map.Entry<String, String> entity : payloadMap.entrySet()) {
             queryElements.add(entity.getKey() + "=" + entity.getValue());
         }
         String queryString = String.join("&", queryElements.toArray(new String[0]));
-
         // payload
         String payload;
         try {
@@ -354,7 +342,6 @@ public class UpbitBrokerClient extends BrokerClient {
         } catch (JsonProcessingException e) {
             throw new RuntimeException(e);
         }
-
         // request
         RequestEntity<String> requestEntity = RequestEntity
                 .post(url)
@@ -369,7 +356,6 @@ public class UpbitBrokerClient extends BrokerClient {
         if(responseMap != null) {
             order.setBrokerOrderId(responseMap.get("uuid"));
         }
-
         // return
         return order;
     }
@@ -382,7 +368,6 @@ public class UpbitBrokerClient extends BrokerClient {
                 .get(url + "?" + queryString)
                 .headers(createHeaders(queryString))
                 .build();
-
         sleep();
         ResponseEntity<String> responseEntity = restTemplate.exchange(requestEntity, String.class);
         List<Map<String, String>> rows;
@@ -409,7 +394,6 @@ public class UpbitBrokerClient extends BrokerClient {
                     BigDecimal quantity = new BigDecimal(row.get("remaining_volume"));
                     BigDecimal price = new BigDecimal(row.get("price"));
                     String clientOrderId = row.get("uuid");
-
                     // order
                     return Order.builder()
                             .type(orderKind)
@@ -434,7 +418,6 @@ public class UpbitBrokerClient extends BrokerClient {
                 .build();
         sleep();
         createRestTemplate().exchange(requestEntity, Void.class);
-
         // submit order
         return submitOrder(asset, order);
     }

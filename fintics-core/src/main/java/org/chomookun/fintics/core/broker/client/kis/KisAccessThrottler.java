@@ -6,7 +6,7 @@ import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantLock;
 
 /**
- * kis access throttler
+ * Kis access throttler
  * appKey 별 초당 20건 호출 제한
  */
 public class KisAccessThrottler {
@@ -14,7 +14,7 @@ public class KisAccessThrottler {
     private static final ConcurrentHashMap<String, LockAndCondition> requestLocks = new ConcurrentHashMap<>();
 
     /**
-     * lock and condition class
+     * Lock and condition class
      */
     private static class LockAndCondition {
         final Lock lock = new ReentrantLock();
@@ -23,7 +23,7 @@ public class KisAccessThrottler {
     }
 
     /**
-     * sleep
+     * Sleep
      * @param appKey app key
      * @param sleepMillis sleep milli seconds
      */
@@ -38,7 +38,6 @@ public class KisAccessThrottler {
                 long sleepTime = sleepMillis - timeSinceLastAccess;
                 lockAndCondition.condition.awaitNanos(sleepTime * 1_000_000);
             }
-
             // Update the last access time for this access token
             lockAndCondition.lastAccessTime = currentTime;
         } finally {

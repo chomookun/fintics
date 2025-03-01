@@ -10,8 +10,6 @@ import org.chomookun.fintics.core.basket.model.Basket;
 import org.chomookun.fintics.core.basket.model.BasketAsset;
 import org.chomookun.fintics.core.indicator.*;
 import org.chomookun.fintics.core.ohlcv.model.Ohlcv;
-import org.chomookun.fintics.core.strategy.runner.StrategyResult;
-import org.chomookun.fintics.core.trade.model.TradeAsset;
 
 import java.awt.print.Pageable;
 import java.util.HashSet;
@@ -22,6 +20,10 @@ import java.util.stream.Collectors;
 @SuperBuilder
 public class GroovyBasketScriptRunner extends BasketScriptRunner {
 
+    /**
+     * Runs basket script
+     * @return rebalance assets
+     */
     @Override
     @SuppressWarnings("unchecked")
     public List<BasketRebalanceAsset> run() {
@@ -34,7 +36,7 @@ public class GroovyBasketScriptRunner extends BasketScriptRunner {
         binding.setVariable("assetService", getAssetService());
         binding.setVariable("ohlcvService", getOhlcvService());
         binding.setVariable("log", log);
-        String scriptText = getImportClause() + "\n" + basket.getScript();
+        String scriptText = getDefaultImportClause() + "\n" + basket.getScript();
         GroovyShell groovyShell = new GroovyShell(groovyClassLoader, binding);
         Object result = groovyShell.evaluate(scriptText);
         if (result != null) {
@@ -43,7 +45,11 @@ public class GroovyBasketScriptRunner extends BasketScriptRunner {
         return null;
     }
 
-    static String getImportClause() {
+    /**
+     * Gets default import clause
+     * @return default import clause
+     */
+    static String getDefaultImportClause() {
         Set<String> importPaths = new HashSet<>();
         // models
         importPaths.add(Asset.class.getName());

@@ -29,7 +29,7 @@ public class AssetService {
     private final AssetClient assetClient;
 
     /**
-     * gets asset list
+     * Gets asset list
      * @param assetSearch asset search condition
      * @param pageable pageable
      * @return assets
@@ -44,7 +44,7 @@ public class AssetService {
     }
 
     /**
-     * gets specified asset
+     * Gets specified asset
      * @param assetId asset id
      * @return asset
      */

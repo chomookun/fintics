@@ -11,6 +11,10 @@ import java.util.List;
 @SuperBuilder
 public class PythonBasketScriptRunner extends BasketScriptRunner {
 
+    /**
+     * Runs basket script
+     * @return basket rebalance assets
+     */
     @Override
     public List<BasketRebalanceAsset> run() {
         Basket basket = getBasket();

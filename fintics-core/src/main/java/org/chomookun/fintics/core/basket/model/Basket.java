@@ -31,10 +31,6 @@ public class Basket {
 
     private String script;
 
-    public static enum Language {
-        GROOVY, PYTHON
-    }
-
     @Builder.Default
     private List<BasketAsset> basketAssets = new ArrayList<>();
 
@@ -49,6 +45,11 @@ public class Basket {
                 .findFirst();
     }
 
+    /**
+     * Converts basket entity to basket
+     * @param basketEntity basket entity
+     * @return basket
+     */
     public static Basket from(BasketEntity basketEntity) {
         return Basket.builder()
                 .basketId(basketEntity.getBasketId())
@@ -64,5 +65,10 @@ public class Basket {
                         .collect(Collectors.toList()))
                 .build();
     }
+
+    /**
+     * Basket Rebalance Language
+     */
+    public static enum Language { GROOVY, PYTHON }
 
 }

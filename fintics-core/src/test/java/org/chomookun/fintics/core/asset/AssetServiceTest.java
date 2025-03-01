@@ -63,7 +63,7 @@ class AssetServiceTest extends CoreTestSupport {
         // when
         Asset asset = assetService.getAsset(assetId).orElseThrow();
         // then
-        assertEquals(asset.getAssetId(), assetId);
+        assertEquals(assetId, asset.getAssetId());
     }
 
 }

@@ -57,6 +57,14 @@ public class IndicatorCalculatorFactory {
         registry.put(KeltnerChannelContext.class, KeltnerChannelCalculator.class);
     }
 
+    /**
+     * Get indicator calculator
+     * @param context context
+     * @return indicator calculator
+     * @param <C> indicator context
+     * @param <R> indicator
+     * @param <T> indicator calculator
+     */
     public static <C extends IndicatorContext, R extends Indicator, T extends IndicatorCalculator<C,R>> T getIndicator(C context) {
         Class<?> calculatorType = registry.get(context.getClass());
         IndicatorCalculator<?,?> calculator;

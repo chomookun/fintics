@@ -9,7 +9,7 @@ import java.util.Map;
 import java.util.Optional;
 
 /**
- * ohlcv client properties
+ * Ohlcv client properties
  */
 @ConfigurationProperties(prefix = "fintics.core.ohlcv.ohlcv-client")
 @AllArgsConstructor
@@ -22,7 +22,7 @@ public class OhlcvClientProperties {
     private final Map<String, String> properties;
 
     /**
-     * gets property by name
+     * Gets property by name
      * @param name property name
      * @return property value
      */

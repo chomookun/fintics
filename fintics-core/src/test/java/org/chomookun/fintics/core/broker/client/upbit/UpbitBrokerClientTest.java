@@ -46,10 +46,8 @@ class UpbitBrokerClientTest {
     void getOrderBook() throws Exception {
         // given
         Asset tradeAsset = getTestAsset();
-
         // when
         OrderBook orderBook = getUpbitTradeClient().getOrderBook(tradeAsset);
-
         // then
         log.info("orderBook:{}", orderBook);
     }
@@ -61,10 +59,8 @@ class UpbitBrokerClientTest {
         Asset tradeAsset = getTestAsset();
         LocalDateTime fromDateTime = LocalDateTime.now().minusWeeks(1);
         LocalDateTime toDateTime = LocalDateTime.now();
-
         // when
         List<Ohlcv> minuteOhlcvs = getUpbitTradeClient().getMinuteOhlcvs(tradeAsset);
-
         // then
         log.info("minuteOhlcvs:{}", minuteOhlcvs);
     }
@@ -76,10 +72,8 @@ class UpbitBrokerClientTest {
         Asset tradeAsset = getTestAsset();
         LocalDate fromDate = LocalDate.now().minusYears(1);
         LocalDate toDate = LocalDate.now();
-
         // when
         List<Ohlcv> dailyOhlcvs = getUpbitTradeClient().getDailyOhlcvs(tradeAsset);
-
         // then
         log.info("dailyOhlcvs:{}", dailyOhlcvs);
     }
@@ -127,7 +121,6 @@ class UpbitBrokerClientTest {
                 .quantity(BigDecimal.valueOf(0.00008556))
                 .price(null)
                 .build();
-
         // when
         getUpbitTradeClient().submitOrder(asset, order);
         // then
@@ -148,7 +141,6 @@ class UpbitBrokerClientTest {
     void amendOrder() throws Exception {
         // given
         List<Order> orders = getUpbitTradeClient().getWaitingOrders();
-
         // when
         for(Order order : orders) {
             Asset asset = Asset.builder()
@@ -157,7 +149,6 @@ class UpbitBrokerClientTest {
             Order amendedOrder = getUpbitTradeClient().amendOrder(asset, order);
             log.debug("amendedOrder:{}", amendedOrder);
         }
-        // then
     }
 
 }

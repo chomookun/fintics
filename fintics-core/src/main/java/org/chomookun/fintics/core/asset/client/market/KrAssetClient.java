@@ -32,9 +32,12 @@ public class KrAssetClient extends AssetClient implements SeibroClientSupport {
 
     private final RestTemplate restTemplate;
 
+    /**
+     * Constructor
+     * @param assetClientProperties asset client properties
+     */
     public KrAssetClient(AssetClientProperties assetClientProperties) {
         super(assetClientProperties);
-
         // rest template
         this.restTemplate = RestTemplateBuilder.create()
                 .httpRequestRetryStrategy(new DefaultHttpRequestRetryStrategy())
@@ -42,7 +45,7 @@ public class KrAssetClient extends AssetClient implements SeibroClientSupport {
     }
 
     /**
-     * returns assets to trade
+     * Returns assets to trade
      * @return assets
      */
     @Override
@@ -55,7 +58,7 @@ public class KrAssetClient extends AssetClient implements SeibroClientSupport {
     }
 
     /**
-     * returns asset list by exchange type
+     * Returns asset list by exchange type
      * 코스피, 코스닥 여부에 따라 다른 부분이 존재 함.
      * @param exchangeType exchange type
      * @return assets
@@ -66,7 +69,6 @@ public class KrAssetClient extends AssetClient implements SeibroClientSupport {
         String w2xPath = "/IPORTAL/user/stock/BIP_CNTS02004V.xml";
         HttpHeaders headers = createSeibroHeaders(w2xPath);
         headers.setContentType(MediaType.APPLICATION_XML);
-
         String action = "SecnIssuPListEL1";
         String task = "ksd.safe.bip.cnts.Stock.process.SecnIssuPTask";
         Map<String,String> payloadMap = new LinkedHashMap<>(){{
@@ -86,22 +88,18 @@ public class KrAssetClient extends AssetClient implements SeibroClientSupport {
             put("END_PAGE", "10000");
         }};
         String payloadXml = createSeibroPayloadXml(action, task, payloadMap);
-
         RequestEntity<String> requestEntity = RequestEntity.post(url)
                 .headers(headers)
                 .body(payloadXml);
         ResponseEntity<String> responseEntity = restTemplate.exchange(requestEntity, String.class);
-
         String responseBody = responseEntity.getBody();
         List<Map<String, String>> rows = convertSeibroXmlToList(responseBody);
-
         // sort
         rows.sort((o1, o2) -> {
             BigDecimal o1MarketCap = convertStringToNumber(o1.get("MARTP_TOTAMT"), BigDecimal.ZERO);
             BigDecimal o2MarketCap = convertStringToNumber(o2.get("MARTP_TOTAMT"), BigDecimal.ZERO);
             return o2MarketCap.compareTo(o1MarketCap);
         });
-
         // market, exchange
         String exchange;
         switch(exchangeType) {
@@ -109,7 +107,7 @@ public class KrAssetClient extends AssetClient implements SeibroClientSupport {
             case "12" -> exchange = "XKOS";
             default -> throw new RuntimeException("invalid exchange type");
         }
-
+        // returns
         return rows.stream()
                 .map(row -> {
                     return Asset.builder()
@@ -126,7 +124,7 @@ public class KrAssetClient extends AssetClient implements SeibroClientSupport {
     }
 
     /**
-     * returns ETF assets
+     * Returns ETF assets
      * @return ETF assets
      */
     List<Asset> getEtfAssets() {
@@ -134,7 +132,6 @@ public class KrAssetClient extends AssetClient implements SeibroClientSupport {
         String w2xPath = "/IPORTAL/user/etf/BIP_CNTS06025V.xml";
         HttpHeaders headers = createSeibroHeaders(w2xPath);
         headers.setContentType(MediaType.APPLICATION_XML);
-
         String action = "secnIssuStatPList";
         String task = "ksd.safe.bip.cnts.etf.process.EtfSetredInfoPTask";
         Map<String,String> payloadMap = new LinkedHashMap<>(){{
@@ -154,26 +151,21 @@ public class KrAssetClient extends AssetClient implements SeibroClientSupport {
             put("END_PAGE", "10000");
         }};
         String payloadXml = createSeibroPayloadXml(action, task, payloadMap);
-
         RequestEntity<String> requestEntity = RequestEntity.post(url)
                 .headers(headers)
                 .body(payloadXml);
         ResponseEntity<String> responseEntity = restTemplate.exchange(requestEntity, String.class);
-
         String responseBody = responseEntity.getBody();
         List<Map<String, String>> rows = convertSeibroXmlToList(responseBody);
-
         // sort
         rows.sort((o1, o2) -> {
             BigDecimal o1MarketCap = convertStringToNumber(o1.get("NETASST_TOTAMT"), BigDecimal.ZERO);
             BigDecimal o2MarketCap = convertStringToNumber(o2.get("NETASST_TOTAMT"), BigDecimal.ZERO);
             return o2MarketCap.compareTo(o1MarketCap);
         });
-
         // market, exchange
         String exchange = "XKRX";
-
-        // convert assets
+        // converts and returns
         return rows.stream()
                 .map(row -> {
                     // market cap (etf is 1 krw unit)
@@ -196,11 +188,20 @@ public class KrAssetClient extends AssetClient implements SeibroClientSupport {
                 .collect(Collectors.toList());
     }
 
+    /**
+     * Returns whether asset is supported
+     * @param asset asset
+     * @return true if supported
+     */
     @Override
     public boolean isSupport(Asset asset) {
         return asset.getAssetId().startsWith("KR.");
     }
 
+    /**
+     * Populates asset
+     * @param asset asset
+     */
     @Override
     public void populateAsset(Asset asset) {
         switch(Optional.ofNullable(asset.getType()).orElse("")) {
@@ -225,11 +226,9 @@ public class KrAssetClient extends AssetClient implements SeibroClientSupport {
         BigDecimal dividendYield = BigDecimal.ZERO;
         BigDecimal capitalGain = BigDecimal.ZERO;
         BigDecimal totalReturn = BigDecimal.ZERO;
-
         // sec info
         Map<String,String> secInfo = getSeibroSecInfo(asset, restTemplate);
         String issucoCustno = secInfo.get("ISSUCO_CUSTNO");
-
         // calculates TTM EPS
         // [투자지표](https://seibro.or.kr/websquare/control.jsp?w2xPath=/IPORTAL/user/company/BIP_CNTS01009V.xml&menuNo=10)
         try {
@@ -254,7 +253,6 @@ public class KrAssetClient extends AssetClient implements SeibroClientSupport {
             // response
             String responseBody = responseEntity.getBody();
             List<Map<String,String>> responseList = convertSeibroXmlToList(responseBody);
-
             // calculates ttm eps
             Map<String,String> epsRow = responseList.stream().filter(row ->
                             row.get("HB").startsWith("EPS"))
@@ -279,7 +277,6 @@ public class KrAssetClient extends AssetClient implements SeibroClientSupport {
         } catch (Exception e) {
             throw new RuntimeException(e);
         }
-
         // calculates TTM ROE
         // [재무비율](https://seibro.or.kr/websquare/control.jsp?w2xPath=/IPORTAL/user/company/BIP_CNTS01008V.xml&menuNo=9)
         try {
@@ -304,7 +301,6 @@ public class KrAssetClient extends AssetClient implements SeibroClientSupport {
             // response
             String responseBody = responseEntity.getBody();
             List<Map<String,String>> responseList = convertSeibroXmlToList(responseBody);
-
             // calculates ttm eps
             Map<String,String> roeRow = responseList.stream().filter(row ->
                             row.get("HB").contentEquals("ROE"))
@@ -330,12 +326,10 @@ public class KrAssetClient extends AssetClient implements SeibroClientSupport {
         } catch (Exception e) {
             throw new RuntimeException(e);
         }
-
         // price,volume
         List<Ohlcv> ohlcvs = getStockOhlcvs(asset);
         price = ohlcvs.get(0).getClose();
         volume = ohlcvs.get(0).getVolume();
-
         // calculates PER
         if (eps.compareTo(BigDecimal.ZERO) <= 0) {
             per = BigDecimal.valueOf(9_999);
@@ -343,7 +337,6 @@ public class KrAssetClient extends AssetClient implements SeibroClientSupport {
             per = price.divide(eps, MathContext.DECIMAL32)
                     .setScale(2, RoundingMode.HALF_UP);
         }
-
         // calculates dividend
         List<Dividend> dividends = getStockDividends(asset);
         dividendFrequency = dividends.size();
@@ -353,7 +346,6 @@ public class KrAssetClient extends AssetClient implements SeibroClientSupport {
         dividendYield = dividendPerShare.divide(price, MathContext.DECIMAL32)
                 .multiply(BigDecimal.valueOf(100))
                 .setScale(2, RoundingMode.HALF_UP);
-
         // capital gain
         BigDecimal startClose = ohlcvs.get(ohlcvs.size()-1).getClose();
         BigDecimal endClose =  ohlcvs.get(0).getClose();
@@ -361,11 +353,9 @@ public class KrAssetClient extends AssetClient implements SeibroClientSupport {
                 .divide(startClose, MathContext.DECIMAL32)
                 .multiply(BigDecimal.valueOf(100))
                 .setScale(2, RoundingMode.HALF_UP);
-
         // total return
         totalReturn = capitalGain.add(dividendYield)
                 .setScale(2, RoundingMode.HALF_UP);
-
         // updates asset
         asset.setPrice(price);
         asset.setVolume(volume);
@@ -454,7 +444,7 @@ public class KrAssetClient extends AssetClient implements SeibroClientSupport {
     }
 
     /**
-     * returns stock dividends
+     * Returns stock dividends
      * @param asset asset
      * @return dividends
      * @see <a href="https://seibro.or.kr/websquare/control.jsp?w2xPath=/IPORTAL/user/company/BIP_CNTS01041V.xml&menuNo=285">배당내역전체검색</a>
@@ -521,6 +511,10 @@ public class KrAssetClient extends AssetClient implements SeibroClientSupport {
         return dividends;
     }
 
+    /**
+     * Populates ETF asset
+     * @param asset ETF asset
+     */
     void populateEtfAsset(Asset asset) {
         BigDecimal price;
         BigDecimal volume;
@@ -529,12 +523,10 @@ public class KrAssetClient extends AssetClient implements SeibroClientSupport {
         BigDecimal dividendYield = BigDecimal.ZERO;
         BigDecimal capitalGain = BigDecimal.ZERO;
         BigDecimal totalReturn = BigDecimal.ZERO;
-
         // price
         List<Ohlcv> ohlcvs = getEtfOhlcvs(asset);
         price = ohlcvs.get(0).getClose();
         volume = ohlcvs.get(0).getVolume();
-
         // calculates dividend
         List<Dividend> dividends = getEtfDividends(asset);
         dividendFrequency = dividends.size();
@@ -544,7 +536,6 @@ public class KrAssetClient extends AssetClient implements SeibroClientSupport {
         dividendYield = dividendPerShare.divide(price, MathContext.DECIMAL32)
                 .multiply(BigDecimal.valueOf(100))
                 .setScale(2, RoundingMode.HALF_UP);
-
         // capital gain
         BigDecimal startPrice = ohlcvs.get(ohlcvs.size() - 1).getClose();
         BigDecimal endPrice = ohlcvs.get(0).getClose();
@@ -552,11 +543,9 @@ public class KrAssetClient extends AssetClient implements SeibroClientSupport {
                 .divide(startPrice, MathContext.DECIMAL32)
                 .multiply(BigDecimal.valueOf(100))
                 .setScale(2, RoundingMode.HALF_UP);
-
         // total return
         totalReturn = capitalGain.add(dividendYield)
                 .setScale(2, RoundingMode.HALF_UP);
-
         // updates asset
         asset.setPrice(price);
         asset.setVolume(volume);
@@ -644,7 +633,7 @@ public class KrAssetClient extends AssetClient implements SeibroClientSupport {
     }
 
     /**
-     * returns etf dividends
+     * Returns etf dividends
      * @param asset asset
      * @return dividends
      * @see <a href="https://seibro.or.kr/websquare/control.jsp?w2xPath=/IPORTAL/user/etf/BIP_CNTS06030V.xml&menuNo=179">분배금지급현황</a>

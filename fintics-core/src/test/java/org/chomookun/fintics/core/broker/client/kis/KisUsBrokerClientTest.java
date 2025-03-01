@@ -48,10 +48,9 @@ class KisUsBrokerClientTest extends CoreTestSupport {
         appKey = System.getenv("KIS_US_APP_KEY");
         appSecret = System.getenv("KIS_US_APP_SECRET");
         accountNo = System.getenv("KIS_US_ACCOUNT_NO");
-
         // loads access token
         if (apiUrl != null && appKey != null && appSecret != null && accountNo != null) {
-            KisBrokerClientTestUtils.loadAccessToken(apiUrl, appKey, appSecret);
+            KisBrokerClientTestUtil.loadAccessToken(apiUrl, appKey, appSecret);
         }
     }
 

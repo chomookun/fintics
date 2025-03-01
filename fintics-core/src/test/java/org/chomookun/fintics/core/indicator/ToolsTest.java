@@ -17,7 +17,6 @@ public class ToolsTest {
         for(int i = 0; i < 100; i ++) {
             rows.add(BigDecimal.valueOf(100*i));
         }
-
         // when
         log.info("###############{}", Tools.graph("Test Graph", rows));
     }

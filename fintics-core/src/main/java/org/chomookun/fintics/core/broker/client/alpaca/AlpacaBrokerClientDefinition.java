@@ -22,11 +22,19 @@ public class AlpacaBrokerClientDefinition implements BrokerClientDefinition {
         return "Alpaca API";
     }
 
+    /**
+     * Gets client class type
+     * @return client class type
+     */
     @Override
     public Class<? extends BrokerClient> getClassType() {
-        return KisUsBrokerClient.class;
+        return AlpacaBrokerClient.class;
     }
 
+    /**
+     * Get properties template
+     * @return properties template
+     */
     @Override
     public String getPropertiesTemplate() {
         StringJoiner template = new StringJoiner("\n");

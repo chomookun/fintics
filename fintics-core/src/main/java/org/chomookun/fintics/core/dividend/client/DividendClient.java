@@ -13,7 +13,7 @@ public abstract class DividendClient {
     private final DividendClientProperties dividendClientProperties;
 
     /**
-     * constructor
+     * Constructor
      * @param dividendClientProperties dividend client properties
      */
     protected DividendClient(DividendClientProperties dividendClientProperties) {
@@ -21,7 +21,7 @@ public abstract class DividendClient {
     }
 
     /**
-     * checks support asset
+     * Checks support asset
      * @param asset asset
      * @return support or not
      */

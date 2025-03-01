@@ -12,7 +12,7 @@ import java.util.StringJoiner;
 public class KisUsBrokerClientDefinition implements BrokerClientDefinition {
 
     /**
-     * gets broker id
+     * Gets broker id
      * @return broker id
      */
     @Override
@@ -21,7 +21,7 @@ public class KisUsBrokerClientDefinition implements BrokerClientDefinition {
     }
 
     /**
-     * gets broker name
+     * Gets broker name
      * @return broker name
      */
     @Override
@@ -30,7 +30,7 @@ public class KisUsBrokerClientDefinition implements BrokerClientDefinition {
     }
 
     /**
-     * gets broker client type
+     * Gets broker client type
      * @return broker class type
      */
     @Override
@@ -39,7 +39,7 @@ public class KisUsBrokerClientDefinition implements BrokerClientDefinition {
     }
 
     /**
-     * returns properties template string
+     * Returns properties template string
      * @return properties template
      */
     @Override
@@ -55,7 +55,7 @@ public class KisUsBrokerClientDefinition implements BrokerClientDefinition {
     }
 
     /**
-     * gets broker market
+     * Gets broker market
      * @return broker market
      */
     @Override
@@ -64,7 +64,7 @@ public class KisUsBrokerClientDefinition implements BrokerClientDefinition {
     }
 
     /**
-     * gets broker market time zone
+     * Gets broker market time zone
      * @return market time zone
      */
     @Override
@@ -73,7 +73,7 @@ public class KisUsBrokerClientDefinition implements BrokerClientDefinition {
     }
 
     /**
-     * returns currency unit - USD
+     * Returns currency unit - USD
      * @return USD currency
      */
     @Override

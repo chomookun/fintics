@@ -16,7 +16,7 @@ import java.util.function.Supplier;
 public class Tools {
 
     /**
-     * calculate technical indicator
+     * Calculate technical indicator
      * @param ohlcvs OHLCV data (time descending)
      * @param context calculator context
      * @param <C> calculator context type
@@ -27,18 +27,16 @@ public class Tools {
         // series
         List<Ohlcv> series = new ArrayList<>(ohlcvs);
         Collections.reverse(series);
-
         // calculate
         IndicatorCalculator<C,R> calculator = IndicatorCalculatorFactory.getIndicator(context);
         List<R> calculateResults =  calculator.calculate(series);
-
         // reverse and return
         Collections.reverse(calculateResults);
         return calculateResults;
     }
 
     /**
-     * calculates percentage of change at each data point
+     * Calculates percentage of change at each data point
      * @param values data points (time descending)
      * @return percentage of change
      */
@@ -48,7 +46,6 @@ public class Tools {
         }
         List<BigDecimal> series = new ArrayList<>(values);
         Collections.reverse(series);
-
         List<BigDecimal> pctChanges = new ArrayList<>();
         pctChanges.add(BigDecimal.ZERO);
         for (int i = 1; i < series.size(); i++) {
@@ -67,13 +64,12 @@ public class Tools {
                     .multiply(BigDecimal.valueOf(100));
             pctChanges.add(pctChange);
         }
-
         Collections.reverse(pctChanges);
         return pctChanges;
     }
 
     /**
-     * calculate sum of all percentage of change
+     * Calculate sum of all percentage of change
      * @param values each data point (time descending)
      * @return sum of all percentage of change
      */
@@ -83,7 +79,7 @@ public class Tools {
     }
 
     /**
-     * calculates z-score each element
+     * Calculates z-score each element
      * @param values data point values (time descending)
      * @return z-score list at each data point
      */
@@ -93,11 +89,9 @@ public class Tools {
         }
         List<BigDecimal> series = new ArrayList<>(values);
         Collections.reverse(series);
-
         BigDecimal mean = mean(series);
         List<BigDecimal> stds = IndicatorCalculator.sds(series, series.size(), MathContext.DECIMAL32);
         BigDecimal std = stds.get(stds.size() - 1);
-
         List<BigDecimal> zScores = new ArrayList<>();
         for(BigDecimal value : series) {
             if(std.compareTo(BigDecimal.ZERO) == 0) {
@@ -109,13 +103,12 @@ public class Tools {
                     .divide(std, MathContext.DECIMAL32);
             zScores.add(zScore);
         }
-
         Collections.reverse(zScores);
         return zScores;
     }
 
     /**
-     * get current(first) z-score
+     * Gets current(first) z-score
      * @param values data point values (time descending)
      * @return current z-score(first)
      */
@@ -125,7 +118,7 @@ public class Tools {
     }
 
     /**
-     * calculates sum value
+     * Calculates sum value
      * @param values data points (time descending)
      * @return sum of all data points values
      */
@@ -135,7 +128,7 @@ public class Tools {
     }
 
     /**
-     * calculates mean(average) values
+     * Calculates mean(average) values
      * @param values data points (time descending)
      * @return mean(average) value
      */
@@ -150,7 +143,7 @@ public class Tools {
     }
 
     /**
-     * calculates min value
+     * Calculates min value
      * @param values data points (time descending)
      * @return min value
      */
@@ -161,7 +154,7 @@ public class Tools {
     }
 
     /**
-     * calculates max value
+     * Calculates max value
      * @param values data point (time descending)
      * @return max value
      */
@@ -172,7 +165,7 @@ public class Tools {
     }
 
     /**
-     * calculates median value
+     * Calculates median value
      * @param values data points (time descending)
      * @return median value
      */
@@ -194,7 +187,7 @@ public class Tools {
     }
 
     /**
-     * check values are crossed
+     * Check values are crossed
      * @param values1 values 1
      * @param values2 values 2
      * @return is value is cross
@@ -208,7 +201,7 @@ public class Tools {
     }
 
     /**
-     * check elements is ascending
+     * Check elements is ascending
      * @param values values
      * @return result
      */
@@ -222,7 +215,7 @@ public class Tools {
     }
 
     /**
-     * check element is descending
+     * Check element is descending
      * @param values values
      * @return result
      */
@@ -236,7 +229,7 @@ public class Tools {
     }
 
     /**
-     * creates simple ascii line chart
+     * Creates simple ascii line chart
      * @param title chart title
      * @param values data point
      * @return ascii chart string
@@ -248,17 +241,14 @@ public class Tools {
                 // make series
                 List<BigDecimal> series = new ArrayList<>(values);
                 Collections.reverse(series);
-
                 // data to double array
                 double[] doubles = series.stream()
                         .mapToDouble(BigDecimal::doubleValue)
                         .toArray();
-
                 // create ascii graph
                 String graph = ASCIIGraph.fromSeries(doubles).withNumRows(10).plot();
                 return String.format("\n%s\n%s", title, graph);
             }
-
             @Override
             public String toString() {
                 return get();
@@ -267,7 +257,7 @@ public class Tools {
     }
 
     /**
-     * creates simple ascii table
+     * Creates simple ascii table
      * @param title table title
      * @param values values
      * @return ascii table string
@@ -279,7 +269,6 @@ public class Tools {
                 // TODO
                 return null;
             }
-
             @Override
             public String toString() {
                 return get();

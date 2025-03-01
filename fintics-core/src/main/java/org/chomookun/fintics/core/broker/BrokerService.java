@@ -29,6 +29,12 @@ public class BrokerService {
 
     private final TradeRepository tradeRepository;
 
+    /**
+     * Gets brokers page
+     * @param brokerSearch broker search
+     * @param pageable pageable
+     * @return page of brokers
+     */
     public Page<Broker> getBrokers(BrokerSearch brokerSearch, Pageable pageable) {
         Page<BrokerEntity> brokerEntityPage = brokerRepository.findAll(brokerSearch, pageable);
         List<Broker> brokers = brokerEntityPage.getContent().stream()
@@ -39,6 +45,11 @@ public class BrokerService {
         return new PageImpl<>(brokers, pageable, total);
     }
 
+    /**
+     * Gets broker
+     * @param brokerId broker id
+     * @return broker
+     */
     public Optional<Broker> getBroker(String brokerId) {
         return brokerRepository.findById(brokerId)
                 .map(brokerEntity -> {
@@ -48,6 +59,10 @@ public class BrokerService {
                 });
     }
 
+    /**
+     * Populates broker
+     * @param broker broker
+     */
     void populateBroker(Broker broker) {
         brokerClientDefinitionRegistry.getBrokerClientDefinition(broker.getBrokerClientId()).ifPresent(brokerClientDefinition -> {
             broker.setMarket(brokerClientDefinition.getMarket());
@@ -56,6 +71,11 @@ public class BrokerService {
         });
     }
 
+    /**
+     * Saves broker
+     * @param broker broker
+     * @return saved broker
+     */
     @Transactional
     public Broker saveBroker(Broker broker) {
         BrokerEntity brokerEntity;
@@ -76,15 +96,17 @@ public class BrokerService {
         return Broker.from(savedBrokerEntity);
     }
 
+    /**
+     * Deletes broker
+     * @param brokerId broker id
+     */
     @Transactional
     public void deleteBroker(String brokerId) {
         BrokerEntity brokerEntity = brokerRepository.findById(brokerId).orElseThrow();
-
         // checks referenced by trade
         if (!tradeRepository.findAllByBrokerId(brokerEntity.getBrokerId()).isEmpty()) {
             throw new DataIntegrityViolationException("Referenced by existing trade");
         }
-
         // deletes
         brokerRepository.delete(brokerEntity);
         brokerRepository.flush();

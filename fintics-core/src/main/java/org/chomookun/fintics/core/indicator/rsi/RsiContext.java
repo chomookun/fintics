@@ -14,6 +14,12 @@ public class RsiContext extends IndicatorContext {
 
     private final int signalPeriod;
 
+    /**
+     * Creates rsi context
+     * @param period period
+     * @param signalPeriod signal period
+     * @return rsi context
+     */
     public static RsiContext of(int period, int signalPeriod) {
         return RsiContext.builder()
                 .period(period)

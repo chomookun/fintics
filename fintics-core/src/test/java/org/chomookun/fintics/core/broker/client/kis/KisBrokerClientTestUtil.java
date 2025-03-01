@@ -8,7 +8,7 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.time.LocalDateTime;
 
-public class KisBrokerClientTestUtils {
+public class KisBrokerClientTestUtil {
 
     /**
      * 인증 토큰 발급 횟수 제한이 있어서 한번 발급 후 temp file 저정 후 재 사용

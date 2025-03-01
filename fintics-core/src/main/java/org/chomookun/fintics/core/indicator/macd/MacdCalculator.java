@@ -9,37 +9,40 @@ import java.util.List;
 
 public class MacdCalculator extends IndicatorCalculator<MacdContext, Macd> {
 
+    /**
+     * Constructor
+     * @param context macd context
+     */
     public MacdCalculator(MacdContext context) {
         super(context);
     }
 
+    /**
+     * Calculate macd
+     * @param series ohlcv series
+     * @return macd series
+     */
     @Override
     public List<Macd> calculate(List<Ohlcv> series) {
         List<BigDecimal> closePrices = series.stream()
                 .map(Ohlcv::getClose)
                 .toList();
-
         List<BigDecimal> values = new ArrayList<>();
         List<BigDecimal> oscillators = new ArrayList<>();
-
         // Calculate MACD line
         List<BigDecimal> shortTermEmas = emas(closePrices, getContext().getShortPeriod(), getContext().getMathContext());
         List<BigDecimal> longTermEmas = emas(closePrices, getContext().getLongPeriod(), getContext().getMathContext());
-
         for (int i = 0; i < longTermEmas.size(); i++) {
             BigDecimal value = shortTermEmas.get(i).subtract(longTermEmas.get(i));
             values.add(value);
         }
-
         // ine using MACD line
         List<BigDecimal> signals = emas(values, getContext().getSignalPeriod(), getContext().getMathContext());
-
         // oscillator
         for (int i = 0; i < values.size(); i++) {
             BigDecimal oscillator = values.get(i).subtract(signals.get(i));
             oscillators.add(oscillator);
         }
-
         // return macds
         List<Macd> macds = new ArrayList<>();
         for(int i = 0; i < values.size(); i ++ ) {

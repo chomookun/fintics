@@ -15,33 +15,26 @@ import java.util.List;
 public interface BrokerRepository extends JpaRepository<BrokerEntity, String>, JpaSpecificationExecutor<BrokerEntity> {
 
     /**
-     * find broker list
+     * Find brokers by broker search
      * @param brokerSearch broker search criteria
      * @param pageable pageable
      * @return page of broker entity
      */
     default Page<BrokerEntity> findAll(BrokerSearch brokerSearch, Pageable pageable) {
-        // where
+        // specifications
         Specification<BrokerEntity> specification = Specification.where(null);
-
-        // like name
         if (brokerSearch.getName() != null) {
             specification = specification.and((root, query, criteriaBuilder) ->
                 criteriaBuilder.like(root.get(BrokerEntity_.NAME), '%' + brokerSearch.getName() + '%')
             );
         }
-
         // sort
-        Sort sort = pageable.getSort().and(Sort.by(Sort.Direction.ASC, BrokerEntity_.NAME));
-
-        // find
-        if (pageable.isPaged()) {
-            pageable = PageRequest.of(pageable.getPageNumber(), pageable.getPageSize(), sort);
-            return findAll(specification, pageable);
-        } else {
-            List<BrokerEntity> brokerEntities = findAll(specification, sort);
-            return new PageImpl<>(brokerEntities, pageable, brokerEntities.size());
-        }
+        Sort sort = pageable.getSort().and(Sort.by(BrokerEntity_.NAME).ascending());
+        Pageable finalPageable = pageable.isUnpaged()
+                ? Pageable.unpaged(sort)
+                : PageRequest.of(pageable.getPageNumber(), pageable.getPageSize(), sort);
+        // find all
+        return findAll(specification, finalPageable);
     }
 
 }

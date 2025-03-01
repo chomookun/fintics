@@ -10,10 +10,19 @@ import java.util.List;
 
 public class ObvCalculator extends IndicatorCalculator<ObvContext, Obv> {
 
+    /**
+     * Constructor
+     * @param context
+     */
     public ObvCalculator(ObvContext context) {
         super(context);
     }
 
+    /**
+     * Calculate obv
+     * @param series ohlcv series
+     * @return obv series
+     */
     @Override
     public List<Obv> calculate(List<Ohlcv> series) {
         // values
@@ -32,12 +41,10 @@ public class ObvCalculator extends IndicatorCalculator<ObvContext, Obv> {
             }
             obvValues.add(new BigDecimal(obvValue.unscaledValue(), obvValue.scale()));
         }
-
         // signal
         List<BigDecimal> signals = emas(obvValues, getContext().getSignalPeriod(), getContext().getMathContext()).stream()
                 .map(value -> value.setScale(0, RoundingMode.HALF_UP))
                 .toList();
-
         // obv
         List<Obv> obvs = new ArrayList<>();
         for(int i = 0; i < obvValues.size(); i ++) {
@@ -50,6 +57,5 @@ public class ObvCalculator extends IndicatorCalculator<ObvContext, Obv> {
         }
         return obvs;
     }
-
 
 }

@@ -11,7 +11,7 @@ public abstract class AssetClient {
     private final AssetClientProperties assetClientProperties;
 
     /**
-     * constructor
+     * Constructor
      * @param assetClientProperties asset client properties
      */
     protected AssetClient(AssetClientProperties assetClientProperties) {
@@ -19,14 +19,14 @@ public abstract class AssetClient {
     }
 
     /**
-     * checks support asset
+     * Checks support asset
      * @param asset asset
      * @return support or not
      */
     public abstract boolean isSupport(Asset asset);
 
     /**
-     * returns assets
+     * Returns assets
      * @return assets
      */
     public abstract List<Asset> getAssets();
@@ -38,7 +38,7 @@ public abstract class AssetClient {
     public abstract void populateAsset(Asset asset);
 
     /**
-     * convert to asset id
+     * Convert to asset id
      * @param market market
      * @param symbol symbol
      * @return asset id

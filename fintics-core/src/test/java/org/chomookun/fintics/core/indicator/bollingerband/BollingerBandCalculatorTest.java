@@ -23,11 +23,8 @@ public class BollingerBandCalculatorTest extends AbstractCalculatorTest {
     @Test
     void calculate() {
         // given
-        String filePath = getPackageTestResourcesDir(this.getClass()) + "BollingerBandCalculatorTest.tsv";
-        List<Map<String,String>> inputRows = readTsv(
-                filePath,
-                new String[]{"dateTime","open","high","low","close","ubb","mbb","lbb","bandWidth","percentB"}
-        );
+        String[] columnNames = new String[]{"dateTime","open","high","low","close","ubb","mbb","lbb","bandWidth","percentB"};
+        List<Map<String,String>> inputRows = readTestResourceAsTsv(this.getClass().getPackage(), "BollingerBandCalculatorTest.tsv", columnNames);
         List<Ohlcv> ohlcvs = inputRows.stream()
                 .map(row -> {
                     return Ohlcv.builder()
@@ -40,11 +37,9 @@ public class BollingerBandCalculatorTest extends AbstractCalculatorTest {
                 .collect(Collectors.toList());
         Collections.reverse(inputRows);
         Collections.reverse(ohlcvs);
-
         // when
         List<BollingerBand> bollingerBands = new BollingerBandCalculator(BollingerBandContext.DEFAULT)
                 .calculate(ohlcvs);
-
         // then
         for(int i = 0, size = bollingerBands.size(); i < size; i ++) {
             BollingerBand bollingerBand = bollingerBands.get(i);
@@ -59,7 +54,6 @@ public class BollingerBandCalculatorTest extends AbstractCalculatorTest {
             BigDecimal originLbb = new BigDecimal(inputRow.get("lbb").replaceAll(",",""));
             BigDecimal originBandWidth = new BigDecimal(inputRow.get("bandWidth").replaceAll(",",""));
             BigDecimal originPercentB = new BigDecimal(inputRow.get("percentB").replaceAll("[,|%]",""));
-
             log.info("[{}] {},{},{}({},{}) / {},{},{}({},{})", i,
                     originUbb, originMbb, originLbb, originBandWidth, originPercentB,
                     bollingerBand.getUpper().setScale(2, RoundingMode.HALF_UP),
@@ -67,12 +61,10 @@ public class BollingerBandCalculatorTest extends AbstractCalculatorTest {
                     bollingerBand.getLower().setScale(2, RoundingMode.HALF_UP),
                     bollingerBand.getWidth(),
                     bollingerBand.getPercentB());
-
             // skip initial block
             if(i < (26*3) + 1) {
                 continue;
             }
-
             // assert
             assertEquals(originUbb.doubleValue(), bollingerBand.getUpper().doubleValue(), 0.1);
             assertEquals(originMbb.doubleValue(), bollingerBand.getMiddle().doubleValue(), 0.1);
@@ -80,7 +72,6 @@ public class BollingerBandCalculatorTest extends AbstractCalculatorTest {
             assertEquals(originBandWidth.doubleValue(), bollingerBand.getWidth().doubleValue(), 0.01);
             assertEquals(originPercentB.doubleValue(), bollingerBand.getPercentB().doubleValue(), 1);
         }
-
     }
 
 }

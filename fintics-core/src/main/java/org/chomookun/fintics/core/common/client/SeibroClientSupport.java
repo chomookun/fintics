@@ -29,9 +29,8 @@ import java.util.Map;
 
 public interface SeibroClientSupport extends ClientSupport {
 
-
     /**
-     * returns seibro api header
+     * Returns seibro api header
      * @param w2xPath w2xPath
      * @return http headers for seibro
      */
@@ -44,7 +43,7 @@ public interface SeibroClientSupport extends ClientSupport {
     }
 
     /**
-     * creates payload XML string
+     * Creates payload XML string
      * @param action seibro api action
      * @param task seibro api task
      * @param payloadMap payload map
@@ -60,20 +59,17 @@ public interface SeibroClientSupport extends ClientSupport {
             throw new RuntimeException(e);
         }
         Document doc = dBuilder.newDocument();
-
         // Create the root element <reqParam>
         Element reqParamElement = doc.createElement("reqParam");
         doc.appendChild(reqParamElement);
-
-        // Add attributes to <reqParam>
+        // Add attributes to <action>
         Attr actionAttr = doc.createAttribute("action");
         actionAttr.setValue(action);
         reqParamElement.setAttributeNode(actionAttr);
-
+        // Add attributes to <task>
         Attr taskAttr = doc.createAttribute("task");
         taskAttr.setValue(task);
         reqParamElement.setAttributeNode(taskAttr);
-
         // Add child elements to <reqParam>
         for(String key : payloadMap.keySet()) {
             String value = payloadMap.get(key);
@@ -83,7 +79,6 @@ public interface SeibroClientSupport extends ClientSupport {
             childElement.setAttributeNode(attr);
             reqParamElement.appendChild(childElement);
         }
-
         // convert to string
         try {
             TransformerFactory transformerFactory = TransformerFactory.newInstance();
@@ -98,7 +93,7 @@ public interface SeibroClientSupport extends ClientSupport {
     }
 
     /**
-     * convert seibro xml response to map
+     * Converts seibro xml response to map
      * @param responseXml response xml
      * @return map
      */
@@ -114,7 +109,6 @@ public interface SeibroClientSupport extends ClientSupport {
             Document document = builder.parse(inputSource);
             XPathFactory xPathFactory = XPathFactory.newInstance();
             XPath xPath = xPathFactory.newXPath();
-
             XPathExpression expr = xPath.compile("/result/*");
             NodeList propertyNodes = (NodeList) expr.evaluate(document, XPathConstants.NODESET);
             for(int i = 0; i < propertyNodes.getLength(); i++) {
@@ -130,7 +124,7 @@ public interface SeibroClientSupport extends ClientSupport {
     }
 
     /**
-     * convert seibro response XML to list
+     * Converts seibro response XML to list
      * @param responseXml response XML
      * @return list of seibro response map
      */
@@ -146,12 +140,10 @@ public interface SeibroClientSupport extends ClientSupport {
             Document document = builder.parse(inputSource);
             XPathFactory xPathFactory = XPathFactory.newInstance();
             XPath xPath = xPathFactory.newXPath();
-
             Double count = (Double) xPath.evaluate("count(//vector)", document, XPathConstants.NUMBER);
             if(count.intValue() == 0) {
                 throw new RuntimeException("response body error - vector element count is 0.");
             }
-
             XPathExpression expr = xPath.compile("//vector/data/result");
             NodeList nodeList = (NodeList) expr.evaluate(document, XPathConstants.NODESET);
             for(int i = 0; i < nodeList.getLength(); i++) {
@@ -166,7 +158,6 @@ public interface SeibroClientSupport extends ClientSupport {
                 }
                 list.add(map);
             }
-
         }catch(Throwable e) {
             throw new RuntimeException(e);
         }
@@ -174,7 +165,7 @@ public interface SeibroClientSupport extends ClientSupport {
     }
 
     /**
-     * gets SEC info
+     * Gets SEC info
      * @param asset asset
      * @return sec info
      */

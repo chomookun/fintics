@@ -27,10 +27,10 @@ class KrAssetClientTest extends CoreTestSupport {
     private final AssetClientProperties assetClientProperties;
 
     /**
-     * Returns KrAssetClient
-     * @return KrAssetClient
+     * Creates kr asset client
+     * @return KrAssetClient kr asset client
      */
-    public KrAssetClient getKrAssetClient() {
+    KrAssetClient createKrAssetClient() {
         return new KrAssetClient(assetClientProperties);
     }
 
@@ -87,7 +87,7 @@ class KrAssetClientTest extends CoreTestSupport {
     @Test
     void getAssets() {
         // when
-        List<Asset> assets = getKrAssetClient().getAssets();
+        List<Asset> assets = createKrAssetClient().getAssets();
         // then
         assertFalse(assets.isEmpty());
         assertTrue(assets.stream().allMatch(asset ->
@@ -103,7 +103,7 @@ class KrAssetClientTest extends CoreTestSupport {
     @MethodSource("getTestStockAssets")
     void getStockOhlcvs(Asset asset) {
         // when
-        List<Ohlcv> stockOhlcvs = getKrAssetClient().getStockOhlcvs(asset);
+        List<Ohlcv> stockOhlcvs = createKrAssetClient().getStockOhlcvs(asset);
         // then
         assertFalse(stockOhlcvs.isEmpty());
     }
@@ -113,7 +113,7 @@ class KrAssetClientTest extends CoreTestSupport {
     @MethodSource("getTestEtfAssets")
     void getStockDividends(Asset asset) {
         // when
-        List<Dividend> stockDividends = getKrAssetClient().getStockDividends(asset);
+        List<Dividend> stockDividends = createKrAssetClient().getStockDividends(asset);
         // then
         log.info("stockDividends:{}", stockDividends);
     }
@@ -123,7 +123,7 @@ class KrAssetClientTest extends CoreTestSupport {
     @MethodSource("getTestEtfAssets")
     void getEtfOhlcvs(Asset asset) {
         // when
-        List<Ohlcv> etfOhlcvs = getKrAssetClient().getEtfOhlcvs(asset);
+        List<Ohlcv> etfOhlcvs = createKrAssetClient().getEtfOhlcvs(asset);
         // then
         assertFalse(etfOhlcvs.isEmpty());
     }
@@ -133,7 +133,7 @@ class KrAssetClientTest extends CoreTestSupport {
     @MethodSource("getTestEtfAssets")
     void getEtfDividends(Asset asset) {
         // when
-        List<Dividend> etfDividends = getKrAssetClient().getEtfDividends(asset);
+        List<Dividend> etfDividends = createKrAssetClient().getEtfDividends(asset);
         // then
         log.info("etfDividends:{}", etfDividends);
     }
@@ -143,7 +143,7 @@ class KrAssetClientTest extends CoreTestSupport {
     @MethodSource("getTestStockAssets")
     void populateStockAsset(Asset asset) {
        // when
-        getKrAssetClient().populateStockAsset(asset);
+        createKrAssetClient().populateStockAsset(asset);
         // then
         log.info("asset:{}", asset);
         assertNotNull(asset.getEps());
@@ -160,7 +160,7 @@ class KrAssetClientTest extends CoreTestSupport {
     @MethodSource("getTestEtfAssets")
     void populateEtfAsset(Asset asset) {
         // when
-        getKrAssetClient().populateEtfAsset(asset);
+        createKrAssetClient().populateEtfAsset(asset);
         // then
         log.info("asset: {}", asset);
         assertNotNull(asset.getDividendFrequency());

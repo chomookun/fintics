@@ -10,17 +10,25 @@ import java.util.List;
 
 public class StochasticSlowCalculator extends IndicatorCalculator<StochasticSlowContext, StochasticSlow> {
 
+    /**
+     * Constructor
+     * @param context stochastic slow context
+     */
     public StochasticSlowCalculator(StochasticSlowContext context) {
         super(context);
     }
 
+    /**
+     * Calculates stochastic slow
+     * @param series ohlcv series
+     * @return stochastic slow series
+     */
     @Override
     public List<StochasticSlow> calculate(List<Ohlcv> series) {
         int period = getContext().getPeriod();
         int periodK = getContext().getPeriodK();
         int periodD = getContext().getPeriodD();
         MathContext mathContext = getContext().getMathContext();
-
         // rawK
         List<BigDecimal> rawKs = new ArrayList<>();
         for (int i = 0; i < series.size(); i++) {
@@ -46,13 +54,10 @@ public class StochasticSlowCalculator extends IndicatorCalculator<StochasticSlow
             }
             rawKs.add(rawK);
         }
-
         // slowK
         List<BigDecimal> slowKs = emas(rawKs, periodK, mathContext);
-
         // slowD
         List<BigDecimal> slowDs = emas(slowKs, periodD, mathContext);
-
         // stochastic slow
         List<StochasticSlow> stochasticSlows = new ArrayList<>();
         for (int i = 0; i < slowDs.size(); i++) {
@@ -62,7 +67,6 @@ public class StochasticSlowCalculator extends IndicatorCalculator<StochasticSlow
                     .build();
             stochasticSlows.add(stochasticSlow);
         }
-
         // return
         return stochasticSlows;
     }

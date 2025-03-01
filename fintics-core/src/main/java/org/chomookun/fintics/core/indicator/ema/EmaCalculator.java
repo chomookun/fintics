@@ -9,10 +9,19 @@ import java.util.List;
 
 public class EmaCalculator extends IndicatorCalculator<EmaContext, Ema> {
 
+    /**
+     * Constructor
+     * @param context
+     */
     public EmaCalculator(EmaContext context) {
         super(context);
     }
 
+    /**
+     * Calculate EMA
+     * @param series ohlcv series
+     * @return ema series
+     */
     @Override
     public List<Ema> calculate(List<Ohlcv> series) {
         List<BigDecimal> closePrices = series.stream()

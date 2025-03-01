@@ -20,9 +20,13 @@ import java.util.List;
 @Slf4j
 class KrDividendClientTest extends CoreTestSupport {
 
-    private final DividendClientProperties dividendClientProperties;
+    final DividendClientProperties dividendClientProperties;
 
-    public KrDividendClient getKrDividendClient() {
+    /**
+     * Creates kr dividend client
+     * @return kr dividend client
+     */
+    KrDividendClient createKrDividendClient() {
         return new KrDividendClient(dividendClientProperties);
     }
 
@@ -56,7 +60,7 @@ class KrDividendClientTest extends CoreTestSupport {
         LocalDate dateFrom = LocalDate.now().minusYears(3);
         LocalDate dateTo = LocalDate.now();
         // when
-        List<Dividend> dividends = getKrDividendClient().getStockDividends(asset, dateFrom, dateTo);
+        List<Dividend> dividends = createKrDividendClient().getStockDividends(asset, dateFrom, dateTo);
         // then
         log.info("dividends:{}", dividends);
     }
@@ -68,7 +72,7 @@ class KrDividendClientTest extends CoreTestSupport {
         LocalDate dateFrom = LocalDate.now().minusYears(3);
         LocalDate dateTo = LocalDate.now();
         // when
-        List<Dividend> dividends = getKrDividendClient().getEtfDividends(asset, dateFrom, dateTo);
+        List<Dividend> dividends = createKrDividendClient().getEtfDividends(asset, dateFrom, dateTo);
         // then
         log.info("dividends:{}", dividends);
     }
@@ -80,7 +84,7 @@ class KrDividendClientTest extends CoreTestSupport {
         LocalDate dateFrom = LocalDate.now().minusYears(3);
         LocalDate dateTo = LocalDate.now();
         // when
-        List<Dividend> dividends = getKrDividendClient().getDividends(asset, dateFrom, dateTo);
+        List<Dividend> dividends = createKrDividendClient().getDividends(asset, dateFrom, dateTo);
         // then
         log.info("dividends:{}", dividends);
     }

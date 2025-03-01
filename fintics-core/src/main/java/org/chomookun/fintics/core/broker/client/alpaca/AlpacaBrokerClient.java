@@ -26,6 +26,10 @@ import java.util.Map;
 import java.util.Optional;
 import java.util.Properties;
 
+/**
+ * Alpaca Broker Client
+ * TODO 현재 외국인 은 실 계좌 개설 불가
+ */
 public class AlpacaBrokerClient extends BrokerClient {
 
     private final boolean live;
@@ -41,7 +45,7 @@ public class AlpacaBrokerClient extends BrokerClient {
     private final ObjectMapper objectMapper;
 
     /**
-     * constructor
+     * Constructor
      * @param definition definition
      * @param properties properties
      */
@@ -53,16 +57,12 @@ public class AlpacaBrokerClient extends BrokerClient {
         this.insecure = Optional.ofNullable(properties.getProperty("insecure"))
                 .map(Boolean::parseBoolean)
                 .orElse(Boolean.FALSE);
-
-        // rest template
         this.restTemplate = createRestTemplate();
-
-        // object mapper
         this.objectMapper = new ObjectMapper();
     }
 
     /**
-     * creates rest template
+     * Creates rest template
      * @return rest template
      */
     RestTemplate createRestTemplate() {
@@ -72,6 +72,10 @@ public class AlpacaBrokerClient extends BrokerClient {
                 .build();
     }
 
+    /**
+     * Creates http headers
+     * @return http headers
+     */
     HttpHeaders createHttpHeaders() {
         HttpHeaders httpHeaders = new HttpHeaders();
         httpHeaders.add("Content-Type", "application/json");
@@ -80,6 +84,11 @@ public class AlpacaBrokerClient extends BrokerClient {
         return httpHeaders;
     }
 
+    /**
+     * Gets whether the market is opened
+     * @param datetime datetime
+     * @return true if the market is opened
+     */
     @Override
     public boolean isOpened(LocalDateTime datetime) throws InterruptedException {
         if (live) {
@@ -91,7 +100,7 @@ public class AlpacaBrokerClient extends BrokerClient {
     }
 
     /**
-     * gets ohlcvs
+     * Gets ohlcvs
      * @param symbol symbol
      * @param timeframe time frame
      * @param start start date time
@@ -120,7 +129,6 @@ public class AlpacaBrokerClient extends BrokerClient {
                 .headers(createHttpHeaders())
                 .build();
         ResponseEntity<String> responseEntity = restTemplate.exchange(requestEntity, String.class);
-
         return null;
     }
 

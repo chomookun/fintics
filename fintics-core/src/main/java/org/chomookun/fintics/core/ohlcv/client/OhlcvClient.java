@@ -8,7 +8,7 @@ import java.time.LocalDateTime;
 import java.util.List;
 
 /**
- * abstract class of ohlcv client
+ * Abstract class of ohlcv client
  */
 @Getter
 public abstract class OhlcvClient {
@@ -16,7 +16,7 @@ public abstract class OhlcvClient {
     private final OhlcvClientProperties ohlcvClientProperties;
 
     /**
-     * constructor
+     * Constructor
      * @param ohlcvClientProperties ohlcv client properties
      */
     public OhlcvClient(OhlcvClientProperties ohlcvClientProperties) {
@@ -24,12 +24,20 @@ public abstract class OhlcvClient {
     }
 
     /**
-     * whether is supported
+     * Gets supported asset
      * @param asset asset
      * @return support or not
      */
     public abstract boolean isSupported(Asset asset);
 
-    public abstract List<Ohlcv> getOhlcvs(Asset asset, Ohlcv.Type type, LocalDateTime datetimeFrom, LocalDateTime datetimeTo);
+    /**
+     * Gets ohlcvs
+     * @param asset asset
+     * @param type type
+     * @param dateTimeFrom date time from
+     * @param dateTimeTo date time to
+     * @return list of ohlcv
+     */
+    public abstract List<Ohlcv> getOhlcvs(Asset asset, Ohlcv.Type type, LocalDateTime dateTimeFrom, LocalDateTime dateTimeTo);
 
 }

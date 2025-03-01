@@ -14,6 +14,12 @@ public class WilliamsRContext extends IndicatorContext {
 
     private final int signalPeriod;
 
+    /**
+     * Creates williams r context
+     * @param period period
+     * @param signalPeriod signal period
+     * @return williams r context
+     */
     public static WilliamsRContext of(int period, int signalPeriod) {
         return WilliamsRContext.builder()
                 .period(period)

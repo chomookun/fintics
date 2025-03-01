@@ -2,7 +2,7 @@ package org.chomookun.fintics.core.ohlcv.model;
 
 import lombok.*;
 import lombok.experimental.SuperBuilder;
-import org.chomookun.arch4j.core.common.data.converter.AbstractEnumConverter;
+import org.chomookun.arch4j.core.common.data.converter.GenericEnumConverter;
 import org.chomookun.fintics.core.ohlcv.entity.OhlcvEntity;
 
 import jakarta.persistence.Converter;
@@ -40,11 +40,8 @@ public class Ohlcv {
 
     public enum Type { MINUTE, DAILY }
 
-    @Converter(autoApply = true)
-    public static class TypeConverter extends AbstractEnumConverter<Type> {}
-
     /**
-     * of factory method
+     * Of factory method
      * @param assetId asset id
      * @param type ohlcv type
      * @param dateTime date time
@@ -71,7 +68,7 @@ public class Ohlcv {
     }
 
     /**
-     * from factory method
+     * From factory method
      * @param ohlcvEntity ohlcv entity
      * @return ohlcv
      */

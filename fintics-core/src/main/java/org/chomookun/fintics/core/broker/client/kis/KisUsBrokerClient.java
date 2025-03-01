@@ -57,7 +57,7 @@ public class KisUsBrokerClient extends BrokerClient {
     private final ObjectMapper objectMapper;
 
     /**
-     * constructor
+     * Constructor
      * @param definition client definition
      * @param properties client properties
      */
@@ -71,16 +71,12 @@ public class KisUsBrokerClient extends BrokerClient {
         this.insecure = Optional.ofNullable(properties.getProperty("insecure"))
                 .map(Boolean::parseBoolean)
                 .orElse(Boolean.FALSE);
-
-        // rest template
         this.restTemplate = createRestTemplate();
-
-        // object mapper
         this.objectMapper = new ObjectMapper();
     }
 
     /**
-     * creates rest template
+     * Creates rest template
      * @return rest template
      */
     RestTemplate createRestTemplate() {
@@ -91,7 +87,7 @@ public class KisUsBrokerClient extends BrokerClient {
     }
 
     /**
-     * creates rest api header
+     * Creates rest api header
      * @return http headers
      */
     HttpHeaders createHeaders() throws InterruptedException {
@@ -105,7 +101,7 @@ public class KisUsBrokerClient extends BrokerClient {
     }
 
     /**
-     * force to be sleep
+     * Force to sleep
      */
     private synchronized void sleep() throws InterruptedException {
         synchronized (LOCK_OBJECT) {
@@ -115,7 +111,7 @@ public class KisUsBrokerClient extends BrokerClient {
     }
 
     /**
-     * checks if market is open
+     * Checks if market is open
      * 해외 휴장일 일정은 rest api 로 제공 되지 않음
      * @param datetime date time
      * @return whether is opened
@@ -127,7 +123,6 @@ public class KisUsBrokerClient extends BrokerClient {
         if (dayOfWeek == DayOfWeek.SATURDAY || dayOfWeek == DayOfWeek.SUNDAY) {
             return false;
         }
-
         // check holiday
         Set<LocalDate> fixedHolidays = new HashSet<>();
         int year = datetime.getYear();
@@ -142,7 +137,7 @@ public class KisUsBrokerClient extends BrokerClient {
     }
 
     /**
-     * converts MIC code to kis exchange code (3 length)
+     * Converts MIC code to kis exchange code (3 length)
      * 한국투자증권 rest api 상 미국거래소 코드가 2종류가 존재함. 해당 method 는 3자리 미국거래소 로 변환
      * @param asset asset
      * @return kis exchange code (3 length)
@@ -157,7 +152,7 @@ public class KisUsBrokerClient extends BrokerClient {
     }
 
     /**
-     * converts MIC code to kis exchange code (4 length)
+     * Converts MIC code to kis exchange code (4 length)
      * 한국투자증권 rest api 상 미국거래소 코드가 2종류가 존재함. 해당 method 는 4자리 미국거래소 로 변환
      * @param asset asset
      * @return kis exchange code (4 length)
@@ -172,7 +167,7 @@ public class KisUsBrokerClient extends BrokerClient {
     }
 
     /**
-     * gets minute ohlcvs
+     * Gets minute ohlcvs
      * @param asset asset
      * @return minute ohlcvs
      * @see <a href="https://apiportal.koreainvestment.com/apiservice/apiservice-oversea-stock-quotations#L_852d7e45-4f34-418b-b6a1-a4552bbcdf90">
@@ -246,7 +241,7 @@ public class KisUsBrokerClient extends BrokerClient {
     }
 
     /**
-     * gets daily ohlcvs
+     * Gets daily ohlcvs
      * @param asset asset
      * @return daily ohlcvs
      * @see <a href="https://apiportal.koreainvestment.com/apiservice/apiservice-oversea-stock-quotations#L_0e9fb2ba-bbac-4735-925a-a35e08c9a790">
@@ -367,7 +362,7 @@ public class KisUsBrokerClient extends BrokerClient {
     }
 
     /**
-     * gets tick price
+     * Gets tick price
      * @param asset asset
      * @param price current asset price
      * @return tick price
@@ -411,7 +406,7 @@ public class KisUsBrokerClient extends BrokerClient {
     }
 
     /**
-     * get account balance
+     * Gets account balance
      * @return balance
      * @see <a href="https://apiportal.koreainvestment.com/apiservice/apiservice-oversea-stock-order#L_0482dfb1-154c-476c-8a3b-6fc1da498dbf">
      *     해외주식 잔고[v1_해외주식-006]
@@ -421,12 +416,10 @@ public class KisUsBrokerClient extends BrokerClient {
     public Balance getBalance() throws InterruptedException {
         Balance balance = new Balance();
         List<BalanceAsset> balanceAssets = new ArrayList<>();
-
         // pagination key
         String trCont = "";
         String ctxAreaFk200 = "";
         String ctxAreaNk200 = "";
-
         // loop
         for (int i = 0; i < 10; i ++) {
             String url = apiUrl + "/uapi/overseas-stock/v1/trading/inquire-balance";
@@ -455,20 +448,17 @@ public class KisUsBrokerClient extends BrokerClient {
             } catch (JsonProcessingException e) {
                 throw new RuntimeException(e);
             }
-
             String rtCd = objectMapper.convertValue(rootNode.path("rt_cd"), String.class);
             String msg1 = objectMapper.convertValue(rootNode.path("msg1"), String.class);
             if (!"0".equals(rtCd)) {
                 throw new RuntimeException(msg1);
             }
-
             JsonNode output1Node = rootNode.path("output1");
             List<Map<String, String>> output1 = objectMapper.convertValue(output1Node, new TypeReference<>() {
             });
             JsonNode output2Node = rootNode.path("output2");
             Map<String, String> output2 = objectMapper.convertValue(output2Node, new TypeReference<>() {
             });
-
             // balance
             if (i == 0) {
                 balance = Balance.builder()
@@ -479,7 +469,6 @@ public class KisUsBrokerClient extends BrokerClient {
                         .profitAmount(new BigDecimal(output2.get("ovrs_tot_pfls")).setScale(2, RoundingMode.HALF_UP))
                         .build();
             }
-
             // balance asset
             List<BalanceAsset> pageBalanceAssets = output1.stream()
                     .map(row -> BalanceAsset.builder()
@@ -498,7 +487,6 @@ public class KisUsBrokerClient extends BrokerClient {
                     .filter(balanceAsset -> balanceAsset.getQuantity().intValue() > 0)
                     .collect(Collectors.toList());
             balanceAssets.addAll(pageBalanceAssets);
-
             // detects next page
             trCont = responseEntity.getHeaders().getFirst("tr_cont");
             ctxAreaFk200 = objectMapper.convertValue(rootNode.path("ctx_area_fk200"), String.class);
@@ -509,22 +497,19 @@ public class KisUsBrokerClient extends BrokerClient {
             }
             trCont = "N";
         }
-
         // set balance assets
         balance.setBalanceAssets(balanceAssets);
-
         // cash amount, total amount
         BigDecimal cashAmount = getBalanceCashAmount();
         BigDecimal totalAmount = balance.getValuationAmount().add(cashAmount);
         balance.setTotalAmount(totalAmount.setScale(2, RoundingMode.HALF_UP));
         balance.setCashAmount(cashAmount.setScale(2, RoundingMode.HALF_UP));
-
         // return
         return balance;
     }
 
     /**
-     * get balance cash amount
+     * Gets balance cash amount
      * 잔고 조회 에서 매도 재사용 가능 금액을 알수 없음 으로 해외 주식 매수 가능 금액 조회 (Apple 로 조회)
      * @return cash amount
      * @see <a href="https://apiportal.koreainvestment.com/apiservice/apiservice-oversea-stock-order#L_2a155fee-882f-4d80-8183-559f2f6983e9">

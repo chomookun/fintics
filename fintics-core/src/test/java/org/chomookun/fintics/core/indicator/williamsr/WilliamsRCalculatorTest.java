@@ -18,16 +18,13 @@ class WilliamsRCalculatorTest extends AbstractCalculatorTest {
     @Test
     void calculate() throws Throwable {
         // given
-        String filePath = getPackageTestResourcesDir(this.getClass()) + "WilliamsRCalculatorTest.tsv";
         String[] columnNames = new String[]{"time","open","high","low","close","volume","r","signal"};
-        List<Map<String,String>> rows = readTsv(filePath, columnNames);
+        List<Map<String,String>> rows = readTestResourceAsTsv(this.getClass().getPackage(), "WilliamsRCalculatorTest.tsv", columnNames);
         List<Ohlcv> ohlcvs = convertOhlcvs(rows, "time^MM/dd,HH:mm","open","high","low","close",null);
         Collections.reverse(rows);
         Collections.reverse(ohlcvs);
-
         // when
         List<WilliamsR> williamsRs = new WilliamsRCalculator(WilliamsRContext.DEFAULT).calculate(ohlcvs);
-
         // then
         for(int i = 0; i < rows.size(); i ++) {
             Map<String,String> row = rows.get(i);
@@ -36,13 +33,11 @@ class WilliamsRCalculatorTest extends AbstractCalculatorTest {
             BigDecimal originSignal = new BigDecimal(row.get("signal").replaceAll("[,%]", ""));
             WilliamsR williamsR = williamsRs.get(i);
             log.info("[{}]{}|{}/{}|{}/{}", i, row.get("time"), originCci, originSignal, williamsR.getValue(), williamsR.getSignal());
-
             // assert
             if (i >= 20) {
                 assertEquals(originCci.doubleValue(), williamsR.getValue().doubleValue(), 0.9);
                 assertEquals(originCci.doubleValue(), williamsR.getValue().doubleValue(), 0.9);
             }
-
         }
     }
 

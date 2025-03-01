@@ -14,6 +14,12 @@ public class BrokerClientDefinitionRegistry implements BeanPostProcessor {
 
     private final List<BrokerClientDefinition> brokerClientDefinitions = new ArrayList<>();
 
+    /**
+     * Post process before initialization
+     * @param bean bean
+     * @param beanName bean name
+     * @return bean
+     */
     @Override
     public Object postProcessAfterInitialization(@NotNull Object bean, @NotNull String beanName) throws BeansException {
         if(bean instanceof BrokerClientDefinition) {
@@ -22,10 +28,19 @@ public class BrokerClientDefinitionRegistry implements BeanPostProcessor {
         return bean;
     }
 
+    /**
+     * Gets broker client definitions
+     * @return list of broker client definitions
+     */
     public List<BrokerClientDefinition> getBrokerClientDefinitions() {
         return brokerClientDefinitions;
     }
 
+    /**
+     * Gets broker client definition
+     * @param brokerClientId broker client id
+     * @return broker client definition
+     */
     public Optional<BrokerClientDefinition> getBrokerClientDefinition(String brokerClientId) {
         return brokerClientDefinitions.stream()
                 .filter(it -> it.getBrokerClientId().equals(brokerClientId))

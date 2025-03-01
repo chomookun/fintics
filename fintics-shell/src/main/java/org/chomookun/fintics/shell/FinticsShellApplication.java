@@ -1,7 +1,6 @@
 package org.chomookun.fintics.shell;
 
-import org.chomookun.arch4j.core.common.cli.SpringApplicationInstaller;
-import org.chomookun.arch4j.shell.ShellApplication;
+import org.chomookun.arch4j.shell.common.SpringApplicationInstaller;
 import org.springframework.boot.WebApplicationType;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.boot.builder.SpringApplicationBuilder;
@@ -25,7 +24,6 @@ public class FinticsShellApplication {
             SpringApplicationInstaller.install(FinticsShellApplication.class, args);
             System.exit(0);
         }
-
         // runs shell application
         new SpringApplicationBuilder(FinticsShellApplication.class)
                 .web(WebApplicationType.NONE)

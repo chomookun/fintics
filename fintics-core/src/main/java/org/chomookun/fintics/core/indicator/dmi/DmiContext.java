@@ -12,6 +12,11 @@ public class DmiContext extends IndicatorContext {
 
     private final int period;
 
+    /**
+     * Creates dmi context
+     * @param period period
+     * @return dmi context
+     */
     public static DmiContext of(int period) {
         return DmiContext.builder()
                 .period(period)

@@ -26,12 +26,12 @@ import java.util.*;
 import java.util.stream.Collectors;
 
 /**
- * simple ohlcv client
+ * Default ohlcv client
  */
 @Component
-@ConditionalOnProperty(prefix = "fintics.core.ohlcv.ohlcv-client", name = "class-name", havingValue="org.chomookun.fintics.core.ohlcv.client.SimpleOhlcvClient")
+@ConditionalOnProperty(prefix = "fintics.core.ohlcv.ohlcv-client", name = "class-name", havingValue="org.chomookun.fintics.core.ohlcv.client.DefaultOhlcvClient")
 @Slf4j
-public class SimpleOhlcvClient extends OhlcvClient implements YahooClientSupport {
+public class DefaultOhlcvClient extends OhlcvClient implements YahooClientSupport {
 
     private final static Object LOCK_OBJECT = new Object();
 
@@ -40,24 +40,20 @@ public class SimpleOhlcvClient extends OhlcvClient implements YahooClientSupport
     private final ObjectMapper objectMapper;
 
     /**
-     * constructor
+     * Constructor
      * @param ohlcvClientProperties client properties
      * @param objectMapper object mapper
      */
-    public SimpleOhlcvClient(OhlcvClientProperties ohlcvClientProperties, ObjectMapper objectMapper) {
+    public DefaultOhlcvClient(OhlcvClientProperties ohlcvClientProperties, ObjectMapper objectMapper) {
         super(ohlcvClientProperties);
-
-        // rest template
         this.restTemplate = RestTemplateBuilder.create()
                 .httpRequestRetryStrategy(new DefaultHttpRequestRetryStrategy())
                 .build();
-
-        // object mapper
         this.objectMapper = objectMapper;
     }
 
     /**
-     * force sleep
+     * Force to sleep
      */
     private static synchronized void sleep() {
         synchronized (LOCK_OBJECT) {
@@ -70,9 +66,9 @@ public class SimpleOhlcvClient extends OhlcvClient implements YahooClientSupport
     }
 
     /**
-     * checks supported asset
+     * Checks supported asset
      * @param asset asset
-     * @return whether is supported
+     * @return whether is supported or not
      */
     @Override
     public boolean isSupported(Asset asset) {
@@ -81,7 +77,7 @@ public class SimpleOhlcvClient extends OhlcvClient implements YahooClientSupport
     }
 
     /**
-     * checks yahoo symbol
+     * Checks yahoo symbol
      * @param yahooSymbol yahoo symbol
      * @return whether yahoo symbol is valid
      */
@@ -109,8 +105,8 @@ public class SimpleOhlcvClient extends OhlcvClient implements YahooClientSupport
     }
 
     /**
-     * get asset time zone
-     * @param asset asset
+     * Gets asset time zone
+     * @param asset asset asset
      * @return time zone
      */
     ZoneId getTimezone(Asset asset) {
@@ -123,7 +119,7 @@ public class SimpleOhlcvClient extends OhlcvClient implements YahooClientSupport
     }
 
     /**
-     * convert asset to yahoo symbol
+     * Converts asset to yahoo symbol
      * @param asset asset
      * @return yahoo symbol
      */
@@ -139,21 +135,17 @@ public class SimpleOhlcvClient extends OhlcvClient implements YahooClientSupport
     }
 
     /**
-     * gets ohlcvs
+     * Gets ohlcvs
      * @param asset asset
      * @param type type
      * @param dateTimeFrom date time from
      * @param dateTimeTo date time to
-     * @param pageable pageable
      * @return list of ohlcvs
      */
     @Override
     public List<Ohlcv> getOhlcvs(Asset asset, Ohlcv.Type type, LocalDateTime dateTimeFrom, LocalDateTime dateTimeTo) {
         HttpHeaders headers = createYahooHeader();
-
-        // yahoo symbol
         String yahooSymbol = convertToYahooSymbol(asset);
-
         // url
         String url = String.format("https://query1.finance.yahoo.com/v8/finance/chart/%s", yahooSymbol);
         url = UriComponentsBuilder.fromUriString(url)
@@ -164,14 +156,12 @@ public class SimpleOhlcvClient extends OhlcvClient implements YahooClientSupport
                 .queryParam("corsDomain", "finance.yahoo.com")
                 .build()
                 .toUriString();
-
         // intervals
         List<String> intervals = null;
         switch(type) {
             case MINUTE -> intervals = List.of("1m","2m","5m","15m","30m","60m","90m");
             case DAILY -> intervals = List.of("1d","5d");
         }
-
         // try request
         String interval;
         long period1 = dateTimeFrom.atOffset(ZoneOffset.UTC).toEpochSecond();
@@ -207,7 +197,6 @@ public class SimpleOhlcvClient extends OhlcvClient implements YahooClientSupport
                 } catch (JsonProcessingException e) {
                     throw new RuntimeException(e);
                 }
-
                 // add to total ohlcv map
                 Map<LocalDateTime,Ohlcv> ohlcvMap = convertRootNodeToOhlcv(asset, type, interval, rootNode);
                 totalOhlcvMap.putAll(ohlcvMap);
@@ -215,7 +204,6 @@ public class SimpleOhlcvClient extends OhlcvClient implements YahooClientSupport
                 log.debug(ignore.getMessage());
             }
         }
-
         // check date time is in range
         List<Ohlcv> ohlcvs = totalOhlcvMap.values().stream()
                 .filter(ohlcv -> {
@@ -223,7 +211,6 @@ public class SimpleOhlcvClient extends OhlcvClient implements YahooClientSupport
                     return (dateTime.isAfter(dateTimeFrom) || dateTime.isEqual(dateTimeFrom))
                             && (dateTime.isBefore(dateTimeTo) || dateTime.isEqual(dateTimeTo));
                 }).collect(Collectors.toList());
-
         // sort by dateTime(sometimes response is not ordered)
         ohlcvs.sort(Comparator
                 .comparing(Ohlcv::getDateTime)
@@ -233,7 +220,7 @@ public class SimpleOhlcvClient extends OhlcvClient implements YahooClientSupport
     }
 
     /**
-     * converts root node to ohlcv map
+     * Converts root node to ohlcv map
      * @param asset asset
      * @param type type
      * @param interval interval
@@ -249,7 +236,6 @@ public class SimpleOhlcvClient extends OhlcvClient implements YahooClientSupport
         List<BigDecimal> lows = objectMapper.convertValue(quoteNode.path("low"), new TypeReference<>(){});
         List<BigDecimal> closes = objectMapper.convertValue(quoteNode.path("close"), new TypeReference<>(){});
         List<BigDecimal> volumes = objectMapper.convertValue(quoteNode.path("volume"), new TypeReference<>(){});
-
         // duplicated data retrieved.
         Map<LocalDateTime, Ohlcv> ohlcvMap = new TreeMap<>();
         if(timestamps != null) {        // if data not found, timestamps element is null.
@@ -276,14 +262,12 @@ public class SimpleOhlcvClient extends OhlcvClient implements YahooClientSupport
                 BigDecimal low = Optional.ofNullable(lows.get(i)).orElse(open);
                 BigDecimal close = Optional.ofNullable(closes.get(i)).orElse(open);
                 BigDecimal volume = Optional.ofNullable(volumes.get(i)).orElse(BigDecimal.ZERO);
-
                 // interpolate flag
                 boolean interpolated = switch(type) {
                     case MINUTE -> !interval.equals("1m");
                     case DAILY -> !interval.equals("1d");
                     default -> false;
                 };
-
                 Ohlcv ohlcv = Ohlcv.builder()
                         .assetId(asset.getAssetId())
                         .dateTime(dateTime)

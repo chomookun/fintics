@@ -2,7 +2,7 @@ package org.chomookun.fintics.core.strategy.model;
 
 import lombok.*;
 import lombok.experimental.SuperBuilder;
-import org.chomookun.arch4j.core.common.data.converter.AbstractEnumConverter;
+import org.chomookun.arch4j.core.common.data.converter.GenericEnumConverter;
 import org.chomookun.fintics.core.strategy.entity.StrategyEntity;
 
 import jakarta.persistence.Converter;
@@ -28,7 +28,7 @@ public class Strategy {
     }
 
     @Converter(autoApply = true)
-    public static class LanguageConverter extends AbstractEnumConverter<Language> {}
+    public static class LanguageConverter extends GenericEnumConverter<Language> {}
 
     public static Strategy from(StrategyEntity strategyEntity) {
         return Strategy.builder()

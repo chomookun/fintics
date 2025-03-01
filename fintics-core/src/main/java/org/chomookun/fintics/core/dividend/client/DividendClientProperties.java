@@ -22,7 +22,7 @@ public class DividendClientProperties {
     private final Map<String, String> properties;
 
     /**
-     * gets property by name
+     * Gets property by name
      * @param name property name
      * @return property value
      */

@@ -16,6 +16,11 @@ public class BasketRebalanceTaskFactory {
 
     private final BasketScriptRunnerFactory basketScriptRunnerFactory;
 
+    /**
+     * Create basket rebalance task
+     * @param basket basket
+     * @return basket rebalance task
+     */
     public BasketRebalanceTask getObject(Basket basket) {
         return BasketRebalanceTask.builder()
                 .basket(basket)

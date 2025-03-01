@@ -9,10 +9,19 @@ import java.util.List;
 
 public class SmaCalculator extends IndicatorCalculator<SmaContext, Sma> {
 
+    /**
+     * Constructor
+     * @param context sma context
+     */
     public SmaCalculator(SmaContext context) {
         super(context);
     }
 
+    /**
+     * Calculates sma
+     * @param series ohlcv series
+     * @return sma series
+     */
     @Override
     public List<Sma> calculate(List<Ohlcv> series) {
         List<BigDecimal> closePrices = series.stream()

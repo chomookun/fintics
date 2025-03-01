@@ -18,16 +18,13 @@ class CciCalculatorTest extends AbstractCalculatorTest {
     @Test
     void calculate() throws Throwable {
         // given
-        String filePath = getPackageTestResourcesDir(this.getClass()) + "CciCalculatorTest.tsv";
         String[] columnNames = new String[]{"time","open","high","low","close","volume","cci","signal"};
-        List<Map<String,String>> rows = readTsv(filePath, columnNames);
+        List<Map<String,String>> rows = readTestResourceAsTsv(this.getClass().getPackage(), "CciCalculatorTest.tsv", columnNames);
         List<Ohlcv> ohlcvs = convertOhlcvs(rows, "time^MM/dd,HH:mm","open","high","low","close",null);
         Collections.reverse(rows);
         Collections.reverse(ohlcvs);
-
         // when
         List<Cci> ccis = new CciCalculator(CciContext.DEFAULT).calculate(ohlcvs);
-
         // then
         for(int i = 0; i < rows.size(); i ++) {
             Map<String,String> row = rows.get(i);
@@ -36,13 +33,10 @@ class CciCalculatorTest extends AbstractCalculatorTest {
             BigDecimal originSignal = new BigDecimal(row.get("signal").replaceAll("[,]", ""));
             Cci cci = ccis.get(i);
             log.info("[{}]{}|{}/{}|{}/{}", i, row.get("time"), originCci, originSignal, cci.getValue(), cci.getSignal());
-
-            // assert
             if (i >= 20) {
                 assertEquals(originCci.doubleValue(), cci.getValue().doubleValue(), 0.9);
                 assertEquals(originCci.doubleValue(), cci.getValue().doubleValue(), 0.9);
             }
-
         }
     }
 
