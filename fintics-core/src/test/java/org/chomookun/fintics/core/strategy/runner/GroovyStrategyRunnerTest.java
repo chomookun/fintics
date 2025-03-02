@@ -91,7 +91,6 @@ class GroovyStrategyRunnerTest {
         Strategy strategy = Strategy.builder()
                 .script("return null")
                 .build();
-
         // when
         StrategyRunner strategyRunner = GroovyStrategyRunner.builder()
                 .tradeAsset(tradeAsset)
@@ -100,7 +99,6 @@ class GroovyStrategyRunnerTest {
                 .orderBook(orderBook)
                 .build();
         StrategyResult strategyResult = strategyRunner.run();
-
         // then
         log.info("== strategyResult:{}", strategyResult);
     }

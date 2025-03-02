@@ -41,7 +41,7 @@ public class Ohlcv {
     public enum Type { MINUTE, DAILY }
 
     /**
-     * Of factory method
+     * Creates Ohlcv
      * @param assetId asset id
      * @param type ohlcv type
      * @param dateTime date time
@@ -68,7 +68,7 @@ public class Ohlcv {
     }
 
     /**
-     * From factory method
+     * Converts ohlcv entity to ohlcv
      * @param ohlcvEntity ohlcv entity
      * @return ohlcv
      */

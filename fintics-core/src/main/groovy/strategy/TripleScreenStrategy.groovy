@@ -1,12 +1,9 @@
 import groovy.transform.ToString
 import groovy.transform.builder.Builder
-import org.jetbrains.annotations.NotNull
-import org.chomookun.fintics.indicator.*
-import org.chomookun.fintics.model.Ohlcv
-import org.chomookun.fintics.model.TradeAsset
-import org.chomookun.fintics.strategy.StrategyResult
-import org.chomookun.fintics.strategy.StrategyResult.Action
-import org.chomookun.fintics.trade.Tools
+import org.chomookun.fintics.core.ohlcv.model.Ohlcv
+import org.chomookun.fintics.core.indicator.Tools
+import org.chomookun.fintics.core.indicator.bolangerband.BollingerBandContext
+import org.chomookun.fintics.core.indicator.pricechannel.PriceChannelContext
 
 import java.math.RoundingMode
 

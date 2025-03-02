@@ -13,6 +13,13 @@ import java.util.List;
 @Repository
 public interface OhlcvSplitRepository extends JpaRepository<OhlcvSplitEntity, OhlcvSplitEntity.Pk>, JpaSpecificationExecutor<OhlcvSplitEntity> {
 
+    /**
+     * Finds ohlcv splits by asset id
+     * @param assetId asset id
+     * @param datetimeFrom date time from
+     * @param datetimeTo date time to
+     * @return list of ohlcv splits
+     */
     @Query("select a from OhlcvSplitEntity a " +
             " where a.assetId = :assetId" +
             " and a.dateTime between :datetimeFrom and :datetimeTo" +

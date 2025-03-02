@@ -31,7 +31,7 @@ public class ProfitService {
     private final BalanceHistoryRepository balanceHistoryRepository;
 
     /**
-     * returns profit
+     * Returns profit
      * @param brokerId broker id
      * @param dateFrom date from
      * @param dateTo date to
@@ -43,11 +43,9 @@ public class ProfitService {
         Broker broker = brokerService.getBroker(brokerId).orElseThrow();
         BrokerClient brokerClient = brokerClientFactory.getObject(broker);
         try {
-
             // total amount
             Balance balance = brokerClient.getBalance();
             BigDecimal totalAmount = balance.getTotalAmount();
-
             // balance histories (+ 1 days)
             List<BalanceHistory> balanceHistories = balanceHistoryRepository.findAllByBrokerId(brokerId, dateFrom.minusDays(1), dateTo).stream()
                     .map(BalanceHistory::from)
@@ -62,7 +60,6 @@ public class ProfitService {
                         .multiply(BigDecimal.valueOf(100))
                         .setScale(4, RoundingMode.FLOOR);
             }
-
             // realized profit
             List<RealizedProfit> realizedProfits = brokerClient.getRealizedProfits(dateFrom, dateTo);
             BigDecimal realizedProfitAmount = realizedProfits.stream()
@@ -71,7 +68,6 @@ public class ProfitService {
             BigDecimal realizedProfitPercentage = realizedProfitAmount.divide(totalAmount, MathContext.DECIMAL32)
                     .multiply(BigDecimal.valueOf(100))
                     .setScale(4, RoundingMode.FLOOR);
-
             // dividend profit
             List<DividendProfit> dividendProfits = brokerClient.getDividendProfits(dateFrom, dateTo);
             BigDecimal dividendProfitAmount = dividendProfits.stream()
@@ -80,7 +76,6 @@ public class ProfitService {
             BigDecimal dividendProfitPercentage = dividendProfitAmount.divide(totalAmount, MathContext.DECIMAL32)
                     .multiply(BigDecimal.valueOf(100))
                     .setScale(4, RoundingMode.FLOOR);
-
             // returns
             return Profit.builder()
                     .brokerId(brokerId)

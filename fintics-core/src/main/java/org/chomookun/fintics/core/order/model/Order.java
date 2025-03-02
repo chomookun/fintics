@@ -51,8 +51,14 @@ public class Order {
 
     private String errorMessage;
 
+    public enum Type { BUY, SELL }
+
+    public enum Kind { LIMIT, MARKET }
+
+    public enum Result { COMPLETED, FAILED }
+
     /**
-     * gets symbol
+     * Gets symbol
      * @return symbol
      */
     public String getSymbol() {
@@ -63,24 +69,13 @@ public class Order {
                 .orElseThrow(() -> new RuntimeException(String.format("invalid assetId[%s]",assetId)));
     }
 
-    public enum Type { BUY, SELL }
-
-    @Converter(autoApply = true)
-    public static class TypeConverter extends GenericEnumConverter<Type> {}
-
-    public enum Kind { LIMIT, MARKET }
-
-    @Converter(autoApply = true)
-    public static class KindConverter extends GenericEnumConverter<Kind> {}
-
-    public enum Result { COMPLETED, FAILED }
-
-    @Converter(autoApply = true)
-    public static class ResultConverter extends GenericEnumConverter<Result> {}
-
+    /**
+     * Converts order entity to order
+     * @param orderEntity order entity
+     * @return order
+     */
     public static Order from(OrderEntity orderEntity) {
         ObjectMapper objectMapper = ObjectMapperHolder.getObject();
-
         // strategy result
         StrategyResult strategyResult = null;
         if (orderEntity.getStrategyResultData() != null) {
@@ -90,8 +85,7 @@ public class Order {
                log.warn(ignore.getMessage());
            }
         }
-
-        // return
+        // returns
         return Order.builder()
                 .orderId(orderEntity.getOrderId())
                 .orderAt(orderEntity.getOrderAt())

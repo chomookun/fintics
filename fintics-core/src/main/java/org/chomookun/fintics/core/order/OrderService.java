@@ -2,6 +2,8 @@ package org.chomookun.fintics.core.order;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import jakarta.persistence.EntityManager;
+import jakarta.persistence.PersistenceContext;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.chomookun.arch4j.core.common.data.IdGenerator;
@@ -22,24 +24,12 @@ import java.util.stream.Collectors;
 @Slf4j
 public class OrderService {
 
+    @PersistenceContext
+    private final EntityManager entityManager;
+
     private final OrderRepository orderRepository;
 
     private final ObjectMapper objectMapper;
-
-    /**
-     * Gets order history
-     * @param orderSearch order search condition
-     * @param pageable pageable
-     * @return page of order
-     */
-    public Page<Order> getOrders(OrderSearch orderSearch, Pageable pageable) {
-        Page<OrderEntity> orderEntityPage = orderRepository.findAll(orderSearch, pageable);
-        List<Order> orders = orderEntityPage.getContent().stream()
-                .map(Order::from)
-                .collect(Collectors.toList());
-        long total = orderEntityPage.getTotalElements();
-        return new PageImpl<>(orders, pageable, total);
-    }
 
     /**
      * Saves order history
@@ -75,9 +65,24 @@ public class OrderService {
         } catch (JsonProcessingException ignore) {
             log.warn(ignore.getMessage());
         }
-
         OrderEntity savedOrderEntity = orderRepository.saveAndFlush(orderEntity);
+        entityManager.refresh(savedOrderEntity);
         return Order.from(savedOrderEntity);
+    }
+
+    /**
+     * Gets order history
+     * @param orderSearch order search condition
+     * @param pageable pageable
+     * @return page of order
+     */
+    public Page<Order> getOrders(OrderSearch orderSearch, Pageable pageable) {
+        Page<OrderEntity> orderEntityPage = orderRepository.findAll(orderSearch, pageable);
+        List<Order> orders = orderEntityPage.getContent().stream()
+                .map(Order::from)
+                .collect(Collectors.toList());
+        long total = orderEntityPage.getTotalElements();
+        return new PageImpl<>(orders, pageable, total);
     }
 
 }

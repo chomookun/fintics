@@ -23,13 +23,18 @@ public class Strategy {
 
     private String script;
 
-    public static enum Language {
+    /**
+     * Strategy language
+     */
+    public enum Language {
         GROOVY, PYTHON
     }
 
-    @Converter(autoApply = true)
-    public static class LanguageConverter extends GenericEnumConverter<Language> {}
-
+    /**
+     * Converts strategy entity to strategy
+     * @param strategyEntity strategy entity
+     * @return strategy
+     */
     public static Strategy from(StrategyEntity strategyEntity) {
         return Strategy.builder()
                 .strategyId(strategyEntity.getStrategyId())

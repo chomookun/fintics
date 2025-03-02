@@ -21,10 +21,9 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 @RequiredArgsConstructor
 public class TradeServiceTest extends CoreTestSupport {
 
-    private final TradeService tradeService;
+    final TradeService tradeService;
 
     @Test
-    @Order(1)
     void getTrades() {
         // given
         TradeEntity tradeEntity = TradeEntity.builder()
@@ -33,19 +32,17 @@ public class TradeServiceTest extends CoreTestSupport {
                 .enabled(true)
                 .build();
         entityManager.persist(tradeEntity);
-
+        entityManager.flush();
         // when
         TradeSearch tradeSearch = TradeSearch.builder()
                 .build();
         Pageable pageable = Pageable.unpaged();
         List<Trade> trades = tradeService.getTrades(tradeSearch, pageable).getContent();
-
         // then
         assertTrue(trades.size() > 0);
     }
 
     @Test
-    @Order(1)
     void getTrade() {
         // given
         TradeEntity tradeEntity = TradeEntity.builder()
@@ -54,11 +51,9 @@ public class TradeServiceTest extends CoreTestSupport {
                 .enabled(true)
                 .build();
         entityManager.persist(tradeEntity);
-
+        entityManager.flush();
         // when
-        Trade trade = tradeService.getTrade(tradeEntity.getTradeId())
-                .orElseThrow();
-
+        Trade trade = tradeService.getTrade(tradeEntity.getTradeId()).orElseThrow();
         // then
         assertEquals(tradeEntity.getTradeId(), trade.getTradeId());
     }

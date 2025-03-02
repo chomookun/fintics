@@ -24,6 +24,11 @@ public class BalanceHistory {
 
     private BigDecimal valuationAmount;
 
+    /**
+     * Converts balance history entity to balance history.
+     * @param balanceHistoryEntity balance history entity
+     * @return balance history
+     */
     public static BalanceHistory from(BalanceHistoryEntity balanceHistoryEntity) {
         return BalanceHistory.builder()
                 .brokerId(balanceHistoryEntity.getBrokerId())

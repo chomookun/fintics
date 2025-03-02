@@ -23,7 +23,7 @@ public class KrDividendClient extends DividendClient implements SeibroClientSupp
     private final RestTemplate restTemplate;
 
     /**
-     * constructor
+     * Constructor
      * @param dividendClientProperties dividend client properties
      */
     public KrDividendClient(DividendClientProperties dividendClientProperties) {
@@ -35,6 +35,11 @@ public class KrDividendClient extends DividendClient implements SeibroClientSupp
                 .build();
     }
 
+    /**
+     * Checks if the client supports the asset
+     * @param asset asset
+     * @return support or not
+     */
     @Override
     public boolean isSupport(Asset asset) {
         return Objects.equals(asset.getMarket(), "KR");

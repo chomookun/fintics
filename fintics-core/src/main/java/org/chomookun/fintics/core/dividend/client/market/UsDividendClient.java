@@ -30,7 +30,7 @@ public class UsDividendClient extends DividendClient implements YahooClientSuppo
     private final ObjectMapper objectMapper;
 
     /**
-     * constructor
+     * Constructor
      * @param dividendClientProperties dividend client properties
      */
     public UsDividendClient(DividendClientProperties dividendClientProperties, ObjectMapper objectMapper) {
@@ -45,11 +45,23 @@ public class UsDividendClient extends DividendClient implements YahooClientSuppo
         this.objectMapper = objectMapper;
     }
 
+    /**
+     * Checks if the client supports the asset
+     * @param asset asset
+     * @return support or not
+     */
     @Override
     public boolean isSupport(Asset asset) {
         return Objects.equals(asset.getMarket(), "US");
     }
 
+    /**
+     * Gets dividends
+     * @param asset asset
+     * @param dateFrom date from
+     * @param dateTo date to
+     * @return list of dividends
+     */
     @Override
     public List<Dividend> getDividends(Asset asset, LocalDate dateFrom, LocalDate dateTo) {
         HttpHeaders headers = createYahooHeader();

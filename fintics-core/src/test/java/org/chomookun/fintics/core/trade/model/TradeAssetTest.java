@@ -25,13 +25,11 @@ public class TradeAssetTest {
             add(Ohlcv.of(assetId, type, now.minusMinutes(2), null, 1060, 1200, 1030, 1040, 200));
             add(Ohlcv.of(assetId, type, now.minusMinutes(3), null, 1050, 1400, 800, 900, 300));
         }};
-
         // when
         TradeAsset tradeAsset = TradeAsset.builder()
                 .minuteOhlcvs(minuteOhlcvs)
                 .build();
         List<Ohlcv> resampleOhlcvs = tradeAsset.getOhlcvs(Ohlcv.Type.MINUTE, 3);
-
         // then
         log.info("resampleOhlcvs:{}", resampleOhlcvs);
         assertEquals(1, resampleOhlcvs.size());
@@ -53,13 +51,11 @@ public class TradeAssetTest {
             add(Ohlcv.of(assetId, type, now.minusMinutes(1), null, 1000, 1100, 900, 1050, 100));
             add(Ohlcv.of(assetId, type, now.minusMinutes(2), null, 1060, 1200, 1030, 1040, 200));
         }};
-
         // when
         TradeAsset tradeAsset = TradeAsset.builder()
                 .minuteOhlcvs(minuteOhlcvs)
                 .build();
         List<Ohlcv> resampleOhlcvs = tradeAsset.getOhlcvs(Ohlcv.Type.MINUTE, 3);
-
         // then
         log.info("resampleOhlcvs:{}", resampleOhlcvs);
         assertEquals(1, resampleOhlcvs.size());
@@ -84,13 +80,11 @@ public class TradeAssetTest {
             add(Ohlcv.of(assetId, type, now.minusMinutes(4), null, 1010, 1300, 1000, 1050, 200));
             add(Ohlcv.of(assetId, type, now.minusMinutes(5), null, 990, 1100, 980, 1000, 100));
         }};
-
         // when
         TradeAsset tradeAsset = TradeAsset.builder()
                 .minuteOhlcvs(minuteOhlcvs)
                 .build();
         List<Ohlcv> resampleOhlcvs = tradeAsset.getOhlcvs(Ohlcv.Type.MINUTE, 3);
-
         // then
         log.info("resampleOhlcvs:{}", resampleOhlcvs);
         assertEquals(2, resampleOhlcvs.size());

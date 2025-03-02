@@ -16,7 +16,7 @@ import org.springframework.stereotype.Repository;
 public interface OrderRepository extends JpaRepository<OrderEntity, String>, JpaSpecificationExecutor<OrderEntity> {
 
     /**
-     * finds order entities by order search
+     * Finds order entities by order search
      * @param orderSearch order search
      * @param pageable pageable
      * @return page of order entity

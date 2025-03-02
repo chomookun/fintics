@@ -1,5 +1,7 @@
 package org.chomookun.fintics.core.strategy;
 
+import jakarta.persistence.EntityManager;
+import jakarta.persistence.PersistenceContext;
 import lombok.RequiredArgsConstructor;
 import org.chomookun.arch4j.core.common.data.IdGenerator;
 import org.chomookun.arch4j.core.common.pbe.PbePropertiesUtil;
@@ -22,12 +24,64 @@ import java.util.Optional;
 @RequiredArgsConstructor
 public class StrategyService {
 
+    @PersistenceContext
+    private final EntityManager entityManager;
+
     private final StrategyRepository strategyRepository;
 
     private final TradeRepository tradeRepository;
 
     /**
-     * gets strategies
+     * Saves strategy
+     * @param strategy strategy
+     * @return saved strategy
+     */
+    @Transactional
+    public Strategy saveStrategy(Strategy strategy) {
+        StrategyEntity strategyEntity = Optional.ofNullable(strategy.getStrategyId())
+                .flatMap(strategyRepository::findById)
+                .orElseGet(() -> StrategyEntity.builder()
+                        .strategyId(IdGenerator.uuid())
+                        .build());
+        strategyEntity.setName(strategy.getName());
+        strategyEntity.setLanguage(strategy.getLanguage());
+        strategyEntity.setVariables(Optional.ofNullable(strategy.getVariables())
+                .map(PbePropertiesUtil::encodePropertiesString)
+                .orElse(null));
+        strategyEntity.setScript(strategy.getScript());
+        StrategyEntity savedStrategyEntity = strategyRepository.saveAndFlush(strategyEntity);
+        entityManager.refresh(savedStrategyEntity);
+        return Strategy.from(savedStrategyEntity);
+    }
+
+    /**
+     * Returns specified strategy
+     * @param strategyId strategy id
+     * @return strategy
+     */
+    public Optional<Strategy> getStrategy(String strategyId) {
+        return strategyRepository.findById(strategyId)
+                .map(Strategy::from);
+    }
+
+    /**
+     * Deletes specified strategy
+     * @param strategyId strategy id
+     */
+    @Transactional
+    public void deleteStrategy(String strategyId) {
+        StrategyEntity strategyEntity = strategyRepository.findById(strategyId).orElseThrow();
+        // checks referenced by trade
+        if (!tradeRepository.findAllByStrategyId(strategyEntity.getStrategyId()).isEmpty()) {
+            throw new DataIntegrityViolationException("Referenced by existing trade");
+        }
+        // deletes
+        strategyRepository.delete(strategyEntity);
+        strategyRepository.flush();
+    }
+
+    /**
+     * Gets strategies
      * @param strategySearch strategy search
      * @param pageable pageable
      * @return list of strategy
@@ -39,59 +93,6 @@ public class StrategyService {
                 .toList();
         long total = strategyEntityPage.getTotalElements();
         return new PageImpl<>(strategies, pageable, total);
-    }
-
-    /**
-     * returns specified strategy
-     * @param strategyId strategy id
-     * @return strategy
-     */
-    public Optional<Strategy> getStrategy(String strategyId) {
-        return strategyRepository.findById(strategyId)
-                .map(Strategy::from);
-    }
-
-    /**
-     * saves strategy
-     * @param strategy strategy
-     * @return saved strategy
-     */
-    @Transactional
-    public Strategy saveStrategy(Strategy strategy) {
-        StrategyEntity strategyEntity;
-        if (strategy.getStrategyId() == null) {
-            strategyEntity = StrategyEntity.builder()
-                    .strategyId(IdGenerator.uuid())
-                    .build();
-        } else {
-            strategyEntity = strategyRepository.findById(strategy.getStrategyId()).orElseThrow();
-        }
-        strategyEntity.setName(strategy.getName());
-        strategyEntity.setLanguage(strategy.getLanguage());
-        strategyEntity.setVariables(Optional.ofNullable(strategy.getVariables())
-                .map(PbePropertiesUtil::encodePropertiesString)
-                .orElse(null));
-        strategyEntity.setScript(strategy.getScript());
-        StrategyEntity savedStrategyEntity = strategyRepository.saveAndFlush(strategyEntity);
-        return Strategy.from(savedStrategyEntity);
-    }
-
-    /**
-     * deletes specified strategy
-     * @param strategyId strategy id
-     */
-    @Transactional
-    public void deleteStrategy(String strategyId) {
-        StrategyEntity strategyEntity = strategyRepository.findById(strategyId).orElseThrow();
-
-        // checks referenced by trade
-        if (!tradeRepository.findAllByStrategyId(strategyEntity.getStrategyId()).isEmpty()) {
-            throw new DataIntegrityViolationException("Referenced by existing trade");
-        }
-
-        // deletes
-        strategyRepository.delete(strategyEntity);
-        strategyRepository.flush();
     }
 
 }

@@ -10,30 +10,31 @@ import org.springframework.data.jpa.repository.JpaSpecificationExecutor;
 import org.springframework.stereotype.Repository;
 
 import java.util.List;
+import java.util.Optional;
 
 @Repository
 public interface StrategyRepository extends JpaRepository<StrategyEntity, String>, JpaSpecificationExecutor<StrategyEntity> {
 
+    /**
+     * Finds all by search condition
+     * @param strategySearch strategy search
+     * @param pageable pageable
+     * @return page of strategy entity
+     */
     default Page<StrategyEntity> findAll(StrategySearch strategySearch, Pageable pageable) {
+        // specifications
         Specification<StrategyEntity> specification = Specification.where(null);
-
-        // name
         if (strategySearch.getName() != null) {
             specification = specification.and((root, query, criteriaBuilder) ->
                     criteriaBuilder.like(root.get(StrategyEntity_.NAME), '%' + strategySearch.getName() + '%'));
         }
-
         // sort
         Sort sort = Sort.by(StrategyEntity_.NAME).ascending();
-
-        // find
-        if (pageable.isPaged()) {
-            pageable = PageRequest.of(pageable.getPageNumber(), pageable.getPageSize(), sort);
-            return findAll(specification, pageable);
-        } else {
-            List<StrategyEntity> strategyEntities = findAll(specification, sort);
-            return new PageImpl<>(strategyEntities, pageable, strategyEntities.size());
-        }
+        Pageable finalPageable = pageable.isUnpaged()
+                ? Pageable.unpaged(sort)
+                : PageRequest.of(pageable.getPageNumber(), pageable.getPageSize(), sort);
+        // find all
+        return findAll(specification, finalPageable);
     }
 
 }
