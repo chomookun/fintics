@@ -321,13 +321,14 @@ class TripleScreenStrategy {
 
     @Override
     String toString() {
-        return "tide.momentum:${tideAnalyzer.getMomentumScore().getAverage()}," +
-                "tide.oversold:${tideAnalyzer.getOversoldScore().getAverage()}," +
-                "tide.overbought:${tideAnalyzer.getOverboughtScore().getAverage()}," +
-                "wave.volatility:${waveAnalyzer.getVolatilityScore().getAverage()}," +
-                "wave.oversold:${waveAnalyzer.getOversoldScore().getAverage()}," +
-                "wave.overbought:${waveAnalyzer.getOverboughtScore().getAverage()}," +
-                "ripple.momentum:${rippleAnalyzer.getMomentumScore().getAverage()}"
+        return """- tide.momentum:${tideAnalyzer.getMomentumScore().getAverage()}
+                - tide.oversold:${tideAnalyzer.getOversoldScore().getAverage()}
+                - tide.overbought:${tideAnalyzer.getOverboughtScore().getAverage()}
+                - wave.volatility:${waveAnalyzer.getVolatilityScore().getAverage()}
+                - wave.oversold:${waveAnalyzer.getOversoldScore().getAverage()}
+                - wave.overbought:${waveAnalyzer.getOverboughtScore().getAverage()}
+                - ripple.momentum:${rippleAnalyzer.getMomentumScore().getAverage()}"""
+                .split('\n').collect { it.trim() }.join('\n')
     }
 }
 
