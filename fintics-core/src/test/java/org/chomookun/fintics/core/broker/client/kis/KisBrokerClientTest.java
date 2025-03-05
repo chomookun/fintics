@@ -71,6 +71,12 @@ class KisBrokerClientTest extends CoreTestSupport {
                         .market("KR")
                         .type("STOCK")
                         .marketCap(BigDecimal.TEN)
+                        .build(),
+                Asset.builder()
+                        .assetId("KR.030000")
+                        .name("Cheil Worldwide")
+                        .market("KR")
+                        .type("STOCK")
                         .build()
         );
     }
@@ -168,6 +174,8 @@ class KisBrokerClientTest extends CoreTestSupport {
                 .build();
         // when
         getKisClient().submitOrder(asset, order);
+        // then
+        log.info("order: {}", order);
     }
 
     @Disabled
@@ -219,6 +227,15 @@ class KisBrokerClientTest extends CoreTestSupport {
                 .build();
         // when
         getKisClient().submitOrder(asset, order);
+    }
+
+    @Disabled
+    @Test
+    void getWaitingOrders() throws InterruptedException {
+        // when
+        List<Order> waitingOrders = getKisClient().getWaitingOrders();
+        // then
+        log.info("waitingOrders:{}", waitingOrders);
     }
 
     @Disabled

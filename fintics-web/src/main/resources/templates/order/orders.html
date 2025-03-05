@@ -18,7 +18,7 @@
             value: null,
             _page: 0,
             _size: 10,
-            _count: -1,
+            _total: -1,
             _status: null
         });
         const trades = new duice.ArrayProxy(/*[[${trades}]]*/[]);
@@ -54,7 +54,7 @@
             duice.ArrayProxy.clear(orders);
             _fetch(url)
                 .then(response => {
-                    orderSearch._count = _parseTotalCount(response);
+                    orderSearch._total = _parseTotalCount(response);
                     return response.json();
                 })
                 .then(data => {
@@ -63,6 +63,18 @@
                 .finally(() => {
                     orderSearch._status = 'completed';
                 });
+        }
+
+        /**
+         * Gets order
+         * @param orderId order id
+         */
+        function getOrder(orderId) {
+            orderDialog.open(orderId).then(result => {
+                if (result) {
+                    getOrders();
+                }
+            });
         }
 
         /**
@@ -199,21 +211,23 @@
                         <col/>
                         <col/>
                         <col style="width:20em;"/>
+                        <col/>
                     </colgroup>
                     <thead>
                     <tr>
                         <th data-th-text="#{web.global.no}"></th>
                         <th data-th-text="#{fintics.core.order.Order.orderAt}"></th>
                         <th data-th-text="#{fintics.core.order.Order.type}"></th>
-                        <th data-th-text="#{fintics.core.trade.Trade.name}"></th>
-                        <th data-th-text="#{fintics.core.asset.Asset.name}"></th>
+                        <th data-th-text="#{fintics.core.order.Order.tradeName}"></th>
+                        <th data-th-text="#{fintics.core.order.Order.assetName}"></th>
                         <th data-th-text="#{fintics.core.order.Order.quantity}"></th>
                         <th data-th-text="#{fintics.core.order.Order.price}"></th>
-                        <th data-th-text="#{fintics.core.strategy.StrategyResult}"></th>
+                        <th data-th-text="#{fintics.core.order.Order.strategyResult}"></th>
                         <th data-th-text="#{fintics.core.order.Order.purchasePrice}"></th>
                         <th data-th-text="#{fintics.core.order.Order.realizedProfitAmount}"></th>
                         <th data-th-text="#{fintics.core.order.Order.result}"></th>
                         <th data-th-text="#{fintics.core.order.Order.errorMessage}"></th>
+                        <th>-</th>
                     </tr>
                     </thead>
                     <tbody>
@@ -221,7 +235,7 @@
                         <td class="text-align--center">
                             <span class="number"
                                   data-duice-bind="status"
-                                  data-duice-execute="this.innerHTML=orderSearch._count - (orderSearch._size*orderSearch._page + status.count) + 1;">
+                                  data-duice-execute="this.innerHTML=orderSearch._total - (orderSearch._size*orderSearch._page + status.index);">
                             </span>
                         </td>
                         <td>
@@ -275,6 +289,15 @@
                                 data-duice-property="errorMessage"
                                 class="height--100 width--100 font-size--smaller code" style="white-space:normal;"></textarea>
                         </td>
+                        <td class="text-align--center">
+                            <button class="button" type="button"
+                                    data-duice-bind="order"
+                                    data-duice-execute="this.dataset.orderId = order.orderId;"
+                                    onclick="getOrder(this.dataset.orderId);">
+                                <img class="icon" th:src="@{/static/image/icon-detail.svg}" alt="detail"/>
+                                <span data-th-text="#{web.global.detail}"></span>
+                            </button>
+                        </td>
                     </tr>
                     <tr data-duice-bind="orderSearch"
                         data-duice-if="return orderSearch._status === 'loading';"
@@ -296,7 +319,7 @@
             <div class="display--flex justify-content--space-between">
                 <div class="flex--1">
                     <span data-th-text="#{web.global.total}"></span>
-                    <span data-duice-bind="orderSearch" data-duice-property="_count" data-duice-format="number(0)" class="number"></span>
+                    <span data-duice-bind="orderSearch" data-duice-property="_total" data-duice-format="number(0)" class="number"></span>
                     <span data-th-text="#{web.global.rows}"></span>
                 </div>
                 <div class="flex--1 display--flex justify-content--center">
@@ -305,7 +328,7 @@
                             data-duice-bind="orderSearch"
                             data-duice-size-property="_size"
                             data-duice-page-property="_page"
-                            data-duice-count-property="_count"
+                            data-duice-total-property="_total"
                             data-duice-onclick="getOrders(this.dataset.page); pushOrderSearch();">
                     </duice-pagination>
                 </div>
@@ -315,7 +338,140 @@
         </div>
     </div>
     <!-- ================================== -->
-    <!-- end: order                       -->
+    <!-- end: orders                        -->
     <!-- ================================== -->
+
+    <!-- ====================================== -->
+    <!-- start: order dialog                    -->
+    <!-- ====================================== -->
+    <dialog id="orderDialog" class="dialog">
+        <style>
+            #orderDialog {
+                width: 600px;
+            }
+        </style>
+        <script th:inline="javascript">
+            const orderDialog = {
+                dialog: new duice.Dialog(document.getElementById('orderDialog')),
+                order: new duice.ObjectProxy({}),
+                open: async function(orderId) {
+                    duice.ObjectProxy.clear(this.order);
+                    duice.ObjectProxy.setReadonlyAll(this.order, true);
+                    let url = new URL(`${_apiUrl}/v1/orders/${orderId}`, document.location.origin);
+                    _fetch(url)
+                        .then(response => response.json())
+                        .then(data => {
+                            duice.ObjectProxy.assign(this.order, data);
+                            console.error(data);
+                            console.error(this.order);
+                        });
+                    return this.dialog.open();
+                },
+                close: function() {
+                    this.dialog.close();
+                }
+            }
+        </script>
+        <div class="dialog-title">
+            <h2>
+                <img class="icon" th:src="@{/static/image/icon-order.svg}" alt="password"/>
+                <span data-th-text="|#{fintics.core.order.Order} #{web.global.detail}|"></span>
+            </h2>
+        </div>
+        <div class="dialog-content">
+            <form onsubmit="return false;" class="display--grid grid-template-columns--12fr gap--1em">
+                <div class="grid-column--span-6">
+                    <label class="display--flex flex-direction--column">
+                        <span data-th-text="#{fintics.core.order.Order.orderAt}" class="font-weight--bold"></span>
+                        <input type="datetime-local" data-duice-bind="orderDialog.order" data-duice-property="orderAt" class="date"/>
+                    </label>
+                </div>
+                <div class="grid-column--span-6">
+                    <label class="display--flex flex-direction--column">
+                        <span data-th-text="#{fintics.core.order.Order.type}" class="font-weight--bold"></span>
+                        <select data-duice-bind="orderDialog.order" data-duice-property="type" class="code">
+                            <option value="BUY">BUY</option>
+                            <option value="SELL">SELL</option>
+                        </select>
+                    </label>
+                </div>
+                <div class="grid-column--span-6">
+                    <label class="display--flex flex-direction--column">
+                        <span data-th-text="#{fintics.core.order.Order.tradeName}" class="font-weight--bold"></span>
+                        <input type="text" data-duice-bind="orderDialog.order" data-duice-property="tradeName"/>
+                    </label>
+                </div>
+                <div class="grid-column--span-6">
+                    <label class="display--flex flex-direction--column">
+                        <span data-th-text="#{fintics.core.order.Order.assetName}" class="font-weight--bold"></span>
+                        <input type="text" data-duice-bind="orderDialog.order" data-duice-property="assetName"/>
+                    </label>
+                </div>
+                <div class="grid-column--span-6">
+                    <label class="display--flex flex-direction--column">
+                        <span data-th-text="#{fintics.core.order.Order.quantity}" class="font-weight--bold"></span>
+                        <input type="number" data-duice-bind="orderDialog.order" data-duice-property="quantity" data-duice-format="number(0)" class="number"/>
+                    </label>
+                </div>
+                <div class="grid-column--span-6">
+                    <label class="display--flex flex-direction--column">
+                        <span data-th-text="#{fintics.core.order.Order.price}" class="font-weight--bold"></span>
+                        <input type="number" data-duice-bind="orderDialog.order" data-duice-property="price" data-duice-format="number()" class="number"/>
+                    </label>
+                </div>
+                <div class="grid-column--span-12">
+                    <label class="display--flex flex-direction--column">
+                        <span data-th-text="#{fintics.core.order.Order.strategyResult}" class="font-weight--bold"></span>
+                        <textarea data-duice-bind="orderDialog.order"
+                                  data-duice-execute="this.value=JSON.stringify(orderDialog.order.strategyResult, null, 2);"
+                                  class="width--100 code"></textarea>
+                    </label>
+                </div>
+                <div class="grid-column--span-6">
+                    <label class="display--flex flex-direction--column">
+                        <span data-th-text="#{fintics.core.order.Order.purchasePrice}" class="font-weight--bold"></span>
+                        <input type="number" data-duice-bind="orderDialog.order" data-duice-property="purchasePrice" data-duice-format="number()" class="number"/>
+                    </label>
+                </div>
+                <div class="grid-column--span-6">
+                    <label class="display--flex flex-direction--column">
+                        <span data-th-text="#{fintics.core.order.Order.realizedProfitAmount}" class="font-weight--bold"></span>
+                        <input type="number" data-duice-bind="orderDialog.order" data-duice-property="realizedProfitAmount" data-duice-format="number()" class="number"/>
+                    </label>
+                </div>
+                <div class="grid-column--span-6">
+                    <label class="display--flex flex-direction--column">
+                        <span data-th-text="#{fintics.core.order.Order.result}" class="font-weight--bold"></span>
+                        <select data-duice-bind="orderDialog.order" data-duice-property="result" class="code">
+                            <option value="COMPLETED">COMPLETED</option>
+                            <option value="FAILED">FAILED</option>
+                        </select>
+                    </label>
+                </div>
+                <div class="grid-column--span-6">
+                    <label class="display--flex flex-direction--column">
+                        <span data-th-text="#{fintics.core.order.Order.brokerOrderId}" class="font-weight--bold"></span>
+                        <input type="number" data-duice-bind="orderDialog.order" data-duice-property="brokerOrderId" class="code"/>
+                    </label>
+                </div>
+                <div class="grid-column--span-12">
+                    <label class="display--flex flex-direction--column">
+                        <span data-th-text="#{fintics.core.order.Order.errorMessage}" class="font-weight--bold"></span>
+                        <textarea data-duice-bind="orderDialog.order" data-duice-property="errorMessage" class="width--100 code"></textarea>
+                    </label>
+                </div>
+            </form>
+            <div class="display--flex justify-content--end gap--1px">
+                <button class="button" type="button" onclick="orderDialog.close();">
+                    <img class="icon" th:src="@{/static/image/icon-close.svg}" alt="close"/>
+                    <span data-th-text="#{web.global.close}"></span>
+                </button>
+            </div>
+        </div>
+    </dialog>
+    <!-- ====================================== -->
+    <!-- end: order dialog                  -->
+    <!-- ====================================== -->
+
 
 </th:block>

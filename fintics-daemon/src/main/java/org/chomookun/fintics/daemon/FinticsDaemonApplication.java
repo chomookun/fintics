@@ -6,13 +6,13 @@ import org.springframework.boot.builder.SpringApplicationBuilder;
 import org.springframework.context.annotation.FullyQualifiedAnnotationBeanNameGenerator;
 
 /**
- * fintics trade application
+ * Fintics daemon application
  */
 @SpringBootApplication(nameGenerator = FullyQualifiedAnnotationBeanNameGenerator.class)
 public class FinticsDaemonApplication {
 
     /**
-     * runs application
+     * Runs application
      * @param args arguments
      */
     public static void main(String[] args) {

@@ -5,6 +5,7 @@
       layout:decorate="_web.html">
 <th:block layout:fragment="_content">
     <th:block th:insert="common/common.html"/>
+    <th:block th:insert="common/asset-dialog.html"/>
     <script th:inline="javascript">
         // defines
         const basketId = new URL(location.href).searchParams.get('basketId');
@@ -53,11 +54,31 @@
         }
 
         /**
-         * removes basket asset
+         * Removes basket asset
          * @param index index
          */
         function removeBasketAsset(index) {
             basket.basketAssets.splice(index, 1);
+        }
+
+        /**
+         * Moves basket asset to top
+         * @param index
+         */
+        function moveBasketAssetToTop(index) {
+            if (index === 0) return;
+            let basketAsset = basket.basketAssets.splice(index, 1)[0];
+            basket.basketAssets.unshift(basketAsset);
+        }
+
+        /**
+         * Moves basket asset to bottom
+         * @param index
+         */
+        function moveBasketAssetToBottom(index) {
+            if (index === basket.basketAssets.length - 1) return;
+            let basketAsset = basket.basketAssets.splice(index, 1)[0];
+            basket.basketAssets.push(basketAsset);
         }
 
         /**
@@ -255,6 +276,7 @@
                                 <col style="width:5em;"/>
                                 <col style="width:7em;"/>
                                 <col style="width:15em;"/>
+                                <col/>
                             </colgroup>
                             <thead>
                             <tr>
@@ -274,6 +296,7 @@
                                 <th data-th-text="#{fintics.core.basket.BasketAsset.enabled}"></th>
                                 <th data-th-text="#{fintics.core.basket.BasketAsset.holdingWeight}"></th>
                                 <th data-th-text="#{fintics.core.basket.BasketAsset.variables}"></th>
+                                <th>-</th>
                             </tr>
                             </thead>
                             <tbody>
@@ -405,6 +428,20 @@
                                         <textarea data-duice-bind="basketAsset" data-duice-property="variables" class="width--100 height--100 code"></textarea>
                                     </label>
                                 </td>
+                                <td class="display--flex flex-direction--column gap--1px">
+                                    <button class="button" type="button"
+                                            data-duice-bind="basketAsset"
+                                            data-duice-execute="this.dataset.index=status.index;"
+                                            onclick="moveBasketAssetToTop(this.dataset.index);">
+                                        <img class="icon" th:src="@{/static/image/icon-up.svg}" alt="up"/>
+                                    </button>
+                                    <button class="button" type="button"
+                                            data-duice-bind="basketAsset"
+                                            data-duice-execute="this.dataset.index=status.index;"
+                                            onclick="moveBasketAssetToBottom(this.dataset.index);">
+                                        <img class="icon" th:src="@{/static/image/icon-down.svg}" alt="down"/>
+                                    </button>
+                                </td>
                             </tr>
                             <tr data-duice-bind="basket.basketAssets"
                                 data-duice-if="return basket.basketAssets.length === 0;" hidden>
@@ -528,7 +565,7 @@
                     value: null,
                     _page: 0,
                     _size: 5,
-                    _count: 0,
+                    _total: -1,
                     _status: null
                 }),
                 assets: new duice.ArrayProxy([]),
@@ -562,7 +599,7 @@
                     duice.ArrayProxy.clear(this.assets);
                     await _fetch(url)
                         .then(response => {
-                            this.assetSearch._count = _parseTotalCount(response);
+                            this.assetSearch._total = _parseTotalCount(response);
                             return response.json();
                         })
                         .then(data => {
@@ -692,12 +729,16 @@
                                 </button>
                             </td>
                             <td class="text-align--center">
-                                <span data-duice-bind="asset" data-duice-property="symbol" class="font-weight--bold code"></span>
+                                <img data-duice-bind="asset" data-duice-execute="_applyAssetFavoriteIcon(this, asset, true);" alt=""/>
+                                <span data-duice-bind="asset" data-duice-property="symbol" class="code font-weight--bold"></span>
                             </td>
                             <td class="text-align--left" style="overflow-x: hidden;">
                                 <img class="icon border-radius--50 font-size--large" th:src="@{/static/image/icon-asset.svg}" data-duice-bind="asset" data-duice-property="icon" th:onerror="|this.src='@{/static/image/icon-asset.svg}';|" alt=""/>
                                 &nbsp;
-                                <span data-duice-bind="asset" data-duice-property="name"></span>
+                                <span data-duice-bind="asset" data-duice-property="name"
+                                    data-duice-execute="this.dataset.assetId=asset.assetId;"
+                                    onclick="_assetDialog.open(this.dataset.assetId);"
+                                    class="link"></span>
                             </td>
                             <td class="text-align--center">
                                 <span class="badge code" data-duice-bind="asset" data-duice-property="exchange"></span>
@@ -786,7 +827,7 @@
                 <div class="display--flex justify-content--space-between">
                     <div class="flex--1">
                         <span data-th-text="#{web.global.total}"></span>
-                        <span data-duice-bind="assetSelectDialog.assetSearch" data-duice-property="_count" data-duice-format="number(0)" class="number"></span>
+                        <span data-duice-bind="assetSelectDialog.assetSearch" data-duice-property="_total" data-duice-format="number(0)" class="number"></span>
                         <span data-th-text="#{web.global.rows}"></span>
                     </div>
                     <div class="flex--1 display--flex justify-content--center">
@@ -794,7 +835,7 @@
                                 data-duice-bind="assetSelectDialog.assetSearch"
                                 data-duice-size-property="_size"
                                 data-duice-page-property="_page"
-                                data-duice-count-property="_count"
+                                data-duice-total-property="_total"
                                 data-duice-onclick="assetSelectDialog.getAssets(this.dataset.page);"
                                 class="code">
                         </duice-pagination>

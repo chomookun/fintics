@@ -1,10 +1,3 @@
-# core
-core:
-  security:
-    security-policy: AUTHENTICATED
-    signing-key: ahD3N&nctCE&aDenBKHu)tav7FyqMw6vPHXRtw7)WbWIvX8Xdtrs4fu*E9UXN58L
-    expire-minutes: 60
-
 # web
 web:
   brand: <img src="/static/image/fintics-icon.svg"/><img src="/static/image/fintics-title.svg"/>

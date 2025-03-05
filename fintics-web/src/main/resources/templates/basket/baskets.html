@@ -12,7 +12,7 @@
             value: null,
             _page: 0,
             _size: 20,
-            _count: -1,
+            _total: -1,
             _status: null
         });
         const baskets = new duice.ArrayProxy([]);
@@ -34,7 +34,7 @@
             duice.ArrayProxy.clear(baskets);
             _fetch(url)
                 .then(response => {
-                    basketSearch._count = _parseTotalCount(response);
+                    basketSearch._total= _parseTotalCount(response);
                     return response.json();
                 })
                 .then(data => {
@@ -158,7 +158,7 @@
                     <tr data-duice-bind="baskets" data-duice-loop="basket,status">
                         <td class="text-align--center">
                             <span data-duice-bind="status"
-                                  data-duice-execute="this.innerHTML=basketSearch._size*basketSearch._page + status.count;"
+                                  data-duice-execute="this.innerHTML = (basketSearch._size * basketSearch._page) + status.count;"
                                   class="number">
                             </span>
                         </td>
@@ -199,7 +199,7 @@
             <div class="display--flex justify-content--space-between">
                 <div>
                     <span data-th-text="#{web.global.total}"></span>
-                    <span data-duice-bind="basketSearch" data-duice-property="_count" data-duice-format="number(0)" class="number"></span>
+                    <span data-duice-bind="basketSearch" data-duice-property="_total" data-duice-format="number(0)" class="number"></span>
                     <span data-th-text="#{web.global.rows}"></span>
                 </div>
                 <div class="flex--1 display--flex justify-content--end">
@@ -208,7 +208,7 @@
                             data-duice-bind="basketSearch"
                             data-duice-size-property="_size"
                             data-duice-page-property="_page"
-                            data-duice-count-property="_count"
+                            data-duice-total-property="_total"
                             data-duice-onclick="getBaskets(this.dataset.page); pushBasketSearch();">
                     </duice-pagination>
                 </div>

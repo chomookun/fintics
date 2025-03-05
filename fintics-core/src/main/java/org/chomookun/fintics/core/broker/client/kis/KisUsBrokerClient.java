@@ -261,7 +261,7 @@ public class KisUsBrokerClient extends BrokerClient {
                 .queryParam("SYMB", symb)
                 .queryParam("GUBN", "0")
                 .queryParam("BYMD", "")
-                .queryParam("MODP", "1")
+                .queryParam("MODP", "0")    // Using raw price (not using adjusting price in trading)
                 .queryParam("KEYB", "")
                 .build()
                 .toUriString();

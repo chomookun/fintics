@@ -45,9 +45,9 @@ public class Order {
 
     private BigDecimal realizedProfitAmount;
 
-    private String brokerOrderId;
-
     private Result result;
+
+    private String brokerOrderId;
 
     private String errorMessage;
 
@@ -99,8 +99,8 @@ public class Order {
                 .strategyResult(strategyResult)
                 .purchasePrice(orderEntity.getPurchasePrice())
                 .realizedProfitAmount(orderEntity.getRealizedProfitAmount())
-                .brokerOrderId(orderEntity.getBrokerOrderId())
                 .result(orderEntity.getResult())
+                .brokerOrderId(orderEntity.getBrokerOrderId())
                 .errorMessage(orderEntity.getErrorMessage())
                 .build();
     }

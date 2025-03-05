@@ -11,7 +11,7 @@
             value: null,
             _page: 0,
             _size: 20,
-            _count: -1,
+            _total: -1,
             _status: null
         });
         const trades = new duice.ArrayProxy([]);
@@ -38,7 +38,7 @@
             duice.ArrayProxy.clear(trades);
             _fetch(url)
                 .then(response => {
-                    tradeSearch._count = _parseTotalCount(response);
+                    tradeSearch._total = _parseTotalCount(response);
                     return response.json();
                 })
                 .then(data => {
@@ -167,7 +167,7 @@
                     <tr data-duice-bind="trades" data-duice-loop="trade,status">
                         <td class="text-align--center">
                         <span data-duice-bind="status"
-                              data-duice-execute="this.innerHTML=tradeSearch._size*tradeSearch._page + status.count;"
+                              data-duice-execute="this.innerHTML = (tradeSearch._size * tradeSearch._page) + status.count;"
                               class="number">
                         </span>
                         </td>
@@ -241,7 +241,7 @@
             <div class="display--flex justify-content--space-between">
                 <div class="flex--1">
                     <span data-th-text="#{web.global.total}"></span>
-                    <span data-duice-bind="tradeSearch" data-duice-property="_count" data-duice-format="number(0)" class="number"></span>
+                    <span data-duice-bind="tradeSearch" data-duice-property="_total" data-duice-format="number(0)" class="number"></span>
                     <span data-th-text="#{web.global.rows}"></span>
                 </div>
                 <div class="flex--1 display--flex justify-content--center">
@@ -250,7 +250,7 @@
                             data-duice-bind="tradeSearch"
                             data-duice-size-property="_size"
                             data-duice-page-property="_page"
-                            data-duice-count-property="_count"
+                            data-duice-total-property="_total"
                             data-duice-onclick="getTrades(this.dataset.page); pushTradeSearch();">
                     </duice-pagination>
                 </div>

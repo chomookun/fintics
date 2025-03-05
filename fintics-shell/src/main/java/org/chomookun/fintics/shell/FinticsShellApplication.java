@@ -9,13 +9,13 @@ import org.springframework.context.annotation.FullyQualifiedAnnotationBeanNameGe
 import java.util.Arrays;
 
 /**
- * fintics shell application
+ * Fintics shell application
  */
 @SpringBootApplication(nameGenerator = FullyQualifiedAnnotationBeanNameGenerator.class)
 public class FinticsShellApplication {
 
     /**
-     * runs application
+     * Runs application
      * @param args arguments
      */
     public static void main(String[] args) {

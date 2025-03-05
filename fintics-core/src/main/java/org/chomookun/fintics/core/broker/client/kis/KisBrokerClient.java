@@ -197,7 +197,7 @@ public class KisBrokerClient extends BrokerClient {
     @Override
     public List<Ohlcv> getMinuteOhlcvs(Asset asset) throws InterruptedException {
         String fidEtcClsCode = "";
-        String fidCondMrktDivCode = "J";
+        String fidCondMrktDivCode = "J";    // J:KRX, NX:NXT, UN:통합
         String fidInputIscd = asset.getSymbol();
         LocalTime time = ZonedDateTime.now(getDefinition().getTimezone()).toLocalTime();
         LocalTime closeTime = LocalTime.of(15,30);
@@ -273,12 +273,12 @@ public class KisBrokerClient extends BrokerClient {
         String url = apiUrl + "/uapi/domestic-stock/v1/quotations/inquire-daily-itemchartprice";
         HttpHeaders headers = createHeaders();
         headers.add("tr_id", "FHKST03010100");
-        String fidCondMrktDivCode = "J";
+        String fidCondMrktDivCode = "J";    // J:KRX, NX:NXT, UN:통합
         String fidInputIscd = asset.getSymbol();
         String fidInputDate1 = DateTimeFormatter.ofPattern("yyyyMMdd").format(LocalDate.now().minusMonths(1));
         String fidInputDate2 = DateTimeFormatter.ofPattern("yyyyMMdd").format(LocalDate.now());
         String fidPeriodDivCode = "D";  // 일봉
-        String fidOrgAdjPrc = "0";      // 수정주가
+        String fidOrgAdjPrc = "1";      // 원주가 (트레이딩 에서는 수정 주가 사용 하지 않음)
         url = UriComponentsBuilder.fromUriString(url)
                 .queryParam("FID_COND_MRKT_DIV_CODE", fidCondMrktDivCode)
                 .queryParam("FID_INPUT_ISCD", fidInputIscd)
@@ -346,7 +346,7 @@ public class KisBrokerClient extends BrokerClient {
         String url = apiUrl + "/uapi/domestic-stock/v1/quotations/inquire-asking-price-exp-ccn";
         HttpHeaders headers = createHeaders();
         headers.add("tr_id", "FHKST01010200");
-        String fidCondMrktDivCode = "J";
+        String fidCondMrktDivCode = "J";    // J:KRX, NX:NXT, UN:통합
         String fidInputIscd = asset.getSymbol();
         url = UriComponentsBuilder.fromUriString(url)
                 .queryParam("FID_COND_MRKT_DIV_CODE", fidCondMrktDivCode)
@@ -595,27 +595,29 @@ public class KisBrokerClient extends BrokerClient {
         // quantity with check
         BigDecimal quantity = order.getQuantity().setScale(0, RoundingMode.FLOOR);
         order.setQuantity(quantity);
-        // price
-        BigDecimal price = order.getPrice().setScale(0, RoundingMode.FLOOR);
-        order.setPrice(price);
         // api url
         String url = apiUrl + "/uapi/domestic-stock/v1/trading/order-cash";
         HttpHeaders headers = createHeaders();
         // order type
         String trId;
         switch(order.getType()) {
-            case BUY -> trId = production ? "TTTC0802U" : "VTTC0802U";
-            case SELL -> trId = production ? "TTTC0801U" : "VTTC0801U";
+            case BUY -> trId = production ? "TTTC0012U" : "VTTC0802U";
+            case SELL -> trId = production ? "TTTC0011U" : "VTTC0801U";
             default -> throw new RuntimeException("invalid order kind");
         }
         headers.add("tr_id", trId);
+        // exchange id (Krx: KRX, Nextrade: NXT)
+        String excgIdDvsnCd = "KRX";
         // order kind
         String ordDvsn;
         String ordUnpr;
         switch(order.getKind()) {
             case LIMIT -> {
                 ordDvsn = "00";
-                ordUnpr = String.valueOf(order.getPrice().longValue());
+                ordUnpr = Optional.ofNullable(order.getPrice())
+                        .map(it -> it.setScale(0, RoundingMode.FLOOR).longValue())
+                        .map(String::valueOf)
+                        .orElseThrow(() -> new RuntimeException("price is required"));
             }
             case MARKET -> {
                 ordDvsn = "01";
@@ -630,6 +632,7 @@ public class KisBrokerClient extends BrokerClient {
         payloadMap.put("CANO", accountNo.split("-")[0]);
         payloadMap.put("ACNT_PRDT_CD", accountNo.split("-")[1]);
         payloadMap.put("PDNO", order.getSymbol());
+        payloadMap.put("EXCG_ID_DVSN_CD", excgIdDvsnCd);
         payloadMap.put("ORD_DVSN", ordDvsn);
         payloadMap.put("ORD_QTY", ordQty);
         payloadMap.put("ORD_UNPR", ordUnpr);
@@ -668,7 +671,7 @@ public class KisBrokerClient extends BrokerClient {
         }
         String url = apiUrl + "/uapi/domestic-stock/v1/trading/inquire-psbl-rvsecncl";
         HttpHeaders headers = createHeaders();
-        headers.add("tr_id", "TTTC8036R");
+        headers.add("tr_id", "TTTC0084R");
         url = UriComponentsBuilder.fromUriString(url)
                 .queryParam("CANO", accountNo.split("-")[0])
                 .queryParam("ACNT_PRDT_CD", accountNo.split("-")[1])
@@ -716,14 +719,14 @@ public class KisBrokerClient extends BrokerClient {
                     String symbol = row.get("pdno");
                     BigDecimal quantity = new BigDecimal(row.get("psbl_qty"));
                     BigDecimal price = new BigDecimal(row.get("ord_unpr"));
-                    String clientOrderId = row.get("odno");
+                    String brokerOrderId = row.get("odno");
                     return Order.builder()
                             .type(orderType)
                             .assetId(toAssetId(symbol))
                             .kind(orderKind)
                             .quantity(quantity)
                             .price(price)
-                            .brokerOrderId(clientOrderId)
+                            .brokerOrderId(brokerOrderId)
                             .build();
 
                 })
@@ -743,20 +746,23 @@ public class KisBrokerClient extends BrokerClient {
     public Order amendOrder(Asset asset, Order order) throws InterruptedException {
         String url = apiUrl + "/uapi/domestic-stock/v1/trading/order-rvsecncl";
         HttpHeaders headers = createHeaders();
-        // trId
-        String trId = (production ? "TTTC0803U" : "VTTC0803U");
+        // TrId
+        String trId = (production ? "TTTC0013U" : "VTTC0803U");
         headers.add("tr_id", trId);
-        // order type
+        // Order type
         String ordDvsn;
         switch(order.getKind()) {
             case LIMIT -> ordDvsn = "00";
             case MARKET -> ordDvsn = "01";
             default -> throw new RuntimeException("invalid order type");
         }
+        // 거래소ID구분코드 (한국거래소: KRX, 대체거래소(넥스트레이드): NXT)
+        String excgIdDvsnCd = "KRX";
         // request
         Map<String, String> payloadMap = new LinkedHashMap<>();
         payloadMap.put("CANO", accountNo.split("-")[0]);
         payloadMap.put("ACNT_PRDT_CD", accountNo.split("-")[1]);
+        payloadMap.put("EXCG_ID_DVSN_CD", excgIdDvsnCd);
         payloadMap.put("KRX_FWDG_ORD_ORGNO", "");
         payloadMap.put("ORGN_ODNO", order.getBrokerOrderId());
         payloadMap.put("ORD_DVSN", ordDvsn);

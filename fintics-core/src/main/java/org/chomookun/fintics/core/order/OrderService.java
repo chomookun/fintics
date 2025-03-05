@@ -72,6 +72,16 @@ public class OrderService {
 
     /**
      * Gets order history
+     * @param orderId order id
+     * @return order
+     */
+    public Order getOrder(String orderId) {
+        OrderEntity orderEntity = orderRepository.findById(orderId).orElseThrow();
+        return Order.from(orderEntity);
+    }
+
+    /**
+     * Gets order histories
      * @param orderSearch order search condition
      * @param pageable pageable
      * @return page of order

@@ -77,13 +77,13 @@ public class OrderEntity extends BaseEntity {
     @Comment("Realized Profit Amount")
     private BigDecimal realizedProfitAmount;
 
-    @Column(name = "broker_order_id", length = 128)
-    @Comment("Broker Order ID")
-    private String brokerOrderId;
-
     @Column(name = "result", length = 16)
     @Comment("Result")
     private Order.Result result;
+
+    @Column(name = "broker_order_id", length = 128)
+    @Comment("Broker Order ID")
+    private String brokerOrderId;
 
     @Column(name = "error_message")
     @Lob

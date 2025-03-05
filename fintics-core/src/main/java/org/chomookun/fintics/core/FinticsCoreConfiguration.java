@@ -29,6 +29,7 @@ import java.util.Properties;
  */
 @Configuration
 @Import(CoreConfiguration.class)
+@ConfigurationPropertiesScan
 @ComponentScan(
         nameGenerator = FullyQualifiedAnnotationBeanNameGenerator.class
 )
@@ -39,7 +40,6 @@ import java.util.Properties;
         annotationClass = Mapper.class,
         nameGenerator = FullyQualifiedAnnotationBeanNameGenerator.class
 )
-@ConfigurationPropertiesScan
 @EnableScheduling
 @EnableCaching
 public class FinticsCoreConfiguration implements EnvironmentPostProcessor {

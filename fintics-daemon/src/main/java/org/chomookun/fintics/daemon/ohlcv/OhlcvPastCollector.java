@@ -3,6 +3,7 @@ package org.chomookun.fintics.daemon.ohlcv;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.chomookun.arch4j.core.execution.model.Execution;
+import org.chomookun.fintics.core.FinticsCoreProperties;
 import org.chomookun.fintics.core.asset.model.Asset;
 import org.chomookun.fintics.core.basket.model.Basket;
 import org.chomookun.fintics.core.basket.model.BasketAsset;
@@ -12,7 +13,6 @@ import org.chomookun.fintics.core.ohlcv.entity.OhlcvEntity;
 import org.chomookun.fintics.core.ohlcv.repository.OhlcvRepository;
 import org.chomookun.fintics.core.basket.BasketService;
 import org.chomookun.fintics.core.ohlcv.model.Ohlcv;
-import org.chomookun.fintics.daemon.FinticsDaemonProperties;
 import org.chomookun.fintics.daemon.common.AbstractTask;
 import org.springframework.data.domain.Pageable;
 import org.springframework.scheduling.annotation.Scheduled;
@@ -33,7 +33,7 @@ public class OhlcvPastCollector extends AbstractTask {
 
     private final static String SCHEDULER_ID = "OhlcvPastCollector";
 
-    private final FinticsDaemonProperties finticsDaemonProperties;
+    private final FinticsCoreProperties finticsCoreProperties;
 
     @PersistenceContext
     private final EntityManager entityManager;
@@ -56,7 +56,7 @@ public class OhlcvPastCollector extends AbstractTask {
         try {
             // expired date time
             LocalDateTime expiredDateTime = LocalDateTime.now()
-                    .minusMonths(finticsDaemonProperties.getDataRetentionMonths());
+                    .minusMonths(finticsCoreProperties.getDataRetentionMonths());
             // past ohlcv is based on basket (using ohlcv client)
             List<Basket> baskets = basketService.getBaskets(BasketSearch.builder().build(), Pageable.unpaged()).getContent();
             for (Basket basket : baskets) {

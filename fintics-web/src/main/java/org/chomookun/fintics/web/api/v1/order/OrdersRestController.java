@@ -95,4 +95,21 @@ public class OrdersRestController {
                 .body(orderResponses);
     }
 
+    /**
+     * Gets order
+     * @param orderId order id
+     * @return order
+     */
+    @GetMapping("/{orderId}")
+    public ResponseEntity<OrderResponse> getOrder(@PathVariable("orderId") String orderId) {
+        Order order = orderService.getOrder(orderId);
+        OrderResponse orderResponse = OrderResponse.from(order);
+        // set trade name
+        orderResponse.setTradeName(tradeService.getTrade(orderResponse.getTradeId())
+                .map(Trade::getName)
+                .orElse(""));
+        // response
+        return ResponseEntity.ok(orderResponse);
+    }
+
 }

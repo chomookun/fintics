@@ -6,13 +6,13 @@ import org.springframework.boot.builder.SpringApplicationBuilder;
 import org.springframework.context.annotation.FullyQualifiedAnnotationBeanNameGenerator;
 
 /**
- * fintics application
+ * Fintics web application
  */
 @SpringBootApplication(nameGenerator = FullyQualifiedAnnotationBeanNameGenerator.class)
 public class FinticsWebApplication {
 
     /**
-     * runs application
+     * Runs application
      * @param args arguments
      */
     public static void main(String[] args) {
