@@ -295,7 +295,7 @@ class TripleScreenStrategy {
                     def buyPosition = this.adjustAveragePosition(position)
                     strategyResult = StrategyResult.of(Action.BUY, buyPosition, "[WAVE OVERSOLD BUY] ${this.toString()}")
                     // tide 과매수 시 매수 보류
-                    if (tideAnalyzer.getOverboughtScore() > 50) {
+                    if (tideAnalyzer.getOverboughtScore() >= 50) {
                         strategyResult = null
                     }
                 }
@@ -308,7 +308,7 @@ class TripleScreenStrategy {
                     def sellPosition = this.adjustAveragePosition(position)
                     strategyResult = StrategyResult.of(Action.SELL, sellPosition, "[WAVE OVERBOUGHT SELL] ${this.toString()}")
                     // tide 과매도 시 매도 보류
-                    if (tideAnalyzer.getOversoldScore() > 50) {
+                    if (tideAnalyzer.getOversoldScore() >= 50) {
                         strategyResult = null
                     }
                 }
@@ -322,6 +322,8 @@ class TripleScreenStrategy {
     @Override
     String toString() {
         return "tide.momentum:${tideAnalyzer.getMomentumScore().getAverage()}," +
+                "tide.oversold:${tideAnalyzer.getOversoldScore().getAverage()}," +
+                "tide.overbought:${tideAnalyzer.getOverboughtScore().getAverage()}," +
                 "wave.volatility:${waveAnalyzer.getVolatilityScore().getAverage()}," +
                 "wave.oversold:${waveAnalyzer.getOversoldScore().getAverage()}," +
                 "wave.overbought:${waveAnalyzer.getOverboughtScore().getAverage()}," +
