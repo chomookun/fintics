@@ -15,10 +15,10 @@ class Score extends LinkedHashMap<String, BigDecimal> implements Comparable<Scor
         return this.values().empty ? 0 : this.values().average() as Number
     }
     @Override
-    int compareTo(@NotNull Score o) {
+    int compareTo(Score o) {
         return Double.compare(this.getAverage().doubleValue(), o.getAverage().doubleValue())
     }
-    int compareTo(@NotNull Number o) {
+    int compareTo(Number o) {
         return Double.compare(this.getAverage().doubleValue(), o.doubleValue())
     }
     @Override
