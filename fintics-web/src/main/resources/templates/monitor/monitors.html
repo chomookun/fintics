@@ -43,7 +43,10 @@
                             }
                             let tradeLog = JSON.parse(frame.body);
                             tradeLogElement.value += tradeLog.logMessage + '\n';
-                            tradeLogElement.scrollTop = tradeLogElement.scrollHeight;
+                            // if not focused, scroll to bottom
+                            if (!document.activeElement.isEqualNode(tradeLogElement)) {
+                                tradeLogElement.scrollTop = tradeLogElement.scrollHeight;
+                            }
                         }
                     });
                     _webSocketClient.subscribe({
