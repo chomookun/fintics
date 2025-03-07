@@ -34,6 +34,9 @@ public class Basket {
     @Builder.Default
     private List<BasketAsset> basketAssets = new ArrayList<>();
 
+    @Builder.Default
+    private List<BasketDivider> basketDividers = new ArrayList<>();
+
     /**
      * gets specified basket asset
      * @param assetId asset id
@@ -62,6 +65,9 @@ public class Basket {
                 .script(basketEntity.getScript())
                 .basketAssets(basketEntity.getBasketAssets().stream()
                         .map(BasketAsset::from)
+                        .collect(Collectors.toList()))
+                .basketDividers(basketEntity.getBasketDividers().stream()
+                        .map(BasketDivider::from)
                         .collect(Collectors.toList()))
                 .build();
     }

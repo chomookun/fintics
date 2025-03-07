@@ -18,6 +18,8 @@ public class BasketAssetRequest {
     @Schema(description = "asset id", example = "US.AAPL")
     private String assetId;
 
+    private Integer sort;
+
     @Schema(description = "fixed", example = "true")
     private boolean fixed;
 

@@ -64,6 +64,13 @@ public class BasketEntity extends BaseEntity {
     @Setter(AccessLevel.NONE)
     private List<BasketAssetEntity> basketAssets = new ArrayList<>();
 
+    @OneToMany(cascade = CascadeType.ALL, orphanRemoval = true)
+    @JoinColumn(name = "basket_id", updatable = false)
+    @OrderBy(BasketDividerEntity_.SORT)
+    @Builder.Default
+    @Setter(AccessLevel.NONE)
+    private List<BasketDividerEntity> basketDividers = new ArrayList<>();
+
     /**
      * Language converter
      */

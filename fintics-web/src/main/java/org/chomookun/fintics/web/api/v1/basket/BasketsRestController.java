@@ -6,8 +6,6 @@ import ch.qos.logback.classic.LoggerContext;
 import ch.qos.logback.classic.PatternLayout;
 import ch.qos.logback.classic.spi.ILoggingEvent;
 import ch.qos.logback.core.OutputStreamAppender;
-import de.vandermeer.asciitable.AsciiTable;
-import de.vandermeer.asciitable.CWC_LongestLine;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.tags.Tag;
@@ -16,6 +14,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.exception.ExceptionUtils;
 import org.chomookun.arch4j.core.common.support.texttable.TextTable;
 import org.chomookun.arch4j.web.common.data.PageableUtils;
+import org.chomookun.fintics.core.basket.model.BasketDivider;
 import org.chomookun.fintics.web.api.v1.basket.dto.BasketRequest;
 import org.chomookun.fintics.web.api.v1.basket.dto.BasketResponse;
 import org.chomookun.fintics.core.basket.rebalance.BasketRebalanceAsset;
@@ -39,10 +38,7 @@ import org.springframework.web.servlet.mvc.method.annotation.StreamingResponseBo
 
 import java.nio.charset.StandardCharsets;
 import java.util.List;
-import java.util.Map;
-import java.util.function.IntUnaryOperator;
 import java.util.stream.Collectors;
-import java.util.stream.IntStream;
 
 @RestController
 @RequestMapping("/api/v1/baskets")
@@ -122,6 +118,17 @@ public class BasketsRestController {
                         .build())
                 .collect(Collectors.toList());
         basket.setBasketAssets(basketAssets);
+        // basket dividers
+        List<BasketDivider> basketDividers = basketRequest.getBasketDividers().stream()
+                .map(basketDividerRequest -> {
+                    return BasketDivider.builder()
+                            .dividerId(basketDividerRequest.getDividerId())
+                            .sort(basketDividerRequest.getSort())
+                            .name(basketDividerRequest.getName())
+                            .build();
+                })
+                .collect(Collectors.toList());
+        basket.setBasketDividers(basketDividers);
         // save
         Basket savedBasket = basketService.saveBasket(basket);
         // response
@@ -154,6 +161,7 @@ public class BasketsRestController {
                 .map(basketAssetRequest -> {
                     return BasketAsset.builder()
                             .assetId(basketAssetRequest.getAssetId())
+                            .sort(basketAssetRequest.getSort())
                             .fixed(basketAssetRequest.isFixed())
                             .enabled(basketAssetRequest.isEnabled())
                             .holdingWeight(basketAssetRequest.getHoldingWeight())
@@ -162,6 +170,17 @@ public class BasketsRestController {
                 })
                 .collect(Collectors.toList());
         basket.setBasketAssets(basketAssets);
+        // basket dividers
+        List<BasketDivider> basketDividers = basketRequest.getBasketDividers().stream()
+                .map(basketDividerRequest -> {
+                    return BasketDivider.builder()
+                            .dividerId(basketDividerRequest.getDividerId())
+                            .sort(basketDividerRequest.getSort())
+                            .name(basketDividerRequest.getName())
+                            .build();
+                })
+                .collect(Collectors.toList());
+        basket.setBasketDividers(basketDividers);
         // save
         Basket savedBasket = basketService.saveBasket(basket);
         return ResponseEntity.ok(BasketResponse.from(savedBasket));

@@ -31,4 +31,7 @@ public class BasketRequest {
     @Builder.Default
     private List<BasketAssetRequest> basketAssets = new ArrayList<>();
 
+    @Builder.Default
+    private List<BasketDividerRequest> basketDividers = new ArrayList<>();
+
 }
