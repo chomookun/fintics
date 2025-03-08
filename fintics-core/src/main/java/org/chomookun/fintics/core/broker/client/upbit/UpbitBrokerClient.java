@@ -141,7 +141,7 @@ public class UpbitBrokerClient extends BrokerClient {
         Map<String, String> orderBookUnit = orderBookUnits.get(0);
         return OrderBook.builder()
                 .price(new BigDecimal(orderBookUnit.get("bid_price")))
-                .tickPrice(BigDecimal.ONE)
+                .tickPrice(BigDecimal.ZERO)
                 .bidPrice(new BigDecimal(orderBookUnit.get("bid_price")))
                 .askPrice(new BigDecimal(orderBookUnit.get("ask_price")))
                 .build();
