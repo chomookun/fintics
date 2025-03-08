@@ -4,7 +4,9 @@ import lombok.RequiredArgsConstructor;
 import org.chomookun.arch4j.core.common.data.IdGenerator;
 import org.chomookun.arch4j.core.common.pbe.PbePropertiesUtil;
 import org.chomookun.fintics.core.basket.entity.BasketAssetEntity;
+import org.chomookun.fintics.core.basket.entity.BasketDividerEntity;
 import org.chomookun.fintics.core.basket.entity.BasketEntity;
+import org.chomookun.fintics.core.basket.model.BasketDivider;
 import org.chomookun.fintics.core.basket.repository.BasketRepository;
 import org.chomookun.fintics.core.trade.repository.TradeRepository;
 import org.chomookun.fintics.core.basket.model.Basket;
@@ -22,6 +24,7 @@ import jakarta.persistence.PersistenceContext;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
+import java.util.stream.IntStream;
 
 @Service
 @RequiredArgsConstructor
@@ -83,26 +86,34 @@ public class BasketService {
                 .map(PbePropertiesUtil::encodePropertiesString)
                 .orElse(null));
         basketEntity.setScript(basket.getScript());
-
         // basket assets
-        List<BasketAssetEntity> basketAssetEntities = basketEntity.getBasketAssets();
-        basketAssetEntities.clear();
-        int sort = 0;
-        for (BasketAsset basketAsset : basket.getBasketAssets()) {
+        basketEntity.getBasketAssets().clear();
+        IntStream.range(0, basket.getBasketAssets().size()).forEach(i -> {
+            BasketAsset basketAsset = basket.getBasketAssets().get(i);
             BasketAssetEntity basketAssetEntity = BasketAssetEntity.builder()
                     .basketId(basketEntity.getBasketId())
                     .assetId(basketAsset.getAssetId())
+                    .sort(i)
                     .fixed(basketAsset.isFixed())
                     .enabled(basketAsset.isEnabled())
                     .holdingWeight(basketAsset.getHoldingWeight())
                     .variables(Optional.ofNullable(basketAsset.getVariables())
                             .map(PbePropertiesUtil::encodePropertiesString)
                             .orElse(null))
-                    .sort(sort ++)
                     .build();
-            basketAssetEntities.add(basketAssetEntity);
+            basketEntity.getBasketAssets().add(basketAssetEntity);
+        });
+        // basket dividers
+        basketEntity.getBasketDividers().clear();
+        for (BasketDivider basketDivider : basket.getBasketDividers()) {
+            BasketDividerEntity basketDividerEntity = BasketDividerEntity.builder()
+                    .basketId(basketEntity.getBasketId())
+                    .dividerId(IdGenerator.uuid())
+                    .sort(basketDivider.getSort())
+                    .name(basketDivider.getName())
+                    .build();
+            basketEntity.getBasketDividers().add(basketDividerEntity);
         }
-
         // save
         BasketEntity savedBasketEntity = basketRepository.saveAndFlush(basketEntity);
         entityManager.refresh(savedBasketEntity);

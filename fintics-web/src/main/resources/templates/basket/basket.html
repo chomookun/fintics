@@ -13,7 +13,7 @@
             basketId: null,
             name: null,
             market: null,
-            basketAssets: []
+            basketItems: []
         });
 
         // checks authority
@@ -31,6 +31,19 @@
             _fetch(url)
                 .then(response => response.json())
                 .then(data => {
+                    // basket items
+                    data.basketItems = [];
+                    data.basketDividers.forEach(basketDivider => {
+                        basketDivider._type = 'basketDivider';
+                        data.basketItems.push(basketDivider);
+                    });
+                    data.basketAssets.forEach(basketAsset => {
+                        basketAsset._type = 'basketAsset';
+                        data.basketItems.push(basketAsset);
+                    });
+                    data.basketItems.sort((a, b) => {
+                        return (a.sort ?? Number.MAX_VALUE) - (b.sort ?? Number.MAX_VALUE);
+                    });
                     duice.ObjectProxy.assign(basket, data);
                 });
         }
@@ -41,15 +54,26 @@
          */
         async function addBasketAsset() {
             let disabledAssetIds = [];
-            basket.basketAssets.forEach(basketAsset => {
+            basket.basketItems.forEach(basketAsset => {
                 disabledAssetIds.push(basketAsset.assetId);
             });
             let selectedAssets = await assetSelectDialog.open(basket.market, disabledAssetIds);
             selectedAssets.forEach(asset => {
                 asset._new = true;
+                asset._type = 'basketAsset';
                 asset.enabled = false;
                 asset.holdingWeight = 0;
-                basket.basketAssets.push(asset);
+                basket.basketItems.push(asset);
+            });
+        }
+
+        /**
+         * Adds basket divider
+         */
+        function addBasketDivider() {
+            basket.basketItems.push({
+                _type: 'basketDivider',
+                name: null
             });
         }
 
@@ -58,7 +82,7 @@
          * @param index index
          */
         function removeBasketAsset(index) {
-            basket.basketAssets.splice(index, 1);
+            basket.basketItems.splice(index, 1);
         }
 
         /**
@@ -67,8 +91,8 @@
          */
         function moveBasketAssetToTop(index) {
             if (index === 0) return;
-            let basketAsset = basket.basketAssets.splice(index, 1)[0];
-            basket.basketAssets.unshift(basketAsset);
+            let basketAsset = basket.basketItems.splice(index, 1)[0];
+            basket.basketItems.unshift(basketAsset);
         }
 
         /**
@@ -76,9 +100,9 @@
          * @param index
          */
         function moveBasketAssetToBottom(index) {
-            if (index === basket.basketAssets.length - 1) return;
-            let basketAsset = basket.basketAssets.splice(index, 1)[0];
-            basket.basketAssets.push(basketAsset);
+            if (index === basket.basketItems.length - 1) return;
+            let basketAsset = basket.basketItems.splice(index, 1)[0];
+            basket.basketItems.push(basketAsset);
         }
 
         /**
@@ -99,6 +123,20 @@
             _confirm(/*[[#{web.global.saveItemConfirm(#{fintics.core.basket.Basket})}]]*/'')
                 .then(result => {
                     if (result) {
+                        // converts item to asset, divider
+                        let data = JSON.parse(JSON.stringify(basket));
+                        data.basketAssets = [];
+                        data.basketDividers = [];
+                        let sort = 0;
+                        data.basketItems.forEach(basketItem => {
+                            if (basketItem._type === 'basketAsset') {
+                                data.basketAssets.push(basketItem);
+                                sort ++;
+                            } else if (basketItem._type === 'basketDivider') {
+                                basketItem.sort = sort;
+                                data.basketDividers.push(basketItem);
+                            }
+                        });
                         let url;
                         let method;
                         if(!basketId) {
@@ -110,17 +148,14 @@
                         }
                         _fetch(new URL(url, document.location.origin), {
                             method: method,
-                            headers: {
-                                'Content-Type': 'application/json'
-                            },
-                            body: JSON.stringify(basket)
+                            headers: {'Content-Type': 'application/json'},
+                            body: JSON.stringify(data)
                         }).then(response => response.json())
                             .then(data => {
                                 _alert(/*[[#{web.global.saveItemComplete(#{fintics.core.basket.Basket})}]]*/'')
                                     .then(() => {
-                                        if(basket.basketId) {
-                                            duice.ObjectProxy.clear(basket);
-                                            duice.ObjectProxy.assign(basket, data);
+                                        if(data.basketId) {
+                                            getBasket(basket.basketId);
                                         }else{
                                             document.location.replace(`${_rootUrl}/basket?basketId=${data.basketId}`);
                                         }
@@ -257,9 +292,21 @@
                     </label>
                 </div>
                 <div class="grid-column--span-12">
-                    <div>
-                        <img class="icon font-size--large" th:src="@{/static/image/icon-asset.svg}" alt="asset"/>
-                        <span data-th-text="#{fintics.core.basket.BasketAsset}" class="font-weight--bold width--100"></span>
+                    <div class="display--flex justify-content--space-between">
+                        <div>
+                            <img class="icon font-size--large" th:src="@{/static/image/icon-asset.svg}" alt="asset"/>
+                            <span data-th-text="#{fintics.core.basket.BasketAsset}" class="font-weight--bold width--100"></span>
+                        </div>
+                        <div class="display--flex justify-content--end gap--1px">
+                            <button class="button" type="button" onclick="addBasketAsset();">
+                                <img class="icon" th:src="@{/static/image/icon-add.svg}" alt="add"/>
+                                <span data-th-text="#{fintics.core.basket.BasketAsset}"></span>
+                            </button>
+                            <button class="button" type="button" onclick="addBasketDivider();">
+                                <img class="icon" th:src="@{/static/image/icon-add.svg}" alt="add"/>
+                                <span data-th-text="#{fintics.core.basket.BasketDivider}"></span>
+                            </button>
+                        </div>
                     </div>
                     <div class="box overflow--auto">
                         <table class="table width--100 border--none">
@@ -280,12 +327,8 @@
                             </colgroup>
                             <thead>
                             <tr>
-                                <th class="text-align--center">
-                                    <button class="button" type="button" onclick="addBasketAsset();">
-                                        <img class="icon" th:src="@{/static/image/icon-add.svg}" alt="add"/>
-                                    </button>
-                                </th>
-                                <th data-th-text="#{web.global.no}"></th>
+                                <th class="text-align--center">-</th>
+                                <th>No</th>
                                 <th data-th-text="#{fintics.core.asset.Asset.symbol}"></th>
                                 <th data-th-text="#{fintics.core.asset.Asset.name}"></th>
                                 <th data-th-text="#{fintics.core.asset.Asset.exchange}"></th>
@@ -299,31 +342,32 @@
                                 <th>-</th>
                             </tr>
                             </thead>
-                            <tbody>
-                            <tr data-duice-bind="basket.basketAssets" data-duice-loop="basketAsset,status" data-duice-editable="true"
-                                data-duice-execute="if(basketAsset._new) this.classList.add('background-color--yellow');">
+                            <tbody data-duice-bind="basket.basketItems" data-duice-loop="basketItem,status" data-duice-editable="true"
+                                data-duice-execute="if(basketItem._new) this.classList.add('background-color--yellow');">
+                            <tr data-duice-bind="basketItem" data-duice-if="return basketItem._type==='basketAsset';">
                                 <td class="text-align--center">
                                     <button class="button" type="button"
-                                            data-duice-bind="basketAsset"
+                                            data-duice-bind="basketItem"
                                             data-duice-execute="this.dataset.index=status.index;"
                                             onclick="removeBasketAsset(this.dataset.index);">
                                         <img class="icon" th:src="@{/static/image/icon-remove.svg}" alt="remove"/>
                                     </button>
                                 </td>
                                 <td class="text-align--center">
-                                    <span data-duice-bind="status" data-duice-property="count"></span>
+                                    <span data-duice-bind="basketItem"
+                                          data-duice-execute="this.innerHTML = basket.basketItems.filter(it => it._type === 'basketAsset').findIndex(it => it.assetId === basketItem.assetId) + 1;" class="number"></span>
                                 </td>
                                 <td>
-                                    <img data-duice-bind="basketAsset" data-duice-execute="_applyAssetFavoriteIcon(this, basketAsset, true);" alt=""/>
-                                    <span data-duice-bind="basketAsset" data-duice-property="symbol" class="code font-weight--bold"></span>
+                                    <img data-duice-bind="basketItem" data-duice-execute="_applyAssetFavoriteIcon(this, basketItem, true);" alt=""/>
+                                    <span data-duice-bind="basketItem" data-duice-property="symbol" class="code font-weight--bold"></span>
                                 </td>
                                 <td class="white-space--nowrap overflow--hidden text-overflow--ellipsis">
-                                    <img class="icon border-radius--50 font-size--large" data-duice-bind="basketAsset" data-duice-property="icon" th:onerror="|this.src='@{/static/image/icon-asset.svg}';|" alt=""/>
+                                    <img class="icon border-radius--50 font-size--large" data-duice-bind="basketItem" data-duice-property="icon" th:onerror="|this.src='@{/static/image/icon-asset.svg}';|" alt=""/>
                                     &nbsp;
-                                    <span data-duice-bind="basketAsset" data-duice-property="name"
+                                    <span data-duice-bind="basketItem" data-duice-property="name"
                                         data-duice-execute="
-                                        this.dataset.assetId=basketAsset.assetId;
-                                         if (basketAsset.holdingWeight === 0 && basketAsset.enabled) {
+                                        this.dataset.assetId=basketItem.assetId;
+                                         if (basketItem.holdingWeight === 0 && basketItem.enabled) {
                                             this.style.fontStyle = 'italic';
                                             this.style.textDecoration = 'line-through';
                                         }
@@ -333,18 +377,18 @@
                                     &nbsp;
                                     <img class="icon font-size--smaller"
                                          th:src="@{/static/image/icon-pin.svg}"
-                                         data-duice-bind="basketAsset"
-                                         data-duice-if="return basketAsset.fixed" alt="fixed"/>
+                                         data-duice-bind="basketItem"
+                                         data-duice-if="return basketItem.fixed" alt="fixed"/>
                                     <img class="icon font-size--smaller"
                                          th:src="@{/static/image/icon-disabled.svg}"
-                                         data-duice-bind="basketAsset"
-                                         data-duice-if="return !basketAsset.enabled" alt="disabled"/>
+                                         data-duice-bind="basketItem"
+                                         data-duice-if="return !basketItem.enabled" alt="disabled"/>
                                 </td>
                                 <td class="text-align--center">
-                                    <span data-duice-bind="basketAsset" data-duice-property="exchange" class="badge"></span>
+                                    <span data-duice-bind="basketItem" data-duice-property="exchange" class="badge"></span>
                                 </td>
                                 <td class="text-align--center">
-                                    <span data-duice-bind="basketAsset" data-duice-property="type" class="badge"></span>
+                                    <span data-duice-bind="basketItem" data-duice-property="type" class="badge"></span>
                                 </td>
                                 <td>
                                     <div class="overflow-y--scroll box" style="line-height:1.5em; height:5em;">
@@ -356,51 +400,52 @@
                                             <tbody>
                                             <tr>
                                                 <td data-th-text="#{fintics.core.asset.Asset.price}"></td>
-                                                <td data-duice-bind="basketAsset" data-duice-property="price" data-duice-format="number()" class="text-align--right"></td>
+                                                <td data-duice-bind="basketItem" data-duice-property="price" data-duice-format="number()" class="text-align--right"></td>
                                             </tr>
                                             <tr>
                                                 <td data-th-text="#{fintics.core.asset.Asset.volume}"></td>
-                                                <td data-duice-bind="basketAsset" data-duice-property="volume" data-duice-format="number()" class="text-align--right"></td>
+                                                <td data-duice-bind="basketItem" data-duice-property="volume" data-duice-format="number()" class="text-align--right"></td>
                                             </tr>
                                             <tr>
                                                 <td data-th-text="#{fintics.core.asset.Asset.marketCap}"></td>
-                                                <td data-duice-bind="basketAsset" data-duice-property="marketCap" data-duice-format="number()" class="text-align--right"></td>
+                                                <td data-duice-bind="basketItem" data-duice-property="marketCap" data-duice-format="number()" class="text-align--right"></td>
                                             </tr>
-                                            <tr data-duice-bind="basketAsset" data-duice-if="return basketAsset.type==='STOCK'">
+                                            <tr data-duice-bind="basketItem" data-duice-if="return basketItem.type==='STOCK'">
                                                 <td data-th-text="#{fintics.core.asset.Asset.eps}"></td>
-                                                <td data-duice-bind="basketAsset" data-duice-property="eps" class="text-align--right"></td>
+                                                <td data-duice-bind="basketItem" data-duice-property="eps" class="text-align--right"></td>
                                             </tr>
-                                            <tr data-duice-bind="basketAsset" data-duice-if="return basketAsset.type==='STOCK'">
+                                            <tr data-duice-bind="basketItem" data-duice-if="return basketItem.type==='STOCK'">
                                                 <td data-th-text="#{fintics.core.asset.Asset.roe}"></td>
-                                                <td data-duice-bind="basketAsset" data-duice-property="roe" class="text-align--right"></td>
+                                                <td data-duice-bind="basketItem" data-duice-property="roe" class="text-align--right"></td>
                                             </tr>
-                                            <tr data-duice-bind="basketAsset" data-duice-if="return basketAsset.type==='STOCK'">
+                                            <tr data-duice-bind="basketItem" data-duice-if="return basketItem.type==='STOCK'">
                                                 <td data-th-text="#{fintics.core.asset.Asset.per}"></td>
-                                                <td data-duice-bind="basketAsset" data-duice-property="per" class="text-align--right"></td>
+                                                <td data-duice-bind="basketItem" data-duice-property="per" class="text-align--right"></td>
                                             </tr>
                                             <tr>
                                                 <td data-th-text="#{fintics.core.asset.Asset.dividendFrequency}"></td>
-                                                <td data-duice-bind="basketAsset" data-duice-property="dividendFrequency" class="text-align--right"></td>
+                                                <td data-duice-bind="basketItem" data-duice-property="dividendFrequency" class="text-align--right"></td>
                                             </tr>
                                             <tr>
                                                 <td data-th-text="#{fintics.core.asset.Asset.dividendYield}"></td>
-                                                <td data-duice-bind="basketAsset" data-duice-property="dividendYield" class="text-align--right"></td>
+                                                <td data-duice-bind="basketItem" data-duice-property="dividendYield" class="text-align--right"></td>
                                             </tr>
                                             <tr>
                                                 <td data-th-text="#{fintics.core.asset.Asset.capitalGain}"></td>
-                                                <td data-duice-bind="basketAsset" data-duice-property="capitalGain" class="text-align--right"></td>
+                                                <td data-duice-bind="basketItem" data-duice-property="capitalGain" class="text-align--right"></td>
                                             </tr>
                                             <tr>
                                                 <td data-th-text="#{fintics.core.asset.Asset.totalReturn}"></td>
-                                                <td data-duice-bind="basketAsset" data-duice-property="totalReturn" class="text-align--right"></td>
+                                                <td data-duice-bind="basketItem" data-duice-property="totalReturn" class="text-align--right"></td>
                                             </tr>
                                             </tbody>
                                         </table>
                                     </div>
                                 </td>
                                 <td class="text-align--center">
-                                    <select data-duice-bind="basketAsset"
-                                            data-duice-option="basketAsset.links"
+                                    <select data-duice-bind="basketItem"
+                                            data-duice-if="return !!basketItem.links"
+                                            data-duice-option="basketItem.links"
                                             data-duice-option-value-property="url"
                                             data-duice-option-text-property="name"
                                             onchange="_openLink(this.value, '_blank'); this.value = '';"
@@ -410,41 +455,74 @@
                                 </td>
                                 <td class="text-align--center">
                                     <label>
-                                        <input type="checkbox" data-duice-bind="basketAsset" data-duice-property="fixed"/>
+                                        <input type="checkbox" data-duice-bind="basketItem" data-duice-property="fixed"/>
                                     </label>
                                 </td>
                                 <td class="text-align--center">
                                     <label>
-                                        <input type="checkbox" data-duice-bind="basketAsset" data-duice-property="enabled"/>
+                                        <input type="checkbox" data-duice-bind="basketItem" data-duice-property="enabled"/>
                                     </label>
                                 </td>
                                 <td class="text-align--center">
                                     <label>
-                                        <input type="number" data-duice-bind="basketAsset" data-duice-property="holdingWeight" class="number width--50"/>%
+                                        <input type="number" data-duice-bind="basketItem" data-duice-property="holdingWeight" class="number width--50"/>%
                                     </label>
                                 </td>
                                 <td>
                                     <label class="display--flex">
-                                        <textarea data-duice-bind="basketAsset" data-duice-property="variables" class="width--100 height--100 code"></textarea>
+                                        <textarea data-duice-bind="basketItem" data-duice-property="variables" class="width--100 height--100 code"></textarea>
                                     </label>
                                 </td>
                                 <td class="display--flex flex-direction--column gap--1px">
                                     <button class="button" type="button"
-                                            data-duice-bind="basketAsset"
+                                            data-duice-bind="basketItem"
                                             data-duice-execute="this.dataset.index=status.index;"
                                             onclick="moveBasketAssetToTop(this.dataset.index);">
                                         <img class="icon" th:src="@{/static/image/icon-up.svg}" alt="up"/>
                                     </button>
                                     <button class="button" type="button"
-                                            data-duice-bind="basketAsset"
+                                            data-duice-bind="basketItem"
                                             data-duice-execute="this.dataset.index=status.index;"
                                             onclick="moveBasketAssetToBottom(this.dataset.index);">
                                         <img class="icon" th:src="@{/static/image/icon-down.svg}" alt="down"/>
                                     </button>
                                 </td>
                             </tr>
-                            <tr data-duice-bind="basket.basketAssets"
-                                data-duice-if="return basket.basketAssets.length === 0;" hidden>
+                            <tr data-duice-bind="basketItem" data-duice-if="return basketItem._type==='basketDivider';" style="background-color:var(--duice-table-tbody-hover-background);">
+                                <td class="text-align--center">
+                                    <button class="button" type="button"
+                                            data-duice-bind="basketItem"
+                                            data-duice-execute="this.dataset.index=status.index;"
+                                            onclick="removeBasketAsset(this.dataset.index);">
+                                        <img class="icon" th:src="@{/static/image/icon-remove.svg}" alt="remove"/>
+                                    </button>
+                                </td>
+<!--                                <td>-->
+<!--                                    <span data-duice-bind="basketItem" data-duice-property="sort" class="font-weight&#45;&#45;bold"></span>-->
+<!--                                </td>-->
+                                <td colspan="11">
+                                    <label>
+                                        <input type="text" data-duice-bind="basketItem" data-duice-property="name" class="width--100 border--none padding--1rem font-weight--bold"/>
+                                    </label>
+                                </td>
+                                <td class="display--flex flex-direction--column gap--1px">
+                                    <button class="button" type="button"
+                                            data-duice-bind="basketItem"
+                                            data-duice-execute="this.dataset.index=status.index;"
+                                            onclick="moveBasketAssetToTop(this.dataset.index);">
+                                        <img class="icon" th:src="@{/static/image/icon-up.svg}" alt="up"/>
+                                    </button>
+                                    <button class="button" type="button"
+                                            data-duice-bind="basketItem"
+                                            data-duice-execute="this.dataset.index=status.index;"
+                                            onclick="moveBasketAssetToBottom(this.dataset.index);">
+                                        <img class="icon" th:src="@{/static/image/icon-down.svg}" alt="down"/>
+                                    </button>
+                                </td>
+                            </tr>
+                            </tbody>
+                            <tbody data-duice-bind="basket.basketItems" data-duice-if="return basket.basketItems.length === 0;" hidden>
+                            <tr>
                                 <td colspan="100%" class="text-align--center">
                                     <span data-th-text="#{web.global.itemNotFound(#{fintics.core.basket.BasketAsset})}"></span>
                                 </td>
