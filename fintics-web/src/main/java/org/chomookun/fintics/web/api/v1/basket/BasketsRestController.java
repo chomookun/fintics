@@ -43,7 +43,6 @@ import java.util.stream.Collectors;
 @RestController
 @RequestMapping("/api/v1/baskets")
 @PreAuthorize("hasAuthority('api.baskets')")
-@Tag(name = "baskets", description = "Baskets")
 @RequiredArgsConstructor
 @Slf4j
 public class BasketsRestController {
@@ -53,7 +52,6 @@ public class BasketsRestController {
     private final BasketScriptRunnerFactory basketScriptRunnerFactory;
 
     @GetMapping
-    @Operation(summary = "get list of basket")
     public ResponseEntity<List<BasketResponse>> getBrokers(
             @RequestParam(value = "name", required = false)
             @Parameter(description = "basket name")
@@ -76,7 +74,6 @@ public class BasketsRestController {
     }
 
     @GetMapping("{basketId}")
-    @Operation(summary = "gets basket info")
     public ResponseEntity<BasketResponse> getBasket(
             @PathVariable("basketId")
             @Parameter(description = "basket id")
@@ -99,6 +96,7 @@ public class BasketsRestController {
         // basket
         Basket basket = Basket.builder()
                 .name(basketRequest.getName())
+                .sort(basketRequest.getSort())
                 .market(basketRequest.getMarket())
                 .rebalanceEnabled(basketRequest.isRebalanceEnabled())
                 .rebalanceSchedule(basketRequest.getRebalanceSchedule())
@@ -150,6 +148,7 @@ public class BasketsRestController {
         // basket
         Basket basket = basketService.getBasket(basketId).orElseThrow();
         basket.setName(basketRequest.getName());
+        basket.setSort(basketRequest.getSort());
         basket.setMarket(basketRequest.getMarket());
         basket.setRebalanceEnabled(basketRequest.isRebalanceEnabled());
         basket.setRebalanceSchedule(basketRequest.getRebalanceSchedule());
@@ -199,6 +198,17 @@ public class BasketsRestController {
     }
 
     /**
+     * Changes basket sort
+     * @param basketId basket id
+     * @param sort sort
+     */
+    @PatchMapping("{basketId}/sort")
+    public ResponseEntity<Void> changeBasketSort(@PathVariable("basketId") String basketId, @RequestParam("sort") Integer sort) {
+        basketService.changeBasketSort(basketId, sort);
+        return ResponseEntity.ok().build();
+    }
+
+    /**
      * test basket
      * @param basketRequest basket request
      * @return sse emitter
@@ -210,13 +220,11 @@ public class BasketsRestController {
             LoggerContext context = (LoggerContext) LoggerFactory.getILoggerFactory();
             Logger logger = (Logger) LoggerFactory.getLogger(this.getClass().getSimpleName());
             logger.setLevel(Level.DEBUG);
-
             // PatternLayout 생성 및 설정 (로그 메시지 형식 지정)
             PatternLayout layout = new PatternLayout();
             layout.setPattern("%msg%n");
             layout.setContext(context);
             layout.start();
-
             OutputStreamAppender<ILoggingEvent> appender = new OutputStreamAppender<>();
             appender.setContext(context);
             appender.setLayout(layout);
@@ -226,7 +234,6 @@ public class BasketsRestController {
             try {
                 // start logger
                 appender.start();
-
                 // creates basket rebalance runner
                 Basket basket = Basket.builder()
                         .language(basketRequest.getLanguage())
@@ -236,12 +243,10 @@ public class BasketsRestController {
                 BasketScriptRunner basketRebalanceRunner = basketScriptRunnerFactory.getObject(basket);
                 basketRebalanceRunner.setLog(logger);
                 List<BasketRebalanceAsset> basketRebalanceAssets = basketRebalanceRunner.run();
-
                 // prints results
                 TextTable textTable = TextTable.valueOf(basketRebalanceAssets);
                 logger.info("# Basket Rebalance Assets [{}]", basketRebalanceAssets.size());
                 logger.info("{}", textTable);
-
                 // Flush after logging to ensure logs are sent
                 outputStream.flush();
 
@@ -258,18 +263,6 @@ public class BasketsRestController {
         return ResponseEntity.ok()
                 .contentType(MediaType.TEXT_PLAIN)
                 .body(stream);
-    }
-
-    public static String toFullWidth(String text) {
-        StringBuilder sb = new StringBuilder();
-        for (char ch : text.toCharArray()) {
-            if (ch >= 33 && ch <= 126) { // 영문, 숫자, 특수문자 범위
-                sb.append((char) (ch + 0xFEE0)); // 전각 문자로 변환
-            } else {
-                sb.append(ch); // 한글 및 기타 문자는 그대로 유지
-            }
-        }
-        return sb.toString();
     }
 
 }

@@ -92,6 +92,7 @@ public class BrokersRestController {
     ) {
         Broker broker = Broker.builder()
                 .name(brokerRequest.getName())
+                .sort(brokerRequest.getSort())
                 .brokerClientId(brokerRequest.getBrokerClientId())
                 .brokerClientProperties(brokerRequest.getBrokerClientProperties())
                 .build();
@@ -119,6 +120,7 @@ public class BrokersRestController {
     ) {
         Broker broker = brokerService.getBroker(brokerId).orElseThrow();
         broker.setName(brokerRequest.getName());
+        broker.setSort(brokerRequest.getSort());
         broker.setBrokerClientId(brokerRequest.getBrokerClientId());
         broker.setBrokerClientProperties(brokerRequest.getBrokerClientProperties());
         Broker savedBroker = brokerService.saveBroker(broker);
@@ -139,6 +141,17 @@ public class BrokersRestController {
                     String brokerId
     ) {
         brokerService.deleteBroker(brokerId);
+        return ResponseEntity.ok().build();
+    }
+
+    /**
+     * Changes broker sort
+     * @param brokerId broker id
+     * @param sort sort
+     */
+    @PatchMapping("{brokerId}/sort")
+    public ResponseEntity<Void> changeBrokerSort(@PathVariable("brokerId") String brokerId, @RequestParam("sort") Integer sort) {
+        brokerService.changeBrokerSort(brokerId, sort);
         return ResponseEntity.ok().build();
     }
 

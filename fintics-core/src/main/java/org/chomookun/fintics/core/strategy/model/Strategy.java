@@ -17,6 +17,8 @@ public class Strategy {
 
     private String name;
 
+    private Integer sort;
+
     private Strategy.Language language;
 
     private String variables;
@@ -39,6 +41,7 @@ public class Strategy {
         return Strategy.builder()
                 .strategyId(strategyEntity.getStrategyId())
                 .name(strategyEntity.getName())
+                .sort(strategyEntity.getSort())
                 .language(strategyEntity.getLanguage())
                 .variables(strategyEntity.getVariables())
                 .script(strategyEntity.getScript())

@@ -16,6 +16,8 @@ public class BrokerRequest {
     @Schema(description = "name", example = "test broker")
     private String name;
 
+    private Integer sort;
+
     @Schema(description = "broker client id", example = "test")
     private String brokerClientId;
 

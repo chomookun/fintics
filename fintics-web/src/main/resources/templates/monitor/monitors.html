@@ -11,7 +11,6 @@
         Chart.defaults.font.size = 8;
         Chart.defaults.animation = false;
         const trades = new duice.ArrayProxy(/*[[${trades}]]*/[]);
-
         // creates monitor map
         const monitorMap = new Map();
         trades.forEach(trade => {
@@ -89,6 +88,8 @@
                             data.basketItems.sort((a, b) => {
                                 return (a.sort ?? Number.MAX_VALUE) - (b.sort ?? Number.MAX_VALUE);
                             });
+                            delete data.basketDividers;
+                            delete data.basketAssets;
                             duice.ObjectProxy.assign(this.basket, data);
                         })
                         .finally(() => {
@@ -101,7 +102,8 @@
                 getDailyOhlcvsChart: function() {
                     this.dailyOhlcvsChart.options.scales.x.max = new Date();
                     this.dailyOhlcvsChart.data.datasets.length = 0;
-                    const promises = this.basket.basketAssets
+                    const promises = this.basket.basketItems
+                        .filter(it => it._type === 'basketAsset')
                         .map(async basketAsset => {
                             let url = new URL(`${_apiUrl}/v1/ohlcvs/${basketAsset.assetId}/daily`, document.location.origin);
                             return _fetch(url, null, true)
@@ -128,7 +130,8 @@
                     this.minuteOhlcvsChart.options.scales.x.max = new Date();
                     this.minuteOhlcvsChart.data.datasets.length = 0;
                     // daily
-                    const promises = this.basket.basketAssets
+                    const promises = this.basket.basketItems
+                        .filter(it => it._type === 'basketAsset')
                         .map(async basketAsset => {
                             let url = new URL(`${_apiUrl}/v1/ohlcvs/${basketAsset.assetId}/minute`, document.location.origin);
                             return _fetch(url, null, true)
@@ -682,7 +685,7 @@
                         </tr>
                         </tbody>
                         <tbody th:data-duice-bind="|monitorMap.get('${trade.tradeId}').basket|"
-                               th:data-duice-if="|return monitorMap.get('${trade.tradeId}').basket._status == 'completed' && monitorMap.get('${trade.tradeId}').basket.basketAssets.length < 1|" hidden>
+                               th:data-duice-if="|return monitorMap.get('${trade.tradeId}').basket._status == 'completed' && monitorMap.get('${trade.tradeId}').basket.basketItems.length < 1|" hidden>
                         <tr>
                             <td colspan="100%" class="text-align--center padding--1rem">
                                 <span data-th-text="#{web.global.itemNotFound(#{fintics.core.basket.BasketAsset})}"></span>

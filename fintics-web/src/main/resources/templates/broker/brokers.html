@@ -21,6 +21,13 @@
             brokerId: null,
             name: null
         });
+        // On brokers item moved
+        duice.ArrayProxy.onItemMoved(brokers, event => {
+            let broker = brokers[event.toIndex];
+            let sort = parseInt(brokerSearch._page) * parseInt(brokerSearch._size) + event.toIndex;
+            changeBrokerSort(broker.brokerId, sort);
+        });
+        // On broker property changed
         duice.ObjectProxy.onPropertyChanged(broker, event => {
             if(event.getProperty() === 'brokerClientId') {
                 let brokerClientId = event.getValue();
@@ -29,7 +36,6 @@
                     ?.propertiesTemplate;
             }
         });
-
         // checks authority
         let hasBrokersEditAuthority = /*[[${#authorization.expression('hasAuthority(''brokers.edit'')')}]]*/false;
         if (!hasBrokersEditAuthority) {
@@ -161,6 +167,41 @@
             });
         }
 
+        /**
+         * Moves broker sort up
+         * @param index
+         */
+        function moveBrokerSortUp(index) {
+            let broker = brokers[parseInt(index)];
+            changeBrokerSort(broker.brokerId, broker.sort - 1);
+        }
+
+        /**
+         * Moves broker sort down
+         * @param index
+         */
+        function moveBrokerSortDown(index) {
+            let broker = brokers[parseInt(index)];
+            changeBrokerSort(broker.brokerId, broker.sort + 1);
+        }
+
+        /**
+         * Changes broker sort
+         * @param brokerId broker id
+         * @param sort sort
+         */
+        function changeBrokerSort(brokerId, sort) {
+            let url = new URL(`${_apiUrl}/v1/brokers/${brokerId}/sort`, document.location.origin);
+            url.searchParams.set('sort', sort);
+            _fetch(url, {
+                method: 'PATCH'
+            }).then(response => {
+                if (response.ok) {
+                    getBrokers();
+                }
+            })
+        }
+
         // DOM content loaded listener
         document.addEventListener('DOMContentLoaded',()=> {
             getBrokers();
@@ -224,17 +265,20 @@
                             <colgroup>
                                 <col style="width:5rem;"/>
                                 <col/>
+                                <col style="width:5rem;"/>
                             </colgroup>
                             <thead>
                             <tr>
                                 <th data-th-text="#{web.global.no}" class="text-align--center"></th>
                                 <th data-th-text="#{fintics.core.broker.Broker.name}"></th>
+                                <th>-</th>
                             </tr>
                             </thead>
                             <tbody>
                             <tr data-duice-bind="brokers" data-duice-loop="broker,status"
                                 data-duice-selected-item-class="selected"
                                 data-duice-execute="this.dataset.brokerId=broker.brokerId;"
+                                data-duice-editable="true"
                                 onclick="getBroker(this.dataset.brokerId);"
                                 class="cursor--pointer">
                                 <td class="text-align--center">
@@ -242,6 +286,22 @@
                                 </td>
                                 <td>
                                     <span data-duice-bind="broker" data-duice-property="name" class="font-weight--bold"></span>
+                                </td>
+                                <td>
+                                    <div class="display--flex gap--1px">
+                                        <button type="button"
+                                                data-duice-bind="broker"
+                                                data-duice-execute="this.dataset.index = status.index;"
+                                                onclick="moveBrokerSortUp(this.dataset.index);">
+                                            <img class="icon" th:src="@{/static/image/icon-up.svg}" alt="up"/>
+                                        </button>
+                                        <button type="button"
+                                                data-duice-bind="broker"
+                                                data-duice-execute="this.dataset.index = status.index;"
+                                                onclick="moveBrokerSortDown(this.dataset.index);">
+                                            <img class="icon" th:src="@{/static/image/icon-down.svg}" alt="down"/>
+                                        </button>
+                                    </div>
                                 </td>
                             </tr>
                             <tr data-duice-bind="brokerSearch"

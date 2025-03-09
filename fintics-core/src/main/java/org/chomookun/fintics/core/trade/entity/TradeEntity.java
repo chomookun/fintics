@@ -31,6 +31,9 @@ public class TradeEntity extends BaseEntity {
     @Column(name = "name")
     private String name;
 
+    @Column(name = "sort")
+    private Integer sort;
+
     @Column(name = "enabled", length = 1)
     @Convert(converter = BooleanConverter.class)
     private boolean enabled;

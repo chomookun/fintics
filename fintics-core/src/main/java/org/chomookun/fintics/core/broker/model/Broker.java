@@ -16,6 +16,8 @@ public class Broker {
 
     private String name;
 
+    private Integer sort;
+
     private String brokerClientId;
 
     private String brokerClientProperties;
@@ -35,6 +37,7 @@ public class Broker {
         return Broker.builder()
                 .brokerId(brokerEntity.getBrokerId())
                 .name(brokerEntity.getName())
+                .sort(brokerEntity.getSort())
                 .brokerClientId(brokerEntity.getBrokerClientId())
                 .brokerClientProperties(brokerEntity.getBrokerClientProperties())
                 .build();
