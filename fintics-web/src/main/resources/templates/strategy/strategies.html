@@ -16,6 +16,12 @@
             _status: null
         });
         const strategies = new duice.ArrayProxy([]);
+        // On strategy item moved
+        duice.ArrayProxy.onItemMoved(strategies, event => {
+            let strategy = strategies[event.toIndex];
+            let sort = parseInt(strategySearch._page) * parseInt(strategySearch._size) + event.toIndex;
+            changeStrategySort(strategy.strategyId, sort);
+        });
 
         /**
          * gets strategies
@@ -50,6 +56,41 @@
         function resetStrategies() {
             duice.ObjectProxy.reset(strategySearch);
             getStrategies();
+        }
+
+        /**
+         * Moves strategy sort up
+         * @param index
+         */
+        function moveStrategySortUp(index) {
+            let strategy = strategies[parseInt(index)];
+            changeStrategySort(strategy.strategyId, strategy.sort - 1);
+        }
+
+        /**
+         * Moves strategy sort down
+         * @param index
+         */
+        function moveStrategySortDown(index) {
+            let strategy = strategies[parseInt(index)];
+            changeStrategySort(strategy.strategyId, strategy.sort + 1);
+        }
+
+        /**
+         * Changes strategy sort
+         * @param strategyId strategy id
+         * @param sort sort
+         */
+        function changeStrategySort(strategyId, sort) {
+            let url = new URL(`${_apiUrl}/v1/strategies/${strategyId}/sort`, document.location.origin);
+            url.searchParams.set('sort', sort);
+            _fetch(url, {
+                method: 'PATCH'
+            }).then(response => {
+                if (response.ok) {
+                    getStrategies();
+                }
+            })
         }
 
         /**
@@ -137,16 +178,20 @@
                         <col style="width:5rem;"/>
                         <col/>
                         <col style="width:20rem;"/>
+                        <col style="width:5rem;"/>
                     </colgroup>
                     <thead>
                     <tr>
                         <th data-th-text="#{web.global.no}" class="text-align--center"></th>
                         <th data-th-text="#{fintics.core.strategy.Strategy.name}"></th>
                         <th data-th-text="#{fintics.core.strategy.Strategy.language}" class="text-align--center"></th>
+                        <th>-</th>
                     </tr>
                     </thead>
                     <tbody>
-                    <tr data-duice-bind="strategies" data-duice-loop="strategy,status">
+                    <tr data-duice-bind="strategies"
+                        data-duice-loop="strategy,status"
+                        data-duice-editable="true">
                         <td class="text-align--center">
                             <span data-duice-bind="status"
                                   data-duice-execute="this.innerHTML = (strategySearch._size * strategySearch._page + status.count);"
@@ -160,6 +205,22 @@
                         </td>
                         <td class="text-align--center">
                             <span data-duice-bind="strategy" data-duice-property="language" class="badge code"></span>
+                        </td>
+                        <td>
+                            <div class="display--flex gap--1px">
+                                <button type="button"
+                                        data-duice-bind="strategy"
+                                        data-duice-execute="this.dataset.index = status.index;"
+                                        onclick="moveStrategySortUp(this.dataset.index);">
+                                    <img class="icon" th:src="@{/static/image/icon-up.svg}" alt="up"/>
+                                </button>
+                                <button type="button"
+                                        data-duice-bind="strategy"
+                                        data-duice-execute="this.dataset.index = status.index;"
+                                        onclick="moveStrategySortDown(this.dataset.index);">
+                                    <img class="icon" th:src="@{/static/image/icon-down.svg}" alt="down"/>
+                                </button>
+                            </div>
                         </td>
                     </tr>
                     <tr data-duice-bind="strategySearch" data-duice-if="return strategySearch._status === 'loading';">

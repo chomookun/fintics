@@ -16,6 +16,8 @@ public class BrokerResponse {
 
     private String name;
 
+    private Integer sort;
+
     private String brokerClientId;
 
     private String brokerClientProperties;
@@ -30,6 +32,7 @@ public class BrokerResponse {
         return BrokerResponse.builder()
                 .brokerId(broker.getBrokerId())
                 .name(broker.getName())
+                .sort(broker.getSort())
                 .brokerClientId(broker.getBrokerClientId())
                 .brokerClientProperties(broker.getBrokerClientProperties())
                 .market(broker.getMarket())

@@ -27,6 +27,10 @@ public class StrategyEntity extends BaseEntity {
     @Comment("Name")
     private String name;
 
+    @Column(name = "sort")
+    @Comment("sort")
+    private Integer sort;
+
     @Column(name = "language", length = 16)
     @Convert(converter = LanguageConverter.class)
     @Comment("Language")

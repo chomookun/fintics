@@ -20,6 +20,8 @@ public class TradeRequest {
     @Schema(description = "name", example = "test trade")
     private String name;
 
+    private Integer sort;
+
     @Schema(description = "enabled", example = "false")
     private boolean enabled;
 

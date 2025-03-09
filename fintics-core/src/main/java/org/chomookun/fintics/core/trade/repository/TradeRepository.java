@@ -8,6 +8,7 @@ import org.springframework.data.domain.*;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.JpaSpecificationExecutor;
+import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.stereotype.Repository;
 
@@ -16,35 +17,58 @@ import java.util.List;
 @Repository
 public interface TradeRepository extends JpaRepository<TradeEntity,String>, JpaSpecificationExecutor<TradeEntity> {
 
-    @Query("select a from TradeEntity a" +
-            " order by a.name")
-    List<TradeEntity> findAllOrderByName();
-
+    /**
+     * Finds all by trade search
+     * @param tradeSearch trade search
+     * @param pageable pageable
+     * @return page of trade entities
+     */
     default Page<TradeEntity> findAll(TradeSearch tradeSearch, Pageable pageable) {
+        // specification
         Specification<TradeEntity> specification = Specification.where(null);
-        // name
         if (tradeSearch.getName() != null) {
             specification = specification.and((root, query, criteriaBuilder) ->
                     criteriaBuilder.like(root.get(TradeEntity_.NAME), '%' + tradeSearch.getName() + '%'));
         }
         // sort
-        Sort sort = pageable.getSort().isSorted()
-                ? pageable.getSort()
-                : Sort.by(Sort.Direction.ASC, BrokerEntity_.NAME);
+        Sort sort = pageable.getSort()
+                .and(Sort.by(TradeEntity_.SORT).ascending())
+                .and(Sort.by(TradeEntity_.NAME).ascending());
         // find
-        if (pageable.isPaged()) {
-            pageable = PageRequest.of(pageable.getPageNumber(), pageable.getPageSize(), sort);
-            return findAll(specification, pageable);
-        } else {
-            List<TradeEntity> tradeEntities = findAll(specification, sort);
-            return new PageImpl<>(tradeEntities);
-        }
+        Pageable finalPageable = pageable.isUnpaged()
+                ? Pageable.unpaged(sort)
+                : PageRequest.of(pageable.getPageNumber(), pageable.getPageSize(), sort);
+        return findAll(specification, finalPageable);
     }
 
+    /**
+     * Find all by basket id
+     * @param basketId basket id
+     * @return list of trade entities
+     */
     List<TradeEntity> findAllByBasketId(String basketId);
 
+    /**
+     * Finds all by strategy id
+     * @param strategyId strategy id
+     * @return list of trade entities
+     */
     List<TradeEntity> findAllByStrategyId(String strategyId);
 
+    /**
+     * Finds all by broker id
+     * @param brokerId broker id
+     * @return list of trade entities
+     */
     List<TradeEntity> findAllByBrokerId(String brokerId);
+
+    /**
+     * Updates sort
+     * @param tradeId trade id
+     * @param sort sort
+     */
+    @Modifying
+    @Query("update TradeEntity t set t.sort = :sort where t.tradeId= :tradeId")
+    void updateSort(String tradeId, Integer sort);
 
 }

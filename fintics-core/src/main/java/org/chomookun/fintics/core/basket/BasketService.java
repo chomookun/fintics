@@ -22,6 +22,7 @@ import org.springframework.transaction.annotation.Transactional;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.PersistenceContext;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
@@ -75,9 +76,11 @@ public class BasketService {
                     .basketId(IdGenerator.uuid())
                     .build();
         } else {
-            basketEntity = basketRepository.findById(basket.getBasketId()).orElseThrow();
+            basketEntity = basketRepository.findById(basket.getBasketId())
+                    .orElseThrow();
         }
         basketEntity.setName(basket.getName());
+        basketEntity.setSort(basket.getSort());
         basketEntity.setMarket(basket.getMarket());
         basketEntity.setRebalanceEnabled(basket.isRebalanceEnabled());
         basketEntity.setRebalanceSchedule(basket.getRebalanceSchedule());
@@ -120,18 +123,55 @@ public class BasketService {
         return Basket.from(savedBasketEntity);
     }
 
+    /**
+     * Deletes basket
+     * @param basketId basket id
+     */
     @Transactional
     public void deleteBasket(String basketId) {
         BasketEntity basketEntity = basketRepository.findById(basketId).orElseThrow();
-
         // checks referenced by trade
         if (!tradeRepository.findAllByBasketId(basketEntity.getBasketId()).isEmpty()) {
             throw new DataIntegrityViolationException("Referenced by existing trade");
         }
-
         // deletes
         basketRepository.delete(basketEntity);
         basketRepository.flush();
+    }
+
+    /**
+     * Updates basket sort
+     * @param basketId basket id
+     * @param sort sort
+     */
+    @Transactional
+    public void changeBasketSort(String basketId, Integer sort) {
+        BasketEntity basketEntity = basketRepository.findById(basketId).orElseThrow();
+        int originSort = Optional.ofNullable(basketEntity.getSort()).orElse(Integer.MAX_VALUE);
+        double finalSort = sort;
+        // up
+        if (sort < originSort) {
+            finalSort = sort - 0.5;
+        }
+        // down
+        if (sort > originSort) {
+            finalSort = sort + 0.5;
+        }
+        // sort
+        Map<String,Double> basketSorts = basketRepository.findAll().stream()
+                .collect(Collectors.toMap(BasketEntity::getBasketId, it ->
+                        Optional.ofNullable(it.getSort())
+                                .map(Double::valueOf)
+                                .orElse(Double.MAX_VALUE)));
+        basketSorts.put(basketId, finalSort);
+        List<String> sortedBasketIds = basketSorts.entrySet().stream()
+                .sorted(Map.Entry.comparingByValue())
+                .map(Map.Entry::getKey)
+                .toList();
+        // updates
+        for (int i = 0; i < sortedBasketIds.size(); i++) {
+            basketRepository.updateSort(sortedBasketIds.get(i), i);
+        }
     }
 
 }

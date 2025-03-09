@@ -7,6 +7,8 @@ import org.springframework.data.domain.*;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.JpaSpecificationExecutor;
+import org.springframework.data.jpa.repository.Modifying;
+import org.springframework.data.jpa.repository.Query;
 import org.springframework.stereotype.Repository;
 
 import java.util.List;
@@ -29,12 +31,23 @@ public interface BasketRepository extends JpaRepository<BasketEntity, String>, J
             );
         }
         // sort
-        Sort sort = pageable.getSort().and(Sort.by(BasketEntity_.NAME).ascending());
+        Sort sort = pageable.getSort()
+                .and(Sort.by(BasketEntity_.SORT).ascending())
+                .and(Sort.by(BasketEntity_.NAME).ascending());
+        // finds all
         Pageable finalPageable = pageable.isUnpaged()
                 ? Pageable.unpaged(sort)
                 : PageRequest.of(pageable.getPageNumber(), pageable.getPageSize(), sort);
-        // finds all
         return findAll(specification, finalPageable);
     }
+
+    /**
+     * Updates sort
+     * @param basketId basket id
+     * @param sort sort
+     */
+    @Modifying
+    @Query("update BasketEntity b set b.sort = :sort where b.basketId = :basketId")
+    void updateSort(String basketId, Integer sort);
 
 }

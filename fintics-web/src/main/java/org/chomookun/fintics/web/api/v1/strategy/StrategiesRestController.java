@@ -93,6 +93,7 @@ public class StrategiesRestController {
     ) {
         Strategy strategy = Strategy.builder()
                 .name(strategyRequest.getName())
+                .sort(strategyRequest.getSort())
                 .language(strategyRequest.getLanguage())
                 .variables(strategyRequest.getVariables())
                 .script(strategyRequest.getScript())
@@ -121,6 +122,7 @@ public class StrategiesRestController {
     ) {
         Strategy strategy = strategyService.getStrategy(strategyId).orElseThrow();
         strategy.setName(strategyRequest.getName());
+        strategy.setSort(strategyRequest.getSort());
         strategy.setLanguage(strategyRequest.getLanguage());
         strategy.setVariables(strategyRequest.getVariables());
         strategy.setScript(strategyRequest.getScript());
@@ -142,6 +144,17 @@ public class StrategiesRestController {
                     String strategyId
     ) {
         strategyService.deleteStrategy(strategyId);
+    }
+
+    /**
+     * Changes strategy sort
+     * @param strategyId strategy id
+     * @param sort sort
+     */
+    @PatchMapping("{strategyId}/sort")
+    public ResponseEntity<Void> changeStrategySort(@PathVariable("strategyId") String strategyId, @RequestParam("sort") Integer sort) {
+        strategyService.changeStrategySort(strategyId, sort);
+        return ResponseEntity.ok().build();
     }
 
 }

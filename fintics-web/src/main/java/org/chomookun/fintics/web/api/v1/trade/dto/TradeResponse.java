@@ -17,6 +17,8 @@ public class TradeResponse {
 
     private String name;
 
+    private Integer sort;
+
     private boolean enabled;
 
     private Integer interval;
@@ -53,6 +55,7 @@ public class TradeResponse {
         return TradeResponse.builder()
                 .tradeId(trade.getTradeId())
                 .name(trade.getName())
+                .sort(trade.getSort())
                 .enabled(trade.isEnabled())
                 .interval(trade.getInterval())
                 .threshold(trade.getThreshold())

@@ -7,6 +7,8 @@ import org.springframework.data.domain.*;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.JpaSpecificationExecutor;
+import org.springframework.data.jpa.repository.Modifying;
+import org.springframework.data.jpa.repository.Query;
 import org.springframework.stereotype.Repository;
 
 import java.util.List;
@@ -29,12 +31,23 @@ public interface StrategyRepository extends JpaRepository<StrategyEntity, String
                     criteriaBuilder.like(root.get(StrategyEntity_.NAME), '%' + strategySearch.getName() + '%'));
         }
         // sort
-        Sort sort = Sort.by(StrategyEntity_.NAME).ascending();
+        Sort sort = pageable.getSort()
+                .and(Sort.by(StrategyEntity_.SORT).ascending())
+                .and(Sort.by(StrategyEntity_.NAME).ascending());
+        // find all
         Pageable finalPageable = pageable.isUnpaged()
                 ? Pageable.unpaged(sort)
                 : PageRequest.of(pageable.getPageNumber(), pageable.getPageSize(), sort);
-        // find all
         return findAll(specification, finalPageable);
     }
+
+    /**
+     * Updates sort
+     * @param strategyId strategy id
+     * @param sort sort
+     */
+    @Modifying
+    @Query("update StrategyEntity s set s.sort = :sort where s.strategyId = :strategyId")
+    void updateSort(String strategyId, Integer sort);
 
 }

@@ -44,6 +44,8 @@
                     data.basketItems.sort((a, b) => {
                         return (a.sort ?? Number.MAX_VALUE) - (b.sort ?? Number.MAX_VALUE);
                     });
+                    delete data.basketDividers;
+                    delete data.basketAssets;
                     duice.ObjectProxy.assign(basket, data);
                 });
         }
@@ -154,7 +156,7 @@
                             .then(data => {
                                 _alert(/*[[#{web.global.saveItemComplete(#{fintics.core.basket.Basket})}]]*/'')
                                     .then(() => {
-                                        if(data.basketId) {
+                                        if(basket.basketId) {
                                             getBasket(basket.basketId);
                                         }else{
                                             document.location.replace(`${_rootUrl}/basket?basketId=${data.basketId}`);

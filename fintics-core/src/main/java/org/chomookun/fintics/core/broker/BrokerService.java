@@ -17,7 +17,9 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -88,6 +90,7 @@ public class BrokerService {
                     .orElseThrow();
         }
         brokerEntity.setName(broker.getName());
+        brokerEntity.setSort(broker.getSort());
         brokerEntity.setBrokerClientId(broker.getBrokerClientId());
         brokerEntity.setBrokerClientProperties(Optional.ofNullable(broker.getBrokerClientProperties())
                 .map(PbePropertiesUtil::encodePropertiesString)
@@ -110,6 +113,36 @@ public class BrokerService {
         // deletes
         brokerRepository.delete(brokerEntity);
         brokerRepository.flush();
+    }
+
+    @Transactional
+    public void changeBrokerSort(String brokerId, Integer sort) {
+        BrokerEntity brokerEntity = brokerRepository.findById(brokerId).orElseThrow();
+        int originSort = Optional.ofNullable(brokerEntity.getSort()).orElse(Integer.MAX_VALUE);
+        double finalSort = sort;
+        // up
+        if (sort < originSort) {
+            finalSort = sort - 0.5;
+        }
+        // down
+        if (sort > originSort) {
+            finalSort = sort + 0.5;
+        }
+        // sorts
+        Map<String,Double> brokerSorts = brokerRepository.findAll().stream()
+                .collect(Collectors.toMap(BrokerEntity::getBrokerId, it ->
+                        Optional.ofNullable(it.getSort())
+                                .map(Double::valueOf)
+                                .orElse(Double.MAX_VALUE)));
+        brokerSorts.put(brokerId, finalSort);
+        List<String> sortedBrokerIds = brokerSorts.entrySet().stream()
+                .sorted(Map.Entry.comparingByValue())
+                .map(Map.Entry::getKey)
+                .toList();
+        // updates
+        for (int i = 0; i < sortedBrokerIds.size(); i++) {
+            brokerRepository.updateSort(sortedBrokerIds.get(i), i);
+        }
     }
 
 }

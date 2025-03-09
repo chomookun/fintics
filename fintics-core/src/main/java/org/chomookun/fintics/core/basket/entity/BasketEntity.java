@@ -31,6 +31,10 @@ public class BasketEntity extends BaseEntity {
     @Comment("Name")
     private String name;
 
+    @Column(name = "sort")
+    @Comment("Sort")
+    private Integer sort;
+
     @Column(name = "market", length = 16)
     @Comment("Market")
     private String market;

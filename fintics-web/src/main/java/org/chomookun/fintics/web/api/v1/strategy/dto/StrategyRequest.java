@@ -11,19 +11,16 @@ import org.chomookun.fintics.core.strategy.model.Strategy;
 @Schema(description = "strategy request")
 public class StrategyRequest {
 
-    @Schema(description = "strategy id")
     private String strategyId;
 
-    @Schema(description = "name")
     private String name;
 
-    @Schema(description = "language")
+    private Integer sort;
+
     private Strategy.Language language;
 
-    @Schema(description = "variables")
     private String variables;
 
-    @Schema(description = "script")
     private String script;
 
 }

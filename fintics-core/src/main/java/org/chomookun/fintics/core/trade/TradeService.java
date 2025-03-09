@@ -24,6 +24,7 @@ import org.chomookun.fintics.core.order.repository.OrderRepository;
 import org.chomookun.fintics.core.order.OrderService;
 import org.chomookun.fintics.core.trade.entity.TradeAssetEntity;
 import org.chomookun.fintics.core.trade.entity.TradeEntity;
+import org.chomookun.fintics.core.trade.entity.TradeEntity_;
 import org.chomookun.fintics.core.trade.model.Trade;
 import org.chomookun.fintics.core.trade.model.TradeAsset;
 import org.chomookun.fintics.core.trade.model.TradeSearch;
@@ -36,10 +37,9 @@ import org.springframework.transaction.annotation.Transactional;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.PersistenceContext;
 import java.math.BigDecimal;
-import java.util.List;
-import java.util.Objects;
-import java.util.Optional;
+import java.util.*;
 import java.util.stream.Collectors;
+import java.util.stream.IntStream;
 
 @Service
 @RequiredArgsConstructor
@@ -108,6 +108,7 @@ public class TradeService {
                     .build();
         }
         tradeEntity.setName(trade.getName());
+        tradeEntity.setSort(trade.getSort());
         tradeEntity.setEnabled(trade.isEnabled());
         tradeEntity.setInterval(trade.getInterval());
         tradeEntity.setThreshold(trade.getThreshold());
@@ -126,7 +127,6 @@ public class TradeService {
         tradeEntity.setAlarmId(trade.getAlarmId());
         tradeEntity.setAlarmOnError(trade.isAlarmOnError());
         tradeEntity.setAlarmOnOrder(trade.isAlarmOnOrder());
-
         // save and return
         TradeEntity savedTradeEntity = tradeRepository.saveAndFlush(tradeEntity);
         entityManager.refresh(savedTradeEntity);
@@ -142,6 +142,43 @@ public class TradeService {
         tradeAssetRepository.deleteByTradeId(tradeId);
         tradeRepository.deleteById(tradeId);
         tradeRepository.flush();
+    }
+
+    /**
+     * Changes trade sort
+     * @param tradeId trade id
+     * @param sort sort
+     */
+    @Transactional
+    public void changeTradeSort(String tradeId, Integer sort) {
+        TradeEntity tradeEntity = tradeRepository.findById(tradeId).orElseThrow();
+        double finalSort = sort;
+        // up
+        if (sort < tradeEntity.getSort()) {
+            finalSort = sort - 0.5;
+        }
+        // down
+        if (sort > tradeEntity.getSort()) {
+            finalSort = sort + 0.5;
+        }
+        // updates sort
+        List<TradeEntity> tradeEntities = tradeRepository.findAll();
+        Map<String, Double> tradeSorts = new HashMap<>();
+        for (TradeEntity tradeEntity1 : tradeEntities) {
+            if (tradeEntity1.getTradeId().equals(tradeId)) {
+                tradeSorts.put(tradeEntity1.getTradeId(), finalSort);
+            } else {
+                tradeSorts.put(tradeEntity1.getTradeId(), (double) tradeEntity1.getSort());
+            }
+        }
+        List<String> sortedTradeIds = tradeSorts.entrySet().stream()
+                .sorted(Map.Entry.comparingByValue())
+                .map(Map.Entry::getKey)
+                .toList();
+        // updates
+        for (int i = 0; i < sortedTradeIds.size(); i++) {
+            tradeRepository.updateSort(sortedTradeIds.get(i), i);
+        }
     }
 
     /**

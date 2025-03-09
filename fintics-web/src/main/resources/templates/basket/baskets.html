@@ -17,6 +17,12 @@
         });
         const baskets = new duice.ArrayProxy([]);
         duice.ArrayProxy.setReadonlyAll(baskets, true);
+        // On brokers item moved
+        duice.ArrayProxy.onItemMoved(baskets, event => {
+            let basket = baskets[event.toIndex];
+            let sort = parseInt(basketSearch._page) * parseInt(basketSearch._size) + event.toIndex;
+            changeBasketSort(basket.basketId, sort);
+        });
 
         /**
          * gets baskets
@@ -51,6 +57,41 @@
         function resetBaskets() {
             duice.ObjectProxy.reset(basketSearch);
             getBaskets();
+        }
+
+        /**
+         * Moves basket sort up
+         * @param index
+         */
+        function moveBasketSortUp(index) {
+            let basket = baskets[parseInt(index)];
+            changeBasketSort(basket.basketId, basket.sort - 1);
+        }
+
+        /**
+         * Moves basket sort down
+         * @param index
+         */
+        function moveBasketSortDown(index) {
+            let basket = baskets[parseInt(index)];
+            changeBasketSort(basket.basketId, basket.sort + 1);
+        }
+
+        /**
+         * Changes basket sort
+         * @param basketId basket id
+         * @param sort sort
+         */
+        function changeBasketSort(basketId, sort) {
+            let url = new URL(`${_apiUrl}/v1/baskets/${basketId}/sort`, document.location.origin);
+            url.searchParams.set('sort', sort);
+            _fetch(url, {
+                method: 'PATCH'
+            }).then(response => {
+                if (response.ok) {
+                    getBaskets();
+                }
+            })
         }
 
         /**
@@ -142,6 +183,7 @@
                         <col/>
                         <col/>
                         <col/>
+                        <col style="width:5rem;"/>
                     </colgroup>
                     <thead>
                     <tr>
@@ -152,10 +194,13 @@
                         <th data-th-text="#{fintics.core.basket.Basket.rebalanceEnabled}"></th>
                         <th data-th-text="#{fintics.core.basket.Basket.rebalanceSchedule}"></th>
                         <th data-th-text="#{fintics.core.basket.Basket.language}"></th>
+                        <th>-</th>
                     </tr>
                     </thead>
                     <tbody>
-                    <tr data-duice-bind="baskets" data-duice-loop="basket,status">
+                    <tr data-duice-bind="baskets"
+                        data-duice-loop="basket,status"
+                        data-duice-editable="true">
                         <td class="text-align--center">
                             <span data-duice-bind="status"
                                   data-duice-execute="this.innerHTML = (basketSearch._size * basketSearch._page) + status.count;"
@@ -181,6 +226,22 @@
                         </td>
                         <td class="text-align--center">
                             <span data-duice-bind="basket" data-duice-property="language" class="badge"></span>
+                        </td>
+                        <td>
+                            <div class="display--flex gap--1px">
+                                <button type="button"
+                                        data-duice-bind="basket"
+                                        data-duice-execute="this.dataset.index = status.index;"
+                                        onclick="moveBasketSortUp(this.dataset.index);">
+                                    <img class="icon" th:src="@{/static/image/icon-up.svg}" alt="up"/>
+                                </button>
+                                <button type="button"
+                                        data-duice-bind="basket"
+                                        data-duice-execute="this.dataset.index = status.index;"
+                                        onclick="moveBasketSortDown(this.dataset.index);">
+                                    <img class="icon" th:src="@{/static/image/icon-down.svg}" alt="down"/>
+                                </button>
+                            </div>
                         </td>
                     </tr>
                     <tr data-duice-bind="basketSearch" data-duice-if="return basketSearch._status === 'loading'">

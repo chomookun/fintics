@@ -18,6 +18,8 @@ public class BasketResponse {
 
     private String name;
 
+    private Integer sort;
+
     private String market;
 
     private boolean rebalanceEnabled;
@@ -45,6 +47,7 @@ public class BasketResponse {
         return BasketResponse.builder()
                 .basketId(basket.getBasketId())
                 .name(basket.getName())
+                .sort(basket.getSort())
                 .market(basket.getMarket())
                 .rebalanceEnabled(basket.isRebalanceEnabled())
                 .rebalanceSchedule(basket.getRebalanceSchedule())

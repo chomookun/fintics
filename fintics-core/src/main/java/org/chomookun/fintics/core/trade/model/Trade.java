@@ -19,6 +19,8 @@ public class Trade {
 
     private String name;
 
+    private Integer sort;
+
     private boolean enabled;
 
     private Integer interval;
@@ -62,6 +64,7 @@ public class Trade {
         return Trade.builder()
                 .tradeId(tradeEntity.getTradeId())
                 .name(tradeEntity.getName())
+                .sort(tradeEntity.getSort())
                 .enabled(tradeEntity.isEnabled())
                 .interval(tradeEntity.getInterval())
                 .threshold(tradeEntity.getThreshold())

@@ -12,6 +12,8 @@ public class StrategyResponse {
 
     private String name;
 
+    private Integer sort;
+
     private Strategy.Language language;
 
     private String variables;
@@ -22,6 +24,7 @@ public class StrategyResponse {
         return StrategyResponse.builder()
                 .strategyId(strategy.getStrategyId())
                 .name(strategy.getName())
+                .sort(strategy.getSort())
                 .language(strategy.getLanguage())
                 .variables(strategy.getVariables())
                 .script(strategy.getScript())

@@ -16,6 +16,8 @@ public class BasketRequest {
 
     private String name;
 
+    private Integer sort;
+
     private String market;
 
     private boolean rebalanceEnabled;

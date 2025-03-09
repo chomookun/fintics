@@ -102,6 +102,7 @@ public class TradesRestController {
         Trade trade = Trade.builder()
                 .tradeId(tradeRequest.getTradeId())
                 .name(tradeRequest.getName())
+                .sort(tradeRequest.getSort())
                 .enabled(tradeRequest.isEnabled())
                 .interval(tradeRequest.getInterval())
                 .threshold(tradeRequest.getThreshold())
@@ -144,6 +145,7 @@ public class TradesRestController {
     ) {
         Trade trade = tradeService.getTrade(tradeId).orElseThrow();
         trade.setName(tradeRequest.getName());
+        trade.setSort(tradeRequest.getSort());
         trade.setEnabled(tradeRequest.isEnabled());
         trade.setInterval(tradeRequest.getInterval());
         trade.setThreshold(tradeRequest.getThreshold());
@@ -180,6 +182,17 @@ public class TradesRestController {
                     String tradeId
     ) {
         tradeService.deleteTrade(tradeId);
+        return ResponseEntity.ok().build();
+    }
+
+    /**
+     * Changes trade sort
+     * @param tradeId trade id
+     * @param sort sort
+     */
+    @PatchMapping("{tradeId}/sort")
+    public ResponseEntity<Void> changeTradeSort(@PathVariable("tradeId") String tradeId, @RequestParam("sort") Integer sort) {
+        tradeService.changeTradeSort(tradeId, sort);
         return ResponseEntity.ok().build();
     }
 

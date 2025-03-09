@@ -143,20 +143,19 @@ values
 
 -- fintics_broker
 insert into `fintics_broker`
-    (`broker_id`,`name`,`broker_client_id`,`broker_client_properties`)
+    (`broker_id`,`name`,`sort`,`broker_client_id`,`broker_client_properties`)
 values
-    ('ca5f55cd88694715bcb4c478710d9a68','Korea Investment Test','KIS',null),
-    ('961eb9c68c9547ce9ae61bbe3be7f037','Korea Investment US Test','KIS_US',null),
-    ('a135ee9a276f4edf81d6e1b6b9d31e39','Upbit Test','UPBIT',null);
+    ('961eb9c68c9547ce9ae61bbe3be7f037','Korea Investment US Test',0,'KIS_US',null),
+    ('ca5f55cd88694715bcb4c478710d9a68','Korea Investment Test',1,'KIS',null),
+    ('a135ee9a276f4edf81d6e1b6b9d31e39','Upbit Test',2,'UPBIT',null);
 
--- fintics_basket - 국내대형주
+-- fintics_basket
 insert into `fintics_basket`
-    (`basket_id`, `name`, `market`)
+    (`basket_id`, `name`, `sort`, `market`)
 values
-    ('e5b2dda4ede54176b5e01eed7c4b9ed8','국내대형주', 'KR'),
-    ('a920f8813c6f46fda2947cee1c8cfb1d','미국대형주', 'US'),
-    ('7818b580e3f340498b97f50e0e801ff8','Upbit (24시간 테스트용)', 'UPBIT');
-
+    ('a920f8813c6f46fda2947cee1c8cfb1d','미국대형주', 0, 'US'),
+    ('e5b2dda4ede54176b5e01eed7c4b9ed8','국내대형주',1, 'KR'),
+    ('7818b580e3f340498b97f50e0e801ff8','Upbit (24시간 테스트용)',2, 'UPBIT');
 insert into `fintics_basket_asset`
     (`basket_id`,`asset_id`,`enabled`, `holding_weight`)
 values
