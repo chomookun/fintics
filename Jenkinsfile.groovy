@@ -23,7 +23,7 @@ pipeline {
                 defaultValue: params.JIB_TO_AUTH_CREDENTIALS,
                 description: 'target image repository credentials')
         string(name: 'MESSAGE_PLATFORM', defaultValue: params.MESSAGE_PLATFORM ?: '___', description: 'Message platform(SLACK|...)')
-        text(name: 'MESSAGE_PLATFORM_CONFIG', defaultValue: params.MESSAGE_PLATFORM_CONFIG ?: '___', description: 'name1=value1\nname2=value2')
+        text(name: 'MESSAGE_PLATFORM_CONFIG', defaultValue: params.MESSAGE_PLATFORM_CONFIG ?: '___', description: 'channel=jenkins\nname1=value1')
     }
     options {
         disableConcurrentBuilds()
