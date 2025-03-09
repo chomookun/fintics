@@ -24,11 +24,15 @@ public class TradeAsset extends Asset {
 
     private String tradeId;
 
+    private LocalDateTime dateTime;
+
     private BigDecimal previousClose;
 
     private BigDecimal open;
 
     private BigDecimal close;
+
+    private BigDecimal volume;
 
     private List<Ohlcv> dailyOhlcvs;
 
@@ -189,8 +193,11 @@ public class TradeAsset extends Asset {
         return TradeAsset.builder()
                 .tradeId(assetEntity.getTradeId())
                 .assetId(assetEntity.getAssetId())
+                .dateTime(assetEntity.getDateTime())
                 .previousClose(assetEntity.getPreviousClose())
                 .open(assetEntity.getOpen())
+                .close(assetEntity.getClose())
+                .volume(assetEntity.getVolume())
                 .message(assetEntity.getMessage())
                 .context(assetEntity.getContext())
                 .build();

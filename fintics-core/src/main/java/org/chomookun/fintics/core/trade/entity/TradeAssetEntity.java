@@ -8,6 +8,8 @@ import org.chomookun.arch4j.core.common.data.converter.MapConverter;
 import jakarta.persistence.*;
 import java.io.Serializable;
 import java.math.BigDecimal;
+import java.time.Instant;
+import java.time.LocalDateTime;
 import java.util.Map;
 
 @Entity
@@ -37,6 +39,9 @@ public class TradeAssetEntity extends BaseEntity {
     @Column(name = "asset_id")
     private String assetId;
 
+    @Column(name = "date_time")
+    private LocalDateTime dateTime;
+
     @Column(name = "previous_close", scale = 4)
     private BigDecimal previousClose;
 
@@ -45,6 +50,9 @@ public class TradeAssetEntity extends BaseEntity {
 
     @Column(name = "close", scale = 4)
     private BigDecimal close;
+
+    @Column(name = "volume", scale = 4)
+    private BigDecimal volume;
 
     @Column(name = "message")
     @Lob

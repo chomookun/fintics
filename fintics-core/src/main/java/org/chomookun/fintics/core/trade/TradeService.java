@@ -203,10 +203,12 @@ public class TradeService {
                             .findFirst()
                             .orElse(null);
                     if (tradeAssetEntity != null) {
-                       tradeAsset.setPreviousClose(tradeAssetEntity.getPreviousClose());
-                       tradeAsset.setOpen(tradeAssetEntity.getOpen());
-                       tradeAsset.setClose(tradeAssetEntity.getClose());
-                       tradeAsset.setMessage(tradeAssetEntity.getMessage());
+                        tradeAsset.setDateTime(tradeAssetEntity.getDateTime());
+                        tradeAsset.setPreviousClose(tradeAssetEntity.getPreviousClose());
+                        tradeAsset.setOpen(tradeAssetEntity.getOpen());
+                        tradeAsset.setClose(tradeAssetEntity.getClose());
+                        tradeAsset.setVolume(tradeAssetEntity.getVolume());
+                        tradeAsset.setMessage(tradeAssetEntity.getMessage());
                     }
                     return tradeAsset;
                 })

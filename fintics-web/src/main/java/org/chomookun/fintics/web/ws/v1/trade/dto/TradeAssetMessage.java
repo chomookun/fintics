@@ -4,6 +4,7 @@ import lombok.*;
 import org.chomookun.fintics.core.trade.model.TradeAsset;
 
 import java.math.BigDecimal;
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -17,11 +18,15 @@ public class TradeAssetMessage {
 
     private String assetId;
 
+    private LocalDateTime dateTime;
+
     private BigDecimal previousClose;
 
     private BigDecimal open;
 
     private BigDecimal close;
+
+    private BigDecimal volume;
 
     private BigDecimal netChange;
 
@@ -37,9 +42,11 @@ public class TradeAssetMessage {
         return TradeAssetMessage.builder()
                 .tradeId(tradeAsset.getTradeId())
                 .assetId(tradeAsset.getAssetId())
+                .dateTime(tradeAsset.getDateTime())
                 .previousClose(tradeAsset.getPreviousClose())
                 .open(tradeAsset.getOpen())
                 .close(tradeAsset.getClose())
+                .volume(tradeAsset.getVolume())
                 .netChange(tradeAsset.getNetChange())
                 .netChangePercentage(tradeAsset.getNetChangePercentage())
                 .intraDayNetChange(tradeAsset.getIntraDayNetChange())

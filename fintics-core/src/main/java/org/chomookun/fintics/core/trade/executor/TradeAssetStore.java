@@ -74,9 +74,11 @@ public class TradeAssetStore {
             TradeAssetEntity statusEntity = TradeAssetEntity.builder()
                     .tradeId(tradeAsset.getTradeId())
                     .assetId(tradeAsset.getAssetId())
+                    .dateTime(tradeAsset.getDateTime())
                     .previousClose(tradeAsset.getPreviousClose())
                     .open(tradeAsset.getOpen())
                     .close(tradeAsset.getClose())
+                    .volume(tradeAsset.getVolume())
                     .message(tradeAsset.getMessage())
                     .context(tradeAsset.getContext())
                     .build();

@@ -169,14 +169,16 @@
                  * @param tradeAsset trade asset
                  */
                 applyTradeAsset: function(tradeAsset) {
-                    let basketAsset = this.basket.basketItems.find(it => it.assetId === tradeAsset.assetId);
-                    if (basketAsset) {
-                        basketAsset.close = tradeAsset.close;
-                        basketAsset.netChange = tradeAsset.netChange;
-                        basketAsset.netChangePercentage = tradeAsset.netChangePercentage;
-                        basketAsset.intraDayNetChange = tradeAsset.intraDayNetChange;
-                        basketAsset.intraDayNetChangePercentage = tradeAsset.intraDayNetChangePercentage;
-                        basketAsset.message = tradeAsset.message;
+                    let basketItem = this.basket.basketItems.find(it => it.assetId === tradeAsset.assetId);
+                    if (basketItem) {
+                        basketItem.dateTime = tradeAsset.dateTime;
+                        basketItem.close = tradeAsset.close;
+                        basketItem.volume = tradeAsset.volume;
+                        basketItem.netChange = tradeAsset.netChange;
+                        basketItem.netChangePercentage = tradeAsset.netChangePercentage;
+                        basketItem.intraDayNetChange = tradeAsset.intraDayNetChange;
+                        basketItem.intraDayNetChangePercentage = tradeAsset.intraDayNetChangePercentage;
+                        basketItem.message = tradeAsset.message;
                     }
                 },
                 /**
@@ -584,6 +586,12 @@
                                               this.classList.toggle('color--green', netChange > 0);
                                               this.classList.toggle('color--red', netChange < 0);
                                               this.innerHTML = `${close?.toLocaleString()||''} (${netChange} <small>/</small> ${netChangePercentage}%)`;
+                                              "></span>
+                                        &nbsp;
+                                        <span class="number font-size--xx-small font-style--italic"
+                                              data-duice-bind="basketItem"
+                                              data-duice-execute="
+                                              this.innerHTML = `Volume: ${basketItem.volume?.toLocaleString()||''}`;
                                               "></span>
                                         &nbsp;
                                         <span class="cursor--pointer"

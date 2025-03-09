@@ -130,9 +130,11 @@ public class TradeExecutor {
                 tradeAsset.setType(basketAsset.getType());
                 tradeAsset.setExchange(basketAsset.getExchange());
                 tradeAsset.setMarketCap(basketAsset.getMarketCap());
+                tradeAsset.setDateTime(minuteOhlcvs.get(0).getDateTime());
                 tradeAsset.setPreviousClose(dailyOhlcvs.get(1).getClose());
                 tradeAsset.setOpen(dailyOhlcvs.get(0).getOpen());
                 tradeAsset.setClose(minuteOhlcvs.get(0).getClose());
+                tradeAsset.setVolume(dailyOhlcvs.get(0).getVolume());
                 tradeAsset.setDailyOhlcvs(dailyOhlcvs);
                 tradeAsset.setMinuteOhlcvs(minuteOhlcvs);
 
