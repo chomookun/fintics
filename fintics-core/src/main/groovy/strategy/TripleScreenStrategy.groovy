@@ -136,8 +136,12 @@ class Analyzer {
         // cci
         score.cciValueOverSignal = cci.value > cci.signal ? 100 : 0
         // chaikin oscillator
-        // score.chaikinOscillatorValue = chaikinOscillator.value > 0 ? 100 : 0
         score.chaikinOscillatorValueOverSignal = chaikinOscillator.value > chaikinOscillator.signal ? 100 : 0
+        // stochastic slow
+        score.stochasticSlowKOverD = stochasticSlow.slowK > stochasticSlow.slowD ? 100 : 0
+        score.stochasticSlowOverbought = stochasticSlow.slowK > 50 ? 100 : 0
+        // williams r
+        score.williamsR = williamsR.value > -50 ? 100 : 0
         // return
         return score
     }
