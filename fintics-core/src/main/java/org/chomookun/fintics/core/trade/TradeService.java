@@ -260,6 +260,7 @@ public class TradeService {
      * @param order order
      * @return submitted order
      */
+    @Transactional
     public Order submitOrder(Order order) {
         try {
             Trade trade = getTrade(order.getTradeId()).orElseThrow();

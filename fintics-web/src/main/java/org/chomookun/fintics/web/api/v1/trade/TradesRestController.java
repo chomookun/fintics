@@ -259,6 +259,7 @@ public class TradesRestController {
      * @return saved order response
      */
     @PostMapping("{tradeId}/orders")
+    @Transactional
     public ResponseEntity<OrderResponse> submitOrder(
             @PathVariable("tradeId")
             @Parameter(description = "trade id")
