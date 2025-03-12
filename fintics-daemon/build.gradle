@@ -4,7 +4,7 @@ plugins {
     id 'io.freefair.lombok' version '8.10'
     id 'org.springframework.boot' version '3.4.1'
     id 'maven-publish'
-    id 'com.google.cloud.tools.jib' version '3.4.0'
+    id 'com.google.cloud.tools.jib' version '3.4.4'
     id 'application'
 }
 
