@@ -5,6 +5,7 @@
       layout:decorate="_web.html">
 <th:block layout:fragment="_content">
     <th:block th:insert="common/common.html"/>
+    <th:block th:insert="common/submit-order-dialog.html"/>
     <script th:inline="javascript">
         const tradeId = new URL(location.href).searchParams.get('tradeId');
         const alarms = new duice.ArrayProxy(/*[[${alarms}]]*/[]);
@@ -835,7 +836,7 @@
                                 if(length === 0) {
                                     this.style.opacity=0.5;
                                 }">
-                                <td>
+                                <td class="text-align--center">
                                     <span data-duice-bind="status" data-duice-property="count" class="number"></span>
                                 </td>
                                 <td>
