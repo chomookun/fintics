@@ -55,7 +55,7 @@ pipeline {
             }
             steps {
                 sh '''
-                ./gradlew publish -x test \
+                ./gradlew publish -x test --stacktrace \
                 -PmavenUrl=${MAVEN_URL} \
                 -PmavenUsername=${MAVEN_CREDENTIALS_USR} \
                 -PmavenPassword=${MAVEN_CREDENTIALS_PWD} \
@@ -72,7 +72,7 @@ pipeline {
             }
             steps {
                 sh '''
-                ./gradlew jib -x test \
+                ./gradlew jib -x test --stacktrace \
                 -PjibFromImage=${JIB_FROM_IMAGE} \
                 -PjibFromAuthUsername=${JIB_FROM_AUTH_CREDENTIALS_USR} \
                 -PjibFromAuthPassword=${JIB_FROM_AUTH_CREDENTIALS_PSW} \
