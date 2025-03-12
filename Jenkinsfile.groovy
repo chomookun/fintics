@@ -11,7 +11,6 @@ pipeline {
                 name: 'PUBLISHING_MAVEN_CREDENTIALS',
                 defaultValue: params.PUBLISHING_MAVEN_CREDENTIALS,
                 description: 'publishing maven credentials')
-        string(name: 'JIB_FROM_IMAGE', defaultValue: params.JIB_FROM_IMAGE, description: 'container base image')
         credentials(credentialType: 'com.cloudbees.plugins.credentials.impl.UsernamePasswordCredentialsImpl',
                 name: 'JIB_FROM_AUTH_CREDENTIALS',
                 defaultValue: params.JIB_FROM_AUTH_CREDENTIALS,
@@ -73,7 +72,6 @@ pipeline {
             steps {
                 sh '''
                 ./gradlew jib -x test --stacktrace \
-                -PjibFromImage=${JIB_FROM_IMAGE} \
                 -PjibFromAuthUsername=${JIB_FROM_AUTH_CREDENTIALS_USR} \
                 -PjibFromAuthPassword=${JIB_FROM_AUTH_CREDENTIALS_PSW} \
                 -PjibToImageNamespace=${JIB_TO_IMAGE_NAMESPACE} \
