@@ -56,15 +56,19 @@ jib {
     from {
         image = project.jibFromImage
         auth {
-            username = project.jibFromAuthUsername
-            password = project.jibFromAuthPassword
+//            username = project.jibFromAuthUsername
+//            password = project.jibFromAuthPassword
+            usernaem = providers.gradleProperty("jibFromAuthUsername").getOrElse("")
+            password = providers.gradleProperty("jibFromAuthPassword").getOrElse("")
         }
     }
     to {
         image = "${project.jibToImageNamespace}/${project.name}"
         auth {
-            username = project.jibToAuthUsername
-            password = project.jibToAuthPassword
+//            username = project.jibToAuthUsername
+//            password = project.jibToAuthPassword
+            username = providers.gradleProperty("jibToAuthUsername").getOrElse("")
+            password = providers.gradleProperty("jibToAuthPassword").getOrElse("")
         }
         tags = [project.jibToTags]
     }

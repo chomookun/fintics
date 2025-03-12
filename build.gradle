@@ -1,6 +1,6 @@
 allprojects {
-    group = project.projectGroup
-    version = project.projectVersion
+//    group = project.projectGroup
+//    version = project.projectVersion
 
     configurations.all {
         resolutionStrategy {
@@ -15,8 +15,10 @@ allprojects {
                 allowInsecureProtocol = true
                 url = project.mavenUrl
                 credentials {
-                    username = project.mavenUsername
-                    password = project.mavenPassword
+//                    username = project.mavenUsername
+                    username = providers.gradleProperty("mavenUsername").getOrElse("")
+//                    password = project.mavenPassword
+                    password = providers.gradleProperty("mavenPassword").getOrElse("")
                 }
             }
         }
@@ -65,8 +67,10 @@ allprojects {
                         allowInsecureProtocol = true
                         url = project.publishingMavenUrl
                         credentials {
-                            username = project.publishingMavenUsername
-                            password = project.publishingMavenPassword
+//                            username = project.publishingMavenUsername
+                            username = providers.gradleProperty("publishingMavenUsername").getOrElse("")
+//                            password = project.publishingMavenPassword
+                            password = providers.gradleProperty("publishingMavenPassword").getOrElse("")
                         }
                     }
                 }
