@@ -57,8 +57,8 @@ jib {
         auth {
 //            username = project.jibFromAuthUsername
 //            password = project.jibFromAuthPassword
-            username = providers.gradleProperty("jibFromAuthUsername").getOrElse("")
-            password = providers.gradleProperty("jibFromAuthPassword").getOrElse("")
+            username = providers.gradleProperty("jibFromAuthUsername").get()
+            password = providers.gradleProperty("jibFromAuthPassword").get()
         }
     }
     to {
@@ -66,8 +66,8 @@ jib {
         auth {
 //            username = project.jibToAuthUsername
 //            password = project.jibToAuthPassword
-            username = providers.gradleProperty("jibToAuthUsername").getOrElse("")
-            password = providers.gradleProperty("jibToAuthPassword").getOrElse("")
+            username = providers.gradleProperty("jibToAuthUsername").get()
+            password = providers.gradleProperty("jibToAuthPassword").get()
         }
         tags = [project.jibToTags]
     }

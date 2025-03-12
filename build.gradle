@@ -16,9 +16,9 @@ allprojects {
                 url = project.mavenUrl
                 credentials {
 //                    username = project.mavenUsername
-                    username = providers.gradleProperty("mavenUsername").getOrElse("")
 //                    password = project.mavenPassword
-                    password = providers.gradleProperty("mavenPassword").getOrElse("")
+                    username = providers.gradleProperty("mavenUsername").get()
+                    password = providers.gradleProperty("mavenPassword").get()
                 }
             }
         }
@@ -68,9 +68,9 @@ allprojects {
                         url = project.publishingMavenUrl
                         credentials {
 //                            username = project.publishingMavenUsername
-                            username = providers.gradleProperty("publishingMavenUsername").getOrElse("")
 //                            password = project.publishingMavenPassword
-                            password = providers.gradleProperty("publishingMavenPassword").getOrElse("")
+                            username = providers.gradleProperty("publishingMavenUsername").get()
+                            password = providers.gradleProperty("publishingMavenPassword").get()
                         }
                     }
                 }
