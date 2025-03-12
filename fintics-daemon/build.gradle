@@ -53,21 +53,15 @@ jib {
     System.setProperty("sendCredentialsOverHttp", "true");
     allowInsecureRegistries = true
     from {
-//        image = project.jibFromImage
         image = providers.gradleProperty("jibFromImage").get()
         auth {
-//            username = project.jibFromAuthUsername
-//            password = project.jibFromAuthPassword
             username = providers.gradleProperty("jibFromAuthUsername").get()
             password = providers.gradleProperty("jibFromAuthPassword").get()
         }
     }
     to {
-//        image = "${project.jibToImageNamespace}/${project.name}"
         image = providers.gradleProperty("jibToImageNamespace").get() + "/" + project.name
         auth {
-//            username = project.jibToAuthUsername
-//            password = project.jibToAuthPassword
             username = providers.gradleProperty("jibToAuthUsername").get()
             password = providers.gradleProperty("jibToAuthPassword").get()
         }
