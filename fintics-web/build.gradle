@@ -58,7 +58,7 @@ jib {
         auth {
 //            username = project.jibFromAuthUsername
 //            password = project.jibFromAuthPassword
-            usernaem = providers.gradleProperty("jibFromAuthUsername").getOrElse("")
+            username = providers.gradleProperty("jibFromAuthUsername").getOrElse("")
             password = providers.gradleProperty("jibFromAuthPassword").getOrElse("")
         }
     }
