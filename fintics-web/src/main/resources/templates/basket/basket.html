@@ -955,12 +955,16 @@
                                 </button>
                             </td>
                             <td class="text-align--center">
+                                <img data-duice-bind="asset" data-duice-execute="_applyAssetFavoriteIcon(this, asset, true);" alt=""/>
                                 <span data-duice-bind="asset" data-duice-property="symbol" class="font-weight--bold code"></span>
                             </td>
                             <td>
                                 <img th:src="@{/static/image/icon-asset.svg}" class="icon border-radius--50 font-size--large" data-duice-bind="asset" data-duice-property="icon" th:onerror="|this.src='@{/static/image/icon-asset.svg}';|" alt=""/>
                                 &nbsp;
-                                <span data-duice-bind="asset" data-duice-property="name"></span>
+                                <span data-duice-bind="asset" data-duice-property="name"
+                                      data-duice-execute="this.dataset.assetId=asset.assetId;"
+                                      onclick="_assetDialog.open(this.dataset.assetId);"
+                                      class="link"></span>
                             </td>
                             <td class="text-align--center">
                                 <span class="badge code" data-duice-bind="asset" data-duice-property="exchange"></span>
