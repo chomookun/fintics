@@ -13,6 +13,8 @@ spring:
       jdbc-url: jdbc:mariadb://192.168.0.2:3306/fintics?useUnicode=true&characterEncoding=UTF-8
       username: fintics
       password: ENC(isMDWx6SPsHeZNBO/dAtcVlU9Akq0MSl)
+      minimum-idle: 10
+      maximum-pool-size: 20
   data:
     redis:
       host: 192.168.0.2
