@@ -85,7 +85,7 @@ pipeline {
             steps {
                 sh '''
                     kubectl delete pod -l app=fintics-daemon
-                    kubectl wait --for=condition=Ready pod -l app=fintics-daemon --timeout=60s
+                    kubectl wait --for=condition=Ready pod -l app=fintics-daemon --timeout=600s
                 '''.stripIndent()
                 sh '''
                     kubectl rollout restart deployment/fintics-web

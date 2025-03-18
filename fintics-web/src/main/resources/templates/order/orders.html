@@ -353,7 +353,9 @@
         <script th:inline="javascript">
             const orderDialog = {
                 dialog: new duice.Dialog(document.getElementById('orderDialog')),
-                order: new duice.ObjectProxy({}),
+                order: new duice.ObjectProxy({
+                    strategyResult: {}
+                }),
                 open: async function(orderId) {
                     duice.ObjectProxy.clear(this.order);
                     duice.ObjectProxy.setReadonlyAll(this.order, true);
@@ -362,8 +364,6 @@
                         .then(response => response.json())
                         .then(data => {
                             duice.ObjectProxy.assign(this.order, data);
-                            console.error(data);
-                            console.error(this.order);
                         });
                     return this.dialog.open();
                 },
