@@ -56,7 +56,7 @@ Runs the UI management web application.
 ps. Technical Indicator: RSI, CCI, Stochastic Slow, Williams %R 
 
 ### 1. US Market (50% of passive)
-Growth 35% + Dividend 35% + Bond 30%
+Growth 35% + Dividend 35% + Bond 20% + Cash 10%
 
 #### [35%] Growth Equity ETF
 | Symbol   | Name                                             | Holding weight | Reference |
@@ -116,7 +116,7 @@ US Growth 17.5% + US Dividend 17.5% + KR Growth 17.5% + KR Dividend 17.5% + US B
 | **441800** | TIMEFOLIO Korea플러스배당액티브 | 8.75% | [K-ETF](https://www.k-etf.com/etf/441800) |
 | **161510** | PLUS 고배당주 | 8.75% | [K-ETF](https://www.k-etf.com/etf/161510) |
 
-#### [30%] US Bond ETF
+#### [20%] US Bond ETF
 | Symbol     | Name | Holding weight | Reference |
 |------------|------|----------------|-------------------------------------------|
 | **476760** | ACE 미국30년국채액티브 | 6% | [K-ETF](https://www.k-etf.com/etf/476760) |
