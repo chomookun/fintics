@@ -43,9 +43,36 @@ class UsAssetClientTest extends CoreTestSupport {
      */
     static List<Asset> getTestStockAssets() {
         return List.of(
+                // Large cap
                 Asset.builder()
                         .assetId("US.MSFT")
                         .name("Microsoft Corporation Common Stock")
+                        .market("US")
+                        .type("STOCK")
+                        .build(),
+                Asset.builder()
+                        .assetId("US.AAPL")
+                        .name("Apple Inc. Common Stock")
+                        .market("US")
+                        .type("STOCK")
+                        .build(),
+                Asset.builder()
+                        .assetId("US.GOOG")
+                        .name("Alphabet Inc. Class C Capital Stock")
+                        .market("US")
+                        .type("STOCK")
+                        .build(),
+                // Mid cap
+                Asset.builder()
+                        .assetId("US.ADSK")
+                        .name("Autodesk Inc. Common Stock")
+                        .market("US")
+                        .type("STOCK")
+                        .build(),
+                // ADR
+                Asset.builder()
+                        .assetId("US.TSM")
+                        .name("Taiwan Semiconductor Manufacturing Company Limited American Depositary Shares")
                         .market("US")
                         .type("STOCK")
                         .build()
@@ -151,6 +178,13 @@ class UsAssetClientTest extends CoreTestSupport {
         // when
         createUsAssetClient().populateStockAsset(asset);
         // then
+        assertNotNull(asset.getPrice());
+        assertNotNull(asset.getVolume());
+        assertNotNull(asset.getEps());
+        assertNotNull(asset.getRoe());
+        assertNotNull(asset.getPer());
+        assertNotNull(asset.getDividendYield());
+        assertNotNull(asset.getDividendFrequency());
         assertNotNull(asset.getCapitalGain());
         assertNotNull(asset.getTotalReturn());
     }

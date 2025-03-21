@@ -25,6 +25,7 @@ import java.math.BigDecimal;
 import java.math.MathContext;
 import java.math.RoundingMode;
 import java.time.*;
+import java.time.format.DateTimeFormatter;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -286,7 +287,7 @@ public class UsAssetClient extends AssetClient implements NasdaqClientSupport, Y
         }
         // calls financial api
         String financialUrl = String.format(
-                "https://api.nasdaq.com/api/company/%s/financials?frequency=1", // frequency 2 is quarterly
+                "https://api.nasdaq.com/api/company/%s/financials?frequency=1", // frequency 1:annually, 2:quarterly
                 asset.getSymbol()
         );
         RequestEntity<Void> financialRequestEntity = RequestEntity.get(financialUrl)
@@ -317,14 +318,43 @@ public class UsAssetClient extends AssetClient implements NasdaqClientSupport, Y
                 netIncome = convertCurrencyToNumber(value, CURRENCY_USD, null);
             }
         }
-        // roe
+        // REO as annual financials
         if(netIncome != null && totalEquity != null) {
             roe = netIncome.divide(totalEquity, 8, RoundingMode.HALF_UP)
                     .multiply(BigDecimal.valueOf(100));
         }
-        // dividend frequency
+        // Override ROE as TTM
+        try {
+            roe = getTtmRoe(asset);
+        } catch (Throwable t) {
+            // ADR, Some small cap is not supported
+            log.warn(t.getMessage());
+        }
+        // Overrides EPS as TTM
+        try {
+            eps = getTtmEps(asset);
+        } catch (Throwable t) {
+            // ADR, Some small cap is not supported
+            log.warn(t.getMessage());
+        }
+        // Overrides PER as TTM
+        if (price != null && eps != null) {
+            if (eps.compareTo(BigDecimal.ZERO) <= 0) {
+                per = BigDecimal.valueOf(9_999);
+            } else {
+                per = price.divide(eps, MathContext.DECIMAL32)
+                        .setScale(2, RoundingMode.HALF_UP);
+            }
+        }
+        // Calculates dividend frequency, yield with TTM
         List<Dividend> dividends = getDividends(asset);
         dividendFrequency = dividends.size();
+        BigDecimal dividendPerShare = dividends.stream()
+                .map(Dividend::getDividendPerShare)
+                .reduce(BigDecimal.ZERO, BigDecimal::add);
+        dividendYield = dividendPerShare.divide(price, MathContext.DECIMAL32)
+                .multiply(BigDecimal.valueOf(100))
+                .setScale(2, RoundingMode.HALF_UP);
         // capital gain
         List<Ohlcv> ohlcvs = getOhlcvs(asset);
         BigDecimal startPrice = ohlcvs.get(ohlcvs.size() - 1).getClose();
@@ -334,7 +364,7 @@ public class UsAssetClient extends AssetClient implements NasdaqClientSupport, Y
                 .multiply(BigDecimal.valueOf(100))
                 .setScale(2, RoundingMode.HALF_UP);
         // total return
-        totalReturn = capitalGain.add(Optional.ofNullable(dividendYield).orElse(BigDecimal.ZERO))
+        totalReturn = capitalGain.add(dividendYield)
                 .setScale(2, RoundingMode.HALF_UP);
         // update asset
         asset.setPrice(price);
@@ -347,6 +377,102 @@ public class UsAssetClient extends AssetClient implements NasdaqClientSupport, Y
         asset.setDividendYield(dividendYield);
         asset.setCapitalGain(capitalGain);
         asset.setTotalReturn(totalReturn);
+    }
+
+    /**
+     * Gets TTM ROE
+     * @param asset asset
+     * @return TTM ROE
+     */
+    BigDecimal getTtmRoe(Asset asset) {
+        HttpHeaders headers = createNasdaqHeaders();
+        String financialUrl = String.format(
+                "https://api.nasdaq.com/api/company/%s/financials?frequency=2", // frequency 1: annually, 2: quarterly
+                asset.getSymbol()
+        );
+        RequestEntity<Void> financialRequestEntity = RequestEntity.get(financialUrl)
+                .headers(headers)
+                .build();
+        ResponseEntity<String> financialResponseEntity = restTemplate.exchange(financialRequestEntity, String.class);
+        JsonNode financialRootNode;
+        try {
+            financialRootNode = objectMapper.readTree(financialResponseEntity.getBody());
+        } catch (JsonProcessingException e) {
+            throw new RuntimeException(e);
+        }
+        JsonNode balanceSheetTableRowsNode = financialRootNode.path("data").path("balanceSheetTable").path("rows");
+        List<Map<String,String>> balanceSheetTableRows = objectMapper.convertValue(balanceSheetTableRowsNode, new TypeReference<>(){});
+        JsonNode incomeStatementTableRowsNode = financialRootNode.path("data").path("incomeStatementTable").path("rows");
+        List<Map<String,String>> incomeStatementTableRows = objectMapper.convertValue(incomeStatementTableRowsNode, new TypeReference<>(){});
+        JsonNode financialRatiosTableRowsNode = financialRootNode.path("data").path("financialRatiosTable").path("rows");
+        List<Map<String,String>> financialRatiosTableRows = objectMapper.convertValue(financialRatiosTableRowsNode, new TypeReference<>(){});
+        // ROE
+        List<BigDecimal> ttmRoes = new ArrayList<>();
+        for (Map<String,String> row : financialRatiosTableRows) {
+            String key = row.get("value1");
+            if (Objects.equals(key, "After Tax ROE")) {
+                BigDecimal roe1 =  convertPercentageToNumber(row.get("value2"), null);
+                BigDecimal roe2 = convertPercentageToNumber(row.get("value3"), null);
+                BigDecimal roe3 = convertPercentageToNumber(row.get("value4"), null);
+                BigDecimal roe4 = convertPercentageToNumber(row.get("value5"), null);
+                ttmRoes.addAll(List.of(roe1, roe2, roe3, roe4));
+            }
+        }
+        return ttmRoes.stream()
+                .reduce(BigDecimal.ZERO, BigDecimal::add)
+                .setScale(2, RoundingMode.FLOOR);
+    }
+
+    /**
+     * Gets TTM EPS
+     * @param asset asset
+     * @return TTM EPS
+     */
+    BigDecimal getTtmEps(Asset asset) {
+        HttpHeaders headers = createNasdaqHeaders();
+        String revenueEpsUrl = String.format(
+                "https://api.nasdaq.com/api/company/%s/revenue?limit=1",
+                asset.getSymbol()
+        );
+        RequestEntity<Void> revenueEpsRequestEntity = RequestEntity.get(revenueEpsUrl)
+                .headers(headers)
+                .build();
+        ResponseEntity<String> revenueEpsResponseEntity = restTemplate.exchange(revenueEpsRequestEntity, String.class);
+        JsonNode rootNode;
+        try {
+            rootNode = objectMapper.readTree(revenueEpsResponseEntity.getBody());
+        } catch (JsonProcessingException e) {
+            throw new RuntimeException(e);
+        }
+        JsonNode revenueTableRowsNode = rootNode.path("data").path("revenueTable").path("rows");
+        List<Map<String,String>> revenueTableRows = objectMapper.convertValue(revenueTableRowsNode, new TypeReference<>(){});
+        Map<LocalDate, BigDecimal> epsMap = new HashMap<>();
+        for (Map<String,String> row : revenueTableRows) {
+            String key = row.get("value1");
+            if (Objects.equals(key, "EPS")) {
+                List.of("value2", "value3", "value4").forEach(subKey -> {
+                    String value = row.get(subKey);
+                    String[] values = value.split("\\s+");
+                    if (values.length == 2) {
+                        BigDecimal eps = convertCurrencyToNumber(values[0], CURRENCY_USD, null);
+                        String dateString = values[1].replace("(", "").replace(")", "");
+                        LocalDate date = LocalDate.parse(dateString, DateTimeFormatter.ofPattern("MM/dd/yyyy"));
+                        epsMap.put(date, eps);
+                    }
+                });
+            }
+        }
+        // ttm epses
+        List<Map<LocalDate, BigDecimal>> ttmEpses = epsMap.entrySet().stream()
+                .sorted(Map.Entry.<LocalDate, BigDecimal>comparingByKey().reversed())
+                .limit(4) // latest 4 quarters
+                .map(entry -> Map.of(entry.getKey(), entry.getValue())) // eps
+                .toList();
+        // sum of ttm eps
+        return ttmEpses.stream()
+                .flatMap(map -> map.values().stream())
+                .reduce(BigDecimal.ZERO, BigDecimal::add)
+                .setScale(2, RoundingMode.HALF_UP);
     }
 
     /**
