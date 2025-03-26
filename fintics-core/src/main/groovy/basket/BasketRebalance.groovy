@@ -89,6 +89,8 @@ static List<Item> getKrEtfItems(etfSymbol) {
 def market = variables.market
 BigDecimal roeLimit = variables.roeLimit as BigDecimal
 BigDecimal perLimit = variables.perLimit as BigDecimal
+Integer maxAssetCount = variables.maxAssetCount as Integer
+BigDecimal holdingWeightPerAsset = variables.holdingWeightPerAsset as BigDecimal
 List<Item> candidateItems = []
 
 //=======================================
@@ -212,8 +214,6 @@ log.info("finalItems: ${finalItems}")
 //=========================================
 // sort by score
 //=========================================
-def maxAssetCount = 50
-def holdingWeightPerAsset = 2.0
 def fixedAssetCount = basket.getBasketAssets().findAll{it.enabled && it.fixed}.size()
 def targetAssetCount = (maxAssetCount - fixedAssetCount) as Integer
 finalItems = finalItems

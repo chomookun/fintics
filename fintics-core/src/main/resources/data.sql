@@ -179,11 +179,11 @@ values
 
 -- fintics_trade
 insert into `fintics_trade`
-    (`trade_id`,`name`,`enabled`,`interval`,`threshold`,`start_at`,`end_at`,`invest_amount`,`broker_id`,`basket_id`,`strategy_id`,`strategy_variables`,`alarm_id`,`order_kind`, cash_asset_id, cash_buffer_weight)
+    (`trade_id`,`name`,`sort`,`enabled`,`interval`,`threshold`,`start_at`,`end_at`,`invest_amount`,`broker_id`,`basket_id`,`strategy_id`,`strategy_variables`,`alarm_id`,`order_kind`, cash_asset_id, cash_buffer_weight)
 values
-    ('06c228451ce0400fa57bb36f0568d7cb','한국투자증권 모의투자 - 국내','Y','60','2','09:00','15:30','1000000','ca5f55cd88694715bcb4c478710d9a68','e5b2dda4ede54176b5e01eed7c4b9ed8','7c94187b346f4727a0f2478fdc53064f', null, null, 'LIMIT', 'KR.488770','1'),
-    ('7af6bc641eef4254b12dd9fa1d43384d','한국투자증권 모의투자 - 미국','Y','60','2','09:30','16:00','1000','961eb9c68c9547ce9ae61bbe3be7f037','a920f8813c6f46fda2947cee1c8cfb1d','7c94187b346f4727a0f2478fdc53064f', null, null, 'LIMIT', null, null),
-    ('81c6a451d6da49449faa2b5b7e66041b','코인놀이방(24시간 테스트용)','N','30','3','00:00','23:59','100000','a135ee9a276f4edf81d6e1b6b9d31e39','7818b580e3f340498b97f50e0e801ff8','7c94187b346f4727a0f2478fdc53064f', null, null, 'LIMIT', null, null);
+    ('06c228451ce0400fa57bb36f0568d7cb','한국투자증권 모의투자 - 국내', 1, 'Y','60','2','09:00','15:30','1000000','ca5f55cd88694715bcb4c478710d9a68','e5b2dda4ede54176b5e01eed7c4b9ed8','7c94187b346f4727a0f2478fdc53064f', null, null, 'LIMIT', 'KR.488770','1'),
+    ('7af6bc641eef4254b12dd9fa1d43384d','한국투자증권 모의투자 - 미국', 2, 'Y','60','2','09:30','16:00','1000','961eb9c68c9547ce9ae61bbe3be7f037','a920f8813c6f46fda2947cee1c8cfb1d','7c94187b346f4727a0f2478fdc53064f', null, null, 'LIMIT', null, null),
+    ('81c6a451d6da49449faa2b5b7e66041b','코인놀이방(24시간 테스트용)', 3, 'N','30','3','00:00','23:59','100000','a135ee9a276f4edf81d6e1b6b9d31e39','7818b580e3f340498b97f50e0e801ff8','7c94187b346f4727a0f2478fdc53064f', null, null, 'LIMIT', null, null);
 
 -- fintics_order
 insert into fintics_order
@@ -192,12 +192,6 @@ values
     ('36ac47501be24bd5b7cdb0255912e757', '2023-11-10 02:23:50.000', 'BUY', '06c228451ce0400fa57bb36f0568d7cb', 'KR.122630', 'KODEX 레버리지(테스트)', 262, 'FAILED', '모의투자 장시작전 입니다.'),
     ('a44181a8d6424dc78682b4fa8e4b0729', '2023-11-10 09:01:12.000', 'BUY', '06c228451ce0400fa57bb36f0568d7cb', 'KR.122630', 'KODEX 레버리지(테스트)', 264, 'COMPLETED', NULL),
     ('62b521b88ee742239753c5b1157d7407', '2023-11-10 14:47:14.000', 'SELL', '06c228451ce0400fa57bb36f0568d7cb', 'KR.122630', 'KODEX 레버리지(테스트)', 264, 'COMPLETED', NULL);
-
-
-
-
-
-
 
 -- for test (paper trade)
 update fintics_broker set broker_client_properties='
