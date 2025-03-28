@@ -538,7 +538,7 @@
                             </th>
                         </tr>
                         </thead>
-                        <tbody th:data-duice-bind="|monitorMap.get('${trade.tradeId}').basket.basketItems|" data-duice-loop="basketItem,status">
+                        <tbody th:data-duice-bind="|monitorMap.get('${trade.tradeId}').basket.basketItems|" data-duice-foreach="basketItem,status">
                         <tr data-duice-bind="basketItem" data-duice-if="return basketItem._type==='basketAsset';">
                             <td class="text-align--center">
                                 <span data-duice-bind="basketItem" data-duice-execute="this.innerHTML = basketItem.sort + 1;" class="number"></span>

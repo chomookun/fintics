@@ -367,7 +367,7 @@
                                     </tr>
                                     </thead>
                                     <tbody>
-                                    <tr th:data-duice-bind="|profitMap.get('${broker.brokerId}').realizedProfits|" data-duice-loop="realizedProfit,status">
+                                    <tr th:data-duice-bind="|profitMap.get('${broker.brokerId}').realizedProfits|" data-duice-foreach="realizedProfit,status">
                                         <td class="text-align--center">
                             <span data-duice-bind="realizedProfit"
                                   data-duice-property="date"
@@ -474,7 +474,7 @@
                                     </tr>
                                     </thead>
                                     <tbody>
-                                    <tr th:data-duice-bind="|profitMap.get('${broker.brokerId}').dividendProfits|" data-duice-loop="dividendProfit,status">
+                                    <tr th:data-duice-bind="|profitMap.get('${broker.brokerId}').dividendProfits|" data-duice-foreach="dividendProfit,status">
                                         <td class="text-align--center">
                                         <span data-duice-bind="dividendProfit"
                                               data-duice-property="date"

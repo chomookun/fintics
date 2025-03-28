@@ -331,7 +331,7 @@
                     </tr>
                     </thead>
                     <tbody>
-                    <tr data-duice-bind="assets" data-duice-loop="asset,status">
+                    <tr data-duice-bind="assets" data-duice-foreach="asset,status">
                         <td class="text-align--center">
                         <span data-duice-bind="status"
                               data-duice-execute="this.innerHTML = (assetSearch._size*assetSearch._page) + status.count;"

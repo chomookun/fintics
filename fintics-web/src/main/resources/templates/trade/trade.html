@@ -542,7 +542,7 @@
                         </tr>
                         </thead>
                         <tbody>
-                        <tr data-duice-bind="basket.basketAssets" data-duice-loop="basketAsset,status">
+                        <tr data-duice-bind="basket.basketAssets" data-duice-foreach="basketAsset,status">
                             <td class="text-align--center">
                                 <span data-duice-bind="status" data-duice-property="count" class="number"></span>
                             </td>
@@ -828,7 +828,7 @@
                             </thead>
                             <tbody>
                             <tr data-duice-bind="balance.balanceAssets"
-                                data-duice-loop="balanceAsset,status"
+                                data-duice-foreach="balanceAsset,status"
                                 data-duice-execute="
                                 let length = basket.basketAssets.filter(basketAsset => {
                                     return basketAsset.assetId === balanceAsset.assetId;
@@ -1025,7 +1025,7 @@
                     </tr>
                     </thead>
                     <tbody>
-                    <tr data-duice-bind="cashAssetDialog.assets" data-duice-loop="asset,status">
+                    <tr data-duice-bind="cashAssetDialog.assets" data-duice-foreach="asset,status">
                         <td class="text-align--center">
                             <button class="button font-size--smaller" type="button"
                                     data-duice-bind="asset"

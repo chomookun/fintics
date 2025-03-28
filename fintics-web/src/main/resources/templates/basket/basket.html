@@ -344,7 +344,7 @@
                                 <th>-</th>
                             </tr>
                             </thead>
-                            <tbody data-duice-bind="basket.basketItems" data-duice-loop="basketItem,status" data-duice-editable="true"
+                            <tbody data-duice-bind="basket.basketItems" data-duice-foreach="basketItem,status" data-duice-editable="true"
                                 data-duice-execute="if(basketItem._new) this.classList.add('background-color--yellow');">
                             <tr data-duice-bind="basketItem" data-duice-if="return basketItem._type==='basketAsset';">
                                 <td class="text-align--center">
@@ -795,7 +795,7 @@
                         </tr>
                         </thead>
                         <tbody>
-                        <tr data-duice-bind="assetSelectDialog.assets" data-duice-loop="asset,status">
+                        <tr data-duice-bind="assetSelectDialog.assets" data-duice-foreach="asset,status">
                             <td class="text-align--center">
                                 <button class="button" type="button"
                                         data-duice-bind="asset"
@@ -945,7 +945,7 @@
                         </tr>
                         </thead>
                         <tbody>
-                        <tr data-duice-bind="assetSelectDialog.selectedAssets" data-duice-loop="asset,status">
+                        <tr data-duice-bind="assetSelectDialog.selectedAssets" data-duice-foreach="asset,status">
                             <td class="text-align--center">
                                 <button class="button" type="button"
                                         data-duice-bind="asset"

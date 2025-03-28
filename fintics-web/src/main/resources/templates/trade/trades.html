@@ -208,7 +208,7 @@
                     </tr>
                     </thead>
                     <tbody>
-                    <tr data-duice-bind="trades" data-duice-loop="trade,status" data-duice-editable="true">
+                    <tr data-duice-bind="trades" data-duice-foreach="trade,status" data-duice-editable="true">
                         <td class="text-align--center">
                         <span data-duice-bind="status"
                               data-duice-execute="this.innerHTML = (tradeSearch._size * tradeSearch._page) + status.count;"
