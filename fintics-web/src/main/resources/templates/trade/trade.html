@@ -14,17 +14,14 @@
         const baskets = new duice.ArrayProxy(/*[[${baskets}]]*/[]);
         const strategies = new duice.ArrayProxy(/*[[${strategies}]]*/[]);
         const cashAsset = new duice.ObjectProxy({});
-
         // basket
         const basket = new duice.ObjectProxy({
             basketAssets: []
         });
         duice.ArrayProxy.setReadonlyAll(basket.basketAssets, true);
-
         // strategy
         const strategy = new duice.ObjectProxy({});
         duice.ObjectProxy.setReadonlyAll(strategy, true);
-
         // trade
         const trade = new duice.ObjectProxy({
             tradeId: null,
@@ -56,7 +53,6 @@
                 }
             }
         });
-
         // order
         const orderSearch = new duice.ObjectProxy({
             assetId: null,
@@ -67,7 +63,6 @@
             _count: 0
         });
         const orders = new duice.ArrayProxy([]);
-
         // balance
         const balance = new duice.ObjectProxy({
             total: null,
@@ -75,7 +70,6 @@
             balanceAssets: []
         });
         duice.ObjectProxy.setReadonlyAll(balance, true);
-
         // checks authority
         let hasTradeEditAuthority = /*[[${#authorization.expression('hasAuthority(''trade.edit'')')}]]*/false;
         if (!hasTradeEditAuthority) {
@@ -381,7 +375,7 @@
                 <div class="grid-column--span-6">
                     <label>
                         <span class="font-weight--bold tag-required" data-th-text="#{fintics.core.trade.Trade.name}"></span>
-                        <input class="width--100 font-weight--bold" type="text" data-duice-bind="trade" data-duice-property="name"/>
+                        <input class="width--100" type="text" data-duice-bind="trade" data-duice-property="name"/>
                     </label>
                 </div>
                 <div class="grid-column--span-6">

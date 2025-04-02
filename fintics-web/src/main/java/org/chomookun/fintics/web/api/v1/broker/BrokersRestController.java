@@ -4,7 +4,7 @@ import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
-import org.chomookun.arch4j.web.common.data.PageableUtils;
+import org.chomookun.arch4j.core.common.data.PageableUtils;
 import org.chomookun.fintics.core.broker.model.Broker;
 import org.chomookun.fintics.core.broker.model.BrokerSearch;
 import org.chomookun.fintics.core.broker.BrokerService;

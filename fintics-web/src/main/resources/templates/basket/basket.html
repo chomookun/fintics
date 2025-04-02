@@ -15,7 +15,6 @@
             market: null,
             basketItems: []
         });
-
         // checks authority
         let hasBasketEditAuthority = /*[[${#authorization.expression('hasAuthority(''basket.edit'')')}]]*/false;
         if (!hasBasketEditAuthority) {
@@ -281,7 +280,7 @@
                 <div class="grid-column--span-6 s__grid-column--span-12">
                     <label>
                         <span data-th-text="#{fintics.core.basket.Basket.name}" class="font-weight--bold tag-required"></span>
-                        <input type="text" data-duice-bind="basket" data-duice-property="name" class="width--100 font-weight--bold"/>
+                        <input type="text" data-duice-bind="basket" data-duice-property="name" class="width--100"/>
                     </label>
                 </div>
                 <div class="grid-column--span-6 s__grid-column--span-12">

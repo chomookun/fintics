@@ -6,7 +6,7 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.chomookun.arch4j.web.common.doc.PageableAsQueryParam;
-import org.chomookun.arch4j.web.common.data.PageableUtils;
+import org.chomookun.arch4j.core.common.data.PageableUtils;
 import org.chomookun.fintics.web.api.v1.broker.dto.BalanceResponse;
 import org.chomookun.fintics.core.order.model.Order;
 import org.chomookun.fintics.core.trade.model.Trade;

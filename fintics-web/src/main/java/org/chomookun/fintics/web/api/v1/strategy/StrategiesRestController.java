@@ -4,7 +4,7 @@ import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
-import org.chomookun.arch4j.web.common.data.PageableUtils;
+import org.chomookun.arch4j.core.common.data.PageableUtils;
 import org.chomookun.fintics.web.api.v1.strategy.dto.StrategyRequest;
 import org.chomookun.fintics.web.api.v1.strategy.dto.StrategyResponse;
 import org.chomookun.fintics.core.strategy.model.Strategy;
