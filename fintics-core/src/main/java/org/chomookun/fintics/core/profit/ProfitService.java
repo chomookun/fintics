@@ -8,9 +8,9 @@ import org.chomookun.fintics.core.broker.BrokerService;
 import org.chomookun.fintics.core.broker.client.BrokerClient;
 import org.chomookun.fintics.core.broker.client.BrokerClientFactory;
 import org.chomookun.fintics.core.profit.repository.BalanceHistoryRepository;
-import org.chomookun.fintics.core.profit.model.DividendProfit;
+import org.chomookun.fintics.core.broker.model.DividendProfit;
 import org.chomookun.fintics.core.profit.model.Profit;
-import org.chomookun.fintics.core.profit.model.RealizedProfit;
+import org.chomookun.fintics.core.broker.model.RealizedProfit;
 import org.springframework.stereotype.Service;
 
 import java.math.BigDecimal;

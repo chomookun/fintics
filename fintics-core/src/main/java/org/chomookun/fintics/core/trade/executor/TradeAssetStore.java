@@ -32,11 +32,6 @@ public class TradeAssetStore {
 
     private final Map<String, TradeAsset> tradeAssetCacheMap = new HashMap<>();
 
-    /**
-     * loads trade assets
-     * @param tradeId trade id
-     * @param assetId asset id
-     */
     public Optional<TradeAsset> load(String tradeId, String assetId) {
         TradeAssetEntity.Pk pk = TradeAssetEntity.Pk.builder()
                 .tradeId(tradeId)
@@ -46,12 +41,6 @@ public class TradeAssetStore {
                 .map(TradeAsset::from);
     }
 
-    /**
-     * saves trade asset
-     * 1. sends stomp message to specific destination
-     * 2. if persist flag is true, save to database table
-     * @param tradeAsset trade asset to handle
-     */
     public void save(TradeAsset tradeAsset) {
         // trim message
         tradeAsset.setMessage(Optional.ofNullable(tradeAsset.getMessage())

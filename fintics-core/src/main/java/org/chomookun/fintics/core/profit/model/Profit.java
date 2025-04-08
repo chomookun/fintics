@@ -1,6 +1,8 @@
 package org.chomookun.fintics.core.profit.model;
 
 import lombok.*;
+import org.chomookun.fintics.core.broker.model.DividendProfit;
+import org.chomookun.fintics.core.broker.model.RealizedProfit;
 
 import java.math.BigDecimal;
 import java.util.ArrayList;

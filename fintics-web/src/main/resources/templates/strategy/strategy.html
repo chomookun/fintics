@@ -4,258 +4,242 @@
       xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
       layout:decorate="_web.html">
 <th:block layout:fragment="_content">
-    <th:block th:insert="common/common.html"/>
+    <th:block th:insert="common/_common.html"/>
     <script th:inline="javascript">
-        const strategyId = new URL(location.href).searchParams.get('strategyId');
-        const strategy = new duice.ObjectProxy({
-            strategyId: null,
-            name: null
+        const strategySearch = new duice.ObjectProxy({
+            key: 'name',
+            value: null,
+            _page: 0,
+            _size: 20,
+            _total: -1,
+            _status: null
         });
-        // checks authority
-        let hasStrategyEditAuthority = /*[[${#authorization.expression('hasAuthority(''strategy.edit'')')}]]*/false;
-        if (!hasStrategyEditAuthority) {
-            duice.ObjectProxy.setReadonlyAll(strategy, true);
-        }
+        const strategies = new duice.ArrayProxy([]);
+        // On strategy item moved
+        duice.ArrayProxy.onItemMoved(strategies, event => {
+            let strategy = strategies[event.toIndex];
+            let sort = parseInt(strategySearch._page) * parseInt(strategySearch._size) + event.toIndex;
+            changeStrategySort(strategy.strategyId, sort);
+        });
 
-        /**
-         * gets strategy
-         * @param strategyId
-         */
-        function getStrategy(strategyId) {
-            let url = new URL(`${_apiUrl}/v1/strategies/${strategyId}`, document.location.origin);
+        function getStrategies(page) {
+            strategySearch._page = page ?? strategySearch._page;
+            let url = new URL(`${_apiUrl}/v1/strategies`, document.location.origin);
+            if (strategySearch.key != null && strategySearch.value != null) {
+                url.searchParams.append(strategySearch.key, strategySearch.value);
+            }
+            url.searchParams.append('_page', strategySearch._page);
+            url.searchParams.append('_size', strategySearch._size);
+            strategySearch._status = 'loading';
+            duice.ArrayProxy.clear(strategies);
             _fetch(url)
-                .then(response => response.json())
+                .then(response => {
+                    strategySearch._total = _parseTotalCount(response);
+                    return response.json();
+                })
                 .then(data => {
-                    duice.ObjectProxy.assign(strategy, data);
+                    duice.ArrayProxy.assign(strategies, data);
+                })
+                .finally(() => {
+                    strategySearch._status = 'completed';
                 });
         }
 
-        /**
-         * saves strategy
-         * @returns {Promise<boolean>}
-         */
-        async function saveStrategy() {
-            if(!strategy.name) {
-                await _alert(/*[[#{web.global.itemEmpty(#{fintics.core.strategy.Strategy.name})}]]*/'');
-                duice.ObjectProxy.focus(strategy, 'name');
-                return false;
-            }
-            if(!strategy.language) {
-                await _alert(/*[[#{web.global.itemEmpty(#{fintics.core.strategy.Strategy.language})}]]*/'');
-                duice.ObjectProxy.focus(strategy, 'language');
-                return false;
-            }
-            _confirm(/*[[#{web.global.saveItemConfirm(#{fintics.core.strategy.Strategy})}]]*/'')
-                .then(result => {
-                    if (result) {
-                        let url;
-                        let method;
-                        if(!strategyId) {
-                            url = `${_apiUrl}/v1/strategies`;
-                            method = 'POST';
-                        }else{
-                            url = `${_apiUrl}/v1/strategies/${strategy.strategyId}`;
-                            method = 'PUT';
-                        }
-                        _fetch(new URL(url, document.location.origin), {
-                            method: method,
-                            headers: {
-                                'Content-Type': 'application/json'
-                            },
-                            body: JSON.stringify(strategy)
-                        }).then(response => response.json())
-                            .then(data => {
-                                _alert(/*[[#{web.global.saveItemComplete(#{fintics.core.strategy.Strategy})}]]*/'')
-                                    .then(() => {
-                                        if(strategy.strategyId) {
-                                            duice.ObjectProxy.clear(strategy);
-                                            duice.ObjectProxy.assign(strategy, data);
-                                        }else{
-                                            document.location.replace(`${_rootUrl}/strategy?strategyId=${data.strategyId}`);
-                                        }
-                                    });
-                            });
-                    }
-                });
+        function resetStrategies() {
+            duice.ObjectProxy.reset(strategySearch);
+            getStrategies();
         }
 
-        /**
-         * deletes strategy
-         * @returns {Promise<void>}
-         */
-        async function deleteStrategy() {
-            if (await _confirm(/*[[#{web.global.deleteItemConfirm(#{fintics.Strategy})}]]*/'')) {
-                let url = new URL(`${_apiUrl}/v1/strategies/${strategy.strategyId}`, document.location.origin);
-                _fetch(url, {
-                    method: 'DELETE'
-                }).then(async response => {
-                    if (response.ok) {
-                        await _alert(/*[[#{web.global.deleteItemComplete(#{fintics.Strategy})}]]*/'');
-                        document.location.replace(`${_rootUrl}/strategies`);
-                    }
-                });
-            }
+        function moveStrategySortUp(index) {
+            let strategy = strategies[parseInt(index)];
+            changeStrategySort(strategy.strategyId, strategy.sort - 1);
         }
 
-        /**
-         * export strategy
-         */
-        function exportStrategy() {
-            let strategyForExport = JSON.parse(JSON.stringify(strategy, null, 4));
-            delete strategyForExport.strategyId;
-            strategyForExport.name += '_Copy';    // adds copy suffix in name
-            let strategyForExportJson = JSON.stringify(strategyForExport, null, 4);
-            let a = document.createElement('a');
-            let href = 'data:application/json;charset=utf-8,' + encodeURIComponent(strategyForExportJson);
-            let download = `strategy_${strategy.name}.json`;
-            a.setAttribute('href', href);
-            a.setAttribute('download', download);
-            a.click();
+        function moveStrategySortDown(index) {
+            let strategy = strategies[parseInt(index)];
+            changeStrategySort(strategy.strategyId, strategy.sort + 1);
         }
 
-        /**
-         * import strategy
-         */
-        function importStrategy() {
-            let input = document.createElement('input');
-            input.setAttribute("type", "file");
-            input.setAttribute("accept", "application/json");
-            input.addEventListener('change', function (e) {
-                let fileReader = new FileReader();
-                if (this.files && this.files[0]) {
-                    fileReader.addEventListener("load", async function (event) {
-                        let strategyForImport = JSON.parse(event.target.result);
-                        // removes name if name is already exist.
-                        if (strategy.name) {
-                            delete strategyForImport.name;
-                        }
-                        delete strategyForImport.strategyId;
-                        duice.ObjectProxy.assign(strategy, strategyForImport);
-                    });
-                    fileReader.readAsText(this.files[0]);
+        function changeStrategySort(strategyId, sort) {
+            let url = new URL(`${_apiUrl}/v1/strategies/${strategyId}/sort`, location.origin);
+            url.searchParams.set('sort', sort);
+            _fetch(url, {
+                method: 'PATCH'
+            }).then(response => {
+                if (response.ok) {
+                    getStrategies();
                 }
-                e.preventDefault();
-                e.stopPropagation();
-            });
-            input.click();
+            })
         }
 
-        document.addEventListener('DOMContentLoaded', () => {
-            if(strategyId) {
-                getStrategy(strategyId);
-            }
+        function getStrategy(strategyId) {
+            let url = new URL('/strategy/detail', location.origin);
+            url.searchParams.set('strategyId', strategyId);
+            location.href = url.href;
+        }
+
+        function createStrategy() {
+            location.href = `${location.origin}/strategy/detail`;
+        }
+
+        function loadStrategySearch() {
+            duice.ObjectProxy.reset(strategySearch);
+            _loadUrlSearchParams(strategySearch, ['key', 'value', '_page', '_size']);
+        }
+
+        function pushStrategySearch() {
+            _pushUrlSearchParams(strategySearch, ['key', 'value', '_page', '_size']);
+        }
+
+        // initialize
+        _initialize(() => {
+            loadStrategySearch();
+            getStrategies();
         });
     </script>
     <style th:inline="css">
-        #simulateLog {
-            padding-top: 0.5em;
-            line-height: 1.2em;
-            background-color: #222;
-            color: white;
-            font-family: monospace;
-            font-size: smaller;
-        }
     </style>
 
     <!-- ====================================== -->
     <!-- start: title                           -->
     <!-- ====================================== -->
     <h1 id="title">
-        <img class="icon" th:src="@{/static/image/icon-strategy.svg}" alt="variable"/>
+        <img class="icon" th:src="@{/static/image/icon-strategy.svg}" alt="strategy"/>
         <span data-th-text="#{fintics.core.strategy.Strategy}"></span>
-        <small>&gt;</small>
-        <small data-duice-bind="strategy" data-duice-property="name"></small>
     </h1>
     <!-- ====================================== -->
     <!-- end: title                             -->
     <!-- ====================================== -->
 
-    <!-- ====================================== -->
-    <!-- start: strategy                        -->
-    <!-- ====================================== -->
+    <!-- ================================== -->
+    <!-- start: strategy                       -->
+    <!-- ================================== -->
     <div class="panel">
         <div class="panel-title">
             <h2>
-                <img class="icon" th:src="@{/static/image/icon-detail.svg}" alt="detail"/>
-                <span data-th-text="|#{fintics.core.strategy.Strategy} #{web.global.detail}|"></span>
+                <img class="icon" th:src="@{/static/image/icon-list.svg}" alt="list"/>
+                <span data-th-text="|#{fintics.core.strategy.Strategy} #{web.global.list}|"></span>
             </h2>
         </div>
         <div class="panel-content">
-            <form class="display--grid grid-template-columns--12fr gap--1rem">
-                <div class="grid-column--span-6 s__grid-column--span-12">
-                    <label>
-                        <span class="font-weight--bold tag-required" data-th-text="#{fintics.core.strategy.Strategy.name}"></span>
-                        <input class="width--100" type="text" data-duice-bind="strategy" data-duice-property="name"/>
-                    </label>
-                </div>
-                <div class="grid-column--span-6 s__grid-column--span-12">
-                    <label>
-                        <span class="font-weight--bold tag-required" data-th-text="#{fintics.core.strategy.Strategy.language}"></span>
-                        <select class="width--100" data-duice-bind="strategy" data-duice-property="language">
-                            <option data-th-text="|#{web.global.select}...|"></option>
-                            <option th:each="language : ${languages}" th:value="${language}" th:text="${language}"></option>
-                        </select>
-                    </label>
-                </div>
-                <div class="grid-column--span-12">
-                    <div>
-                        <span class="font-weight--bold" data-th-text="#{fintics.core.strategy.Strategy.variables}"></span>
+            <form onsubmit="return false;" class="display--flex justify-content--space-between">
+                <div>
+                    <div class="display--flex flex-wrap--nowrap gap--1px">
+                        <label class="flex--1">
+                            <select data-duice-bind="strategySearch" data-duice-property="key">
+                                <option value="name" data-th-text="#{fintics.core.strategy.Strategy.name}"></option>
+                            </select>
+                        </label>
+                        <label class="flex--2">
+                            <input type="text" data-duice-bind="strategySearch" data-duice-property="value"
+                                   th:placeholder="#{web.global.keyword}"/>
+                        </label>
                     </div>
-                    <duice-codemirror class="box code"
-                                      data-duice-bind="strategy"
-                                      data-duice-property="variables"
-                                      data-duice-mode="properties"
-                                      data-duice-theme="dracula">
-                    </duice-codemirror>
                 </div>
-                <div class="grid-column--span-12">
-                    <div>
-                        <span class="font-weight--bold" data-th-text="#{fintics.core.strategy.Strategy.script}"></span>
-                    </div>
-                    <duice-codemirror class="code box" style="height:100vh;"
-                                      data-duice-bind="strategy"
-                                      data-duice-property="script"
-                                      data-duice-mode="groovy"
-                                      data-duice-theme="dracula">
-                    </duice-codemirror>
+                <div class="flex--1 display--flex justify-content--end gap--1px">
+                    <button class="button" type="submit" onclick="getStrategies(); pushStrategySearch();">
+                        <img class="icon" th:src="@{/static/image/icon-search.svg}" alt="reset"/>
+                        <span data-th-text="#{web.global.search}"></span>
+                    </button>
+                    <button class="button" type="button" onclick="resetStrategies();">
+                        <img class="icon" th:src="@{/static/image/icon-reset.svg}" alt="reset"/>
+                        <span data-th-text="#{web.global.reset}"></span>
+                    </button>
                 </div>
             </form>
+            <div class="box overflow-auto">
+                <table class="table width--100 border--none">
+                    <colgroup>
+                        <col style="width:5rem;"/>
+                        <col/>
+                        <col style="width:20rem;"/>
+                        <col style="width:5rem;"/>
+                    </colgroup>
+                    <thead>
+                    <tr>
+                        <th data-th-text="#{web.global.no}" class="text-align--center"></th>
+                        <th data-th-text="#{fintics.core.strategy.Strategy.name}"></th>
+                        <th data-th-text="#{fintics.core.strategy.Strategy.language}" class="text-align--center"></th>
+                        <th>-</th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    <tr data-duice-bind="strategies"
+                        data-duice-foreach="strategy,status"
+                        data-duice-editable="true">
+                        <td class="text-align--center">
+                            <span data-duice-bind="status"
+                                  data-duice-execute="this.innerHTML = (strategySearch._size * strategySearch._page + status.count);"
+                                  class="number">
+                            </span>
+                        </td>
+                        <td>
+                            <a href="javascript:void(0)" onclick="getStrategy(this.dataset.strategyId);"
+                               data-duice-bind="strategy"
+                               data-duice-execute="this.dataset.strategyId = strategy.strategyId;">
+                                <span data-duice-bind="strategy" data-duice-property="name"></span>
+                            </a>
+                        </td>
+                        <td class="text-align--center">
+                            <span data-duice-bind="strategy" data-duice-property="language" class="badge code"></span>
+                        </td>
+                        <td>
+                            <div class="display--flex gap--1px">
+                                <button type="button"
+                                        data-duice-bind="strategy"
+                                        data-duice-execute="this.dataset.index = status.index;"
+                                        onclick="moveStrategySortUp(this.dataset.index);">
+                                    <img class="icon" th:src="@{/static/image/icon-up.svg}" alt="up"/>
+                                </button>
+                                <button type="button"
+                                        data-duice-bind="strategy"
+                                        data-duice-execute="this.dataset.index = status.index;"
+                                        onclick="moveStrategySortDown(this.dataset.index);">
+                                    <img class="icon" th:src="@{/static/image/icon-down.svg}" alt="down"/>
+                                </button>
+                            </div>
+                        </td>
+                    </tr>
+                    <tr data-duice-bind="strategySearch" data-duice-if="return strategySearch._status === 'loading';">
+                        <td colspan="100%" class="text-align--center padding--1rem">
+                            <span class="blink" data-th-text="#{web.global.itemLoading(#{fintics.core.strategy.Strategy})}"></span>
+                        </td>
+                    </tr>
+                    <tr data-duice-bind="strategySearch" data-duice-if="return strategySearch._status === 'completed' && strategies.length < 1;" hidden>
+                        <td colspan="100%" class="text-align--center padding--1rem">
+                            <span data-th-text="#{web.global.itemNotFound(#{fintics.core.strategy.Strategy})}"></span>
+                        </td>
+                    </tr>
+                    </tbody>
+                </table>
+            </div>
             <div class="display--flex justify-content--space-between">
-                <div class="display--flex gap--1px">
-                    <button class="button" type="button"
-                            th:classappend="!${#authorization.expression('hasAuthority(''strategy.edit'')')}?'locked'"
-                            onclick="exportStrategy();">
-                        <img class="icon" th:src="@{/static/image/icon-export.svg}" alt="export"/>
-                        <span>Export</span>
-                    </button>
-                    <button class="button" type="button"
-                            th:classappend="!${#authorization.expression('hasAuthority(''strategy.edit'')')}?'locked'"
-                            onclick="importStrategy();">
-                        <img class="icon" th:src="@{/static/image/icon-import.svg}" alt="import"/>
-                        <span>Import</span>
-                    </button>
+                <div class="flex--1">
+                    <span data-th-text="#{web.global.total}"></span>
+                    <span data-duice-bind="strategySearch" data-duice-property="_total" data-duice-format="number(0)" class="number"></span>
+                    <span data-th-text="#{web.global.rows}"></span>
                 </div>
-                <div class="display--flex justify-content--space-between gap--1px">
-                    <button class="button" type="button"
-                            data-duice-bind="strategy"
-                            th:classappend="!${#authorization.expression('hasAuthority(''strategy.edit'')')}?'locked'"
-                            onclick="deleteStrategy();">
-                        <img class="icon" th:src="@{/static/image/icon-delete.svg}" alt="save"/>
-                        <span data-th-text="#{web.global.delete}"></span>
-                    </button>
-                    <button class="button" type="button"
-                            data-duice-bind="strategy"
-                            th:classappend="!${#authorization.expression('hasAuthority(''strategy.edit'')')}?'locked'"
-                            onclick="saveStrategy();">
-                        <img class="icon" th:src="@{/static/image/icon-save.svg}" alt="save"/>
-                        <span data-th-text="#{web.global.save}"></span>
+                <div class="flex--1 display--flex justify-content--center">
+                    <duice-pagination
+                            class="number"
+                            data-duice-bind="strategySearch"
+                            data-duice-size-property="_size"
+                            data-duice-page-property="_page"
+                            data-duice-total-property="_total"
+                            data-duice-onclick="getStrategies(this.dataset.page); pushStrategySearch();">
+                    </duice-pagination>
+                </div>
+                <div class="flex--1 display--flex justify-content--end">
+                    <button class="button" type="button" onclick="createStrategy();">
+                        <img class="icon" th:src="@{/static/image/icon-create.svg}" alt="create"/>
+                        <span data-th-text="#{web.global.create}"></span>
                     </button>
                 </div>
             </div>
         </div>
     </div>
-    <!-- ====================================== -->
-    <!-- end: strategy                          -->
-    <!-- ====================================== -->
+    <!-- ================================== -->
+    <!-- end: strategy                       -->
+    <!-- ================================== -->
 
 </th:block>

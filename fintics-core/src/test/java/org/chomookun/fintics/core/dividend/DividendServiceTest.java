@@ -15,8 +15,6 @@ import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.util.List;
 
-import static org.junit.jupiter.api.Assertions.*;
-
 @SpringBootTest(classes = FinticsCoreConfiguration.class)
 @RequiredArgsConstructor
 @Slf4j

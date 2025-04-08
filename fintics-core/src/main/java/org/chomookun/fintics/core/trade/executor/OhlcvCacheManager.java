@@ -35,13 +35,6 @@ public class OhlcvCacheManager {
 
     private Map<String, List<Ohlcv>> minuteOhlcvsCache = new ConcurrentHashMap<>();
 
-    /**
-     * Gets daily ohlcvs
-     * @param assetId asset id
-     * @param dateTimeFrom date time from
-     * @param dateTimeTo date time to
-     * @return daily ohlcvs
-     */
     @Transactional(readOnly = true)
     public List<Ohlcv> getDailyOhlcvs(String assetId, LocalDateTime dateTimeFrom, LocalDateTime dateTimeTo) {
         List<Ohlcv> cachedDailyOhlcvs;
@@ -56,7 +49,7 @@ public class OhlcvCacheManager {
             // load cache
             cachedDailyOhlcvs = dailyOhlcvsCache.get(assetId);
             if (cachedDailyOhlcvs == null || cachedDailyOhlcvs.size() < 250) {
-                cachedDailyOhlcvs = ohlcvService.getDailyOhlcvs(assetId, LocalDateTime.now().minusYears(3), LocalDateTime.now(), PageRequest.of(0, 500));
+                cachedDailyOhlcvs = ohlcvService.getOhlcvs(assetId, Ohlcv.Type.DAILY, LocalDateTime.now().minusYears(3), LocalDateTime.now(), PageRequest.of(0, 500));
                 cachedDailyOhlcvs.forEach(it -> it.setCached(true));
                 dailyOhlcvsCache.put(assetId, cachedDailyOhlcvs);
             }
@@ -70,13 +63,6 @@ public class OhlcvCacheManager {
                 ).collect(Collectors.toList());
     }
 
-    /**
-     * Gets minute ohlcvs
-     * @param assetId asset id
-     * @param dateTimeFrom date time from
-     * @param dateTimeTo data time to
-     * @return minute ohlcvs
-     */
     @Transactional(readOnly = true)
     public List<Ohlcv> getMinuteOhlcvs(String assetId, LocalDateTime dateTimeFrom, LocalDateTime dateTimeTo) {
         List<Ohlcv> cachedMinuteOhlcvs;
@@ -91,7 +77,7 @@ public class OhlcvCacheManager {
             // load cache
             cachedMinuteOhlcvs = minuteOhlcvsCache.get(assetId);
             if (cachedMinuteOhlcvs == null || cachedMinuteOhlcvs.size() < 3_000) {
-                cachedMinuteOhlcvs = ohlcvService.getMinuteOhlcvs(assetId, LocalDateTime.now().minusMonths(1), LocalDateTime.now(), PageRequest.of(0, 6_000));
+                cachedMinuteOhlcvs = ohlcvService.getOhlcvs(assetId, Ohlcv.Type.MINUTE, LocalDateTime.now().minusMonths(1), LocalDateTime.now(), PageRequest.of(0, 6_000));
                 cachedMinuteOhlcvs.forEach(it -> it.setCached(true));
                 minuteOhlcvsCache.put(assetId, cachedMinuteOhlcvs);
             }

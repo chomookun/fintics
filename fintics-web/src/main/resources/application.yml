@@ -3,4 +3,4 @@ web:
   brand: <img src="/static/image/fintics-icon.svg"/><img src="/static/image/fintics-title.svg"/>
   favicon: /static/image/fintics-icon.svg
   title: Fintics
-  index: monitors
+  index: monitor

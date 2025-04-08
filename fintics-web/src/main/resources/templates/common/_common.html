@@ -1,0 +1,32 @@
+<script th:src="@{/static/lightweight-charts/lightweight-charts.js?version={version}(version=${_scriptVersion})}"></script>
+<script th:src="@{/static/fintics.js?version={version}(version=${_scriptVersion})}"></script>
+<script th:inline="javascript">
+    /**
+     * marks asset
+     */
+    const _applyAssetFavoriteIcon = function(imgElement, asset, editable) {
+        imgElement.classList.add('icon','font-size--large');
+        if (asset.favorite) {
+            imgElement.src = /*[[@{/static/image/icon-favorite-on.svg}]]*/'';
+        } else {
+            imgElement.src = /*[[@{/static/image/icon-favorite-off.svg}]]*/'';
+        }
+        if (editable) {
+            imgElement.classList.add('link');
+            imgElement.dataset.assetId = asset.assetId;
+            imgElement.dataset.favorite = asset.favorite;
+            imgElement.onclick = function() {
+                let assetId = this.dataset.assetId;
+                let favorite = !JSON.parse(this.dataset.favorite);
+                let url = new URL(`${_apiUrl}/v1/asset/assets/${assetId}/favorite`, document.location.origin);
+                let method = favorite ? 'POST' : 'DELETE';
+                _fetch(url, {
+                    method: method
+                }).then(() => {
+                    asset.favorite = favorite;
+                });
+            };
+        }
+    }
+</script>
+

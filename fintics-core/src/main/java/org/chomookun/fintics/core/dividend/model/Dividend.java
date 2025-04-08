@@ -17,11 +17,6 @@ public class Dividend {
 
     private BigDecimal dividendPerShare;
 
-    /**
-     * Converts dividend entity to dividend
-     * @param dividendEntity dividend entity
-     * @return dividend
-     */
     public static Dividend from(DividendEntity dividendEntity) {
         return Dividend.builder()
                 .assetId(dividendEntity.getAssetId())

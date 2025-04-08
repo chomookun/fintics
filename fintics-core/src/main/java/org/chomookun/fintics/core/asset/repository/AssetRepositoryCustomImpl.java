@@ -25,12 +25,6 @@ public class AssetRepositoryCustomImpl implements AssetRepositoryCustom {
 
     private final JPAQueryFactory jpaQueryFactory;
 
-    /**
-     * Finds asset entities
-     * @param assetSearch asset search criteria
-     * @param pageable pageable
-     * @return page of asset entities
-     */
     @Override
     public Page<AssetEntity> findAll(AssetSearch assetSearch, Pageable pageable) {
         QAssetEntity qAssetEntity = QAssetEntity.assetEntity;

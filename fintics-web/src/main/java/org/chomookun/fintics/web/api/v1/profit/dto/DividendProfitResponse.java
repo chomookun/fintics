@@ -2,7 +2,7 @@ package org.chomookun.fintics.web.api.v1.profit.dto;
 
 import lombok.Builder;
 import lombok.Getter;
-import org.chomookun.fintics.core.profit.model.DividendProfit;
+import org.chomookun.fintics.core.broker.model.DividendProfit;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;

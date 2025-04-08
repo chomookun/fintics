@@ -11,7 +11,7 @@ import java.util.Optional;
 /**
  * Ohlcv client properties
  */
-@ConfigurationProperties(prefix = "fintics.core.ohlcv.ohlcv-client")
+@ConfigurationProperties(prefix = "fintics.core.asset.ohlcv-client")
 @AllArgsConstructor
 @Getter
 @Builder

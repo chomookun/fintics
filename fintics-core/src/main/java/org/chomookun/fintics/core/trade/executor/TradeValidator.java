@@ -11,10 +11,6 @@ import java.util.Objects;
 @Slf4j
 public class TradeValidator {
 
-    /**
-     * Checks validity of ohlcvs
-     * @param ohlcvs ohlcvs
-     */
     public static void validateOhlcvs(List<Ohlcv> ohlcvs) {
         // checks date time order
         for (int i = 0; i < ohlcvs.size() - 1; i ++) {
@@ -26,10 +22,6 @@ public class TradeValidator {
         }
     }
 
-    /**
-     * Checks validity of order book
-     * @param orderBook order book
-     */
     public static void validateOrderBook(OrderBook orderBook) {
         // checks null
         Objects.requireNonNull(orderBook.getPrice(), "price is required");

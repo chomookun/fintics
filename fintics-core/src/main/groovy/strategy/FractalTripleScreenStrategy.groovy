@@ -1,9 +1,9 @@
 import groovy.transform.ToString
 import groovy.transform.builder.Builder
 import org.chomookun.fintics.core.ohlcv.model.Ohlcv
-import org.chomookun.fintics.core.indicator.Tools
-import org.chomookun.fintics.core.indicator.bolangerband.BollingerBandContext
-import org.chomookun.fintics.core.indicator.pricechannel.PriceChannelContext
+import org.chomookun.fintics.core.ohlcv.indicator.Tools
+import org.chomookun.fintics.core.ohlcv.indicator.bolangerband.BollingerBandContext
+import org.chomookun.fintics.core.ohlcv.indicator.pricechannel.PriceChannelContext
 
 import java.math.RoundingMode
 

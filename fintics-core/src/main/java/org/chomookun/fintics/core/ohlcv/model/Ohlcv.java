@@ -2,10 +2,8 @@ package org.chomookun.fintics.core.ohlcv.model;
 
 import lombok.*;
 import lombok.experimental.SuperBuilder;
-import org.chomookun.arch4j.core.common.data.converter.GenericEnumConverter;
 import org.chomookun.fintics.core.ohlcv.entity.OhlcvEntity;
 
-import jakarta.persistence.Converter;
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
@@ -40,19 +38,6 @@ public class Ohlcv {
 
     public enum Type { MINUTE, DAILY }
 
-    /**
-     * Creates Ohlcv
-     * @param assetId asset id
-     * @param type ohlcv type
-     * @param dateTime date time
-     * @param timeZone time zone
-     * @param open open price
-     * @param high high price
-     * @param low low price
-     * @param close low close
-     * @param volume volume
-     * @return ohlcv
-     */
     public static Ohlcv of(String assetId, Ohlcv.Type type, LocalDateTime dateTime, ZoneId timeZone, double open, double high, double low, double close, double volume) {
         return Ohlcv.builder()
                 .assetId(assetId)
@@ -67,11 +52,6 @@ public class Ohlcv {
                 .build();
     }
 
-    /**
-     * Converts ohlcv entity to ohlcv
-     * @param ohlcvEntity ohlcv entity
-     * @return ohlcv
-     */
     public static Ohlcv from(OhlcvEntity ohlcvEntity) {
         return Ohlcv.builder()
                 .assetId(ohlcvEntity.getAssetId())

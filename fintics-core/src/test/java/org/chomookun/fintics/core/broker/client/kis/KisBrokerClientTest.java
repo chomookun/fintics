@@ -7,7 +7,7 @@ import org.chomookun.fintics.core.broker.model.Balance;
 import org.chomookun.fintics.core.ohlcv.model.Ohlcv;
 import org.chomookun.fintics.core.order.model.Order;
 import org.chomookun.fintics.core.broker.model.OrderBook;
-import org.chomookun.fintics.core.profit.model.DividendProfit;
+import org.chomookun.fintics.core.broker.model.DividendProfit;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;

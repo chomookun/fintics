@@ -48,10 +48,6 @@ public class Asset {
 
     private BigDecimal totalReturn;
 
-    /**
-     * gets symbol
-     * @return symbol
-     */
     public String getSymbol() {
         return Optional.ofNullable(getAssetId())
                 .map(string -> string.split("\\."))
@@ -60,11 +56,6 @@ public class Asset {
                 .orElseThrow(() -> new RuntimeException(String.format("invalid assetId[%s]", getAssetId())));
     }
 
-    /**
-     * Converts asset entity to model
-     * @param assetEntity asset entity
-     * @return asset model
-     */
     public static Asset from(AssetEntity assetEntity) {
         return Asset.builder()
                 .assetId(assetEntity.getAssetId())

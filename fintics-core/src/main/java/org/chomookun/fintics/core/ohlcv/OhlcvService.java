@@ -19,9 +19,6 @@ import java.util.List;
 import java.util.NavigableMap;
 import java.util.TreeMap;
 
-/**
- * Ohlcv service
- */
 @Service
 @RequiredArgsConstructor
 public class OhlcvService {
@@ -34,71 +31,28 @@ public class OhlcvService {
 
     private final OhlcvClient ohlcvClient;
 
-    /**
-     * Returns daily ohlcvs
-     * @param assetId asset id
-     * @param dateTimeFrom date time from
-     * @param dateTimeTo date time to
-     * @param pageable pageable
-     * @return list of daily ohlcvs
-     */
-    public List<Ohlcv> getDailyOhlcvs(String assetId, LocalDateTime dateTimeFrom, LocalDateTime dateTimeTo, Pageable pageable) {
+    public List<Ohlcv> getOhlcvs(String assetId, Ohlcv.Type type, LocalDateTime dateTimeFrom, LocalDateTime dateTimeTo, Pageable pageable) {
         // daily ohlcv entities
-        List<Ohlcv> dailyOhlcvs = ohlcvRepository.findAllByAssetIdAndType(assetId, Ohlcv.Type.DAILY, dateTimeFrom, dateTimeTo, pageable).stream()
+        List<Ohlcv> ohlcvs = ohlcvRepository.findAllByAssetIdAndType(assetId, type, dateTimeFrom, dateTimeTo, pageable).stream()
                 .map(Ohlcv::from)
                 .toList();
         // ohlcv client
-        if (dailyOhlcvs.isEmpty()) {
+        if (ohlcvs.isEmpty()) {
             Asset asset = assetService.getAsset(assetId).orElseThrow();
-            dailyOhlcvs = ohlcvClient.getOhlcvs(asset, Ohlcv.Type.DAILY, dateTimeFrom, dateTimeTo);
+            ohlcvs = ohlcvClient.getOhlcvs(asset, type, dateTimeFrom, dateTimeTo);
             // apply pageable (client not support pagination)
             if (pageable.isPaged()) {
                 long startIndex = pageable.getOffset();
-                long endIndex = Math.min(dailyOhlcvs.size(), startIndex + pageable.getPageSize());
-                dailyOhlcvs = dailyOhlcvs.subList(Math.toIntExact(startIndex), Math.toIntExact(endIndex));
+                long endIndex = Math.min(ohlcvs.size(), startIndex + pageable.getPageSize());
+                ohlcvs = ohlcvs.subList(Math.toIntExact(startIndex), Math.toIntExact(endIndex));
             }
         }
         // apply split ratio
-        applySplitRatioIfExist(assetId, dailyOhlcvs);
+        applySplitRatioIfExist(assetId, ohlcvs);
         // return
-        return dailyOhlcvs;
+        return ohlcvs;
     }
 
-    /**
-     * Returns minute ohlcvs
-     * @param assetId asset id
-     * @param dateTimeFrom date time from
-     * @param dateTimeTo date time to
-     * @param pageable pageable
-     * @return list of minute ohlcvs
-     */
-    public List<Ohlcv> getMinuteOhlcvs(String assetId, LocalDateTime dateTimeFrom, LocalDateTime dateTimeTo, Pageable pageable) {
-        /// gets minute ohlcvs from entity
-        List<Ohlcv> minuteOhlcvs = ohlcvRepository.findAllByAssetIdAndType(assetId, Ohlcv.Type.MINUTE, dateTimeFrom, dateTimeTo, pageable).stream()
-                .map(Ohlcv::from)
-                .toList();
-        // ohlcv client
-        if (minuteOhlcvs.isEmpty()) {
-            Asset asset = assetService.getAsset(assetId).orElseThrow();
-            minuteOhlcvs = ohlcvClient.getOhlcvs(asset, Ohlcv.Type.MINUTE, dateTimeFrom, dateTimeTo);
-            // apply pageable (client not support pagination)
-            if (pageable.isPaged()) {
-                long startIndex = pageable.getOffset();
-                long endIndex = Math.min(minuteOhlcvs.size(), startIndex + pageable.getPageSize());
-                minuteOhlcvs = minuteOhlcvs.subList(Math.toIntExact(startIndex), Math.toIntExact(endIndex));
-            }
-        }
-        // apply split ratio
-        applySplitRatioIfExist(assetId, minuteOhlcvs);
-        // return
-        return minuteOhlcvs;
-    }
-
-    /**
-     * Applies split ratio to ohlcvs
-     * @param assetId asset id
-     * @param ohlcvs ohlcvs
-     */
     void applySplitRatioIfExist(String assetId, List<Ohlcv> ohlcvs) {
         // if ohlcvs is empty, skip
         if (ohlcvs.isEmpty()) {
@@ -130,11 +84,6 @@ public class OhlcvService {
         }
     }
 
-    /**
-     * Calculates cumulative ratio as navigable map
-     * @param splitEntities asset split entities
-     * @return return ratio navigable map
-     */
     NavigableMap<LocalDateTime, BigDecimal> calculateCumulativeRatios(List<OhlcvSplitEntity> splitEntities) {
         NavigableMap<LocalDateTime, BigDecimal> cumulativeRatios = new TreeMap<>();
         BigDecimal cumulativeRatio = BigDecimal.ONE;
@@ -154,12 +103,6 @@ public class OhlcvService {
         return cumulativeRatios;
     }
 
-    /**
-     * Returns cumulative ratio
-     * @param dateTime date time
-     * @param cumulativeRatios cumulative ratios map
-     * @return cumulative ratio
-     */
     BigDecimal getCumulativeRatioForDate(LocalDateTime dateTime, NavigableMap<LocalDateTime, BigDecimal> cumulativeRatios) {
         return cumulativeRatios.tailMap(dateTime, false).values().stream()
                 .reduce(BigDecimal.ONE, BigDecimal::multiply);

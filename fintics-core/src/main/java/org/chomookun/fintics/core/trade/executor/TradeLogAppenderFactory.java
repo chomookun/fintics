@@ -15,12 +15,6 @@ public class TradeLogAppenderFactory {
 
     private final ObjectMapper objectMapper;
 
-    /**
-     * gets object
-     * @param context context
-     * @param destination stomp messaging destination
-     * @return log appender
-     */
     public TradeLogAppender getObject(Context context, Trade trade) {
         return TradeLogAppender.builder()
                 .context(context)
