@@ -125,19 +125,26 @@ values
     ('e5b2dda4ede54176b5e01eed7c4b9ed8','국내대형주',1, 'KR'),
     ('7818b580e3f340498b97f50e0e801ff8','Upbit (24시간 테스트용)',2, 'UPBIT');
 insert into `fintics_basket_asset`
-    (`basket_id`,`asset_id`,`enabled`, `holding_weight`)
+    (`basket_id`,`asset_id`,`enabled`, `holding_weight`, `sort`)
 values
-    ('e5b2dda4ede54176b5e01eed7c4b9ed8','KR.488770','N','0'),
-    ('e5b2dda4ede54176b5e01eed7c4b9ed8','KR.122630','Y','20'),
-    ('e5b2dda4ede54176b5e01eed7c4b9ed8','KR.229200','Y','20'),
-    ('e5b2dda4ede54176b5e01eed7c4b9ed8','KR.005930','Y','20'),
-    ('e5b2dda4ede54176b5e01eed7c4b9ed8','KR.000660','Y','20'),
-    ('a920f8813c6f46fda2947cee1c8cfb1d','US.SPY','Y','20'),
-    ('a920f8813c6f46fda2947cee1c8cfb1d','US.QQQ','Y','20'),
-    ('a920f8813c6f46fda2947cee1c8cfb1d','US.AAPL','Y','20'),
-    ('a920f8813c6f46fda2947cee1c8cfb1d','US.MSFT','Y','20'),
-    ('7818b580e3f340498b97f50e0e801ff8','UPBIT.KRW-BTC','Y','40'),
-    ('7818b580e3f340498b97f50e0e801ff8','UPBIT.KRW-ETH','Y','40');
+    ('e5b2dda4ede54176b5e01eed7c4b9ed8','KR.488770','N',0, 0),
+    ('e5b2dda4ede54176b5e01eed7c4b9ed8','KR.122630','Y',20, 1),
+    ('e5b2dda4ede54176b5e01eed7c4b9ed8','KR.229200','Y',20, 2),
+    ('e5b2dda4ede54176b5e01eed7c4b9ed8','KR.005930','Y',20, 3),
+    ('e5b2dda4ede54176b5e01eed7c4b9ed8','KR.000660','Y',20, 4),
+    ('a920f8813c6f46fda2947cee1c8cfb1d','US.SPY','Y',20, 0),
+    ('a920f8813c6f46fda2947cee1c8cfb1d','US.QQQ','Y',20, 1),
+    ('a920f8813c6f46fda2947cee1c8cfb1d','US.AAPL','Y',20, 2),
+    ('a920f8813c6f46fda2947cee1c8cfb1d','US.MSFT','Y',20, 3),
+    ('7818b580e3f340498b97f50e0e801ff8','UPBIT.KRW-BTC','Y',40, 0),
+    ('7818b580e3f340498b97f50e0e801ff8','UPBIT.KRW-ETH','Y',40, 1);
+insert into `fintics_basket_divider`
+    (`basket_id`,`divider_id`,`name`,`sort`)
+values
+    ('e5b2dda4ede54176b5e01eed7c4b9ed8','36a9236308eb4f3bb369b435e519bc8d','ETF', 0),
+    ('e5b2dda4ede54176b5e01eed7c4b9ed8','39c3320fe34d418db2937eff9fbdc1c8','Stock', 3),
+    ('a920f8813c6f46fda2947cee1c8cfb1d','6d83494f2e5240749795fa9405e924ab','ETF', 0),
+    ('a920f8813c6f46fda2947cee1c8cfb1d','d29dd523892243b980522d85ebec13db','Stock', 2);
 
 -- fintics_strategy
 insert into `fintics_strategy`

@@ -261,11 +261,11 @@
                             <span data-th-text="#{fintics.core.basket.BasketAsset}" class="font-weight--bold width--100"></span>
                         </div>
                         <div class="display--flex justify-content--end gap--1px">
-                            <button class="button" type="button" onclick="addBasketAsset();">
+                            <button class="button small" type="button" onclick="addBasketAsset();">
                                 <img class="icon" th:src="@{/static/image/icon-add.svg}" alt="add"/>
                                 <span data-th-text="#{fintics.core.basket.BasketAsset}"></span>
                             </button>
-                            <button class="button" type="button" onclick="addBasketDivider();">
+                            <button class="button small" type="button" onclick="addBasketDivider();">
                                 <img class="icon" th:src="@{/static/image/icon-add.svg}" alt="add"/>
                                 <span data-th-text="#{fintics.core.basket.BasketDivider}"></span>
                             </button>
@@ -309,7 +309,7 @@
                                 data-duice-execute="if(basketItem._new) this.classList.add('background-color--yellow');">
                             <tr data-duice-bind="basketItem" data-duice-if="return basketItem._type==='basketAsset';">
                                 <td class="text-align--center">
-                                    <button class="button" type="button"
+                                    <button class="button small" type="button"
                                             data-duice-bind="basketItem"
                                             data-duice-execute="this.dataset.index=status.index;"
                                             onclick="removeBasketAsset(this.dataset.index);">
@@ -436,24 +436,26 @@
                                         <textarea data-duice-bind="basketItem" data-duice-property="variables" class="width--100 height--100 code"></textarea>
                                     </label>
                                 </td>
-                                <td class="display--flex flex-direction--column gap--1px">
-                                    <button class="button" type="button"
-                                            data-duice-bind="basketItem"
-                                            data-duice-execute="this.dataset.index=status.index;"
-                                            onclick="moveBasketAssetToTop(this.dataset.index);">
-                                        <img class="icon" th:src="@{/static/image/icon-up.svg}" alt="up"/>
-                                    </button>
-                                    <button class="button" type="button"
-                                            data-duice-bind="basketItem"
-                                            data-duice-execute="this.dataset.index=status.index;"
-                                            onclick="moveBasketAssetToBottom(this.dataset.index);">
-                                        <img class="icon" th:src="@{/static/image/icon-down.svg}" alt="down"/>
-                                    </button>
+                                <td>
+                                    <div class="display--flex flex-direction--column justify-content--center gap--1px">
+                                        <button class="button small" type="button"
+                                                data-duice-bind="basketItem"
+                                                data-duice-execute="this.dataset.index=status.index;"
+                                                onclick="moveBasketAssetToTop(this.dataset.index);">
+                                            <img class="icon" th:src="@{/static/image/icon-up.svg}" alt="up"/>
+                                        </button>
+                                        <button class="button small" type="button"
+                                                data-duice-bind="basketItem"
+                                                data-duice-execute="this.dataset.index=status.index;"
+                                                onclick="moveBasketAssetToBottom(this.dataset.index);">
+                                            <img class="icon" th:src="@{/static/image/icon-down.svg}" alt="down"/>
+                                        </button>
+                                    </div>
                                 </td>
                             </tr>
                             <tr data-duice-bind="basketItem" data-duice-if="return basketItem._type==='basketDivider';" style="background-color:var(--duice-table-tbody-hover-background);">
                                 <td class="text-align--center">
-                                    <button class="button" type="button"
+                                    <button class="button small" type="button"
                                             data-duice-bind="basketItem"
                                             data-duice-execute="this.dataset.index=status.index;"
                                             onclick="removeBasketAsset(this.dataset.index);">
@@ -465,19 +467,21 @@
                                         <input type="text" data-duice-bind="basketItem" data-duice-property="name" class="width--100 border--none padding--1rem font-weight--bold"/>
                                     </label>
                                 </td>
-                                <td class="display--flex flex-direction--column gap--1px">
-                                    <button class="button" type="button"
-                                            data-duice-bind="basketItem"
-                                            data-duice-execute="this.dataset.index=status.index;"
-                                            onclick="moveBasketAssetToTop(this.dataset.index);">
-                                        <img class="icon" th:src="@{/static/image/icon-up.svg}" alt="up"/>
-                                    </button>
-                                    <button class="button" type="button"
-                                            data-duice-bind="basketItem"
-                                            data-duice-execute="this.dataset.index=status.index;"
-                                            onclick="moveBasketAssetToBottom(this.dataset.index);">
-                                        <img class="icon" th:src="@{/static/image/icon-down.svg}" alt="down"/>
-                                    </button>
+                                <td>
+                                    <div class="display--flex flex-direction--column gap--1px">
+                                        <button class="button small" type="button"
+                                                data-duice-bind="basketItem"
+                                                data-duice-execute="this.dataset.index=status.index;"
+                                                onclick="moveBasketAssetToTop(this.dataset.index);">
+                                            <img class="icon" th:src="@{/static/image/icon-up.svg}" alt="up"/>
+                                        </button>
+                                        <button class="button small" type="button"
+                                                data-duice-bind="basketItem"
+                                                data-duice-execute="this.dataset.index=status.index;"
+                                                onclick="moveBasketAssetToBottom(this.dataset.index);">
+                                            <img class="icon" th:src="@{/static/image/icon-down.svg}" alt="down"/>
+                                        </button>
+                                    </div>
                                 </td>
                             </tr>
                             </tbody>
@@ -531,7 +535,7 @@
                             <span data-th-text="#{fintics.core.basket.Basket.script}" class="font-weight--bold width--100"></span>
                         </div>
                         <div>
-                            <button type="button" class="button" onclick="testBasket();">
+                            <button type="button" class="button small" onclick="testBasket();">
                                 <img class="icon" th:src="@{/static/image/icon-test.svg}" alt="test"/>
                                 <span>Test</span>
                             </button>
@@ -633,7 +637,7 @@
                  */
                 async function getAssets(page) {
                     assetSearch._page = page || 0;
-                    let url = new URL(`${_apiUrl}/v1/asset/assets`, location.origin);
+                    let url = new URL(`${_apiUrl}/v1/assets`, location.origin);
                     if (options.market) {
                         url.searchParams.set('market', options.market);
                     }
@@ -797,13 +801,13 @@
                         <tbody>
                         <tr data-duice-bind="selectAssetDialog.assets" data-duice-foreach="asset,status">
                             <td class="text-align--center">
-                                <button class="button" type="button"
+                                <button class="button small" type="button"
                                         data-duice-bind="asset"
                                         data-duice-execute="
-                        this.dataset.index = status.index;
-                        if(asset._selected) {
-                            this.disabled = true;
-                        }"
+                                        this.dataset.index = status.index;
+                                        if(asset._selected) {
+                                            this.disabled = true;
+                                        }"
                                         onclick="selectAssetDialog.selectAsset(this.dataset.index);">
                                     <img class="icon" th:src="@{/static/image/icon-add.svg}" alt="add"/>
                                 </button>
@@ -947,7 +951,7 @@
                         <tbody>
                         <tr data-duice-bind="selectAssetDialog.selectedAssets" data-duice-foreach="asset,status">
                             <td class="text-align--center">
-                                <button class="button" type="button"
+                                <button class="button small" type="button"
                                         data-duice-bind="asset"
                                         data-duice-execute="this.dataset.index = status.index;"
                                         onclick="selectAssetDialog.deselectAsset(this.dataset.index);">
@@ -1082,7 +1086,7 @@
                     signal = abortController.signal;
                     let testBasketLog = document.getElementById('test-basket-log');
                     testBasketLog.value = '';
-                    let url = new URL(`${_apiUrl}/v1/basket/baskets/test`, location.origin);
+                    let url = new URL(`${_apiUrl}/v1/baskets/test`, location.origin);
                     _fetch(url, {
                         method: 'POST',
                         headers: { 'Content-Type': 'application/json' },

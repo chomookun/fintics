@@ -658,7 +658,7 @@
                             </td>
                             <td class="text-align--center">
                                 <div class="display--flex flex-direction--column gap--1px">
-                                    <button class="button" type="button"
+                                    <button class="button small" type="button"
                                             data-duice-bind="basketItem"
                                             data-duice-execute="this.dataset.assetId=basketItem.assetId"
                                             th:attr="onclick=|monitorMap.get('${trade.tradeId}').buyTradeAsset(this.dataset.assetId);|"
@@ -666,7 +666,7 @@
                                         <img class="icon" th:src="@{/static/image/icon-add.svg}" alt="buy"/>
                                         <span data-th-text="#{fintics.core.order.Order.Type.BUY}"></span>
                                     </button>
-                                    <button class="button" type="button"
+                                    <button class="button small" type="button"
                                             data-duice-bind="basketItem"
                                             data-duice-execute="this.dataset.assetId=basketItem.assetId;"
                                             th:attr="onclick=|monitorMap.get('${trade.tradeId}').sellTradeAsset(this.dataset.assetId);|"

@@ -316,14 +316,14 @@
                     <tbody>
                     <tr data-duice-bind="assets" data-duice-foreach="asset,status">
                         <td class="text-align--center">
-                        <span data-duice-bind="status"
-                              data-duice-execute="this.innerHTML = (assetSearch._size*assetSearch._page) + status.count;"
-                              class="number">
-                        </span>
+                            <span data-duice-bind="status"
+                                  data-duice-execute="this.innerHTML = (assetSearch._size*assetSearch._page) + status.count;"
+                                  class="number">
+                            </span>
                         </td>
                         <td>
                             <img data-duice-bind="asset" data-duice-execute="_applyAssetFavoriteIcon(this, asset, true);" alt=""/>
-                            <span data-duice-bind="asset" data-duice-property="symbol" class="code font-weight--bold"></span>
+                            <span data-duice-bind="asset" data-duice-property="symbol" class="code"></span>
                         </td>
                         <td>
                             <div class="text-truncate" style="width:22em;">

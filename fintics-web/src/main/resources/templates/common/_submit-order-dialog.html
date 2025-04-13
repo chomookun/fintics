@@ -50,7 +50,7 @@
                 }
                 _confirm(/*[[#{web.global.requestItemConfirm(#{fintics.core.order.Order})}]]*/'')
                     .then(result => {
-                        let url = new URL(`${_apiUrl}/v1/trade/trades/${order.tradeId}/orders`, location.origin);
+                        let url = new URL(`${_apiUrl}/v1/trades/${order.tradeId}/orders`, location.origin);
                         if (result) {
                             _fetch(url, {
                                 method: 'POST',

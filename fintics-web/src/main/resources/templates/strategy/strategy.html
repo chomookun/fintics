@@ -184,14 +184,14 @@
                             <span data-duice-bind="strategy" data-duice-property="language" class="badge code"></span>
                         </td>
                         <td>
-                            <div class="display--flex gap--1px">
-                                <button type="button"
+                            <div class="display--flex justify-content--center gap--1px">
+                                <button type="button" class="button small"
                                         data-duice-bind="strategy"
                                         data-duice-execute="this.dataset.index = status.index;"
                                         onclick="moveStrategySortUp(this.dataset.index);">
                                     <img class="icon" th:src="@{/static/image/icon-up.svg}" alt="up"/>
                                 </button>
-                                <button type="button"
+                                <button type="button" class="button small"
                                         data-duice-bind="strategy"
                                         data-duice-execute="this.dataset.index = status.index;"
                                         onclick="moveStrategySortDown(this.dataset.index);">

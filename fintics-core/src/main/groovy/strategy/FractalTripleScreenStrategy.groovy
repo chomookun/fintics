@@ -277,19 +277,23 @@ class TripleScreenStrategy {
         // tide 모멘텀 기준 포지션 산출
         def position = this.calculatePosition(maxPosition, minPosition)
 
-        // 과매도, 과매수 임계치 - 기본 50
-        def waveOversoldThreshold = 50
-        def waveOverboughtThreshold = 50
-        // tide 상승 추세 인 경우 과매도 판정 민감도 추가
-        if (tideAnalyzer.getMomentumScore() >= 75) {
-            waveOversoldThreshold = 25
-            waveOverboughtThreshold = 75
-        }
-        // tide 하락 추세 인 경우 과매수 판정 민감도 증가
-        if (tideAnalyzer.getMomentumScore() <= 25) {
-            waveOversoldThreshold = 75
-            waveOverboughtThreshold = 25
-        }
+        // 과매도, 과매수 임계치 - tide 모멘텀 가중치 기준 가변 적용
+        def waveOversoldThreshold = 100 - tideAnalyzer.getMomentumScore().getAverage()
+        def waveOverboughtThreshold = 0 + tideAnalyzer.getMomentumScore().getAverage()
+
+//        // 과매도, 과매수 임계치 - 기본 50
+//        def waveOversoldThreshold = 50
+//        def waveOverboughtThreshold = 50
+//        // tide 상승 추세 인 경우 과매도 판정 민감도 추가
+//        if (tideAnalyzer.getMomentumScore() >= 75) {
+//            waveOversoldThreshold = 25
+//            waveOverboughtThreshold = 75
+//        }
+//        // tide 하락 추세 인 경우 과매수 판정 민감도 증가
+//        if (tideAnalyzer.getMomentumScore() <= 25) {
+//            waveOversoldThreshold = 75
+//            waveOverboughtThreshold = 25
+//        }
 
         // wave 변동성 구간
         if (waveAnalyzer.getVolatilityScore() >= 50) {
