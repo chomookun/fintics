@@ -1,0 +1,26 @@
+name: deploy-gcp
+on:
+  workflow_dispatch:
+    inputs:
+      tag:
+        description: 'image tag to deploy'
+        required: true
+        default: 'latest'
+jobs:
+  deploy-gcp:
+    name: deploy-gcp
+    runs-on: ubuntu-latest
+    env:
+      IMAGE_TAG: ${{ github.event.inputs.tag }}
+    steps:
+      - name: Authenticate to Google Cloud
+        uses: google-github-actions/auth@v1
+        with:
+          credentials_json: ${{ secrets.GCP_CREDENTIALS }}
+      - name: Deploy to GCP Cloud Run
+        uses: google-github-actions/deploy-cloudrun@v1
+        with:
+          region: us-central1
+          project_id: ${{ vars.GCP_PROJECT_ID }}
+          service: fintics-web
+          image: docker.io/${{ vars.DOCKER_NAMESPACE }}/fintics-web:${{ env.IMAGE_TAG}}
