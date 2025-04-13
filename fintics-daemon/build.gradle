@@ -65,7 +65,7 @@ jib {
             username = providers.gradleProperty("jibToAuthUsername").get()
             password = providers.gradleProperty("jibToAuthPassword").get()
         }
-        tags = [project.jibToTags]
+        tags = project.jibToTags.split(',').collect{it.trim()}
     }
     containerizingMode = "packaged"
     container {
