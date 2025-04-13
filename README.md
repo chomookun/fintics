@@ -8,14 +8,6 @@ This program only automates your own investment strategy and philosophy.
 
 ![](docs/assets/image/gambling-dog.gif)
 
-## Container image
-
-### fintics-deamon
-https://hub.docker.com/r/chomookun/fintics-daemon
-
-### fintics-web
-https://hub.docker.com/r/chomookun/fintics-web
-
 
 ## Starts applications
 
@@ -49,6 +41,15 @@ Runs the UI management web application.
 # starts fintics-web
 ./gradlew :fintics:fintics-web:bootRun
 ```
+
+## Container image
+
+### fintics-daemon
+https://hub.docker.com/r/chomookun/fintics-daemon
+
+### fintics-web
+https://hub.docker.com/r/chomookun/fintics-web
+
 
 ## My passive EMP(ETF Managed Portfolio)
 
