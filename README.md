@@ -12,7 +12,7 @@ This program only automates your own investment strategy and philosophy.
 ![](docs/assets/image/gambling-dog.gif)
 
 
-## Running applications from source
+## Running from source
 
 ### Configures Gradle 
 Adds private maven repository
@@ -45,7 +45,7 @@ Runs the UI management web application.
 ./gradlew :fintics:fintics-web:bootRun
 ```
 
-## Running application from distribution binary
+## Running from release binary
 
 Downloads Released archives.
 
@@ -60,20 +60,16 @@ Downloads Released archives.
 ./bin/fintics-web
 ```
 
-## Running application from container image
+## Running from container image
 
 ### Starts fintics-daemon
-https://hub.docker.com/r/chomookun/fintics-daemon
-
 ```shell
-docker run -rm -p 8080:8080 chomoookun/fintics-daemon:latest
+docker run -rm -p 8081:8081 docker.io/chomoookun/fintics-daemon:latest
 ```
 
 ### Starts fintics-web
-https://hub.docker.com/r/chomookun/fintics-web
-
 ```shell
-docker run -rm -p 8081:8081 chomoookun/fintics-web:latest
+docker run -rm -p 8080:8080 docker.io/chomoookun/fintics-web:latest
 ```
 
 
