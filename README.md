@@ -10,8 +10,10 @@ This program only automates your own investment strategy and philosophy.
 
 ## Container image
 
+### fintics-deamon
 https://hub.docker.com/r/chomookun/fintics-daemon
 
+### fintics-web
 https://hub.docker.com/r/chomookun/fintics-web
 
 
