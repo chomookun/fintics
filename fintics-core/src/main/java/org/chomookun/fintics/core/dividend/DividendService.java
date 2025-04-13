@@ -22,14 +22,6 @@ public class DividendService {
 
     private final AssetService assetService;
 
-    /**
-     * Returns dividends
-     * @param assetId asset id
-     * @param dateFrom date from
-     * @param dateTo date to
-     * @param pageable pageable
-     * @return list of dividend
-     */
     public List<Dividend> getDividends(String assetId, LocalDate dateFrom, LocalDate dateTo, Pageable pageable) {
         List<Dividend> dividends = dividendRepository.findByAssetIdAndDateBetweenOrderByDateDesc(assetId, dateFrom, dateTo).stream()
                 .map(Dividend::from)

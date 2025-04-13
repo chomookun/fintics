@@ -5,16 +5,9 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.boot.builder.SpringApplicationBuilder;
 import org.springframework.context.annotation.FullyQualifiedAnnotationBeanNameGenerator;
 
-/**
- * Fintics daemon application
- */
 @SpringBootApplication(nameGenerator = FullyQualifiedAnnotationBeanNameGenerator.class)
 public class FinticsDaemonApplication {
 
-    /**
-     * Runs application
-     * @param args arguments
-     */
     public static void main(String[] args) {
         new SpringApplicationBuilder(FinticsDaemonApplication.class)
                 .web(WebApplicationType.SERVLET)

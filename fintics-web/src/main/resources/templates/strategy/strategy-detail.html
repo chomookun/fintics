@@ -1,0 +1,246 @@
+<!DOCTYPE html>
+<html lang="en"
+      xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="_web.html">
+<th:block layout:fragment="_content">
+    <th:block th:insert="common/_common.html"/>
+    <script th:inline="javascript">
+        const strategyId = new URL(location.href).searchParams.get('strategyId');
+        const strategy = new duice.ObjectProxy({
+            strategyId: null,
+            name: null
+        });
+        // checks authority
+        let hasStrategyEditAuthority = /*[[${#authorization.expression('hasAuthority(''strategy:edit'')')}]]*/false;
+        if (!hasStrategyEditAuthority) {
+            duice.ObjectProxy.setReadonlyAll(strategy, true);
+        }
+
+        function getStrategy(strategyId) {
+            let url = new URL(`${_apiUrl}/v1/strategies/${strategyId}`, document.location.origin);
+            _fetch(url)
+                .then(response => response.json())
+                .then(data => {
+                    duice.ObjectProxy.assign(strategy, data);
+                });
+        }
+
+        async function saveStrategy() {
+            if(!strategy.name) {
+                await _alert(/*[[#{web.global.itemEmpty(#{fintics.core.strategy.Strategy.name})}]]*/'');
+                duice.ObjectProxy.focus(strategy, 'name');
+                return false;
+            }
+            if(!strategy.language) {
+                await _alert(/*[[#{web.global.itemEmpty(#{fintics.core.strategy.Strategy.language})}]]*/'');
+                duice.ObjectProxy.focus(strategy, 'language');
+                return false;
+            }
+            _confirm(/*[[#{web.global.saveItemConfirm(#{fintics.core.strategy.Strategy})}]]*/'')
+                .then(result => {
+                    if (result) {
+                        let url;
+                        let method;
+                        if(!strategyId) {
+                            url = `${_apiUrl}/v1/strategies`;
+                            method = 'POST';
+                        }else{
+                            url = `${_apiUrl}/v1/strategies/${strategy.strategyId}`;
+                            method = 'PUT';
+                        }
+                        _fetch(new URL(url, document.location.origin), {
+                            method: method,
+                            headers: {
+                                'Content-Type': 'application/json'
+                            },
+                            body: JSON.stringify(strategy)
+                        }).then(response => response.json())
+                            .then(data => {
+                                _alert(/*[[#{web.global.saveItemComplete(#{fintics.core.strategy.Strategy})}]]*/'')
+                                    .then(() => {
+                                        if(strategy.strategyId) {
+                                            duice.ObjectProxy.clear(strategy);
+                                            duice.ObjectProxy.assign(strategy, data);
+                                        }else{
+                                            let url = new URL('/strategy/detail', location.origin);
+                                            url.searchParams.set('strategyId', data.strategyId);
+                                            location.replace(url.href);
+                                        }
+                                    });
+                            });
+                    }
+                });
+        }
+
+        async function deleteStrategy() {
+            if (await _confirm(/*[[#{web.global.deleteItemConfirm(#{fintics.core.strategy.Strategy})}]]*/'')) {
+                let url = new URL(`${_apiUrl}/v1/strategies/${strategy.strategyId}`, document.location.origin);
+                _fetch(url, {
+                    method: 'DELETE'
+                }).then(async response => {
+                    if (response.ok) {
+                        await _alert(/*[[#{web.global.deleteItemComplete(#{fintics.core.strategy.Strategy})}]]*/'');
+                        location.replace(`${location.origin}/strategy`);
+                    }
+                });
+            }
+        }
+
+        function exportStrategy() {
+            let strategyForExport = JSON.parse(JSON.stringify(strategy, null, 4));
+            delete strategyForExport.strategyId;
+            strategyForExport.name += '_Copy';    // adds copy suffix in name
+            let strategyForExportJson = JSON.stringify(strategyForExport, null, 4);
+            let a = document.createElement('a');
+            let href = 'data:application/json;charset=utf-8,' + encodeURIComponent(strategyForExportJson);
+            let download = `strategy_${strategy.name}.json`;
+            a.setAttribute('href', href);
+            a.setAttribute('download', download);
+            a.click();
+        }
+
+        function importStrategy() {
+            let input = document.createElement('input');
+            input.setAttribute("type", "file");
+            input.setAttribute("accept", "application/json");
+            input.addEventListener('change', function (e) {
+                let fileReader = new FileReader();
+                if (this.files && this.files[0]) {
+                    fileReader.addEventListener("load", async function (event) {
+                        let strategyForImport = JSON.parse(event.target.result);
+                        // removes name if name is already exist.
+                        if (strategy.name) {
+                            delete strategyForImport.name;
+                        }
+                        delete strategyForImport.strategyId;
+                        duice.ObjectProxy.assign(strategy, strategyForImport);
+                    });
+                    fileReader.readAsText(this.files[0]);
+                }
+                e.preventDefault();
+                e.stopPropagation();
+            });
+            input.click();
+        }
+
+        // initialize
+        _initialize(() => {
+            if(strategyId) {
+                getStrategy(strategyId);
+            }
+        });
+    </script>
+    <style th:inline="css">
+        #simulateLog {
+            padding-top: 0.5em;
+            line-height: 1.2em;
+            background-color: #222;
+            color: white;
+            font-family: monospace;
+            font-size: smaller;
+        }
+    </style>
+
+    <!-- ====================================== -->
+    <!-- start: title                           -->
+    <!-- ====================================== -->
+    <h1 id="title">
+        <img class="icon" th:src="@{/static/image/icon-strategy.svg}" alt="variable"/>
+        <span data-th-text="#{fintics.core.strategy.Strategy}"></span>
+        <small>&gt;</small>
+        <small data-duice-bind="strategy" data-duice-property="name"></small>
+    </h1>
+    <!-- ====================================== -->
+    <!-- end: title                             -->
+    <!-- ====================================== -->
+
+    <!-- ====================================== -->
+    <!-- start: strategy                        -->
+    <!-- ====================================== -->
+    <div class="panel">
+        <div class="panel-title">
+            <h2>
+                <img class="icon" th:src="@{/static/image/icon-detail.svg}" alt="detail"/>
+                <span data-th-text="|#{fintics.core.strategy.Strategy} #{web.global.detail}|"></span>
+            </h2>
+        </div>
+        <div class="panel-content">
+            <form class="display--grid grid-template-columns--12fr gap--1rem">
+                <div class="grid-column--span-6 s__grid-column--span-12">
+                    <label>
+                        <span class="font-weight--bold tag-required" data-th-text="#{fintics.core.strategy.Strategy.name}"></span>
+                        <input class="width--100" type="text" data-duice-bind="strategy" data-duice-property="name"/>
+                    </label>
+                </div>
+                <div class="grid-column--span-6 s__grid-column--span-12">
+                    <label>
+                        <span class="font-weight--bold tag-required" data-th-text="#{fintics.core.strategy.Strategy.language}"></span>
+                        <select class="width--100" data-duice-bind="strategy" data-duice-property="language">
+                            <option data-th-text="|#{web.global.select}...|"></option>
+                            <option th:each="language : ${languages}" th:value="${language}" th:text="${language}"></option>
+                        </select>
+                    </label>
+                </div>
+                <div class="grid-column--span-12">
+                    <div>
+                        <span class="font-weight--bold" data-th-text="#{fintics.core.strategy.Strategy.variables}"></span>
+                    </div>
+                    <duice-codemirror class="box code"
+                                      data-duice-bind="strategy"
+                                      data-duice-property="variables"
+                                      data-duice-mode="properties"
+                                      data-duice-theme="dracula">
+                    </duice-codemirror>
+                </div>
+                <div class="grid-column--span-12">
+                    <div>
+                        <span class="font-weight--bold" data-th-text="#{fintics.core.strategy.Strategy.script}"></span>
+                    </div>
+                    <duice-codemirror class="code box" style="height:100vh;"
+                                      data-duice-bind="strategy"
+                                      data-duice-property="script"
+                                      data-duice-mode="groovy"
+                                      data-duice-theme="dracula">
+                    </duice-codemirror>
+                </div>
+            </form>
+            <div class="display--flex justify-content--space-between">
+                <div class="display--flex gap--1px">
+                    <button class="button" type="button"
+                            th:classappend="!${#authorization.expression('hasAuthority(''strategy:edit'')')}?'locked'"
+                            onclick="exportStrategy();">
+                        <img class="icon" th:src="@{/static/image/icon-export.svg}" alt="export"/>
+                        <span>Export</span>
+                    </button>
+                    <button class="button" type="button"
+                            th:classappend="!${#authorization.expression('hasAuthority(''strategy:edit'')')}?'locked'"
+                            onclick="importStrategy();">
+                        <img class="icon" th:src="@{/static/image/icon-import.svg}" alt="import"/>
+                        <span>Import</span>
+                    </button>
+                </div>
+                <div class="display--flex justify-content--space-between gap--1px">
+                    <button class="button" type="button"
+                            data-duice-bind="strategy"
+                            th:classappend="!${#authorization.expression('hasAuthority(''strategy:edit'')')}?'locked'"
+                            onclick="deleteStrategy();">
+                        <img class="icon" th:src="@{/static/image/icon-delete.svg}" alt="save"/>
+                        <span data-th-text="#{web.global.delete}"></span>
+                    </button>
+                    <button class="button" type="button"
+                            data-duice-bind="strategy"
+                            th:classappend="!${#authorization.expression('hasAuthority(''strategy:edit'')')}?'locked'"
+                            onclick="saveStrategy();">
+                        <img class="icon" th:src="@{/static/image/icon-save.svg}" alt="save"/>
+                        <span data-th-text="#{web.global.save}"></span>
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+    <!-- ====================================== -->
+    <!-- end: strategy                          -->
+    <!-- ====================================== -->
+
+</th:block>

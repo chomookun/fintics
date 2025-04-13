@@ -12,9 +12,6 @@ import java.time.LocalDateTime;
 import java.time.ZoneId;
 import java.util.*;
 
-/**
- * trade asset
- */
 @Data
 @EqualsAndHashCode(callSuper = true)
 @SuperBuilder
@@ -43,19 +40,11 @@ public class TradeAsset extends Asset {
     @Builder.Default
     private Map<String,Object> context = new HashMap<>();
 
-    /**
-     * gets net change
-     * @return net change
-     */
     public BigDecimal getNetChange() {
         return (close != null ? close : BigDecimal.ZERO)
                 .subtract(previousClose != null ? previousClose : BigDecimal.ZERO);
     }
 
-    /**
-     * gets net change percentage
-     * @return net change percentage
-     */
     public BigDecimal getNetChangePercentage() {
         if (previousClose == null || previousClose.compareTo(BigDecimal.ZERO) == 0) {
             return BigDecimal.ZERO; // if previous close not existed
@@ -65,19 +54,11 @@ public class TradeAsset extends Asset {
                 .multiply(BigDecimal.valueOf(100));
     }
 
-    /**
-     * gets intraday net change
-     * @return intraday net change
-     */
     public BigDecimal getIntraDayNetChange() {
         return (close != null ? close : BigDecimal.ZERO)
                 .subtract(open != null ? open : BigDecimal.ZERO);
     }
 
-    /**
-     * gets intraday net change percentage
-     * @return intraday net change percentage
-     */
     public BigDecimal getIntraDayNetChangePercentage() {
         if (open == null || open.compareTo(BigDecimal.ZERO) == 0) {
             return BigDecimal.ZERO; // if open is not existed
@@ -87,12 +68,6 @@ public class TradeAsset extends Asset {
                 .multiply(BigDecimal.valueOf(100));
     }
 
-    /**
-     * returns OHLCV list
-     * @param type ohlcv type
-     * @param period period
-     * @return ohlcvs
-     */
     public List<Ohlcv> getOhlcvs(Ohlcv.Type type, int period) {
         List<Ohlcv> ohlcvs;
         switch(type) {
@@ -107,12 +82,6 @@ public class TradeAsset extends Asset {
         return getOhlcvs(Ohlcv.Type.valueOf(type), period);
     }
 
-    /**
-     * resample ohlcvs by period
-     * @param ohlcvs ohlcvs
-     * @param period period
-     * @return resampled ohlcvs
-     */
     private List<Ohlcv> resampleOhlcvs(List<Ohlcv> ohlcvs, int period) {
         if (ohlcvs.isEmpty() || period <= 0) {
             return Collections.emptyList();
@@ -133,16 +102,10 @@ public class TradeAsset extends Asset {
         return resampledOhlcvs;
     }
 
-    /**
-     * creates resampled ohlcvs
-     * @param ohlcvs ohlcvs
-     * @return resampled ohlcvs
-     */
     private Ohlcv createResampledOhlcv(List<Ohlcv> ohlcvs) {
         // convert to series
         List<Ohlcv> series = new ArrayList<>(ohlcvs);
         Collections.reverse(series);
-
         // merge ohlcv
         Ohlcv.Type type = null;
         LocalDateTime datetime = null;
@@ -175,7 +138,6 @@ public class TradeAsset extends Asset {
                 volume = volume.add(ohlcv.getVolume());
             }
         }
-
         // return resampled ohlcvs
         return Ohlcv.builder()
                 .type(type)

@@ -16,9 +16,6 @@ import java.time.LocalDate;
 import java.util.List;
 import java.util.Optional;
 
-/**
- * asset service
- */
 @Service
 @RequiredArgsConstructor
 @Slf4j
@@ -28,12 +25,6 @@ public class AssetService {
 
     private final AssetClient assetClient;
 
-    /**
-     * Gets asset list
-     * @param assetSearch asset search condition
-     * @param pageable pageable
-     * @return assets
-     */
     public Page<Asset> getAssets(AssetSearch assetSearch, Pageable pageable) {
         Page<AssetEntity> assetEntityPage = assetRepository.findAll(assetSearch, pageable);
         List<Asset> assets = assetEntityPage.getContent().stream()
@@ -43,11 +34,6 @@ public class AssetService {
         return new PageImpl<>(assets, pageable, total);
     }
 
-    /**
-     * Gets specified asset
-     * @param assetId asset id
-     * @return asset
-     */
     public Optional<Asset> getAsset(String assetId) {
         Asset asset = assetRepository.findById(assetId)
                 .map(Asset::from)
@@ -66,11 +52,6 @@ public class AssetService {
         return Optional.ofNullable(asset);
     }
 
-    /**
-     * Sets favorite
-     * @param assetId asset id
-     * @param favorite  favorite
-     */
     public void setFavorite(String assetId, boolean favorite) {
         AssetEntity assetEntity = assetRepository.findById(assetId).orElseThrow();
         assetEntity.setFavorite(favorite);

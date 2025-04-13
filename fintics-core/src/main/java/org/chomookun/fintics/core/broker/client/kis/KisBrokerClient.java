@@ -14,8 +14,8 @@ import org.chomookun.fintics.core.broker.client.BrokerClientDefinition;
 import org.chomookun.fintics.core.ohlcv.model.Ohlcv;
 import org.chomookun.fintics.core.order.model.Order;
 import org.chomookun.fintics.core.broker.model.OrderBook;
-import org.chomookun.fintics.core.profit.model.DividendProfit;
-import org.chomookun.fintics.core.profit.model.RealizedProfit;
+import org.chomookun.fintics.core.broker.model.DividendProfit;
+import org.chomookun.fintics.core.broker.model.RealizedProfit;
 import org.springframework.core.ParameterizedTypeReference;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
@@ -33,7 +33,10 @@ import java.util.*;
 import java.util.stream.Collectors;
 
 /**
- * 한국투자증권 국내 주식 broker client
+ * 한국투자증권 해외 주식 broker client
+ * @see <a href="https://apiportal.koreainvestment.com/intro">
+ *     Korea Investment Open API
+ *     </a>
  */
 @Slf4j
 public class KisBrokerClient extends BrokerClient {
@@ -75,10 +78,6 @@ public class KisBrokerClient extends BrokerClient {
         this.objectMapper = new ObjectMapper();
     }
 
-    /**
-     * Creates rest template
-     * @return rest template
-     */
     RestTemplate createRestTemplate() {
         return RestTemplateBuilder.create()
                 .httpRequestRetryStrategy(new KisHttpRequestRetryStrategy())
@@ -86,10 +85,6 @@ public class KisBrokerClient extends BrokerClient {
                 .build();
     }
 
-    /**
-     * Creates headers
-     * @return headers
-     */
     HttpHeaders createHeaders() throws InterruptedException {
         KisAccessToken accessToken = KisAccessTokenRegistry.getAccessToken(apiUrl, appKey, appSecret);
         HttpHeaders httpHeaders = new HttpHeaders();
@@ -100,9 +95,6 @@ public class KisBrokerClient extends BrokerClient {
         return httpHeaders;
     }
 
-    /**
-     * Forces to sleep
-     */
     private synchronized void sleep() throws InterruptedException {
         synchronized (LOCK_OBJECT) {
             long sleepMillis = production ? 200 : 1_000;
@@ -110,11 +102,6 @@ public class KisBrokerClient extends BrokerClient {
         }
     }
 
-    /**
-     * Returns market is open
-     * @param datetime datetime
-     * @return whether market is open
-     */
     @Override
     public boolean isOpened(LocalDateTime datetime) throws InterruptedException {
         // check weekend
@@ -127,9 +114,7 @@ public class KisBrokerClient extends BrokerClient {
     }
 
     /**
-     * checks holiday
-     * @param dateTime date time
-     * @return whether is holiday
+     * Checks holiday
      * @see <a href="https://apiportal.koreainvestment.com/apiservice/apiservice-domestic-index-quotations#L_5c488ab2-59fd-486e-bf74-b68e813e35c0">
      *     국내휴장일조회[국내주식-040]
      *     </a>
@@ -188,8 +173,6 @@ public class KisBrokerClient extends BrokerClient {
 
     /**
      * Returns minute ohlcvs
-     * @param asset asset
-     * @return minute ohlcvs
      * @see <a href="https://apiportal.koreainvestment.com/apiservice/apiservice-domestic-stock-quotations2#L_eddbb36a-1d55-461a-b242-3067ba1e5640">
      *     주식당일분봉조회[v1_국내주식-022]
      *     </a>
@@ -262,8 +245,6 @@ public class KisBrokerClient extends BrokerClient {
 
     /**
      * Return daily ohlcvs
-     * @param asset asset
-     * @return daily ohlcvs
      * @see <a href="https://apiportal.koreainvestment.com/apiservice/apiservice-domestic-stock-quotations2#L_a08c3421-e50f-4f24-b1fe-64c12f723c77">
      *     국내주식기간별시세 - 일,주,월,년[v1_국내주식-016]
      *     </a>
@@ -335,8 +316,6 @@ public class KisBrokerClient extends BrokerClient {
 
     /**
      * Return order book
-     * @param asset asset
-     * @return order book
      * @see <a href="https://apiportal.koreainvestment.com/apiservice/apiservice-domestic-stock-quotations2#L_af3d3794-92c0-4f3b-8041-4ca4ddcda5de">
      *     주식현재가 호가/예상체결[v1_국내주식-011]
      *     </a>

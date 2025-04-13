@@ -65,13 +65,6 @@ public class TradeExecutor {
     @Setter
     private TradeAssetStore tradeAssetStore;
 
-    /**
-     * executes trade
-     * @param trade trade info
-     * @param strategy strategy info
-     * @param dateTime date time
-     * @param brokerClient broker client
-     */
     public void execute(Trade trade, Strategy strategy, LocalDateTime dateTime, BrokerClient brokerClient) throws InterruptedException {
         log.info("=".repeat(80));
         log.info("[{}] execute trade", trade.getName());
@@ -276,12 +269,6 @@ public class TradeExecutor {
         }
     }
 
-    /**
-     * checks operating time
-     * @param trade trade info
-     * @param dateTime date time
-     * @return whether date time is operable
-     */
     private boolean isOperatingTime(Trade trade, LocalDateTime dateTime) {
         if(trade.getStartTime() == null || trade.getEndTime() == null) {
             return false;
@@ -298,13 +285,6 @@ public class TradeExecutor {
         }
     }
 
-    /**
-     * return previous daily ohlcvs
-     * @param assetId asset id
-     * @param ohlcvs ohlcvs
-     * @param dateTime date time
-     * @return previous daily ohlcvs
-     */
     private List<Ohlcv> getPreviousDailyOhlcvs(String assetId, List<Ohlcv> ohlcvs, LocalDateTime dateTime) {
         LocalDateTime dateTimeFrom = dateTime.minusYears(3);
         LocalDateTime dateTimeTo = ohlcvs.isEmpty()
@@ -316,13 +296,6 @@ public class TradeExecutor {
         return ohlcvCacheManager.getDailyOhlcvs(assetId, dateTimeFrom, dateTimeTo);
     }
 
-    /**
-     * return previous minute ohlcvs
-     * @param assetId asset id
-     * @param ohlcvs ohlcvs
-     * @param dateTime date time
-     * @return previous minute ohlcvs
-     */
     private List<Ohlcv> getPreviousMinuteOhlcvs(String assetId, List<Ohlcv> ohlcvs, LocalDateTime dateTime) {
         LocalDateTime dateTimeFrom = dateTime.minusMonths(1);
         LocalDateTime dateTimeTo = ohlcvs.isEmpty()
@@ -342,11 +315,6 @@ public class TradeExecutor {
 
     }
 
-    /**
-     * calculates buy price
-     * @param orderBook order book
-     * @return buy price
-     */
     private BigDecimal calculateBuyPrice(OrderBook orderBook) throws InterruptedException {
         BigDecimal price = orderBook.getAskPrice();
         BigDecimal tickPrice = orderBook.getTickPrice();
@@ -357,11 +325,6 @@ public class TradeExecutor {
         return price.max(orderBook.getBidPrice());
     }
 
-    /**
-     * calculates sell price
-     * @param orderBook order book
-     * @return sell price
-     */
     private BigDecimal calculateSellPrice(OrderBook orderBook) throws InterruptedException {
         BigDecimal price = orderBook.getBidPrice();
         BigDecimal tickPrice = orderBook.getTickPrice();
@@ -372,15 +335,6 @@ public class TradeExecutor {
         return price.min(orderBook.getAskPrice());
     }
 
-    /**
-     * buys trade asset
-     * @param brokerClient broker client
-     * @param trade trade
-     * @param tradeAsset trade asset
-     * @param quantity buy quantity
-     * @param price buy price for unit
-     * @param strategyResult strategy result
-     */
     private void buyTradeAsset(BrokerClient brokerClient, Trade trade, TradeAsset tradeAsset, BigDecimal quantity, BigDecimal price, StrategyResult strategyResult) throws InterruptedException {
         Order order = Order.builder()
                 .orderAt(Instant.now())
@@ -440,16 +394,6 @@ public class TradeExecutor {
         }
     }
 
-    /**
-     * sells trade asset
-     * @param brokerClient broker client
-     * @param trade trade
-     * @param tradeAsset basket asset
-     * @param quantity sell quantity
-     * @param price sell price
-     * @param strategyResult strategy result
-     * @param balanceAsset balance asset
-     */
     private void sellTradeAsset(BrokerClient brokerClient, Trade trade, TradeAsset tradeAsset, BigDecimal quantity, BigDecimal price, StrategyResult strategyResult, BalanceAsset balanceAsset) throws InterruptedException {
         Order order = Order.builder()
                 .orderAt(Instant.now())
@@ -463,7 +407,6 @@ public class TradeExecutor {
                 .strategyResult(strategyResult)
                 .build();
         log.info("[{}] sellTradeAsset: {}", tradeAsset.getName(), order);
-
         // purchase price, realized amount
         if (balanceAsset.getPurchasePrice() != null) {
             order.setPurchasePrice(balanceAsset.getPurchasePrice());
@@ -472,7 +415,6 @@ public class TradeExecutor {
                     .setScale(4, RoundingMode.FLOOR);
             order.setRealizedProfitAmount(realizedProfitAmount);
         }
-
         try {
             // check waiting order exists
             Order waitingOrder = brokerClient.getWaitingOrders().stream()
@@ -492,11 +434,9 @@ public class TradeExecutor {
                 }
                 return;
             }
-
             // submit sell order
             brokerClient.submitOrder(tradeAsset, order);
             order.setResult(Order.Result.COMPLETED);
-
             // deposit sell amount in cash
             if (trade.getCashAssetId() != null) {
                 try {
@@ -506,10 +446,8 @@ public class TradeExecutor {
                     log.warn(ignore.getMessage());
                 }
             }
-
             // alarm
             sendOrderAlarmIfEnabled(trade, order);
-
         } catch (Throwable e) {
             order.setResult(Order.Result.FAILED);
             order.setErrorMessage(e.getMessage());
@@ -519,10 +457,6 @@ public class TradeExecutor {
         }
     }
 
-    /**
-     * saves trade order
-     * @param order order info
-     */
     private void saveTradeOrder(Order order) {
         DefaultTransactionDefinition transactionDefinition = new DefaultTransactionDefinition(TransactionDefinition.PROPAGATION_REQUIRES_NEW);
         TransactionTemplate transactionTemplate = new TransactionTemplate(transactionManager, transactionDefinition);
@@ -530,12 +464,6 @@ public class TradeExecutor {
                 orderService.saveOrder(order));
     }
 
-    /**
-     * send error alarm if enable
-     * @param trade trade
-     * @param asset basket asset
-     * @param t throwable
-     */
     private void sendErrorAlarmIfEnabled(Trade trade, Asset asset, Throwable t) {
         if(trade.getAlarmId() != null && !trade.getAlarmId().isBlank()) {
             if (trade.isAlarmOnError()) {
@@ -547,11 +475,6 @@ public class TradeExecutor {
         }
     }
 
-    /**
-     * send order alarm if enable
-     * @param trade trade
-     * @param order order
-     */
     private void sendOrderAlarmIfEnabled(Trade trade, Order order) {
         if (trade.isAlarmOnOrder()) {
             if (trade.getAlarmId() != null && !trade.getAlarmId().isBlank()) {
@@ -569,12 +492,6 @@ public class TradeExecutor {
         }
     }
 
-    /**
-     * withdraw buy amount from cash asset
-     * @param brokerClient broker client
-     * @param trade trade
-     * @param buyAmount buy amount
-     */
     void withdrawBuyAmountFromCash(BrokerClient brokerClient, Trade trade, BigDecimal buyAmount) throws InterruptedException {
         // 계좌 정보 조회
         Balance balance = brokerClient.getBalance();
@@ -627,12 +544,6 @@ public class TradeExecutor {
         }
     }
 
-    /**
-     * deposit sell amount to cash asset
-     * @param brokerClient broker client
-     * @param trade trade
-     * @param sellAmount sell amount
-     */
     void depositSellAmountToCash(BrokerClient brokerClient, Trade trade, BigDecimal sellAmount) throws InterruptedException {
         // 설정 된 현금 대기 비중 계산
         BigDecimal cashBufferWeight = trade.getCashBufferWeight();

@@ -49,17 +49,6 @@ public class TradeRunnable implements Runnable {
     @Getter
     private boolean interrupted = false;
 
-    /**
-     * constructor
-     * @param tradeId trade id
-     * @param interval interval(seconds)
-     * @param tradeService trade service
-     * @param strategyService strategy service
-     * @param brokerService broker service
-     * @param tradeExecutor trade executor
-     * @param brokerClientFactory broker client factory
-     * @param tradeAssetStoreFactory trade asset store factory
-     */
     @Builder
     protected TradeRunnable(
         String tradeId,
@@ -79,14 +68,10 @@ public class TradeRunnable implements Runnable {
         this.tradeExecutor = tradeExecutor;
         this.brokerClientFactory = brokerClientFactory;
         this.tradeAssetStoreFactory = tradeAssetStoreFactory;
-
         // log
         this.log = (Logger) LoggerFactory.getLogger(tradeId);
     }
 
-    /**
-     * runs trade
-     */
     @Override
     public void run() {
         // logger
@@ -95,12 +80,10 @@ public class TradeRunnable implements Runnable {
             log.addAppender(this.logAppender);
             this.logAppender.start();
         }
-
         // status template
         String destination = String.format("/trades/%s/assets", tradeId);
         TradeAssetStore statusHandler = tradeAssetStoreFactory.getObject();
         tradeExecutor.setTradeAssetStore(statusHandler);
-
         // start loop
         log.info("Start TradeRunnable: {}", tradeId);
         while(!Thread.currentThread().isInterrupted() && !interrupted) {

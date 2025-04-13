@@ -18,8 +18,8 @@ import org.chomookun.fintics.core.broker.client.BrokerClientDefinition;
 import org.chomookun.fintics.core.ohlcv.model.Ohlcv;
 import org.chomookun.fintics.core.order.model.Order;
 import org.chomookun.fintics.core.broker.model.OrderBook;
-import org.chomookun.fintics.core.profit.model.DividendProfit;
-import org.chomookun.fintics.core.profit.model.RealizedProfit;
+import org.chomookun.fintics.core.broker.model.DividendProfit;
+import org.chomookun.fintics.core.broker.model.RealizedProfit;
 import org.springframework.core.ParameterizedTypeReference;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.RequestEntity;
@@ -68,10 +68,6 @@ public class UpbitBrokerClient extends BrokerClient {
         this.objectMapper = new ObjectMapper();
     }
 
-    /**
-     * Creates rest template
-     * @return rest template
-     */
     RestTemplate createRestTemplate() {
         return RestTemplateBuilder.create()
                 .httpRequestRetryStrategy(new DefaultHttpRequestRetryStrategy())
@@ -88,11 +84,6 @@ public class UpbitBrokerClient extends BrokerClient {
         Thread.sleep(300);
     }
 
-    /**
-     * Creates headers
-     * @param queryString query string
-     * @return headers
-     */
     HttpHeaders createHeaders(String queryString) {
         // check null
         if(queryString == null) {

@@ -55,11 +55,6 @@ public class Trade {
 
     private boolean alarmOnOrder;
 
-    /**
-     * from factory method
-     * @param tradeEntity trade entity
-     * @return trade
-     */
     public static Trade from(TradeEntity tradeEntity) {
         return Trade.builder()
                 .tradeId(tradeEntity.getTradeId())

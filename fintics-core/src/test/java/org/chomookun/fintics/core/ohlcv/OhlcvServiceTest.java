@@ -27,7 +27,7 @@ public class OhlcvServiceTest extends CoreTestSupport {
     private final OhlcvService ohlcvService;
 
     @Test
-    void getDailyOhlcvs() {
+    void getOhlcvsWithTypeDaily() {
         String assetId = "test";
         LocalDateTime dateTimeFrom = LocalDateTime.now().minusDays(30).truncatedTo(ChronoUnit.DAYS);
         LocalDateTime dateTimeTo = LocalDateTime.now().truncatedTo(ChronoUnit.DAYS);
@@ -43,13 +43,13 @@ public class OhlcvServiceTest extends CoreTestSupport {
                 .build()));
         entityManager.flush();
         // when
-        List<Ohlcv> ohlcvs = ohlcvService.getDailyOhlcvs(assetId, dateTimeFrom, dateTimeTo, PageRequest.of(0, 10));
+        List<Ohlcv> ohlcvs = ohlcvService.getOhlcvs(assetId, Ohlcv.Type.DAILY, dateTimeFrom, dateTimeTo, PageRequest.of(0, 10));
         // then
         assertEquals(2, ohlcvs.size());
     }
 
     @Test
-    void getMinuteOhlcvs() {
+    void getOhlcvsWithTypeMinute() {
         String assetId = "test";
         LocalDateTime dateTimeFrom = LocalDateTime.now().minusHours(1).truncatedTo(ChronoUnit.MINUTES);
         LocalDateTime dateTimeTo = LocalDateTime.now().truncatedTo(ChronoUnit.MINUTES);
@@ -65,13 +65,13 @@ public class OhlcvServiceTest extends CoreTestSupport {
                 .build()));
         entityManager.flush();
         // when
-        List<Ohlcv> assetOhlcvs = ohlcvService.getMinuteOhlcvs(assetId, dateTimeFrom, dateTimeTo, PageRequest.of(0, 10));
+        List<Ohlcv> assetOhlcvs = ohlcvService.getOhlcvs(assetId, Ohlcv.Type.MINUTE, dateTimeFrom, dateTimeTo, PageRequest.of(0, 10));
         // then
         assertEquals(2, assetOhlcvs.size());
     }
 
     @Test
-    void getDailyOhlcvWithForwardSplit() {
+    void getOhlcvWithForwardSplit() {
         // given
         String assetId = "test";
         // 액면 분할 정보
@@ -105,8 +105,9 @@ public class OhlcvServiceTest extends CoreTestSupport {
                 .build());
         entityManager.flush();
         // when
-        List<Ohlcv> dailyOhlcvs = ohlcvService.getDailyOhlcvs(
+        List<Ohlcv> dailyOhlcvs = ohlcvService.getOhlcvs(
                 assetId,
+                Ohlcv.Type.DAILY,
                 LocalDateTime.of(2011,1,1, 0, 0, 0),
                 LocalDateTime.of(2011,12,31, 23, 59, 59),
                 Pageable.unpaged()
@@ -120,7 +121,7 @@ public class OhlcvServiceTest extends CoreTestSupport {
     }
 
     @Test
-    void getDailyOhlcvWithReverseSplit() {
+    void getOhlcvWithReverseSplit() {
         // given
         String assetId = "test";
         // 액면 병합 정보
@@ -154,8 +155,9 @@ public class OhlcvServiceTest extends CoreTestSupport {
                 .build());
         entityManager.flush();
         // when
-        List<Ohlcv> dailyOhlcvs = ohlcvService.getDailyOhlcvs(
+        List<Ohlcv> dailyOhlcvs = ohlcvService.getOhlcvs(
                 assetId,
+                Ohlcv.Type.DAILY,
                 LocalDateTime.of(2011,1,1, 0, 0, 0),
                 LocalDateTime.of(2011,12,31, 23, 59, 59),
                 Pageable.unpaged()
@@ -169,7 +171,7 @@ public class OhlcvServiceTest extends CoreTestSupport {
     }
 
     @Test
-    void getDailyOhlcvWithAVGOSplit() {
+    void getOhlcvWithAVGOSplit() {
         // given
         String assetId = "US.AVGO";
         // 브로드컴(AVGO) 2024-07-15 10->1 액면 분할
@@ -203,8 +205,9 @@ public class OhlcvServiceTest extends CoreTestSupport {
                 .build());
         entityManager.flush();
         // when
-        List<Ohlcv> dailyOhlcvs = ohlcvService.getDailyOhlcvs(
+        List<Ohlcv> dailyOhlcvs = ohlcvService.getOhlcvs(
                 assetId,
+                Ohlcv.Type.DAILY,
                 LocalDateTime.of(2024,1,1, 0, 0, 0),
                 LocalDateTime.of(2024,12,31, 23, 59, 59),
                 Pageable.unpaged()

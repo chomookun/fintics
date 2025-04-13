@@ -8,7 +8,7 @@ import org.chomookun.fintics.core.asset.model.Asset;
 import org.chomookun.fintics.core.asset.model.AssetSearch;
 import org.chomookun.fintics.core.basket.model.Basket;
 import org.chomookun.fintics.core.basket.model.BasketAsset;
-import org.chomookun.fintics.core.indicator.*;
+import org.chomookun.fintics.core.ohlcv.indicator.*;
 import org.chomookun.fintics.core.ohlcv.model.Ohlcv;
 
 import java.awt.print.Pageable;

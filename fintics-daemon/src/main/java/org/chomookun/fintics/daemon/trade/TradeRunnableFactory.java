@@ -10,9 +10,6 @@ import org.chomookun.fintics.core.trade.executor.TradeAssetStoreFactory;
 import org.chomookun.fintics.core.trade.executor.TradeExecutorFactory;
 import org.springframework.stereotype.Component;
 
-/**
- * trade runnable factory
- */
 @Component
 @RequiredArgsConstructor
 public class TradeRunnableFactory {
@@ -29,11 +26,6 @@ public class TradeRunnableFactory {
 
     private final TradeAssetStoreFactory tradeAssetStoreFactory;
 
-    /**
-     * creates trade runnable
-     * @param trade trade info
-     * @return trade runnable
-     */
     public TradeRunnable getObject(Trade trade) {
         return TradeRunnable.builder()
                 .tradeId(trade.getTradeId())

@@ -1,0 +1,97 @@
+name: release
+on:
+  workflow_dispatch:
+    inputs:
+      tag:
+        description: 'Git tag to create (e.g. v1.0.0)'
+        required: true
+jobs:
+  release:
+    name: release
+    runs-on: ubuntu-latest
+    env:
+      RELEASE_VERSION: 1.0.0-SNAPSHOT
+      RELEASE_TAG: ${{ github.event.inputs.tag }}
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v2
+      - name: Set up JDK
+        uses: actions/setup-java@v2
+        with:
+          distribution: 'temurin'
+          java-version: '17'
+      - name: Creates tag for release
+        run: |
+          git config user.name "github-actions"
+          git config user.email "actions@github.com"
+          git fetch origin
+          git tag -f ${{ env.RELEASE_TAG }}
+          git push -f origin ${{ env.RELEASE_TAG }}
+      - name: Gradle build
+        run: |
+          ./gradlew clean build -x test --stacktrace
+      - name: Builds distributio files
+        run: |
+          ./gradlew bootDistZip -x test --stacktrace
+      - name: Upload Additional Files
+        uses: actions/upload-artifact@v4
+        with:
+          name: my-artifact
+          path: |
+            ${{ github.workspace }}/fintics-daemon/build/distribution/fintics-daemon-boot-${{ env.RELEASE_VERSION }}.zip
+            ${{ github.workspace }}/fintics-web/build/distributions/fintics-web-boot-${{ env.RELEASE_VERSION }}.zip
+            ${{ github.workspace }}/fintics-shell/build/distribution/fintics-shell-boot-${{ env.RELEASE_VERSION }}.zip
+      - name: Delete Existing Release (if exists)
+        continue-on-error: true
+        run: gh release delete ${{ env.RELEASE_TAG }} -y
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      - name: Create Release
+        id: create_release
+        uses: actions/create-release@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          tag_name: ${{ env.RELEASE_TAG }}
+          release_name: Release ${{ env.RELEASE_VERSION }}.${{ env.RELEASE_TAG }}
+          draft: false
+          prerelease: false
+      - name: Upload Release Asset daemon
+        id: upload-release-asset-daemon
+        uses: actions/upload-release-asset@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          upload_url: ${{ steps.create_release.outputs.upload_url }}
+          asset_path: ${{ github.workspace }}/fintics-daemon/build/distributions/fintics-daemon-boot-${{ env.RELEASE_VERSION }}.zip
+          asset_name: fintics-daemon-boot-${{ env.RELEASE_VERSION }}.zip
+          asset_content_type: application/zip
+      - name: Upload Release Asset web
+        id: upload-release-asset-web
+        uses: actions/upload-release-asset@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          upload_url: ${{ steps.create_release.outputs.upload_url }}
+          asset_path: ${{ github.workspace }}/fintics-web/build/distributions/fintics-web-boot-${{ env.RELEASE_VERSION }}.zip
+          asset_name: fintics-web-boot-${{ env.RELEASE_VERSION }}.zip
+          asset_content_type: application/zip
+      - name: Upload Release Asset shell
+        id: upload-release-asset-shell
+        uses: actions/upload-release-asset@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          upload_url: ${{ steps.create_release.outputs.upload_url }}
+          asset_path: ${{ github.workspace }}/fintics-shell/build/distributions/fintics-shell-boot-${{ env.RELEASE_VERSION }}.zip
+          asset_name: fintics-shell-boot-${{ env.RELEASE_VERSION }}.zip
+          asset_content_type: application/zip
+      - name: Publish container image
+        run: |
+          ./gradlew jib -x test --stacktrace \
+          -PjibFromAuthUsername=${{ secrets.DOCKER_CREDENTIALS_USERNAME }} \
+          -PjibFromAuthPassword=${{ secrets.DOCKER_CREDENTIALS_PASSWORD }} \
+          -PjibToImageNamespace=${{ vars.DOCKER_NAMESPACE }} \
+          -PjibToAuthUsername=${{ secrets.DOCKER_CREDENTIALS_USERNAME }} \
+          -PjibToAuthPassword=${{ secrets.DOCKER_CREDENTIALS_PASSWORD }} \
+          -PjibToTags=${{ env.RELEASE_TAG }},latest 

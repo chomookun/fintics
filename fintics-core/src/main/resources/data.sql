@@ -1,4 +1,5 @@
 -- delete not used data
+delete from `core_menu_role`;
 delete from `core_menu_i18n`;
 delete from `core_menu`;
 delete from `core_git`;
@@ -8,113 +9,80 @@ delete from `core_alarm`;
 insert into `core_authority`
     (`authority_id`,`system_required`,`name`)
 values
-    ('api.assets','Y','Assets Access API Authority'),
-    ('api.assets.edit','Y','Assets Edit API Authority'),
-    ('api.ohlcvs','Y','Ohlcvs API Authority'),
-    ('api.dividends','Y','Dividends Access API Authority'),
-    ('api.orders','Y','Orders API Authority'),
-    ('api.trades','Y','Trades API Access Authority'),
-    ('api.trades.edit','Y','Trades Edit API Authority'),
-    ('api.baskets','Y','Baskets API Authority'),
-    ('api.baskets.edit','Y','Baskets Edit API Authority'),
-    ('api.strategies','Y','Strategies API Authority'),
-    ('api.strategies.edit','Y','Strategies Edit API Authority'),
-    ('api.brokers','Y','Brokers API Access Authority'),
-    ('api.brokers.edit','Y','Brokers Edit API Authority'),
-    ('api.profits','Y','Profits Access Authority'),
-    ('api.schedulers','Y','Schedulers Access Authority'),
-    ('monitors','Y','Monitor Access Authority'),
-    ('assets','Y','Assets Access Authority'),
-    ('baskets','Y','Baskets Access Authority'),
+    ('monitor','Y','Monitor Access Authority'),
+    ('asset','Y','Asset Access Authority'),
     ('basket','Y','Basket Access Authority'),
-    ('basket.edit','Y','Baskets Edit Authority'),
-    ('strategies','Y','Strategies Access Authority'),
+    ('basket:edit','Y','Basket Edit Authority'),
     ('strategy','Y','Strategy Access Authority'),
-    ('strategy.edit','Y','Strategy Edit Authority'),
-    ('brokers','Y','Brokers Access Authority'),
-    ('brokers.edit','Y','Brokers Edit Authority'),
-    ('trades','Y','Trades Access Authority'),
+    ('strategy:edit','Y','Strategy Edit Authority'),
+    ('broker','Y','Broker Access Authority'),
+    ('broker:edit','Y','Broker Edit Authority'),
     ('trade','Y','Trade Access Authority'),
-    ('trade.edit','Y','Trade Edit Authority'),
-    ('orders','Y','Orders Access Authority'),
-    ('profits','Y','Profits Access Authority'),
-    ('schedulers','Y','Schedulers Access Authority');
+    ('trade:edit','Y','Trade Edit Authority'),
+    ('order','Y','Order Access Authority'),
+    ('profit','Y','Profit Access Authority');
 
 -- core_role_authority
 insert into `core_role_authority`
     (`role_id`,`authority_id`)
 values
-    ('USER','api.assets'),
-    ('USER','api.ohlcvs'),
-    ('USER','api.dividends'),
-    ('USER','api.orders'),
-    ('USER','api.baskets'),
-    ('USER','api.strategies'),
-    ('USER','api.brokers'),
-    ('USER','api.trades'),
-    ('USER','api.profits'),
-    ('USER','api.schedulers'),
-    ('USER','monitors'),
-    ('USER','assets'),
-    ('USER','baskets'),
+    ('USER','monitor'),
+    ('USER','asset'),
     ('USER','basket'),
-    ('USER','strategies'),
     ('USER','strategy'),
-    ('USER','brokers'),
-    ('USER','trades'),
+    ('USER','broker'),
     ('USER','trade'),
-    ('USER','orders'),
-    ('USER','profits'),
-    ('USER','schedulers');
+    ('USER','order'),
+    ('USER','profit');
 
 -- core_menu
 insert into `core_menu`
     (`menu_id`,`system_required`,`parent_menu_id`,`name`,`link`,`target`,`sort`,`icon`)
 values
-    ('monitors','Y',null,'Monitor','/monitors',null,1,'/static/image/icon-monitor.svg'),
-    ('assets','Y',null,'Asset','/assets',null,2,'/static/image/icon-asset.svg'),
-    ('baskets','Y',null,'Basket','/baskets',null,3,'/static/image/icon-basket.svg'),
-    ('strategies','Y',null,'Strategy','/strategies',null,4,'/static/image/icon-strategy.svg'),
-    ('brokers','Y',null,'Broker','/brokers',null,5,'/static/image/icon-broker.svg'),
-    ('trades','Y',null,'Trade','/trades',null,6,'/static/image/icon-trade.svg'),
-    ('orders','Y',null,'Order','/orders',null,7,'/static/image/icon-order.svg'),
-    ('profits','Y',null,'Profit','/profits',null,8,'/static/image/icon-profit.svg'),
+    ('monitor','Y',null,'Monitor','/monitor',null,1,'/static/image/icon-monitor.svg'),
+    ('asset','Y',null,'Asset','/asset',null,2,'/static/image/icon-asset.svg'),
+    ('basket','Y',null,'Basket','/basket',null,3,'/static/image/icon-basket.svg'),
+    ('strategy','Y',null,'Strategy','/strategy',null,4,'/static/image/icon-strategy.svg'),
+    ('broker','Y',null,'Broker','/broker',null,5,'/static/image/icon-broker.svg'),
+    ('trade','Y',null,'Trade','/trade',null,6,'/static/image/icon-trade.svg'),
+    ('order','Y',null,'Order','/order',null,7,'/static/image/icon-order.svg'),
+    ('profit','Y',null,'Profit','/profit',null,8,'/static/image/icon-profit.svg'),
     ('admin','N',null,'Admin','/admin','_blank',99,'/static/image/icon-admin.svg');
 
 -- core_menu_i18n
 insert into `core_menu_i18n`
     (`menu_id`,`language`,`name`)
 values
-    ('monitors','ko','모니터'),
-    ('baskets','ko','바스켓'),
-    ('strategies','ko','매매전략'),
-    ('brokers','ko','브로커'),
-    ('trades','ko','트레이드'),
-    ('assets','ko','종목'),
-    ('orders','ko','거래'),
-    ('profits','ko','수익현황'),
+    ('monitor','ko','모니터'),
+    ('asset','ko','종목'),
+    ('basket','ko','바스켓'),
+    ('strategy','ko','매매전략'),
+    ('broker','ko','브로커'),
+    ('trade','ko','트레이드'),
+    ('order','ko','거래'),
+    ('profit','ko','수익현황'),
     ('admin','ko','관리자');
 
 -- core_menu_role
 insert into `core_menu_role`
     (`menu_id`,`role_id`,`type`)
 values
-    ('monitors','USER','VIEW'),
-    ('monitors','USER','LINK'),
-    ('baskets','USER','VIEW'),
-    ('baskets','USER','LINK'),
-    ('strategies','USER','VIEW'),
-    ('strategies','USER','LINK'),
-    ('brokers','USER','VIEW'),
-    ('brokers','USER','LINK'),
-    ('trades','USER','VIEW'),
-    ('trades','USER','LINK'),
-    ('assets','USER','VIEW'),
-    ('assets','USER','LINK'),
-    ('orders','USER','VIEW'),
-    ('orders','USER','LINK'),
-    ('profits','USER','VIEW'),
-    ('profits','USER','LINK'),
+    ('monitor','USER','VIEW'),
+    ('monitor','USER','LINK'),
+    ('asset','USER','VIEW'),
+    ('asset','USER','LINK'),
+    ('basket','USER','VIEW'),
+    ('basket','USER','LINK'),
+    ('strategy','USER','VIEW'),
+    ('strategy','USER','LINK'),
+    ('broker','USER','VIEW'),
+    ('broker','USER','LINK'),
+    ('trade','USER','VIEW'),
+    ('trade','USER','LINK'),
+    ('order','USER','VIEW'),
+    ('order','USER','LINK'),
+    ('profit','USER','VIEW'),
+    ('profit','USER','LINK'),
     ('admin','USER','VIEW');
 
 -- core_alarm

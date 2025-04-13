@@ -4,7 +4,6 @@ import lombok.Builder;
 import lombok.Getter;
 import lombok.Setter;
 import org.chomookun.fintics.core.order.model.Order;
-import org.chomookun.fintics.web.api.v1.strategy.dto.StrategyResultResponse;
 
 import java.math.BigDecimal;
 import java.time.Instant;

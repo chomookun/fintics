@@ -11,7 +11,7 @@ import java.util.Optional;
 /**
  * dividend client properties
  */
-@ConfigurationProperties(prefix = "fintics.core.dividend.dividend-client")
+@ConfigurationProperties(prefix = "fintics.core.asset.dividend-client")
 @AllArgsConstructor
 @Getter
 @Builder

@@ -1,27 +1,15 @@
 package org.chomookun.fintics.core.strategy.runner;
 
-import com.github.javaparser.utils.LineSeparator;
-import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.apache.commons.io.IOUtils;
-import org.chomookun.arch4j.core.common.test.CoreTestSupport;
-import org.chomookun.fintics.core.FinticsCoreConfiguration;
 import org.chomookun.fintics.core.ohlcv.model.Ohlcv;
 import org.chomookun.fintics.core.broker.model.OrderBook;
 import org.chomookun.fintics.core.strategy.model.Strategy;
 import org.chomookun.fintics.core.trade.model.Trade;
 import org.chomookun.fintics.core.trade.model.TradeAsset;
 import org.junit.jupiter.api.Test;
-import org.springframework.boot.test.context.SpringBootTest;
 
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.IOException;
-import java.io.InputStream;
 import java.math.BigDecimal;
-import java.nio.charset.StandardCharsets;
 import java.time.LocalDateTime;
-import java.util.List;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 

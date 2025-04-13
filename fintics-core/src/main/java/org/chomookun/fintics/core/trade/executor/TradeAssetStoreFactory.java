@@ -19,10 +19,6 @@ public class TradeAssetStoreFactory {
 
     private final PlatformTransactionManager transactionManager;
 
-    /**
-     * gets trade asset score
-     * @return trade asset store
-     */
     public TradeAssetStore getObject() {
         return TradeAssetStore.builder()
                 .stringRedisTemplate(stringRedisTemplate)

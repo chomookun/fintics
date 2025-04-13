@@ -9,7 +9,7 @@ import org.chomookun.fintics.core.basket.model.Basket;
 import org.chomookun.fintics.core.broker.model.BalanceAsset;
 import org.chomookun.fintics.core.basket.model.BasketAsset;
 import org.chomookun.fintics.core.broker.model.OrderBook;
-import org.chomookun.fintics.core.indicator.*;
+import org.chomookun.fintics.core.ohlcv.indicator.*;
 import org.chomookun.fintics.core.ohlcv.model.Ohlcv;
 import org.chomookun.fintics.core.strategy.model.Strategy;
 import org.chomookun.fintics.core.trade.model.TradeAsset;
@@ -20,25 +20,11 @@ import java.util.stream.Collectors;
 
 public class GroovyStrategyRunner extends StrategyRunner {
 
-    /**
-     * constructor
-     * @param strategy     strategy
-     * @param variables    variable
-     * @param dateTime     date time
-     * @param basketAsset basket asset
-     * @param tradeAsset   trade asset
-     * @param balanceAsset balance asset
-     * @param orderBook    order book
-     */
     @Builder
     public GroovyStrategyRunner(Strategy strategy, String variables, LocalDateTime dateTime, BasketAsset basketAsset, TradeAsset tradeAsset, BalanceAsset balanceAsset, OrderBook orderBook) {
         super(strategy, variables, dateTime, basketAsset, tradeAsset, balanceAsset, orderBook);
     }
 
-    /**
-     * executes strategy script
-     * @return result of execution
-     */
     @Override
     public StrategyResult run() {
         ClassLoader classLoader = this.getClass().getClassLoader();
