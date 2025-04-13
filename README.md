@@ -107,18 +107,18 @@ Growth 35% + Dividend 35% + Bond 20% + Cash 10%
 | **JEPI** | JPMorgan Equity Premium Income ETF | 8.75% | [Nasdaq](https://www.nasdaq.com/market-activity/etf/jepi/dividend-history) |
 | **RDVI** | FT Vest Rising Dividend Achievers Target Income ETF | 8.75% | [Nasdaq](https://www.nasdaq.com/market-activity/etf/rdvi/dividend-history) |
 
-#### [30%] Bond ETF
+#### [20%] Bond ETF
 | Symbol   | Name                                        | Holding weight | Reference |
 |----------|---------------------------------------------|----------------|-----------------------------------------------------------------------------|
-| **GOVI** | Invesco Equal Weight 0-30 Year Treasury ETF | 6% | [Nasdaq](https://www.nasdaq.com/market-activity/etf/govi/dividend-history)  |
-| **FBND** | Fidelity Total Bond ETF  | 6% | [Nasdaq](https://www.nasdaq.com/market-activity/etf/fbnd/dividend-history)  |
-| **JBND** | JPMorgan Active Bond ETF | 6% | [Nasdaq](https://www.nasdaq.com/market-activity/etf/jbnd/dividend-history)  |
-| **BOND** | PIMCO Active Bond ETF | 6% | [Nasdaq](https://www.nasdaq.com/market-activity/etf/bond/dividend-history)  |
-| **PYLD** | PIMCO Multisector Bond Active ETF | 6% | [Nasdaq](https://www.nasdaq.com/market-activity/pyld/dgrw/dividend-history) |
+| **GOVI** | Invesco Equal Weight 0-30 Year Treasury ETF | 4%             | [Nasdaq](https://www.nasdaq.com/market-activity/etf/govi/dividend-history)  |
+| **FBND** | Fidelity Total Bond ETF  | 4%             | [Nasdaq](https://www.nasdaq.com/market-activity/etf/fbnd/dividend-history)  |
+| **JBND** | JPMorgan Active Bond ETF | 4%             | [Nasdaq](https://www.nasdaq.com/market-activity/etf/jbnd/dividend-history)  |
+| **BOND** | PIMCO Active Bond ETF | 4%             | [Nasdaq](https://www.nasdaq.com/market-activity/etf/bond/dividend-history)  |
+| **PYLD** | PIMCO Multisector Bond Active ETF | 4%             | [Nasdaq](https://www.nasdaq.com/market-activity/pyld/dgrw/dividend-history) |
 
 
 ### 2. KR Market (50% of passive)
-US Growth 17.5% + US Dividend 17.5% + KR Growth 17.5% + KR Dividend 17.5% + US Bond 30%
+US Growth 17.5% + US Dividend 17.5% + KR Growth 17.5% + KR Dividend 17.5% + US Bond 20% + Cash 10%
 
 #### [17.5%] US Growth Equity ETF
 | Symbol     | Name | Holding weight | Reference |
@@ -153,11 +153,11 @@ US Growth 17.5% + US Dividend 17.5% + KR Growth 17.5% + KR Dividend 17.5% + US B
 #### [20%] US Bond ETF
 | Symbol     | Name | Holding weight | Reference |
 |------------|------|----------------|-------------------------------------------|
-| **476760** | ACE 미국30년국채액티브 | 6% | [K-ETF](https://www.k-etf.com/etf/476760) |
-| **476760** | ACE 미국30년국채엔화노출액티브(H) | 6% | [K-ETF](https://www.k-etf.com/etf/476760) |
-| **468370** | KODEX iShares미국인플레이션국채액티브 | 6% | [K-ETF](https://www.k-etf.com/etf/468370) |
-| **468630** | KODEX iShares미국투자등급회사채액티브 | 6% | [K-ETF](https://www.k-etf.com/etf/468630) |
-| **468380** | KODEX iShares미국하이일드액티브 | 6% | [K-ETF](https://www.k-etf.com/etf/468380) |
+| **476760** | ACE 미국30년국채액티브 | 4%             | [K-ETF](https://www.k-etf.com/etf/476760) |
+| **476760** | ACE 미국30년국채엔화노출액티브(H) | 4%             | [K-ETF](https://www.k-etf.com/etf/476760) |
+| **468370** | KODEX iShares미국인플레이션국채액티브 | 4%             | [K-ETF](https://www.k-etf.com/etf/468370) |
+| **468630** | KODEX iShares미국투자등급회사채액티브 | 4%             | [K-ETF](https://www.k-etf.com/etf/468630) |
+| **468380** | KODEX iShares미국하이일드액티브 | 4%             | [K-ETF](https://www.k-etf.com/etf/468380) |
 
 
 
