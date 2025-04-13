@@ -9,7 +9,7 @@ This program only automates your own investment strategy and philosophy.
 ![](docs/assets/image/gambling-dog.gif)
 
 
-## Starts applications
+## Running applications from source
 
 ### Configures Gradle 
 Adds private maven repository
@@ -42,13 +42,36 @@ Runs the UI management web application.
 ./gradlew :fintics:fintics-web:bootRun
 ```
 
-## Container image
+## Running application from distribution binary
 
-### fintics-daemon
+Downloads Released archives.
+
+### Starts fintics-daemon
+
+```shell
+./bin/fintics-daemon
+```
+
+### Starts fintics-web
+```shell
+./bin/fintics-web
+```
+
+## Running application from container image
+
+### Starts fintics-daemon
 https://hub.docker.com/r/chomookun/fintics-daemon
 
-### fintics-web
+```shell
+docker run -rm -p 8080:8080 chomoookun/fintics-daemon:latest
+```
+
+### Starts fintics-web
 https://hub.docker.com/r/chomookun/fintics-web
+
+```shell
+docker run -rm -p 8081:8081 chomoookun/fintics-web:latest
+```
 
 
 ## My passive EMP(ETF Managed Portfolio)
@@ -114,16 +137,18 @@ US Growth 17.5% + US Dividend 17.5% + KR Growth 17.5% + KR Dividend 17.5% + US B
 | **490600** | RISE 미국배당100데일리고정커버드콜 | 4.37% | [K-ETF](https://www.k-etf.com/etf/490600) |
 
 #### [17.5%] KR Growth Equity ETF
-| Symbol     | Name | Holding weight | Reference |
-|------------|------|----------------|-------------------------------------|
-| **472150** | TIGER 배당커버드콜액티브 | 8.75% | [K-ETF](https://www.k-etf.com/etf/472150) |
-| **498400** | KODEX 200타겟위클리커버드콜 | 8.75% | [K-ETF](https://www.k-etf.com/etf/498400) |
+| Symbol | Name | Holding weight | Reference |
+|------|--|----------------|-------------------------------------|
+| **472150** | TIGER 배당커버드콜액티브 | 5.83%          | [K-ETF](https://www.k-etf.com/etf/472150) |
+| **498400** | KODEX 200타겟위클리커버드콜 | 5.83%          | [K-ETF](https://www.k-etf.com/etf/498400) |
+| **496080** | TIGER 코리아밸류업 | 5.83%          | [K-ETF](https://www.k-etf.com/etf/496080) |
 
 #### [17.5%] KR Dividend Equity ETF
-| Symbol     | Name | Holding weight | Reference |
-|------------|------|----------------|-------------------------------------|
-| **441800** | TIMEFOLIO Korea플러스배당액티브 | 8.75% | [K-ETF](https://www.k-etf.com/etf/441800) |
-| **161510** | PLUS 고배당주 | 8.75% | [K-ETF](https://www.k-etf.com/etf/161510) |
+| Symbol | Name | Holding weight | Reference |
+|------|--|----------------|-------------------------------------|
+| **441800** | TIMEFOLIO Korea플러스배당액티브 | 5.83%          | [K-ETF](https://www.k-etf.com/etf/441800) |
+| **161510** | PLUS 고배당주 | 5.83%          | [K-ETF](https://www.k-etf.com/etf/161510) |
+| **466940** | TIGER 은행고배당플러스TOP10 | 5.83%          | [K-ETF](https://www.k-etf.com/etf/466940) |
 
 #### [20%] US Bond ETF
 | Symbol     | Name | Holding weight | Reference |
