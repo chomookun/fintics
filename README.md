@@ -1,5 +1,8 @@
 # FINTICS (Financial System Trading Application)
 
+[![Sponsor](https://img.shields.io/badge/Sponsor-%E2%9D%A4-red?logo=github)](https://github.com/sponsors/chomookun)
+[![Donate](https://img.shields.io/badge/Donate-Ko--fi-orange?logo=kofi)](https://ko-fi.com/chomookun)
+
 If you don't have your own investment strategy and philosophy, Don't do it. 
 If you mess up, you'll be in big trouble.
 This program only automates your own investment strategy and philosophy.
