@@ -1,7 +1,0 @@
-remote_theme: chomookun/jekyll-plain
-plugins:
-  - jekyll-remote-theme
-
-# theme configuration
-brand-icon: <img src="/assets/image/fintics-icon.svg" class="icon"/>
-brand-title: <img src="/assets/image/fintics-title.svg"/>

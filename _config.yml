@@ -1,0 +1,27 @@
+remote_theme: chomookun/jekyll-plain
+plugins:
+  - jekyll-remote-theme
+
+# theme configuration
+brand-icon: /docs/assets/image/fintics-icon.svg
+brand-title: <img src="/docs/assets/image/fintics-title.svg"/>
+
+# exclude
+exclude:
+  - .github
+  - build
+  - out
+  - fintics-core
+  - fintics-daemon
+  - fintics-dependencies
+  - fintics-shell
+  - fintics-web
+  - gradle
+  - vendor
+  - build.grade
+  - gradle.properties
+  - settings.gradle
+  - Jenkinsfile.groovy
+  - Gemfile
+  - Gemfile.lock
+

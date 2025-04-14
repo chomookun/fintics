@@ -109,6 +109,7 @@ ps. Technical Indicator: RSI, CCI, Stochastic Slow, Williams %R
 Growth 35% + Dividend 35% + Bond 20% + Cash 10%
 
 #### [35%] Growth Equity ETF
+
 | Symbol   | Name                                             | Holding weight | Reference |
 |----------|--------------------------------------------------|----------------|----------------------------------------------------------------------------|
 | **JEPQ** | JPMorgan Nasdaq Equity Premium Income ETF        | 7% | [Nasdaq](https://www.nasdaq.com/market-activity/etf/jepq/dividend-history) |
@@ -118,6 +119,7 @@ Growth 35% + Dividend 35% + Bond 20% + Cash 10%
 | **GPIX** | Goldman Sachs S&P 500 Core Premium Income ETF | 7% | [Nasdaq](https://www.nasdaq.com/market-activity/etf/gpix/dividend-history) |
 
 #### [35%] Dividend Equity ETF
+
 | Symbol   | Name                                         | Holding weight | Reference |
 |----------|----------------------------------------------|----------------|----------------------------------------------------------------------------|
 | **DGRW** | WisdomTree U.S. Quality Dividend Growth Fund | 8.75% | [Nasdaq](https://www.nasdaq.com/market-activity/etf/dgrw/dividend-history) |
@@ -126,6 +128,7 @@ Growth 35% + Dividend 35% + Bond 20% + Cash 10%
 | **RDVI** | FT Vest Rising Dividend Achievers Target Income ETF | 8.75% | [Nasdaq](https://www.nasdaq.com/market-activity/etf/rdvi/dividend-history) |
 
 #### [20%] Bond ETF
+
 | Symbol   | Name                                        | Holding weight | Reference |
 |----------|---------------------------------------------|----------------|-----------------------------------------------------------------------------|
 | **GOVI** | Invesco Equal Weight 0-30 Year Treasury ETF | 4%             | [Nasdaq](https://www.nasdaq.com/market-activity/etf/govi/dividend-history)  |
@@ -139,6 +142,7 @@ Growth 35% + Dividend 35% + Bond 20% + Cash 10%
 US Growth 17.5% + US Dividend 17.5% + KR Growth 17.5% + KR Dividend 17.5% + US Bond 20% + Cash 10%
 
 #### [17.5%] US Growth Equity ETF
+
 | Symbol     | Name | Holding weight | Reference |
 |------------|----|----------------|--------------------------------------------|
 | **474220** | TIGER 미국테크TOP10타겟커버드콜 | 4.37% | [K-ETF](https://www.k-etf.com/etf/474220) |
@@ -147,6 +151,7 @@ US Growth 17.5% + US Dividend 17.5% + KR Growth 17.5% + KR Dividend 17.5% + US B
 | **491620** | RISE 미국테크100데일리고정커버드콜 | 4.37% | [K-ETF](https://www.k-etf.com/etf/491620)  |
 
 #### [17.5%] US Dividend Equity ETF
+
 | Symbol     | Name | Holding weight | Reference |
 |------------|------|----------------|-------------------------------------|
 | **441640** | KODEX 미국배당커버드콜액티브 | 4.37% | [K-ETF](https://www.k-etf.com/etf/441640) |
@@ -155,6 +160,7 @@ US Growth 17.5% + US Dividend 17.5% + KR Growth 17.5% + KR Dividend 17.5% + US B
 | **490600** | RISE 미국배당100데일리고정커버드콜 | 4.37% | [K-ETF](https://www.k-etf.com/etf/490600) |
 
 #### [17.5%] KR Growth Equity ETF
+
 | Symbol | Name | Holding weight | Reference |
 |------|--|----------------|-------------------------------------|
 | **472150** | TIGER 배당커버드콜액티브 | 5.83%          | [K-ETF](https://www.k-etf.com/etf/472150) |
@@ -162,6 +168,7 @@ US Growth 17.5% + US Dividend 17.5% + KR Growth 17.5% + KR Dividend 17.5% + US B
 | **496080** | TIGER 코리아밸류업 | 5.83%          | [K-ETF](https://www.k-etf.com/etf/496080) |
 
 #### [17.5%] KR Dividend Equity ETF
+
 | Symbol | Name | Holding weight | Reference |
 |------|--|----------------|-------------------------------------|
 | **441800** | TIMEFOLIO Korea플러스배당액티브 | 5.83%          | [K-ETF](https://www.k-etf.com/etf/441800) |
@@ -169,6 +176,7 @@ US Growth 17.5% + US Dividend 17.5% + KR Growth 17.5% + KR Dividend 17.5% + US B
 | **466940** | TIGER 은행고배당플러스TOP10 | 5.83%          | [K-ETF](https://www.k-etf.com/etf/466940) |
 
 #### [20%] US Bond ETF
+
 | Symbol     | Name | Holding weight | Reference |
 |------------|------|----------------|-------------------------------------------|
 | **476760** | ACE 미국30년국채액티브 | 4%             | [K-ETF](https://www.k-etf.com/etf/476760) |
