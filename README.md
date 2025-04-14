@@ -8,7 +8,6 @@ If you mess up, you'll be in big trouble.<br/>
 This program only automates your own investment strategy.
 
 ![](docs/assets/image/gambling-raccon.gif)
-
 ![](docs/assets/image/gambling-dog.gif)
 
 
