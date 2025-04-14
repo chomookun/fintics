@@ -1,7 +1,7 @@
 # FINTICS (Financial System Trading Application)
 
-[![Sponsor](https://img.shields.io/badge/Sponsor-%E2%9D%A4-red?logo=github)](https://github.com/sponsors/chomookun)
-[![Donate](https://img.shields.io/badge/Donate-Ko--fi-orange?logo=kofi)](https://ko-fi.com/chomookun)
+[![Sponsor](https://img.shields.io/badge/Sponsor-%E2%9D%A4-green?logo=github)](https://github.com/sponsors/chomookun)
+[![Donate](https://img.shields.io/badge/Donate-Ko--fi-green?logo=kofi)](https://ko-fi.com/chomookun)
 
 If you don't have your own investment strategy and philosophy, Don't do it. 
 If you mess up, you'll be in big trouble.
@@ -10,6 +10,19 @@ This program only automates your own investment strategy and philosophy.
 ![](docs/assets/image/gambling-raccon.gif)
 
 ![](docs/assets/image/gambling-dog.gif)
+
+
+## Demo site
+
+* username/password: developer/developer
+
+### [![](https://img.shields.io/badge/Cloud%20Run-https://gcp.fintics--web.chomookun.org-red?logo=google-cloud)](https://gcp.fintics-web.chomookun.org)
+
+Due to a cold start, there is an initialization delay of approximately 30 seconds. (No money!!!)
+
+### [![](https://img.shields.io/badge/Self--Hosting-https://fintics--web.chomookun.org-blue?logo=google-cloud)](https://fintics-web.chomookun.org)
+
+Hosted on a home server, which may result in slower response times.
 
 
 ## Running from source
@@ -71,6 +84,15 @@ docker run -rm -p 8081:8081 docker.io/chomoookun/fintics-daemon:latest
 ```shell
 docker run -rm -p 8080:8080 docker.io/chomoookun/fintics-web:latest
 ```
+
+
+## References
+
+### [![](https://img.shields.io/badge/Github-https://github.com/chomoomun/fintics-green?logo=github)](https://github.com/chomookun/fintics)
+Git source repository
+
+### [![](https://img.shields.io/badge/Arch4j-https://github.com/chomookun/arch4j-red?logo=github)](https://github.com/chomookun/arch4j)
+Arch4j framework based on spring boot
 
 
 ## My passive EMP(ETF Managed Portfolio)
@@ -157,10 +179,5 @@ US Growth 17.5% + US Dividend 17.5% + KR Growth 17.5% + KR Dividend 17.5% + US B
 | **468370** | KODEX iShares미국인플레이션국채액티브 | 4%             | [K-ETF](https://www.k-etf.com/etf/468370) |
 | **468630** | KODEX iShares미국투자등급회사채액티브 | 4%             | [K-ETF](https://www.k-etf.com/etf/468630) |
 | **468380** | KODEX iShares미국하이일드액티브 | 4%             | [K-ETF](https://www.k-etf.com/etf/468380) |
-
-
-
-## TODO - My active portfolio for trading
-
 
 
