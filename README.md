@@ -45,14 +45,14 @@ allprojects {
 Runs the trading daemon application.
 ```shell
 # starts fintics-daemon
-./gradlew :fintics:fintics-daemon:bootRun
+./gradlew :fintics-daemon:bootRun
 ```
 
 ### Starts fintics-web
 Runs the UI management web application.
 ```shell
 # starts fintics-web
-./gradlew :fintics:fintics-web:bootRun
+./gradlew :fintics-web:bootRun
 ```
 
 ## 🧪 Running from release binary
