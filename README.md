@@ -10,17 +10,23 @@ This program only automates your own investment strategy.
 ![](docs/assets/image/gambling-raccon.gif)
 ![](docs/assets/image/gambling-dog.gif)
 
+---
 
 ## 🖥️ Demo site
 
-Credentials: developer/developer
+Credentials: **developer/developer**
 
-### [![](https://img.shields.io/badge/Cloud%20Run-https://gcp.fintics--web.chomookun.org-blue?logo=google-cloud)](https://gcp.fintics-web.chomookun.org)
-
+### UI web application
+[![](https://img.shields.io/badge/Cloud%20Run-https://gcp.fintics--web.chomookun.org-blue?logo=google-cloud)](https://gcp.fintics-web.chomookun.org)
+<br/>
 Due to a cold start, there is an initialization delay of approximately 30 seconds.<br/>
+(No money!!!)
+
+### Trading daemon application
 Trading daemon is not available on the demo site.<br/>
 (No money!!!)
 
+---
 
 ## 🧪 Running from source
 
@@ -55,6 +61,8 @@ Runs the UI management web application.
 ./gradlew :fintics-web:bootRun
 ```
 
+---
+
 ## 🧪 Running from release binary
 
 Downloads Released archives.
@@ -70,6 +78,8 @@ Downloads Released archives.
 ./bin/fintics-web
 ```
 
+---
+
 ## 🧪 Running from container image
 
 ### Starts fintics-daemon
@@ -82,15 +92,17 @@ docker run -rm -p 8081:8081 docker.io/chomoookun/fintics-daemon:latest
 docker run -rm -p 8080:8080 docker.io/chomoookun/fintics-web:latest
 ```
 
+---
 
 ## 🔗 References
 
-### [![](https://img.shields.io/badge/Github-https://github.com/chomoomun/fintics-green?logo=github)](https://github.com/chomookun/fintics)
-Git source repository
+### Git source repository
+[![](https://img.shields.io/badge/Github-https://github.com/chomoomun/fintics-green?logo=github)](https://github.com/chomookun/fintics)
 
-### [![](https://img.shields.io/badge/Arch4j-https://github.com/chomookun/arch4j-red?logo=github)](https://github.com/chomookun/arch4j)
-Arch4j framework based on spring boot
+### Arch4j framework (based on spring boot)
+[![](https://img.shields.io/badge/Arch4j-https://github.com/chomookun/arch4j-red?logo=github)](https://github.com/chomookun/arch4j)
 
+---
 
 ## 💼 My passive EMP(ETF Managed Portfolio)
 
