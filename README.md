@@ -14,7 +14,7 @@ This program only automates your own investment strategy and philosophy.
 
 ## 🖥️ Demo site
 
-username/password: developer/developer
+Credentials: developer/developer
 
 ### [![](https://img.shields.io/badge/Cloud%20Run-https://gcp.fintics--web.chomookun.org-blue?logo=google-cloud)](https://gcp.fintics-web.chomookun.org)
 
