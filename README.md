@@ -71,7 +71,7 @@ Downloads Released archives.
 
 ## 🧪 Running from container image
 
-### &#128196; Starts fintics-daemon
+### Starts fintics-daemon
 ```shell
 docker run -rm -p 8081:8081 docker.io/chomoookun/fintics-daemon:latest
 ```
