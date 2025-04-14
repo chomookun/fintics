@@ -12,7 +12,7 @@ This program only automates your own investment strategy and philosophy.
 ![](docs/assets/image/gambling-dog.gif)
 
 
-## &#128193; Demo site
+## 🖥️ Demo site
 
 username/password: developer/developer
 
@@ -25,7 +25,7 @@ Due to a cold start, there is an initialization delay of approximately 30 second
 Hosted on a home server, which may result in slower response times.
 
 
-## &#128193; Running from source
+## 🧪 Running from source
 
 ### Configures Gradle 
 Adds private maven repository
@@ -58,7 +58,7 @@ Runs the UI management web application.
 ./gradlew :fintics:fintics-web:bootRun
 ```
 
-## &#128640; Running from release binary
+## 🧪 Running from release binary
 
 Downloads Released archives.
 
@@ -73,7 +73,7 @@ Downloads Released archives.
 ./bin/fintics-web
 ```
 
-## &#128193; Running from container image
+## 🧪 Running from container image
 
 ### &#128196; Starts fintics-daemon
 ```shell
@@ -86,7 +86,7 @@ docker run -rm -p 8080:8080 docker.io/chomoookun/fintics-web:latest
 ```
 
 
-## References
+## 🔗 References
 
 ### [![](https://img.shields.io/badge/Github-https://github.com/chomoomun/fintics-green?logo=github)](https://github.com/chomookun/fintics)
 Git source repository
@@ -95,7 +95,7 @@ Git source repository
 Arch4j framework based on spring boot
 
 
-## My passive EMP(ETF Managed Portfolio)
+## 💼 My passive EMP(ETF Managed Portfolio)
 
 ### Concept
 - Seeking a Balance Between Growth and Dividend
