@@ -12,7 +12,7 @@ This program only automates your own investment strategy and philosophy.
 ![](docs/assets/image/gambling-dog.gif)
 
 
-## Demo site
+## &#128193; Demo site
 
 username/password: developer/developer
 
@@ -25,7 +25,7 @@ Due to a cold start, there is an initialization delay of approximately 30 second
 Hosted on a home server, which may result in slower response times.
 
 
-## Running from source
+## &#128193; Running from source
 
 ### Configures Gradle 
 Adds private maven repository
@@ -58,7 +58,7 @@ Runs the UI management web application.
 ./gradlew :fintics:fintics-web:bootRun
 ```
 
-## Running from release binary
+## &#128193; Running from release binary
 
 Downloads Released archives.
 
