@@ -27,7 +27,7 @@ Hosted on a home server, which may result in slower response times.
 
 ## &#128193; Running from source
 
-### &#128196; Configures Gradle 
+### Configures Gradle 
 Adds private maven repository
 ```shell
 vim ~/.gradle/init.gradle
@@ -44,31 +44,31 @@ allprojects {
 ...
 ```
 
-### &#128196; Starts fintics-daemon
+### Starts fintics-daemon
 Runs the trading daemon application.
 ```shell
 # starts fintics-daemon
 ./gradlew :fintics:fintics-daemon:bootRun
 ```
 
-### &#128196; Starts fintics-web
+### Starts fintics-web
 Runs the UI management web application.
 ```shell
 # starts fintics-web
 ./gradlew :fintics:fintics-web:bootRun
 ```
 
-## &#128193; Running from release binary
+## Running from release binary
 
 Downloads Released archives.
 
-### &#128196; Starts fintics-daemon
+### Starts fintics-daemon
 
 ```shell
 ./bin/fintics-daemon
 ```
 
-### &#128196; Starts fintics-web
+### Starts fintics-web
 ```shell
 ./bin/fintics-web
 ```
