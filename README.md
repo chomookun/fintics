@@ -3,8 +3,8 @@
 [![Sponsor](https://img.shields.io/badge/Sponsor-%E2%9D%A4-green?logo=github)](https://github.com/sponsors/chomookun)
 [![Donate](https://img.shields.io/badge/Donate-Ko--fi-green?logo=kofi)](https://ko-fi.com/chomookun)
 
-If you don't have your own investment strategy and philosophy, Don't do it. 
-If you mess up, you'll be in big trouble.
+If you don't have your own investment strategy and philosophy, Don't do it.<br/> 
+If you mess up, you'll be in big trouble.<br/>
 This program only automates your own investment strategy and philosophy.
 
 ![](docs/assets/image/gambling-raccon.gif)
@@ -18,7 +18,9 @@ Credentials: developer/developer
 
 ### [![](https://img.shields.io/badge/Cloud%20Run-https://gcp.fintics--web.chomookun.org-blue?logo=google-cloud)](https://gcp.fintics-web.chomookun.org)
 
-Due to a cold start, there is an initialization delay of approximately 30 seconds. (No money!!!)
+Due to a cold start, there is an initialization delay of approximately 30 seconds.<br/>
+Trading daemon is not available on the demo site.<br/>
+(No money!!!)
 
 
 ## 🧪 Running from source
