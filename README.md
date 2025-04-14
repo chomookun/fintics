@@ -73,7 +73,7 @@ Downloads Released archives.
 ./bin/fintics-web
 ```
 
-## Running from container image
+## &#128193; Running from container image
 
 ### Starts fintics-daemon
 ```shell
