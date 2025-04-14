@@ -5,7 +5,7 @@
 
 If you don't have your own investment strategy and philosophy, Don't do it.<br/> 
 If you mess up, you'll be in big trouble.<br/>
-This program only automates your own investment strategy and philosophy.
+This program only automates your own investment strategy.
 
 ![](docs/assets/image/gambling-raccon.gif)
 
