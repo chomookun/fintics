@@ -16,18 +16,18 @@ This program only automates your own investment strategy and philosophy.
 
 username/password: developer/developer
 
-### &#128196; [![](https://img.shields.io/badge/Cloud%20Run-https://gcp.fintics--web.chomookun.org-red?logo=google-cloud)](https://gcp.fintics-web.chomookun.org)
+### [![](https://img.shields.io/badge/Cloud%20Run-https://gcp.fintics--web.chomookun.org-red?logo=google-cloud)](https://gcp.fintics-web.chomookun.org)
 
 Due to a cold start, there is an initialization delay of approximately 30 seconds. (No money!!!)
 
-### &#128196; [![](https://img.shields.io/badge/Self--Hosting-https://fintics--web.chomookun.org-blue?logo=linux)](https://fintics-web.chomookun.org)
+### [![](https://img.shields.io/badge/Self--Hosting-https://fintics--web.chomookun.org-blue?logo=linux)](https://fintics-web.chomookun.org)
 
 Hosted on a home server, which may result in slower response times.
 
 
 ## &#128193; Running from source
 
-### Configures Gradle 
+### &#128196; Configures Gradle 
 Adds private maven repository
 ```shell
 vim ~/.gradle/init.gradle
@@ -44,14 +44,14 @@ allprojects {
 ...
 ```
 
-### Starts fintics-daemon
+### &#128196; Starts fintics-daemon
 Runs the trading daemon application.
 ```shell
 # starts fintics-daemon
 ./gradlew :fintics:fintics-daemon:bootRun
 ```
 
-### Starts fintics-web
+### &#128196; Starts fintics-web
 Runs the UI management web application.
 ```shell
 # starts fintics-web
@@ -62,20 +62,20 @@ Runs the UI management web application.
 
 Downloads Released archives.
 
-### Starts fintics-daemon
+### &#128196; Starts fintics-daemon
 
 ```shell
 ./bin/fintics-daemon
 ```
 
-### Starts fintics-web
+### &#128196; Starts fintics-web
 ```shell
 ./bin/fintics-web
 ```
 
 ## &#128193; Running from container image
 
-### Starts fintics-daemon
+### &#128196; Starts fintics-daemon
 ```shell
 docker run -rm -p 8081:8081 docker.io/chomoookun/fintics-daemon:latest
 ```
