@@ -16,7 +16,7 @@ This program only automates your own investment strategy and philosophy.
 
 username/password: developer/developer
 
-### [![](https://img.shields.io/badge/Cloud%20Run-https://gcp.fintics--web.chomookun.org-red?logo=google-cloud)](https://gcp.fintics-web.chomookun.org)
+### [![](https://img.shields.io/badge/Cloud%20Run-https://gcp.fintics--web.chomookun.org-blue?logo=google-cloud)](https://gcp.fintics-web.chomookun.org)
 
 Due to a cold start, there is an initialization delay of approximately 30 seconds. (No money!!!)
 
