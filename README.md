@@ -16,19 +16,21 @@ This program only automates your own investment strategy.
 
 Credentials: **developer/developer**
 
-### UI web application
+### Management web application (google cloud run)
 [![](https://img.shields.io/badge/Cloud%20Run-https://gcp.fintics--web.chomookun.org-blue?logo=google-cloud)](https://gcp.fintics-web.chomookun.org)
 <br/>
 Due to a cold start, there is an initialization delay of approximately 30 seconds.<br/>
 (No money!!!)
 
 ### Trading daemon application
+![](https://img.shields.io/badge/N/A-Not%20available-red?logo=)
+<br/>
 Trading daemon is not available on the demo site.<br/>
 (No money!!!)
 
 ---
 
-## 🧪 Running from source
+## 🧪 Running from source code
 
 ### Configures Gradle 
 Adds private maven repository
