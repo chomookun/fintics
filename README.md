@@ -58,7 +58,7 @@ Runs the UI management web application.
 ./gradlew :fintics:fintics-web:bootRun
 ```
 
-## Running from release binary
+## &#128640; Running from release binary
 
 Downloads Released archives.
 
