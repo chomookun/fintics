@@ -20,10 +20,6 @@ username/password: developer/developer
 
 Due to a cold start, there is an initialization delay of approximately 30 seconds. (No money!!!)
 
-### [![](https://img.shields.io/badge/Self--Hosting-https://fintics--web.chomookun.org-blue?logo=linux)](https://fintics-web.chomookun.org)
-
-Hosted on a home server, which may result in slower response times.
-
 
 ## 🧪 Running from source
 
