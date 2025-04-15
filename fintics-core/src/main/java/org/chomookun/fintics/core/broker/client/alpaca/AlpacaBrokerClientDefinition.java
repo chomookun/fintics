@@ -3,6 +3,7 @@ package org.chomookun.fintics.core.broker.client.alpaca;
 import org.chomookun.fintics.core.broker.client.BrokerClient;
 import org.chomookun.fintics.core.broker.client.BrokerClientDefinition;
 import org.chomookun.fintics.core.broker.client.kis.KisUsBrokerClient;
+import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Component;
 
 import java.time.ZoneId;
@@ -10,6 +11,7 @@ import java.util.Currency;
 import java.util.StringJoiner;
 
 @Component
+@Lazy(false)
 public class AlpacaBrokerClientDefinition implements BrokerClientDefinition {
 
     @Override
