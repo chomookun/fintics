@@ -4,7 +4,7 @@ import ch.qos.logback.classic.Logger;
 import lombok.Builder;
 import lombok.Setter;
 import org.apache.commons.lang3.exception.ExceptionUtils;
-import org.chomookun.arch4j.core.alarm.AlarmService;
+import org.chomookun.arch4j.core.notification.NotificationService;
 import org.chomookun.fintics.core.asset.model.Asset;
 import org.chomookun.fintics.core.broker.model.Balance;
 import org.chomookun.fintics.core.broker.model.BalanceAsset;
@@ -49,7 +49,7 @@ public class TradeExecutor {
 
     private final OrderService orderService;
 
-    private final AlarmService alarmService;
+    private final NotificationService notificationService;
 
     private final StrategyRunnerFactory strategyRunnerFactory;
 
@@ -264,7 +264,7 @@ public class TradeExecutor {
 
             } catch (Throwable e) {
                 log.error(e.getMessage(), e);
-                sendErrorAlarmIfEnabled(trade, basketAsset, e);
+                sendErrorNotificationIfEnabled(trade, basketAsset, e);
             }
         }
     }
@@ -383,7 +383,7 @@ public class TradeExecutor {
             order.setResult(Order.Result.COMPLETED);
 
             // alarm
-            sendOrderAlarmIfEnabled(trade, order);
+            sendOrderNotificationIfEnabled(trade, order);
 
         } catch (Throwable e) {
             order.setResult(Order.Result.FAILED);
@@ -447,7 +447,7 @@ public class TradeExecutor {
                 }
             }
             // alarm
-            sendOrderAlarmIfEnabled(trade, order);
+            sendOrderNotificationIfEnabled(trade, order);
         } catch (Throwable e) {
             order.setResult(Order.Result.FAILED);
             order.setErrorMessage(e.getMessage());
@@ -464,20 +464,20 @@ public class TradeExecutor {
                 orderService.saveOrder(order));
     }
 
-    private void sendErrorAlarmIfEnabled(Trade trade, Asset asset, Throwable t) {
-        if(trade.getAlarmId() != null && !trade.getAlarmId().isBlank()) {
-            if (trade.isAlarmOnError()) {
+    private void sendErrorNotificationIfEnabled(Trade trade, Asset asset, Throwable t) {
+        if(trade.getNotifierId() != null && !trade.getNotifierId().isBlank()) {
+            if (trade.isNotifyOnError()) {
                 String subject = String.format("[%s - %s] Error", trade.getName(), asset != null ? asset.getName() : "");
                 Throwable rootCause = ExceptionUtils.getRootCause(t);
                 String content = rootCause.getClass().getName() + "\n" + rootCause.getMessage();
-                alarmService.sendAlarm(trade.getAlarmId(), subject, content);
+                notificationService.sendNotification(trade.getNotifierId(), subject, content, null);
             }
         }
     }
 
-    private void sendOrderAlarmIfEnabled(Trade trade, Order order) {
-        if (trade.isAlarmOnOrder()) {
-            if (trade.getAlarmId() != null && !trade.getAlarmId().isBlank()) {
+    private void sendOrderNotificationIfEnabled(Trade trade, Order order) {
+        if (trade.isNotifyOnOrder()) {
+            if (trade.getNotifierId() != null && !trade.getNotifierId().isBlank()) {
                 // subject
                 StringBuilder subject = new StringBuilder();
                 subject.append(String.format("[%s - %s] %s", trade.getName(), order.getAssetName(), order.getType()));
@@ -487,7 +487,7 @@ public class TradeExecutor {
                 content.append(String.format("- price: %s", order.getPrice())).append('\n');
                 content.append(String.format("- quantity: %s", order.getQuantity())).append('\n');
                 content.append(String.format("- strategyResult: %s", order.getStrategyResult())).append('\n');
-                alarmService.sendAlarm(trade.getAlarmId(), subject.toString(), content.toString());
+                notificationService.sendNotification(trade.getNotifierId(), subject.toString(), content.toString(), null);
             }
         }
     }

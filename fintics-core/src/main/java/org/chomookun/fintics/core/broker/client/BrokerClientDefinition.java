@@ -11,16 +11,16 @@ import java.util.Currency;
 public interface BrokerClientDefinition extends Aware {
 
     /**
-     * Defines broker client id
-     * @return client id
+     * Defines broker client type
+     * @return client type
      */
-    String getBrokerClientId();
+    String getClientType();
 
     /**
      * Defines broker client name
      * @return client name
      */
-    String getBrokerClientName();
+    String getName();
 
     /**
      * Defines client class type

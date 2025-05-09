@@ -3,7 +3,7 @@
       xmlns:th="http://www.thymeleaf.org"
       xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
       layout:decorate="_web.html">
-<th:block layout:fragment="_content">
+<main layout:fragment="_main">
     <th:block th:insert="common/_common.html"/>
     <script th:inline="javascript">
         // defines
@@ -32,18 +32,16 @@
             }
             url.searchParams.append('_page', basketSearch._page);
             url.searchParams.append('_size', basketSearch._size);
+            baskets.length = 0;
             basketSearch._status = 'loading';
-            duice.ArrayProxy.clear(baskets);
             _fetch(url)
                 .then(response => {
                     basketSearch._total= _parseTotalCount(response);
                     return response.json();
                 })
                 .then(data => {
+                    basketSearch._status = data.length < 1 ? 'empty' : null;
                     duice.ArrayProxy.assign(baskets, data);
-                })
-                .finally(() => {
-                    basketSearch._status = 'completed';
                 });
         }
 
@@ -223,12 +221,12 @@
                             </div>
                         </td>
                     </tr>
-                    <tr data-duice-bind="basketSearch" data-duice-if="return basketSearch._status === 'loading'">
+                    <tr data-duice-bind="basketSearch" data-duice-if="return basketSearch._status === 'loading'" hidden>
                         <td colspan="100%" class="text-align--center padding--1rem">
-                            <span class="blink" data-th-text="#{web.global.itemLoading(#{fintics.core.basket.Basket})}"></span>
+                            <span class="loading"></span>
                         </td>
                     </tr>
-                    <tr data-duice-bind="basketSearch" data-duice-if="return basketSearch._status === 'completed' && baskets.length < 1;" hidden>
+                    <tr data-duice-bind="basketSearch" data-duice-if="return basketSearch._status === 'empty';" hidden>
                         <td colspan="100%" class="text-align--center padding--1rem">
                             <span data-th-text="#{web.global.itemNotFound(#{fintics.core.basket.Basket})}"></span>
                         </td>
@@ -265,4 +263,4 @@
     <!-- end: basket                        -->
     <!-- ================================== -->
 
-</th:block>
+</main>

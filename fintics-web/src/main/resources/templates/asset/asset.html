@@ -3,7 +3,7 @@
       xmlns:th="http://www.thymeleaf.org"
       xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
       layout:decorate="_web.html">
-<th:block layout:fragment="_content">
+<main layout:fragment="_main">
     <th:block th:insert="common/_common.html"/>
     <th:block th:insert="common/_asset-dialog.html"/>
     <script th:inline="javascript">
@@ -44,19 +44,18 @@
             assetSearch._sort.forEach(it => {
                 url.searchParams.append('_sort', it);
             });
+            assets.length = 0;
             assetSearch._status = 'loading';
-            duice.ArrayProxy.clear(assets);
             _fetch(url)
                 .then(response => {
                     assetSearch._total = _parseTotalCount(response);
                     return response.json()
                 })
                 .then(data => {
+                    assetSearch._status = data.length < 1 ? 'empty' : null;
                     duice.ArrayProxy.assign(assets, data);
-                })
-                .finally(() => {
-                    assetSearch._status = 'completed';
                 });
+
         }
 
         function getAssetsWithSort(property, event) {
@@ -398,13 +397,13 @@
                         </td>
                     </tr>
                     <tr data-duice-bind="assetSearch"
-                        data-duice-if="return assetSearch._status === 'loading';">
+                        data-duice-if="return assetSearch._status === 'loading';" hidden>
                         <td colspan="100%" class="text-align--center padding--1rem">
-                            <span class="blink" data-th-text="#{web.global.itemLoading(#{fintics.core.asset.Asset})}"></span>
+                            <span class="loading"></span>
                         </td>
                     </tr>
                     <tr data-duice-bind="assetSearch"
-                        data-duice-if="return assetSearch._status === 'completed' && assets.length < 1;" hidden>
+                        data-duice-if="return assetSearch._status === 'empty';" hidden>
                         <td colspan="100%" class="text-align--center padding--1rem">
                             <span data-th-text="#{web.global.itemNotFound(#{fintics.core.asset.Asset})}"></span>
                         </td>
@@ -437,4 +436,4 @@
     <!-- end: assets                        -->
     <!-- ================================== -->
 
-</th:block>
+</main>

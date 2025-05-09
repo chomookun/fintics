@@ -58,7 +58,7 @@ public class BalanceHistoryCollector extends AbstractTask {
         } catch (Throwable e) {
             log.error(e.getMessage(), e);
             failExecution(execution, e);
-            sendSystemAlarm(execution);
+            sendSystemNotification(execution);
             throw new RuntimeException(e);
         }
         log.info("BalanceHistoryCollector - End collect balance history.");

@@ -49,7 +49,7 @@ public class AssetCollector extends AbstractTask {
             failExecution(execution, e);
             throw new RuntimeException(e);
         } finally {
-            sendSystemAlarm(execution);
+            sendSystemNotification(execution);
         }
         log.info("AssetCollector - End collect asset.");
     }

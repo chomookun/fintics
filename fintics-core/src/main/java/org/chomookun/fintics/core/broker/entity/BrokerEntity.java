@@ -25,11 +25,11 @@ public class BrokerEntity extends BaseEntity {
     @Column(name = "sort")
     private Integer sort;
 
-    @Column(name = "broker_client_id", length = 32)
-    private String brokerClientId;
+    @Column(name = "client_type", length = 32)
+    private String clientType;
 
-    @Column(name = "broker_client_properties")
+    @Column(name = "client_properties", length = Integer.MAX_VALUE)
     @Lob
-    private String brokerClientProperties;
+    private String clientProperties;
 
 }

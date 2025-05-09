@@ -1,7 +1,7 @@
 package org.chomookun.fintics.core.trade.executor;
 
 import lombok.RequiredArgsConstructor;
-import org.chomookun.arch4j.core.alarm.AlarmService;
+import org.chomookun.arch4j.core.notification.NotificationService;
 import org.chomookun.fintics.core.asset.AssetService;
 import org.chomookun.fintics.core.basket.BasketService;
 import org.chomookun.fintics.core.ohlcv.OhlcvService;
@@ -24,7 +24,7 @@ public class TradeExecutorFactory {
 
     private final OrderService orderService;
 
-    private final AlarmService alarmService;
+    private final NotificationService notificationService;
 
     private final StrategyRunnerFactory strategyRunnerFactory;
 
@@ -37,7 +37,7 @@ public class TradeExecutorFactory {
                 .basketService(basketService)
                 .ohlcvService(ohlcvService)
                 .orderService(orderService)
-                .alarmService(alarmService)
+                .notificationService(notificationService)
                 .strategyRunnerFactory(strategyRunnerFactory)
                 .ohlcvCacheManager(ohlcvCacheManager)
                 .build();

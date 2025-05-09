@@ -91,7 +91,7 @@ public class DividendCollector extends AbstractTask {
             failExecution(execution, e);
             throw new RuntimeException(e);
         } finally {
-            sendSystemAlarm(execution);
+            sendSystemNotification(execution);
         }
         log.info("DividendCollector - Complete collect dividend.");
     }

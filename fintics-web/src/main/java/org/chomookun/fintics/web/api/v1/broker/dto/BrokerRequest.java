@@ -18,10 +18,10 @@ public class BrokerRequest {
 
     private Integer sort;
 
-    @Schema(description = "broker client id", example = "test")
-    private String brokerClientId;
+    @Schema(description = "client type", example = "test")
+    private String clientType;
 
-    @Schema(description = "broker client properties", example = "name=value")
-    private String brokerClientProperties;
+    @Schema(description = "client properties", example = "name=value")
+    private String clientProperties;
 
 }

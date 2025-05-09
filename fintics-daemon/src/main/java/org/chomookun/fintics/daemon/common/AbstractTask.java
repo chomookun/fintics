@@ -1,9 +1,9 @@
 package org.chomookun.fintics.daemon.common;
 
 import lombok.extern.slf4j.Slf4j;
-import org.chomookun.arch4j.core.alarm.AlarmService;
 import org.chomookun.arch4j.core.execution.model.Execution;
 import org.chomookun.arch4j.core.execution.ExecutionService;
+import org.chomookun.arch4j.core.notification.NotificationService;
 import org.chomookun.fintics.core.FinticsCoreProperties;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.jpa.repository.JpaRepository;
@@ -21,7 +21,7 @@ public abstract class AbstractTask {
     private FinticsCoreProperties finticsCoreProperties;
 
     @Autowired
-    private AlarmService alarmService;
+    private NotificationService notificationService;
 
     @Autowired
     private ExecutionService executionService;
@@ -42,12 +42,12 @@ public abstract class AbstractTask {
         executionService.fail(execution, e);
     }
 
-    protected final void sendSystemAlarm(Execution execution) {
-        String alarmId = finticsCoreProperties.getSystemAlarmId();
+    protected final void sendSystemNotification(Execution execution) {
+        String alarmId = finticsCoreProperties.getSystemNotifierId();
         String subject = String.format("%s[%s]", execution.getTaskName(), execution.getExecutionId());
         String content = execution.toString();
         if (alarmId != null) {
-            alarmService.sendAlarm(alarmId, subject, content);
+            notificationService.sendNotification(alarmId, subject, content, null);
         }
     }
 

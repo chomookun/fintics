@@ -64,8 +64,8 @@ public class BrokerRestController {
         Broker broker = Broker.builder()
                 .name(brokerRequest.getName())
                 .sort(brokerRequest.getSort())
-                .brokerClientId(brokerRequest.getBrokerClientId())
-                .brokerClientProperties(brokerRequest.getBrokerClientProperties())
+                .clientType(brokerRequest.getClientType())
+                .clientProperties(brokerRequest.getClientProperties())
                 .build();
         Broker savedBroker = brokerService.saveBroker(broker);
         return ResponseEntity.status(HttpStatus.CREATED)
@@ -79,8 +79,8 @@ public class BrokerRestController {
         Broker broker = brokerService.getBroker(brokerId).orElseThrow();
         broker.setName(brokerRequest.getName());
         broker.setSort(brokerRequest.getSort());
-        broker.setBrokerClientId(brokerRequest.getBrokerClientId());
-        broker.setBrokerClientProperties(brokerRequest.getBrokerClientProperties());
+        broker.setClientType(brokerRequest.getClientType());
+        broker.setClientProperties(brokerRequest.getClientProperties());
         Broker savedBroker = brokerService.saveBroker(broker);
         return ResponseEntity.ok(BrokerResponse.from(savedBroker));
     }

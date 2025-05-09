@@ -40,6 +40,10 @@ public interface OrderRepository extends JpaRepository<OrderEntity, String>, Jpa
             specification = specification.and((root, query, criteriaBuilder) ->
                     criteriaBuilder.equal(root.get(OrderEntity_.ASSET_ID), orderSearch.getAssetId()));
         }
+        if (orderSearch.getAssetName() != null) {
+            specification = specification.and((root, query, criteriaBuilder) ->
+                    criteriaBuilder.equal(root.get(OrderEntity_.ASSET_NAME), '%' + orderSearch.getAssetName() + '%'));
+        }
         if (orderSearch.getType() != null) {
             specification = specification.and((root, query, criteriaBuilder) ->
                     criteriaBuilder.equal(root.get(OrderEntity_.TYPE), orderSearch.getType()));

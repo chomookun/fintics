@@ -14,12 +14,12 @@ import java.util.StringJoiner;
 public class KisBrokerClientDefinition implements BrokerClientDefinition {
 
     @Override
-    public String getBrokerClientId() {
+    public String getClientType() {
         return "KIS";
     }
 
     @Override
-    public String getBrokerClientName() {
+    public String getName() {
         return "Korea Investment Kis API";
     }
 

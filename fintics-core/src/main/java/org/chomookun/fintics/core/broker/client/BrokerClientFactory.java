@@ -22,11 +22,11 @@ public class BrokerClientFactory {
      * @return broker client
      */
     public BrokerClient getObject(Broker broker) {
-        BrokerClientDefinition brokerClientDefinition = brokerClientDefinitionRegistry.getBrokerClientDefinition(broker.getBrokerClientId()).orElseThrow();
+        BrokerClientDefinition brokerClientDefinition = brokerClientDefinitionRegistry.getBrokerClientDefinition(broker.getClientType()).orElseThrow();
         try {
             Class<? extends BrokerClient> clientClass = brokerClientDefinition.getClassType().asSubclass(BrokerClient.class);
             Constructor<? extends BrokerClient> constructor = clientClass.getConstructor(BrokerClientDefinition.class, Properties.class);
-            Properties properties = PbePropertiesUtil.loadProperties(broker.getBrokerClientProperties());
+            Properties properties = PbePropertiesUtil.loadProperties(broker.getClientProperties());
             return constructor.newInstance(brokerClientDefinition, properties);
         } catch (NoSuchMethodException e) {
             throw new IllegalArgumentException(e);

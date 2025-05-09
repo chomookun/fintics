@@ -15,12 +15,12 @@ import java.util.StringJoiner;
 public class AlpacaBrokerClientDefinition implements BrokerClientDefinition {
 
     @Override
-    public String getBrokerClientId() {
+    public String getClientType() {
         return "ALPACA";
     }
 
     @Override
-    public String getBrokerClientName() {
+    public String getName() {
         return "Alpaca API";
     }
 

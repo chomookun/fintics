@@ -75,15 +75,15 @@ public class TradeEntity extends BaseEntity {
     @Lob
     private String strategyVariables;
 
-    @Column(name = "alarm_id", length = 32)
-    private String alarmId;
+    @Column(name = "notifier_id", length = 32)
+    private String notifierId;
 
-    @Column(name = "alarm_on_error", length = 1)
+    @Column(name = "notify_on_error", length = 1)
     @Convert(converter = BooleanConverter.class)
-    private boolean alarmOnError;
+    private boolean notifyOnError;
 
-    @Column(name = "alarm_on_order", length = 1)
+    @Column(name = "notify_on_order", length = 1)
     @Convert(converter = BooleanConverter.class)
-    private boolean alarmOnOrder;
+    private boolean notifyOnOrder;
 
 }

@@ -1,9 +1,9 @@
 package org.chomookun.fintics.web.view.trade;
 
 import lombok.RequiredArgsConstructor;
-import org.chomookun.arch4j.core.alarm.AlarmService;
-import org.chomookun.arch4j.core.alarm.model.Alarm;
-import org.chomookun.arch4j.core.alarm.model.AlarmSearch;
+import org.chomookun.arch4j.core.notification.NotifierService;
+import org.chomookun.arch4j.core.notification.model.Notifier;
+import org.chomookun.arch4j.core.notification.model.NotifierSearch;
 import org.chomookun.fintics.core.basket.model.Basket;
 import org.chomookun.fintics.core.basket.model.BasketSearch;
 import org.chomookun.fintics.core.broker.client.BrokerClientDefinition;
@@ -20,7 +20,6 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.servlet.ModelAndView;
@@ -39,7 +38,7 @@ public class TradeController {
 
     private final StrategyService strategyService;
 
-    private final AlarmService alarmService;
+    private final NotifierService notifierService;
 
     private final BrokerClientDefinitionRegistry brokerClientDefinitionRegistry;
 
@@ -59,8 +58,8 @@ public class TradeController {
     public ModelAndView detail(@RequestParam(value="tradeId", required = false) String tradeId) {
         ModelAndView modelAndView = new ModelAndView("trade/trade-detail");
         modelAndView.addObject("tradeId", tradeId);
-        List<Alarm> alarms = alarmService.getAlarms(AlarmSearch.builder().build(), Pageable.unpaged()).getContent();
-        modelAndView.addObject("alarms", alarms);
+        List<Notifier> notifiers = notifierService.getNotifiers(NotifierSearch.builder().build(), Pageable.unpaged()).getContent();
+        modelAndView.addObject("notifiers", notifiers);
         List<Broker> brokers =  brokerService.getBrokers(BrokerSearch.builder().build(), Pageable.unpaged()).getContent();
         modelAndView.addObject("brokers", brokers);
         List<BrokerClientDefinition> brokerClientDefinitions = brokerClientDefinitionRegistry.getBrokerClientDefinitions();

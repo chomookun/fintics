@@ -18,7 +18,7 @@
             imgElement.onclick = function() {
                 let assetId = this.dataset.assetId;
                 let favorite = !JSON.parse(this.dataset.favorite);
-                let url = new URL(`${_apiUrl}/v1/asset/assets/${assetId}/favorite`, document.location.origin);
+                let url = new URL(`${_apiUrl}/v1/assets/${assetId}/favorite`, document.location.origin);
                 let method = favorite ? 'POST' : 'DELETE';
                 _fetch(url, {
                     method: method

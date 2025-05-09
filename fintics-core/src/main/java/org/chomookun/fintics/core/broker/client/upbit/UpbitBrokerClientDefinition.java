@@ -14,12 +14,12 @@ import java.util.StringJoiner;
 public class UpbitBrokerClientDefinition implements BrokerClientDefinition {
 
     @Override
-    public String getBrokerClientId() {
+    public String getClientType() {
         return "UPBIT";
     }
 
     @Override
-    public String getBrokerClientName() {
+    public String getName() {
         return "Upbit API";
     }
 

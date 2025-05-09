@@ -3,7 +3,7 @@
       xmlns:th="http://www.thymeleaf.org"
       xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
       layout:decorate="_web.html">
-<th:block layout:fragment="_content">
+<main layout:fragment="_main">
     <th:block th:insert="common/_common.html"/>
     <script th:inline="javascript">
         // defines
@@ -83,7 +83,7 @@
         }
 
         function getProfit(brokerId, dateFrom, dateTo) {
-            let url = new URL(`${_apiUrl}/v1/profit/profits/${brokerId}`, location.origin);
+            let url = new URL(`${_apiUrl}/v1/profits/${brokerId}`, location.origin);
             if (dateFrom && dateTo) {
                 url.searchParams.set('dateFrom', dateFns.format(dateFrom, 'YYYY-MM-DD'));
                 url.searchParams.set('dateTo', dateFns.format(dateTo, 'YYYY-MM-DD'));
@@ -97,7 +97,7 @@
             balanceHistoriesChart.data.datasets.length = 0;
             balanceHistoriesChart.update();
             // fetches profit
-            _fetch(url, {}, true)
+            _fetch(url, {_suppressAlert:true})
             .then(response => response.json())
             .then(data => {
                 duice.ObjectProxy.assign(profitMap.get(brokerId), data);
@@ -413,11 +413,11 @@
                                     <tr th:data-duice-bind="|profitSearchMap.get('${broker.brokerId}')|"
                                         th:data-duice-if="|return profitSearchMap.get('${broker.brokerId}')._status === 'loading'|" hidden>
                                         <td colspan="100%" class="text-align--center padding--1rem">
-                                            <span class="blink" data-th-text="#{web.global.itemLoading(#{fintics.core.profit.RealizedProfit})}"></span>
+                                            <span class="loading"></span>
                                         </td>
                                     </tr>
                                     <tr th:data-duice-bind="|profitSearchMap.get('${broker.brokerId}')|"
-                                        th:data-duice-if="|return profitSearchMap.get('${broker.brokerId}')._status == 'completed' && profitMap.get('${broker.brokerId}').realizedProfits.length < 1|" hidden>
+                                        th:data-duice-if="|return  profitSearchMap.get('${broker.brokerId}')._status !== 'loading' && profitMap.get('${broker.brokerId}').realizedProfits.length < 1;|" hidden>
                                         <td colspan="100%" class="text-align--center padding--1rem">
                                             <span data-th-text="#{web.global.itemNotFound(#{fintics.core.profit.RealizedProfit})}"></span>
                                         </td>
@@ -505,7 +505,7 @@
                                     <tr th:data-duice-bind="|profitSearchMap.get('${broker.brokerId}')|"
                                         th:data-duice-if="|return profitSearchMap.get('${broker.brokerId}')._status === 'loading'|">
                                         <td colspan="100%" class="text-align--center padding--1rem">
-                                            <span class="blink" data-th-text="#{web.global.itemLoading(#{fintics.core.profit.DividendProfit})}"></span>
+                                            <span class="loading"></span>
                                         </td>
                                     </tr>
                                     <tr th:data-duice-bind="|profitSearchMap.get('${broker.brokerId}')|"
@@ -528,4 +528,4 @@
     <!-- end: profit                            -->
     <!-- ====================================== -->
 
-</th:block>
+</main>

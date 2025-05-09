@@ -3,7 +3,7 @@
       xmlns:th="http://www.thymeleaf.org"
       xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
       layout:decorate="_web.html">
-<th:block layout:fragment="_content">
+<main layout:fragment="_main">
     <th:block th:insert="common/_common.html"/>
     <th:block th:insert="common/_asset-dialog.html"/>
     <script th:inline="javascript">
@@ -1156,4 +1156,4 @@
     <!-- end: test-basket-dialog                -->
     <!-- ====================================== -->
 
-</th:block>
+</main>

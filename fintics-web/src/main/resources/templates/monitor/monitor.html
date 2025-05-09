@@ -3,7 +3,7 @@
       xmlns:th="http://www.thymeleaf.org"
       xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
       layout:decorate="_web.html">
-<th:block layout:fragment="_content">
+<main layout:fragment="_main">
     <th:block th:insert="common/_common.html"/>
     <th:block th:insert="common/_asset-dialog.html"/>
     <th:block th:insert="common/_submit-order-dialog.html"/>
@@ -89,10 +89,8 @@
                             });
                             delete data.basketDividers;
                             delete data.basketAssets;
+                            this.basket._status = data.length < 1 ? 'empty' : null;
                             duice.ObjectProxy.assign(this.basket, data);
-                        })
-                        .finally(() => {
-                            this.basket._status = 'completed';
                         });
                 },
                 /**
@@ -106,7 +104,7 @@
                         .map(async basketAsset => {
                             let url = new URL(`${_apiUrl}/v1/assets/${basketAsset.assetId}/ohlcvs`, location.origin);
                             url.searchParams.set('type', 'DAILY');
-                            return _fetch(url, null, true)
+                            return _fetch(url, {_suppressAlert:true})
                                 .then(response => response.json())
                                 .then(ohlcvs => {
                                     let timeSeries = _createTimeSeries(ohlcvs);
@@ -135,7 +133,7 @@
                         .map(async basketAsset => {
                             let url = new URL(`${_apiUrl}/v1/assets/${basketAsset.assetId}/ohlcvs`, location.origin);
                             url.searchParams.set('type', 'MINUTE');
-                            return _fetch(url, null, true)
+                            return _fetch(url, {_suppressAlert:true})
                                 .then(response => response.json())
                                 .then(ohlcvs => {
                                     let timeSeries = _createTimeSeries(ohlcvs);
@@ -157,7 +155,7 @@
                  */
                 getTradeAssets: function() {
                     let url = new URL(`${_apiUrl}/v1/trades/${this.trade.tradeId}/assets`, document.location.origin);
-                    _fetch(url, null, true)
+                    _fetch(url, {_suppressAlert:true})
                         .then(response => response.json())
                         .then(tradeAssets => {
                             tradeAssets.forEach(tradeAsset => {
@@ -187,7 +185,7 @@
                  */
                 getBalance: function() {
                     let url = new URL(`${_apiUrl}/v1/trades/${this.trade.tradeId}/balance`, document.location.origin);
-                    _fetch(url, null, true)
+                    _fetch(url, {_suppressAlert:true})
                         .then(response => response.json())
                         .then(balance => {
                             this.applyBalance(balance);
@@ -225,7 +223,7 @@
                     url.searchParams.append('orderAtTo', orderAtTo);
                     url.searchParams.append('tradeId', this.trade.tradeId);
                     url.searchParams.append('_size', 1000);
-                    _fetch(url, null, true).then(response => response.json()).then(orders => {
+                    _fetch(url, {_suppressAlert:true}).then(response => response.json()).then(orders => {
                         this.applyOrders(orders);
                     });
                 },
@@ -307,7 +305,9 @@
          * @param tradeId trade id
          */
         function openTrade(tradeId) {
-            _openLink(`${location.origin}/trade/${tradeId}`, '_blank');
+            const url = new URL(`${location.origin}/trade/detail`);
+            url.searchParams.set('tradeId', tradeId);
+            _openLink(url.toString(), '_blank');
         }
 
         /**
@@ -687,12 +687,12 @@
                             th:data-duice-if="|return monitorMap.get('${trade.tradeId}').basket._status === 'loading'|" hidden>
                         <tr>
                             <td colspan="100%" class="text-align--center padding--1rem">
-                                <span class="blink" data-th-text="#{web.global.itemLoading(#{fintics.core.basket.BasketAsset})}"></span>
+                                <span class="loading"></span>
                             </td>
                         </tr>
                         </tbody>
                         <tbody th:data-duice-bind="|monitorMap.get('${trade.tradeId}').basket|"
-                               th:data-duice-if="|return monitorMap.get('${trade.tradeId}').basket._status == 'completed' && monitorMap.get('${trade.tradeId}').basket.basketItems.length < 1|" hidden>
+                               th:data-duice-if="|return monitorMap.get('${trade.tradeId}').basket._status == 'empty';|" hidden>
                         <tr>
                             <td colspan="100%" class="text-align--center padding--1rem">
                                 <span data-th-text="#{web.global.itemNotFound(#{fintics.core.basket.BasketAsset})}"></span>
@@ -708,4 +708,4 @@
     <!-- end: trade                         -->
     <!-- ================================== -->
 
-</th:block>
+</main>

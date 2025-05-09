@@ -43,7 +43,7 @@ public class BrokerClientDefinitionRegistry implements BeanPostProcessor {
      */
     public Optional<BrokerClientDefinition> getBrokerClientDefinition(String brokerClientId) {
         return brokerClientDefinitions.stream()
-                .filter(it -> it.getBrokerClientId().equals(brokerClientId))
+                .filter(it -> it.getClientType().equals(brokerClientId))
                 .findFirst();
     }
 

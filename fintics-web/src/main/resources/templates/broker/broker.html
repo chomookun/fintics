@@ -3,7 +3,7 @@
       xmlns:th="http://www.thymeleaf.org"
       xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
       layout:decorate="_web.html">
-<th:block layout:fragment="_content">
+<main layout:fragment="_main">
     <th:block th:insert="common/_common.html"/>
     <script th:inline="javascript">
         // defines
@@ -27,12 +27,24 @@
             let sort = parseInt(brokerSearch._page) * parseInt(brokerSearch._size) + event.toIndex;
             changeBrokerSort(broker.brokerId, sort);
         });
+
+        // On broker property changing
+        duice.ObjectProxy.onPropertyChanging(broker, async event => {
+            if(event.getProperty() === 'clientType') {
+                if (!broker._new) {
+                    if (!await _confirm(/*[[#{web.global.changeItemConfirm(#{fintics.broker.Broker.clientType})}]]*/'')) {
+                        return false;
+                    }
+                }
+            }
+            return true;
+        });
         // On broker property changed
         duice.ObjectProxy.onPropertyChanged(broker, event => {
-            if(event.getProperty() === 'brokerClientId') {
-                let brokerClientId = event.getValue();
-                broker.brokerClientProperties = brokerClientDefinitions
-                    .find(item => item['brokerClientId'] === brokerClientId)
+            if(event.getProperty() === 'clientType') {
+                let clientType = event.getValue();
+                broker.clientProperties = brokerClientDefinitions
+                    .find(it => it['clientType'] === clientType)
                     ?.propertiesTemplate;
             }
         });
@@ -52,20 +64,18 @@
             }
             url.searchParams.append('_page', brokerSearch._page);
             url.searchParams.append('_size', brokerSearch._size);
+            brokers.length = 0;
             brokerSearch._status = 'loading';
-            duice.ArrayProxy.clear(brokers);
             _fetch(url)
                 .then(response => {
                     brokerSearch._total= _parseTotalCount(response);
                     return response.json()
                 })
                 .then(data => {
+                    brokerSearch._status = data.length < 1 ? 'empty' : null;
                     duice.ArrayProxy.assign(brokers, data);
                     // select current item
                     duice.ArrayProxy.selectItem(brokers, brokers.findIndex(it => it.brokerId === broker.brokerId));
-                })
-                .finally(() => {
-                    brokerSearch._status = 'completed';
                 });
         }
 
@@ -271,13 +281,13 @@
                                 </td>
                             </tr>
                             <tr data-duice-bind="brokerSearch"
-                                data-duice-if="return brokerSearch._status === 'loading';">
+                                data-duice-if="return brokerSearch._status === 'loading';" hidden>
                                 <td colspan="100%" class="text-align--center padding--1rem">
-                                    <span class="blink" data-th-text="#{web.global.itemLoading(#{fintics.core.broker.Broker})}"></span>
+                                    <span class="loading"></span>
                                 </td>
                             </tr>
                             <tr data-duice-bind="brokerSearch"
-                                data-duice-if="return brokerSearch._status === 'completed' && brokers.length < 1;" hidden>
+                                data-duice-if="return brokerSearch._status === 'empty';" hidden>
                                 <td colspan="100%" class="text-align--center padding--1rem">
                                     <span data-th-text="#{web.global.itemNotFound(#{fintics.core.broker.Broker})}"></span>
                                 </td>
@@ -336,22 +346,22 @@
                         </div>
                         <div class="grid-column--span-6 s__grid-column--span-12">
                             <label>
-                                <span class="font-weight--bold" data-th-text="#{fintics.core.broker.Broker.brokerClientId}"></span>
+                                <span class="font-weight--bold" data-th-text="#{fintics.core.broker.Broker.clientType}"></span>
                                 <select class="width--100"
-                                        data-duice-bind="broker" data-duice-property="brokerClientId"
+                                        data-duice-bind="broker" data-duice-property="clientType"
                                         data-duice-option="brokerClientDefinitions"
-                                        data-duice-option-value-property="brokerClientId"
-                                        data-duice-option-text-property="brokerClientName">
+                                        data-duice-option-value-property="clientType"
+                                        data-duice-option-text-property="name">
                                     <option data-th-text="|#{web.global.select}...|"></option>
                                 </select>
                             </label>
                         </div>
                         <div class="grid-column--span-12">
                             <label>
-                                <span class="font-weight--bold" data-th-text="#{fintics.core.broker.Broker.brokerClientProperties}"></span>
+                                <span class="font-weight--bold" data-th-text="#{fintics.core.broker.Broker.clientProperties}"></span>
                                 <duice-codemirror class="box code"
                                                   data-duice-bind="broker"
-                                                  data-duice-property="brokerClientProperties"
+                                                  data-duice-property="clientProperties"
                                                   data-duice-mode="properties"
                                                   data-duice-theme="dracula">
                                 </duice-codemirror>
@@ -390,4 +400,4 @@
     <!-- end: broker content                  -->
     <!-- ====================================== -->
 
-</th:block>
+</main>

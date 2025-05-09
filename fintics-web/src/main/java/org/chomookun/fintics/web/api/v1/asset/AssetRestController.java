@@ -76,7 +76,7 @@ public class AssetRestController {
 
     @Operation(summary = "Creates favorite")
     @PostMapping("{assetId}/favorite")
-    @PreAuthorize("hasAuthority('assets:edit')")
+    @PreAuthorize("hasAuthority('asset:edit')")
     @Transactional
     public ResponseEntity<Void> createFavorite(@PathVariable("assetId") String assetId){
         assetService.setFavorite(assetId, true);
@@ -85,7 +85,7 @@ public class AssetRestController {
 
     @Operation(summary = "Deletes favorite")
     @DeleteMapping("{assetId}/favorite")
-    @PreAuthorize("hasAuthority('assets:edit')")
+    @PreAuthorize("hasAuthority('asset:edit')")
     @Transactional
     public ResponseEntity<Void> deleteFavorite(@PathVariable("assetId") String assetId){
         assetService.setFavorite(assetId, false);

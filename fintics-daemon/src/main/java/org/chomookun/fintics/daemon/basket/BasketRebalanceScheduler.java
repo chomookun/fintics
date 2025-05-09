@@ -2,7 +2,7 @@ package org.chomookun.fintics.daemon.basket;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.chomookun.arch4j.core.alarm.AlarmService;
+import org.chomookun.arch4j.core.notification.NotificationService;
 import org.chomookun.fintics.core.FinticsCoreProperties;
 import org.chomookun.fintics.core.basket.rebalance.BasketRebalanceResult;
 import org.chomookun.fintics.core.basket.rebalance.BasketRebalanceTask;
@@ -39,7 +39,7 @@ public class BasketRebalanceScheduler {
 
     private final FinticsCoreProperties finticsProperties;
 
-    private final AlarmService alarmService;
+    private final NotificationService notificationService;
 
     /**
      * synchronizes scheduler with database
@@ -129,7 +129,7 @@ public class BasketRebalanceScheduler {
             log.warn(e.getMessage(), e);
             stringBuilder.append(e.getMessage());
         } finally {
-            sendSystemAlarm(stringBuilder.toString());
+            sendSystemNotification(stringBuilder.toString());
         }
     }
 
@@ -137,8 +137,8 @@ public class BasketRebalanceScheduler {
      * send system alarm
      * @param content message content
      */
-    protected void sendSystemAlarm(String content) {
-        alarmService.sendAlarm(finticsProperties.getSystemAlarmId(), this.getClass().getSimpleName(), content);
+    protected void sendSystemNotification(String content) {
+        notificationService.sendNotification(finticsProperties.getSystemNotifierId(), this.getClass().getSimpleName(), content, null);
     }
 
 }

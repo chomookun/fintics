@@ -13,14 +13,6 @@ spring:
       host: ~ # Redis host
       port: ~ # Redis port
       password: ~ # Redis password
-  mail:
-    host: ~ # SMTP host (ex: smtp.gmail.com)
-    port: ~ # SMTP port (ex: 587)
-    username: ~ # SMTP username
-    password: ~ # SMTP password
-    properties:
-      mail.smtp.auth: true
-      mail.smtp.starttls.enable: true
 
 # jasypt
 jasypt:

@@ -18,9 +18,9 @@ public class Broker {
 
     private Integer sort;
 
-    private String brokerClientId;
+    private String clientType;
 
-    private String brokerClientProperties;
+    private String clientProperties;
 
     private String market;
 
@@ -38,8 +38,8 @@ public class Broker {
                 .brokerId(brokerEntity.getBrokerId())
                 .name(brokerEntity.getName())
                 .sort(brokerEntity.getSort())
-                .brokerClientId(brokerEntity.getBrokerClientId())
-                .brokerClientProperties(brokerEntity.getBrokerClientProperties())
+                .clientType(brokerEntity.getClientType())
+                .clientProperties(brokerEntity.getClientProperties())
                 .build();
     }
 

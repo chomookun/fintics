@@ -16,7 +16,7 @@ import org.springframework.context.annotation.Lazy;
 public final class FinticsCoreProperties {
 
     @NotNull
-    private final String systemAlarmId;
+    private final String systemNotifierId;
 
     @NotNull
     private final Integer dataRetentionMonths;

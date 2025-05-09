@@ -3,7 +3,7 @@ delete from `core_menu_role`;
 delete from `core_menu_i18n`;
 delete from `core_menu`;
 delete from `core_git`;
-delete from `core_alarm`;
+delete from `core_notifier`;
 
 -- core_authority
 insert into `core_authority`
@@ -11,6 +11,7 @@ insert into `core_authority`
 values
     ('monitor','Y','Monitor Access Authority'),
     ('asset','Y','Asset Access Authority'),
+    ('asset:edit','Y','Asset Edit Authority'),
     ('basket','Y','Basket Access Authority'),
     ('basket:edit','Y','Basket Edit Authority'),
     ('strategy','Y','Strategy Access Authority'),
@@ -85,11 +86,11 @@ values
     ('profit','USER','LINK'),
     ('admin','USER','VIEW');
 
--- core_alarm
-insert into `core_alarm`
-    (`alarm_id`,`name`,`alarm_client_id`,`alarm_client_config`)
+-- core_notifier
+insert into `core_notifier`
+    (`notifier_id`,`name`,`client_type`,`client_properties`)
 values
-    ('fintics','Slack-Fintics','SLACK','url=https://hooks.slack.com/services/___');
+    ('fintics','Fintics Slack','SLACK','url=https://hooks.slack.com/services/___');
 
 -- fintics_asset
 insert into `fintics_asset`
@@ -111,7 +112,7 @@ values
 
 -- fintics_broker
 insert into `fintics_broker`
-    (`broker_id`,`name`,`sort`,`broker_client_id`,`broker_client_properties`)
+    (`broker_id`,`name`,`sort`,`client_type`,`client_properties`)
 values
     ('961eb9c68c9547ce9ae61bbe3be7f037','Korea Investment US Test',0,'KIS_US',null),
     ('ca5f55cd88694715bcb4c478710d9a68','Korea Investment Test',1,'KIS',null),
@@ -154,7 +155,7 @@ values
 
 -- fintics_trade
 insert into `fintics_trade`
-    (`trade_id`,`name`,`sort`,`enabled`,`interval`,`threshold`,`start_at`,`end_at`,`invest_amount`,`broker_id`,`basket_id`,`strategy_id`,`strategy_variables`,`alarm_id`,`order_kind`, cash_asset_id, cash_buffer_weight)
+    (`trade_id`,`name`,`sort`,`enabled`,`interval`,`threshold`,`start_at`,`end_at`,`invest_amount`,`broker_id`,`basket_id`,`strategy_id`,`strategy_variables`,`notifier_id`,`order_kind`, cash_asset_id, cash_buffer_weight)
 values
     ('06c228451ce0400fa57bb36f0568d7cb','한국투자증권 모의투자 - 국내', 1, 'Y','60','2','09:00','15:30','1000000','ca5f55cd88694715bcb4c478710d9a68','e5b2dda4ede54176b5e01eed7c4b9ed8','7c94187b346f4727a0f2478fdc53064f', null, null, 'LIMIT', 'KR.488770','1'),
     ('7af6bc641eef4254b12dd9fa1d43384d','한국투자증권 모의투자 - 미국', 2, 'Y','60','2','09:30','16:00','1000','961eb9c68c9547ce9ae61bbe3be7f037','a920f8813c6f46fda2947cee1c8cfb1d','7c94187b346f4727a0f2478fdc53064f', null, null, 'LIMIT', null, null),
@@ -169,7 +170,7 @@ values
     ('62b521b88ee742239753c5b1157d7407', '2023-11-10 14:47:14.000', 'SELL', '06c228451ce0400fa57bb36f0568d7cb', 'KR.122630', 'KODEX 레버리지(테스트)', 264, 'COMPLETED', NULL);
 
 -- for test (paper trade)
-update fintics_broker set broker_client_properties='
+update fintics_broker set client_properties='
 production=false
 apiUrl=https://openapivts.koreainvestment.com:29443
 appKey=[appkey]

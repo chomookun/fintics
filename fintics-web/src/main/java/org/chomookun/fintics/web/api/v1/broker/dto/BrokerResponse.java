@@ -18,9 +18,9 @@ public class BrokerResponse {
 
     private Integer sort;
 
-    private String brokerClientId;
+    private String clientType;
 
-    private String brokerClientProperties;
+    private String clientProperties;
 
     private String market;
 
@@ -33,8 +33,8 @@ public class BrokerResponse {
                 .brokerId(broker.getBrokerId())
                 .name(broker.getName())
                 .sort(broker.getSort())
-                .brokerClientId(broker.getBrokerClientId())
-                .brokerClientProperties(broker.getBrokerClientProperties())
+                .clientType(broker.getClientType())
+                .clientProperties(broker.getClientProperties())
                 .market(broker.getMarket())
                 .timezone(broker.getTimezone())
                 .currency(broker.getCurrency())

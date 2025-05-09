@@ -74,7 +74,7 @@ public class OhlcvUnusedDeleter extends AbstractTask {
         } catch (Throwable e) {
             log.error(e.getMessage(), e);
             failExecution(execution, e);
-            sendSystemAlarm(execution);
+            sendSystemNotification(execution);
             throw new RuntimeException(e);
         }
         log.info("OhlcvUnusedDeleter - End to delete unused ohlcv.");

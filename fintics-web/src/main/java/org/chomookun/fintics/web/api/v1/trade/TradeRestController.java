@@ -85,9 +85,9 @@ public class TradeRestController {
                 .basketId(tradeRequest.getBasketId())
                 .strategyId(tradeRequest.getStrategyId())
                 .strategyVariables(tradeRequest.getStrategyVariables())
-                .alarmId(tradeRequest.getAlarmId())
-                .alarmOnError(tradeRequest.isAlarmOnError())
-                .alarmOnOrder(tradeRequest.isAlarmOnOrder())
+                .notifierId(tradeRequest.getNotifierId())
+                .notifyOnError(tradeRequest.isNotifyOnError())
+                .notifyOnOrder(tradeRequest.isNotifyOnOrder())
                 .build();
         Trade savedTrade = tradeService.saveTrade(trade);
         TradeResponse savedTradeResponse = TradeResponse.from(savedTrade);
@@ -115,9 +115,9 @@ public class TradeRestController {
         trade.setBasketId(tradeRequest.getBasketId());
         trade.setStrategyId(tradeRequest.getStrategyId());
         trade.setStrategyVariables(tradeRequest.getStrategyVariables());
-        trade.setAlarmId(tradeRequest.getAlarmId());
-        trade.setAlarmOnError(tradeRequest.isAlarmOnError());
-        trade.setAlarmOnOrder(tradeRequest.isAlarmOnOrder());
+        trade.setNotifierId(tradeRequest.getNotifierId());
+        trade.setNotifyOnError(tradeRequest.isNotifyOnError());
+        trade.setNotifyOnOrder(tradeRequest.isNotifyOnOrder());
         Trade savedTrade = tradeService.saveTrade(trade);
         TradeResponse savedTradeResponse = TradeResponse.from(savedTrade);
         return ResponseEntity.ok(savedTradeResponse);

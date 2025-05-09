@@ -49,11 +49,11 @@ public class Trade {
 
     private String strategyVariables;
 
-    private String alarmId;
+    private String notifierId;
 
-    private boolean alarmOnError;
+    private boolean notifyOnError;
 
-    private boolean alarmOnOrder;
+    private boolean notifyOnOrder;
 
     public static Trade from(TradeEntity tradeEntity) {
         return Trade.builder()
@@ -73,9 +73,9 @@ public class Trade {
                 .basketId(tradeEntity.getBasketId())
                 .strategyId(tradeEntity.getStrategyId())
                 .strategyVariables(tradeEntity.getStrategyVariables())
-                .alarmId(tradeEntity.getAlarmId())
-                .alarmOnError(tradeEntity.isAlarmOnError())
-                .alarmOnOrder(tradeEntity.isAlarmOnOrder())
+                .notifierId(tradeEntity.getNotifierId())
+                .notifyOnError(tradeEntity.isNotifyOnError())
+                .notifyOnOrder(tradeEntity.isNotifyOnOrder())
                 .build();
     }
 

@@ -8,6 +8,13 @@ plugins {
     id 'application'
 }
 
+configurations {
+    developmentOnly
+    runtimeClasspath {
+        extendsFrom developmentOnly
+    }
+}
+
 dependencies {
     // subproject
     implementation platform(project(":fintics-dependencies"))
@@ -16,6 +23,9 @@ dependencies {
 
     // arch4j-web
     implementation "org.chomookun.arch4j:arch4j-web:1.0.0-SNAPSHOT"
+
+    // development tools (BOM not working)
+    developmentOnly 'org.springframework.boot:spring-boot-devtools:3.4.1'
 
 }
 

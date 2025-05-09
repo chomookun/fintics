@@ -24,7 +24,6 @@ import org.chomookun.fintics.core.order.repository.OrderRepository;
 import org.chomookun.fintics.core.order.OrderService;
 import org.chomookun.fintics.core.trade.entity.TradeAssetEntity;
 import org.chomookun.fintics.core.trade.entity.TradeEntity;
-import org.chomookun.fintics.core.trade.entity.TradeEntity_;
 import org.chomookun.fintics.core.trade.model.Trade;
 import org.chomookun.fintics.core.trade.model.TradeAsset;
 import org.chomookun.fintics.core.trade.model.TradeSearch;
@@ -39,7 +38,6 @@ import jakarta.persistence.PersistenceContext;
 import java.math.BigDecimal;
 import java.util.*;
 import java.util.stream.Collectors;
-import java.util.stream.IntStream;
 
 @Service
 @RequiredArgsConstructor
@@ -124,9 +122,9 @@ public class TradeService {
         tradeEntity.setStrategyVariables(Optional.ofNullable(trade.getStrategyVariables())
                 .map(PbePropertiesUtil::encodePropertiesString)
                 .orElse(null));
-        tradeEntity.setAlarmId(trade.getAlarmId());
-        tradeEntity.setAlarmOnError(trade.isAlarmOnError());
-        tradeEntity.setAlarmOnOrder(trade.isAlarmOnOrder());
+        tradeEntity.setNotifierId(trade.getNotifierId());
+        tradeEntity.setNotifyOnError(trade.isNotifyOnError());
+        tradeEntity.setNotifyOnOrder(trade.isNotifyOnOrder());
         // save and return
         TradeEntity savedTradeEntity = tradeRepository.saveAndFlush(tradeEntity);
         entityManager.refresh(savedTradeEntity);

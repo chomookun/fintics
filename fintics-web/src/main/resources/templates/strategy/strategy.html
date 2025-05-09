@@ -3,7 +3,7 @@
       xmlns:th="http://www.thymeleaf.org"
       xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
       layout:decorate="_web.html">
-<th:block layout:fragment="_content">
+<main layout:fragment="_main">
     <th:block th:insert="common/_common.html"/>
     <script th:inline="javascript">
         const strategySearch = new duice.ObjectProxy({
@@ -30,18 +30,16 @@
             }
             url.searchParams.append('_page', strategySearch._page);
             url.searchParams.append('_size', strategySearch._size);
+            strategies.length = 0;
             strategySearch._status = 'loading';
-            duice.ArrayProxy.clear(strategies);
             _fetch(url)
                 .then(response => {
                     strategySearch._total = _parseTotalCount(response);
                     return response.json();
                 })
                 .then(data => {
+                    strategySearch._status = data.length < 1 ? 'empty' : null;
                     duice.ArrayProxy.assign(strategies, data);
-                })
-                .finally(() => {
-                    strategySearch._status = 'completed';
                 });
         }
 
@@ -200,12 +198,12 @@
                             </div>
                         </td>
                     </tr>
-                    <tr data-duice-bind="strategySearch" data-duice-if="return strategySearch._status === 'loading';">
+                    <tr data-duice-bind="strategySearch" data-duice-if="return strategySearch._status === 'loading';" hidden>
                         <td colspan="100%" class="text-align--center padding--1rem">
-                            <span class="blink" data-th-text="#{web.global.itemLoading(#{fintics.core.strategy.Strategy})}"></span>
+                            <span class="loading"></span>
                         </td>
                     </tr>
-                    <tr data-duice-bind="strategySearch" data-duice-if="return strategySearch._status === 'completed' && strategies.length < 1;" hidden>
+                    <tr data-duice-bind="strategySearch" data-duice-if="return strategySearch._status === 'empty';" hidden>
                         <td colspan="100%" class="text-align--center padding--1rem">
                             <span data-th-text="#{web.global.itemNotFound(#{fintics.core.strategy.Strategy})}"></span>
                         </td>
@@ -242,4 +240,4 @@
     <!-- end: strategy                       -->
     <!-- ================================== -->
 
-</th:block>
+</main>

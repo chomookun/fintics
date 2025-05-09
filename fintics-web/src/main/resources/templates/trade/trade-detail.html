@@ -3,13 +3,13 @@
       xmlns:th="http://www.thymeleaf.org"
       xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
       layout:decorate="_web.html">
-<th:block layout:fragment="_content">
+<main layout:fragment="_main">
     <th:block th:insert="common/_common.html"/>
     <th:block th:insert="common/_asset-dialog.html"/>
     <th:block th:insert="common/_submit-order-dialog.html"/>
     <script th:inline="javascript">
         const tradeId = new URL(location.href).searchParams.get('tradeId');
-        const alarms = new duice.ArrayProxy(/*[[${alarms}]]*/[]);
+        const notifiers = new duice.ArrayProxy(/*[[${notifiers}]]*/[]);
         const brokers = new duice.ArrayProxy(/*[[${brokers}]]*/[]);
         const brokerClientDefinitions = new duice.ArrayProxy(/*[[${brokerClientDefinitions}]]*/[]);
         const baskets = new duice.ArrayProxy(/*[[${baskets}]]*/[]);
@@ -206,7 +206,7 @@
         }
 
         function getTradeBalance() {
-            let url = new URL(`${_apiUrl}/v1/trade/trades/${tradeId}/balance`, document.location.origin);
+            let url = new URL(`${_apiUrl}/v1/trades/${tradeId}/balance`, document.location.origin);
             _fetch(url).then(response => response.json())
                 .then(data => {
                     duice.ObjectProxy.assign(balance, data);
@@ -378,12 +378,12 @@
                 </div>
                 <div class="grid-column--span-12">
                     <label>
-                        <span class="font-weight--bold width--100" data-th-text="#{fintics.core.trade.Trade.alarmId}"></span>
+                        <span class="font-weight--bold width--100" data-th-text="#{fintics.core.trade.Trade.notifierId}"></span>
                         <select class="width--100"
                                 data-duice-bind="trade"
-                                data-duice-property="alarmId"
-                                data-duice-option="alarms"
-                                data-duice-option-value-property="alarmId"
+                                data-duice-property="notifierId"
+                                data-duice-option="notifiers"
+                                data-duice-option-value-property="notifierId"
                                 data-duice-option-text-property="name">
                             <option data-th-text="|#{web.global.select}...|"></option>
                         </select>
@@ -391,13 +391,13 @@
                 </div>
                 <div class="grid-column--span-12">
                     <label>
-                        <input type="checkbox" data-duice-bind="trade" data-duice-property="alarmOnError"/>
-                        <span class="font-weight--bold" data-th-text="#{fintics.core.trade.Trade.alarmOnError}"></span>
+                        <input type="checkbox" data-duice-bind="trade" data-duice-property="notifyOnError"/>
+                        <span class="font-weight--bold" data-th-text="#{fintics.core.trade.Trade.notifyOnError}"></span>
                     </label>
                     &nbsp;
                     <label>
-                        <input type="checkbox" data-duice-bind="trade" data-duice-property="alarmOnOrder"/>
-                        <span class="font-weight--bold" data-th-text="#{fintics.core.trade.Trade.alarmOnOrder}"></span>
+                        <input type="checkbox" data-duice-bind="trade" data-duice-property="notifyOnOrder"/>
+                        <span class="font-weight--bold" data-th-text="#{fintics.core.trade.Trade.notifyOnOrder}"></span>
                     </label>
                 </div>
                 <div class="grid-column--span-6">
@@ -1065,4 +1065,4 @@
     <!-- end: cash asset dialog                 -->
     <!-- ====================================== -->
 
-</th:block>
+</main>

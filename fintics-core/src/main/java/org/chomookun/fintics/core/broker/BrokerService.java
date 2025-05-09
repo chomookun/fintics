@@ -66,7 +66,7 @@ public class BrokerService {
      * @param broker broker
      */
     void populateBroker(Broker broker) {
-        brokerClientDefinitionRegistry.getBrokerClientDefinition(broker.getBrokerClientId()).ifPresent(brokerClientDefinition -> {
+        brokerClientDefinitionRegistry.getBrokerClientDefinition(broker.getClientType()).ifPresent(brokerClientDefinition -> {
             broker.setMarket(brokerClientDefinition.getMarket());
             broker.setTimezone(brokerClientDefinition.getTimezone());
             broker.setCurrency(brokerClientDefinition.getCurrency());
@@ -91,8 +91,8 @@ public class BrokerService {
         }
         brokerEntity.setName(broker.getName());
         brokerEntity.setSort(broker.getSort());
-        brokerEntity.setBrokerClientId(broker.getBrokerClientId());
-        brokerEntity.setBrokerClientProperties(Optional.ofNullable(broker.getBrokerClientProperties())
+        brokerEntity.setClientType(broker.getClientType());
+        brokerEntity.setClientProperties(Optional.ofNullable(broker.getClientProperties())
                 .map(PbePropertiesUtil::encodePropertiesString)
                 .orElse(null));
         BrokerEntity savedBrokerEntity = brokerRepository.saveAndFlush(brokerEntity);

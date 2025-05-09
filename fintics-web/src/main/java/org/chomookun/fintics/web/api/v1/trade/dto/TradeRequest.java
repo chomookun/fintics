@@ -61,13 +61,13 @@ public class TradeRequest {
     @Schema(description = "strategy variables")
     private String strategyVariables;
 
-    @Schema(description = "alarm id")
-    private String alarmId;
+    @Schema(description = "notifier id")
+    private String notifierId;
 
-    @Schema(description = "alarm on error", example = "false")
-    private boolean alarmOnError;
+    @Schema(description = "notify on error", example = "false")
+    private boolean notifyOnError;
 
-    @Schema(description = "alarm on order", example = "false")
-    private boolean alarmOnOrder;
+    @Schema(description = "notify on order", example = "false")
+    private boolean notifyOnOrder;
 
 }

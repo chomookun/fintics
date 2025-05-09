@@ -13,14 +13,6 @@ spring:
       host: 192.168.0.2
       port: 6379
       password: ~
-  mail:
-    host: smtp.gmail.com
-    port: 587
-    username: ENC(38lyjb6uZqGnbQkfdGtkvff7W8CZ3BLd)
-    password: ENC(Ecj4lg42odfEAjJ71SlBbro+uTKTlqsa6Wj0rpTA8go=)
-    properties:
-      mail.smtp.auth: true
-      mail.smtp.starttls.enable: true
 
 # jasypt
 jasypt:

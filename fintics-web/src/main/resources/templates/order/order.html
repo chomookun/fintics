@@ -3,7 +3,7 @@
       xmlns:th="http://www.thymeleaf.org"
       xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
       layout:decorate="_web.html">
-<th:block layout:fragment="_content">
+<main layout:fragment="_main">
     <th:block th:insert="common/_common.html"/>
     <th:block th:insert="common/_asset-dialog.html"/>
     <script th:inline="javascript">
@@ -50,18 +50,16 @@
             }
             url.searchParams.append('_page', orderSearch._page);
             url.searchParams.append('_size', orderSearch._size);
+            orders.length = 0;
             orderSearch._status = 'loading';
-            duice.ArrayProxy.clear(orders);
             _fetch(url)
                 .then(response => {
                     orderSearch._total = _parseTotalCount(response);
                     return response.json();
                 })
                 .then(data => {
+                    orderSearch._status = data.length < 1 ? 'empty' : null;
                     duice.ArrayProxy.assign(orders, data);
-                })
-                .finally(() => {
-                    orderSearch._status = 'completed';
                 });
         }
 
@@ -300,15 +298,13 @@
                         </td>
                     </tr>
                     <tr data-duice-bind="orderSearch"
-                        data-duice-if="return orderSearch._status === 'loading';"
-                        hidden>
+                        data-duice-if="return orderSearch._status === 'loading';" hidden>
                         <td colspan="100%" class="text-align--center padding--1rem">
-                            <span class="blink" data-th-text="#{web.global.itemLoading(#{fintics.core.order.Order})}"></span>
+                            <span class="loading"></span>
                         </td>
                     </tr>
                     <tr data-duice-bind="orderSearch"
-                        data-duice-if="return orderSearch._status === 'completed' && orders.length < 1;"
-                        hidden>
+                        data-duice-if="return orderSearch._status === 'empty';" hidden>
                         <td colspan="100%" class="text-align--center padding--1rem">
                             <span data-th-text="#{web.global.itemNotFound(#{fintics.core.order.Order})}"></span>
                         </td>
@@ -487,4 +483,4 @@
     <!-- ====================================== -->
 
 
-</th:block>
+</main>

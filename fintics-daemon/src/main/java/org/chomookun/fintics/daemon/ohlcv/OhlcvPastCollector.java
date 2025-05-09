@@ -84,7 +84,7 @@ public class OhlcvPastCollector extends AbstractTask {
         } catch(Throwable e) {
             log.error(e.getMessage(), e);
             failExecution(execution, e);
-            sendSystemAlarm(execution);
+            sendSystemNotification(execution);
             throw new RuntimeException(e);
         }
         log.info("OhlcvPastCollector - End collect past ohlcv");
