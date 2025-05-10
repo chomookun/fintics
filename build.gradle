@@ -55,6 +55,15 @@ allprojects {
                 withSourcesJar()
             }
         }
+        it.tasks.withType(Test).configureEach {
+            useJUnitPlatform {
+                excludeTags 'manual'
+            }
+            testLogging {
+                events 'failed'
+                exceptionFormat = 'full'
+            }
+        }
         // maven-publish
         if(it.plugins.hasPlugin('maven-publish')) {
             it.publishing {

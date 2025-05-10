@@ -1,11 +1,12 @@
 package org.chomookun.fintics.core.broker.client.kis;
 
 import org.junit.jupiter.api.Disabled;
+import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
 
 class KisAccessThrottlerTest {
 
-    @Disabled
+    @Tag("manual")
     @Test
     void test() throws InterruptedException {
         Runnable task1 = () -> {

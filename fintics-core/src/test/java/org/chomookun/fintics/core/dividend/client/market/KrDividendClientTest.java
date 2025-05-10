@@ -7,6 +7,7 @@ import org.chomookun.fintics.core.FinticsCoreConfiguration;
 import org.chomookun.fintics.core.dividend.client.DividendClientProperties;
 import org.chomookun.fintics.core.asset.model.Asset;
 import org.chomookun.fintics.core.dividend.model.Dividend;
+import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.MethodSource;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -53,6 +54,7 @@ class KrDividendClientTest extends CoreTestSupport {
         );
     }
 
+    @Tag("manual")
     @ParameterizedTest
     @MethodSource("getStockAssets")
     void getStockDividends(Asset asset) {

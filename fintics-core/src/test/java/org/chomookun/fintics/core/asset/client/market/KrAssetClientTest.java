@@ -5,6 +5,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.chomookun.fintics.core.dividend.model.Dividend;
 import org.chomookun.fintics.core.ohlcv.model.Ohlcv;
 import org.junit.jupiter.api.Disabled;
+import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
 import org.chomookun.arch4j.core.common.test.CoreTestSupport;
 import org.chomookun.fintics.core.FinticsCoreConfiguration;
@@ -83,7 +84,7 @@ class KrAssetClientTest extends CoreTestSupport {
                 );
     }
 
-    @Disabled
+    @Tag("manual")
     @Test
     void getAssets() {
         // when
@@ -98,7 +99,7 @@ class KrAssetClientTest extends CoreTestSupport {
                         asset.getType() != null));
     }
 
-    @Disabled
+    @Tag("manual")
     @ParameterizedTest
     @MethodSource("getTestStockAssets")
     void getStockOhlcvs(Asset asset) {
@@ -108,7 +109,7 @@ class KrAssetClientTest extends CoreTestSupport {
         assertFalse(stockOhlcvs.isEmpty());
     }
 
-    @Disabled
+    @Tag("manual")
     @ParameterizedTest
     @MethodSource("getTestEtfAssets")
     void getStockDividends(Asset asset) {
@@ -118,7 +119,7 @@ class KrAssetClientTest extends CoreTestSupport {
         log.info("stockDividends:{}", stockDividends);
     }
 
-    @Disabled
+    @Tag("manual")
     @ParameterizedTest
     @MethodSource("getTestEtfAssets")
     void getEtfOhlcvs(Asset asset) {
@@ -128,7 +129,7 @@ class KrAssetClientTest extends CoreTestSupport {
         assertFalse(etfOhlcvs.isEmpty());
     }
 
-    @Disabled
+    @Tag("manual")
     @ParameterizedTest
     @MethodSource("getTestEtfAssets")
     void getEtfDividends(Asset asset) {
@@ -138,7 +139,7 @@ class KrAssetClientTest extends CoreTestSupport {
         log.info("etfDividends:{}", etfDividends);
     }
 
-    @Disabled
+    @Tag("manual")
     @ParameterizedTest
     @MethodSource("getTestStockAssets")
     void populateStockAsset(Asset asset) {
@@ -155,7 +156,7 @@ class KrAssetClientTest extends CoreTestSupport {
         assertNotNull(asset.getTotalReturn());
     }
 
-    @Disabled
+    @Tag("manual")
     @ParameterizedTest
     @MethodSource("getTestEtfAssets")
     void populateEtfAsset(Asset asset) {

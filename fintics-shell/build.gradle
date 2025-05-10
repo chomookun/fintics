@@ -17,14 +17,6 @@ dependencies {
     implementation "org.chomookun.arch4j:arch4j-shell:1.0.0-SNAPSHOT"
 }
 
-test {
-    useJUnitPlatform()
-    testLogging {
-        events 'failed'
-        exceptionFormat = 'full'
-    }
-}
-
 jar {
     enabled = true
     archiveClassifier = ''

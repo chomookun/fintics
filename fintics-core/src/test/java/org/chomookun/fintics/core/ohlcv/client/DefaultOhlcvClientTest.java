@@ -3,6 +3,7 @@ package org.chomookun.fintics.core.ohlcv.client;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.MethodSource;
 import org.chomookun.arch4j.core.common.test.CoreTestSupport;
@@ -79,6 +80,7 @@ class DefaultOhlcvClientTest extends CoreTestSupport {
         );
     }
 
+    @Tag("manual")
     @ParameterizedTest
     @MethodSource({"getTestUsStockAssets","getTestUsEtfAssets","getTestKrStockAssets","getTestKrEtfAssets"})
     void getDailyOhlcvs(Asset asset) {
@@ -94,6 +96,7 @@ class DefaultOhlcvClientTest extends CoreTestSupport {
         assertFalse(dailyOhlcvs.isEmpty());
     }
 
+    @Tag("manual")
     @ParameterizedTest
     @MethodSource({"getTestUsStockAssets","getTestUsEtfAssets","getTestKrStockAssets","getTestKrEtfAssets"})
     void getMinuteOhlcvs(Asset asset) {

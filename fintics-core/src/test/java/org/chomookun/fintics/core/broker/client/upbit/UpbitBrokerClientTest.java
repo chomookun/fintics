@@ -7,6 +7,7 @@ import org.chomookun.fintics.core.ohlcv.model.Ohlcv;
 import org.chomookun.fintics.core.order.model.Order;
 import org.chomookun.fintics.core.broker.model.OrderBook;
 import org.junit.jupiter.api.Disabled;
+import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
 
 import java.math.BigDecimal;
@@ -41,7 +42,7 @@ class UpbitBrokerClientTest {
                 .build();
     }
 
-    @Disabled
+    @Tag("manual")
     @Test
     void getOrderBook() throws Exception {
         // given
@@ -52,7 +53,7 @@ class UpbitBrokerClientTest {
         log.info("orderBook:{}", orderBook);
     }
 
-    @Disabled
+    @Tag("manual")
     @Test
     void getMinuteOhlcvs() throws Exception {
         // given
@@ -65,7 +66,7 @@ class UpbitBrokerClientTest {
         log.info("minuteOhlcvs:{}", minuteOhlcvs);
     }
 
-    @Disabled
+    @Tag("manual")
     @Test
     void getDailyOhlcvs() throws Exception {
         // given
@@ -78,7 +79,7 @@ class UpbitBrokerClientTest {
         log.info("dailyOhlcvs:{}", dailyOhlcvs);
     }
 
-    @Disabled
+    @Tag("manual")
     @Test
     void getBalance() throws Exception {
         // given
@@ -88,7 +89,7 @@ class UpbitBrokerClientTest {
         log.info("balance: {}", balance);
     }
 
-    @Disabled
+    @Tag("manual")
     @Test
     void submitOrderBuy() throws Exception {
         // given
@@ -107,7 +108,7 @@ class UpbitBrokerClientTest {
         // then
     }
 
-    @Disabled
+    @Tag("manual")
     @Test
     void submitOrderSell() throws Exception {
         // given
@@ -126,7 +127,7 @@ class UpbitBrokerClientTest {
         // then
     }
 
-    @Disabled
+    @Tag("manual")
     @Test
     void getWaitingOrders() throws Exception {
         // given
@@ -136,7 +137,7 @@ class UpbitBrokerClientTest {
         log.info("orders:{}", orders);
     }
 
-    @Disabled
+    @Tag("manual")
     @Test
     void amendOrder() throws Exception {
         // given

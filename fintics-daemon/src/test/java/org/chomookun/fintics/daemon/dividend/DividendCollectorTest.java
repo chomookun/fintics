@@ -7,6 +7,7 @@ import org.chomookun.fintics.daemon.FinticsDaemonConfiguration;
 import org.chomookun.fintics.core.dividend.entity.DividendEntity;
 import org.chomookun.fintics.core.asset.model.Asset;
 import org.junit.jupiter.api.Disabled;
+import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.MethodSource;
@@ -66,7 +67,7 @@ class DividendCollectorTest extends CoreTestSupport {
         );
     }
 
-    @Disabled
+    @Tag("manual")
     @Test
     void collect() {
         // given
@@ -78,6 +79,7 @@ class DividendCollectorTest extends CoreTestSupport {
         log.info("dividendEntities:{}", dividendEntities);
     }
 
+    @Tag("manual")
     @ParameterizedTest
     @MethodSource({"getUsStockAssets", "getUsEtfAssets", "getKrStockAssets", "getKrEtfAssets"})
     void saveDividends(Asset asset) {

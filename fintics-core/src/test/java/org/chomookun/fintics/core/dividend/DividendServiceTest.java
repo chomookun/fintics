@@ -6,6 +6,7 @@ import org.chomookun.arch4j.core.common.test.CoreTestSupport;
 import org.chomookun.fintics.core.FinticsCoreConfiguration;
 import org.chomookun.fintics.core.dividend.entity.DividendEntity;
 import org.chomookun.fintics.core.dividend.model.Dividend;
+import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.data.domain.PageRequest;

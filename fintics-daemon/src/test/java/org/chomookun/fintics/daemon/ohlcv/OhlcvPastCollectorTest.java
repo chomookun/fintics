@@ -4,6 +4,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.chomookun.fintics.daemon.FinticsDaemonConfiguration;
 import org.junit.jupiter.api.Disabled;
+import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
@@ -31,7 +32,7 @@ class OhlcvPastCollectorTest extends CoreTestSupport {
     @PersistenceContext
     private final EntityManager entityManager;
 
-    @Disabled
+    @Tag("manual")
     @Test
     void collect() {
         // given
@@ -49,6 +50,7 @@ class OhlcvPastCollectorTest extends CoreTestSupport {
         );
     }
 
+    @Tag("manual")
     @ParameterizedTest
     @MethodSource("getTestAssetArguments")
     void collectPastMinuteOhlcvs(String assetId, String exchange) {
@@ -73,6 +75,7 @@ class OhlcvPastCollectorTest extends CoreTestSupport {
         assertTrue(ohlcvEntities.size() > 0);
     }
 
+    @Tag("manual")
     @ParameterizedTest
     @MethodSource("getTestAssetArguments")
     void collectPastDailyOhlcvs(String assetId, String exchange) {

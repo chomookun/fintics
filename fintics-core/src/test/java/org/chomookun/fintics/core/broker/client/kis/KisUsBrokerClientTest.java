@@ -10,6 +10,7 @@ import org.chomookun.fintics.core.broker.model.OrderBook;
 import org.chomookun.fintics.core.broker.model.RealizedProfit;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Disabled;
+import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
 import org.chomookun.arch4j.core.common.test.CoreTestSupport;
 import org.chomookun.fintics.core.FinticsCoreConfiguration;
@@ -87,7 +88,7 @@ class KisUsBrokerClientTest extends CoreTestSupport {
         return new KisUsBrokerClient(new KisBrokerClientDefinition(), properties);
     }
 
-    @Disabled
+    @Tag("manual")
     @Test
     void isOpened() throws InterruptedException {
         // given
@@ -98,7 +99,7 @@ class KisUsBrokerClientTest extends CoreTestSupport {
         log.info("== opened:{}", opened);
     }
 
-    @Disabled
+    @Tag("manual")
     @ParameterizedTest
     @MethodSource({"getStockAssets","getEtfAssets"})
     void getMinuteOhlcvs(Asset asset) throws InterruptedException {
@@ -108,7 +109,7 @@ class KisUsBrokerClientTest extends CoreTestSupport {
         assertNotNull(minuteOhlcvs);
     }
 
-    @Disabled
+    @Tag("manual")
     @ParameterizedTest
     @MethodSource({"getStockAssets","getEtfAssets"})
     void getDailyOhlcvs(Asset asset) throws InterruptedException {
@@ -118,7 +119,7 @@ class KisUsBrokerClientTest extends CoreTestSupport {
         assertNotNull(dailyOhlcvs);
     }
 
-    @Disabled
+    @Tag("manual")
     @ParameterizedTest
     @MethodSource({"getStockAssets","getEtfAssets"})
     void getOrderBook(Asset asset) throws InterruptedException {
@@ -133,7 +134,7 @@ class KisUsBrokerClientTest extends CoreTestSupport {
         assertNotNull(orderBook.getAskPrice());
     }
 
-    @Disabled
+    @Tag("manual")
     @ParameterizedTest
     @MethodSource({"getStockAssets","getEtfAssets"})
     void getTickPrice(Asset asset) throws InterruptedException {
@@ -144,7 +145,7 @@ class KisUsBrokerClientTest extends CoreTestSupport {
         assertNotNull(tickPrice);
     }
 
-    @Disabled
+    @Tag("manual")
     @Test
     void getBalance() throws InterruptedException {
         // when
@@ -153,7 +154,7 @@ class KisUsBrokerClientTest extends CoreTestSupport {
         assertNotNull(balance.getCashAmount());
     }
 
-    @Disabled
+    @Tag("manual")
     @Test
     void submitOrderBuy() throws InterruptedException {
         // given
@@ -171,7 +172,7 @@ class KisUsBrokerClientTest extends CoreTestSupport {
         getKisUsClient().submitOrder(asset, order);
     }
 
-    @Disabled
+    @Tag("manual")
     @Test
     void submitOrderSell() throws InterruptedException {
         // given
@@ -189,7 +190,7 @@ class KisUsBrokerClientTest extends CoreTestSupport {
         getKisUsClient().submitOrder(asset, order);
     }
 
-    @Disabled
+    @Tag("manual")
     @Test
     void getRealizedProfits() throws InterruptedException {
         // given
@@ -201,7 +202,7 @@ class KisUsBrokerClientTest extends CoreTestSupport {
         log.info("realizedProfit:{}",  realizedProfits);
     }
 
-    @Disabled
+    @Tag("manual")
     @Test
     void getPaymentBalanceAsset() throws InterruptedException {
         // given
