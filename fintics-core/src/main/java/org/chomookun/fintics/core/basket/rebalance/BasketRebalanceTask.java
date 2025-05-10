@@ -116,8 +116,31 @@ public class BasketRebalanceTask {
                 }
             }
         }
+        //===========================================
+        // 3. (예외처리)
+        // 증권사 장애 시 종목 제외되는 증상 있음으로
+        // 장애 복구 시 다시 추가되도록 누락분 추가
+        //===========================================
+        for (Balance balance : balances) {
+               for (BalanceAsset balanceAsset : balance.getBalanceAssets()) {
+                    String assetId = balanceAsset.getAssetId();
+                    // 현재 보유중인 종목이 최종 베스켓에 존재하는지 확인
+                    boolean existInBasket = basket.getBasketAssets().stream()
+                            .anyMatch(it -> Objects.equals(it.getAssetId(), assetId));
+                    // 베스켓에서 누락된 경우 추가
+                    if (!existInBasket) {
+                        BasketAsset basketAsset = BasketAsset.builder()
+                                .assetId(assetId)
+                                .enabled(true)
+                                .holdingWeight(BigDecimal.ZERO)
+                                .build();
+                        basket.getBasketAssets().add(basketAsset);
+                        addedBasketAssets.add(basketAsset);
+                    }
+                }
+        }
         //=============================================
-        // 3. 최종 변경 사항 저장 처리
+        // 99. 최종 변경 사항 저장 처리
         //=============================================
         basketService.saveBasket(basket);
         // returns

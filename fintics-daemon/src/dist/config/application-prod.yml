@@ -6,21 +6,13 @@ spring:
       jdbc-url: jdbc:mariadb://192.168.0.2:3306/fintics?useUnicode=true&characterEncoding=UTF-8
       username: fintics
       password: ENC(isMDWx6SPsHeZNBO/dAtcVlU9Akq0MSl)
-      minimum-idle: 10
-      maximum-pool-size: 20
+      minimum-idle: 20
+      maximum-pool-size: 40
   data:
     redis:
       host: 192.168.0.2
       port: 6379
       password: ~
-  mail:
-    host: smtp.gmail.com
-    port: 587
-    username: ENC(38lyjb6uZqGnbQkfdGtkvff7W8CZ3BLd)
-    password: ENC(Ecj4lg42odfEAjJ71SlBbro+uTKTlqsa6Wj0rpTA8go=)
-    properties:
-      mail.smtp.auth: true
-      mail.smtp.starttls.enable: true
 
 # jasypt
 jasypt:

@@ -7,6 +7,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.chomookun.fintics.core.trade.TradeChannels;
 import org.chomookun.fintics.core.trade.model.TradeLog;
 import org.chomookun.fintics.web.ws.v1.trade.dto.TradeLogMessage;
+import org.springframework.context.annotation.Lazy;
 import org.springframework.data.redis.connection.Message;
 import org.springframework.data.redis.connection.MessageListener;
 import org.springframework.data.redis.listener.RedisMessageListenerContainer;
@@ -16,6 +17,7 @@ import org.springframework.stereotype.Component;
 import java.io.IOException;
 
 @Component
+@Lazy(false)
 @RequiredArgsConstructor
 @Slf4j
 public class TradeLogHandler implements MessageListener {

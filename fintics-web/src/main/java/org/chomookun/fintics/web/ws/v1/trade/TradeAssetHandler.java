@@ -8,6 +8,7 @@ import org.chomookun.fintics.core.trade.TradeChannels;
 import org.chomookun.fintics.core.trade.model.TradeAsset;
 import org.chomookun.fintics.web.ws.v1.trade.dto.TradeAssetMessage;
 import org.chomookun.fintics.web.ws.v1.trade.dto.TradeLogMessage;
+import org.springframework.context.annotation.Lazy;
 import org.springframework.data.redis.connection.Message;
 import org.springframework.data.redis.connection.MessageListener;
 import org.springframework.data.redis.listener.RedisMessageListenerContainer;
@@ -17,6 +18,7 @@ import org.springframework.stereotype.Component;
 import java.io.IOException;
 
 @Component
+@Lazy(false)
 @RequiredArgsConstructor
 @Slf4j
 public class TradeAssetHandler implements MessageListener {
