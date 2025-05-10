@@ -55,6 +55,7 @@ allprojects {
                 withSourcesJar()
             }
         }
+        // junit test
         it.tasks.withType(Test).configureEach {
             useJUnitPlatform {
                 excludeTags 'manual'
