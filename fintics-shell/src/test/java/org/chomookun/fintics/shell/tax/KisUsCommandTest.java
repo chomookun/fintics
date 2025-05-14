@@ -1,5 +1,6 @@
 package org.chomookun.fintics.shell.tax;
 
+import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
 
 import java.io.File;
@@ -9,6 +10,7 @@ import static org.junit.jupiter.api.Assertions.*;
 
 class KisUsCommandTest {
 
+    @Tag("manual")
     @Test
     public void test() throws IOException {
         String baseDir = System.getProperty("user.home") + File.separator;

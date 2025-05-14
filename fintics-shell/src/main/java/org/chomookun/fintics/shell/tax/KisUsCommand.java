@@ -300,7 +300,7 @@ public class KisUsCommand {
         private String taxCode = "61";          // 세율구분 (61: 중소기업외 소액주주, 중소기업외 국외주식)
         private String buyType = "01";          // 취득유형 (01: 매매)
         private LocalDate sellDate;             // 양도일자 (형식: yyyy-MM-dd)
-        private BigDecimal sellPrice;            // 주당양도가액
+        private BigDecimal sellPrice;           // 주당양도가액
         private BigDecimal sellAmount;          // 양도가액
         private LocalDate buyDate;              // 취득일자 (형식: yyyy-MM-dd)
         private BigDecimal buyPrice;            // 주당취득가액
