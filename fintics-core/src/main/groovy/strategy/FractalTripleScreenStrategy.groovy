@@ -278,8 +278,8 @@ class TripleScreenStrategy {
         def position = this.calculatePosition(maxPosition, minPosition)
 
         // 과매도, 과매수 임계치 - tide 모멘텀 가중치 기준 가변 적용
-        def waveOversoldThreshold = 100 - tideAnalyzer.getMomentumScore().getAverage()
-        def waveOverboughtThreshold = 0 + tideAnalyzer.getMomentumScore().getAverage()
+        def waveOversoldThreshold = (100 - tideAnalyzer.getMomentumScore().getAverage()) as BigDecimal
+        def waveOverboughtThreshold = (0 + tideAnalyzer.getMomentumScore().getAverage()) as BigDecimal
 
 //        // 과매도, 과매수 임계치 - 기본 50
 //        def waveOversoldThreshold = 50
