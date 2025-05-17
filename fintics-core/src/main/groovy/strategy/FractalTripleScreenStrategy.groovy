@@ -1,5 +1,7 @@
 import groovy.transform.ToString
 import groovy.transform.builder.Builder
+import org.chomookun.fintics.core.ohlcv.indicator.ema.Ema
+import org.chomookun.fintics.core.ohlcv.indicator.ema.EmaContext
 import org.chomookun.fintics.core.ohlcv.model.Ohlcv
 import org.chomookun.fintics.core.ohlcv.indicator.Tools
 import org.chomookun.fintics.core.ohlcv.indicator.bolangerband.BollingerBandContext
@@ -268,6 +270,22 @@ class TripleScreenStrategy {
     }
 
     /**
+     * 과매도 임계치 - tide 모멘텀 가중치 기준 가변 적용
+     * @return
+     */
+    BigDecimal getWaveOversoldThreshold() {
+        return (100 - tideAnalyzer.getMomentumScore().getAverage()) as BigDecimal
+    }
+
+    /**
+     * 과매수 임계치 - tide 모멘텀 가중치 기준 가변 적용
+     * @return
+     */
+    BigDecimal getWaveOverboughtThreshold() {
+        return (0 + tideAnalyzer.getMomentumScore().getAverage()) as BigDecimal
+    }
+
+    /**
      * gets strategy result
      * @return strategy result
      */
@@ -277,28 +295,10 @@ class TripleScreenStrategy {
         // tide 모멘텀 기준 포지션 산출
         def position = this.calculatePosition(maxPosition, minPosition)
 
-        // 과매도, 과매수 임계치 - tide 모멘텀 가중치 기준 가변 적용
-        def waveOversoldThreshold = (100 - tideAnalyzer.getMomentumScore().getAverage()) as BigDecimal
-        def waveOverboughtThreshold = (0 + tideAnalyzer.getMomentumScore().getAverage()) as BigDecimal
-
-//        // 과매도, 과매수 임계치 - 기본 50
-//        def waveOversoldThreshold = 50
-//        def waveOverboughtThreshold = 50
-//        // tide 상승 추세 인 경우 과매도 판정 민감도 추가
-//        if (tideAnalyzer.getMomentumScore() >= 75) {
-//            waveOversoldThreshold = 25
-//            waveOverboughtThreshold = 75
-//        }
-//        // tide 하락 추세 인 경우 과매수 판정 민감도 증가
-//        if (tideAnalyzer.getMomentumScore() <= 25) {
-//            waveOversoldThreshold = 75
-//            waveOverboughtThreshold = 25
-//        }
-
         // wave 변동성 구간
         if (waveAnalyzer.getVolatilityScore() >= 50) {
             // wave 과매도 시
-            if (waveAnalyzer.getOversoldScore() >= waveOversoldThreshold) {
+            if (waveAnalyzer.getOversoldScore() >= this.getWaveOversoldThreshold()) {
                 // ripple 상승 모멘텀
                 if (rippleAnalyzer.getMomentumScore() > 50) {
                     // wave 평균가 기준 매수 포지션
@@ -311,7 +311,7 @@ class TripleScreenStrategy {
                 }
             }
             // wave 과매수 시
-            if (waveAnalyzer.getOverboughtScore() >= waveOverboughtThreshold) {
+            if (waveAnalyzer.getOverboughtScore() >= this.getWaveOverboughtThreshold()) {
                 // ripple 하락 모멘텀
                 if (rippleAnalyzer.getMomentumScore() < 50) {
                     // wave 평균가 기준 매도 포지션
@@ -335,8 +335,8 @@ class TripleScreenStrategy {
                 - tide.oversold:${tideAnalyzer.getOversoldScore().getAverage()}
                 - tide.overbought:${tideAnalyzer.getOverboughtScore().getAverage()}
                 - wave.volatility:${waveAnalyzer.getVolatilityScore().getAverage()}
-                - wave.oversold:${waveAnalyzer.getOversoldScore().getAverage()}
-                - wave.overbought:${waveAnalyzer.getOverboughtScore().getAverage()}
+                - wave.oversold(threshold):${waveAnalyzer.getOversoldScore().getAverage()}(${this.getWaveOversoldThreshold()})
+                - wave.overbought(threshold):${waveAnalyzer.getOverboughtScore().getAverage()}(${this.getWaveOverboughtThreshold()})
                 - ripple.momentum:${rippleAnalyzer.getMomentumScore().getAverage()}"""
                 .split('\n').collect { it.trim() }.join('\n')
     }
@@ -382,6 +382,13 @@ static def calculateChannel(List<Ohlcv> ohlcvs, int period) {
     channel.upper = (uppers.average() as BigDecimal).setScale(4, RoundingMode.HALF_UP)
     channel.lower = (lowers.average() as BigDecimal).setScale(4, RoundingMode.HALF_UP)
     channel.middle = ((channel.upper + channel.lower) / 2).setScale(4, RoundingMode.HALF_UP)
+
+    // todo 최근 이동평균 강도에 따라 상하단 조정
+    List<Ema> emas = Tools.indicators(ohlcvs, EmaContext.DEFAULT).take(20)
+    def emaChangeValue = emas.first().value - emas.last().value
+    channel.upper += emaChangeValue
+    channel.middle += emaChangeValue
+    channel.lower += emaChangeValue
 
     // return
     return channel

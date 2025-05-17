@@ -3,7 +3,6 @@ delete from `core_menu_role`;
 delete from `core_menu_i18n`;
 delete from `core_menu`;
 delete from `core_git`;
-delete from `core_notifier`;
 
 -- core_authority
 insert into `core_authority`
@@ -38,22 +37,31 @@ values
 
 -- core_menu
 insert into `core_menu`
-    (`menu_id`,`system_required`,`parent_menu_id`,`name`,`link`,`target`,`sort`,`icon`)
+    (`menu_id`,`system_required`,`enabled`,`parent_menu_id`,`link`,`target`,`sort`,`icon`)
 values
-    ('monitor','Y',null,'Monitor','/monitor',null,1,'/static/image/icon-monitor.svg'),
-    ('asset','Y',null,'Asset','/asset',null,2,'/static/image/icon-asset.svg'),
-    ('basket','Y',null,'Basket','/basket',null,3,'/static/image/icon-basket.svg'),
-    ('strategy','Y',null,'Strategy','/strategy',null,4,'/static/image/icon-strategy.svg'),
-    ('broker','Y',null,'Broker','/broker',null,5,'/static/image/icon-broker.svg'),
-    ('trade','Y',null,'Trade','/trade',null,6,'/static/image/icon-trade.svg'),
-    ('order','Y',null,'Order','/order',null,7,'/static/image/icon-order.svg'),
-    ('profit','Y',null,'Profit','/profit',null,8,'/static/image/icon-profit.svg'),
-    ('admin','N',null,'Admin','/admin','_blank',99,'/static/image/icon-admin.svg');
+    ('monitor','Y','Y',null,'/monitor',null,1,'/static/image/icon-monitor.svg'),
+    ('asset','Y','Y',null,'/asset',null,2,'/static/image/icon-asset.svg'),
+    ('basket','Y','Y',null,'/basket',null,3,'/static/image/icon-basket.svg'),
+    ('strategy','Y','Y',null,'/strategy',null,4,'/static/image/icon-strategy.svg'),
+    ('broker','Y','Y',null,'/broker',null,5,'/static/image/icon-broker.svg'),
+    ('trade','Y','Y',null,'/trade',null,6,'/static/image/icon-trade.svg'),
+    ('order','Y','Y',null,'/order',null,7,'/static/image/icon-order.svg'),
+    ('profit','Y','Y',null,'/profit',null,8,'/static/image/icon-profit.svg'),
+    ('admin','N','Y',null,'/admin','_blank',99,'/static/image/icon-admin.svg');
 
 -- core_menu_i18n
 insert into `core_menu_i18n`
-    (`menu_id`,`language`,`name`)
+    (`menu_id`,`locale`,`name`)
 values
+    ('monitor','en','Monitor'),
+    ('asset','en','Asset'),
+    ('basket','en','Basket'),
+    ('strategy','en','Strategy'),
+    ('broker','en','Broker'),
+    ('trade','en','Trade'),
+    ('order','en','Order'),
+    ('profit','en','Profit'),
+    ('admin','en','Admin'),
     ('monitor','ko','모니터'),
     ('asset','ko','종목'),
     ('basket','ko','바스켓'),
@@ -85,12 +93,6 @@ values
     ('profit','USER','VIEW'),
     ('profit','USER','LINK'),
     ('admin','USER','VIEW');
-
--- core_notifier
-insert into `core_notifier`
-    (`notifier_id`,`name`,`client_type`,`client_properties`)
-values
-    ('fintics','Fintics Slack','SLACK','url=https://hooks.slack.com/services/___');
 
 -- fintics_asset
 insert into `fintics_asset`
