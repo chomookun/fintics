@@ -26,6 +26,14 @@ values
 insert into `core_role_authority`
     (`role_id`,`authority_id`)
 values
+    ('DEVELOPER','monitor'),
+    ('DEVELOPER','asset'),
+    ('DEVELOPER','basket'),
+    ('DEVELOPER','strategy'),
+    ('DEVELOPER','broker'),
+    ('DEVELOPER','trade'),
+    ('DEVELOPER','order'),
+    ('DEVELOPER','profit'),
     ('USER','monitor'),
     ('USER','asset'),
     ('USER','basket'),
