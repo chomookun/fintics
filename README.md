@@ -14,7 +14,7 @@ This program only automates your own investment strategy.
 
 ## 🖥️ Demo site
 
-Credentials: **admin/admin**
+Credentials: **developer/developer**
 
 ### Management web application (google cloud run)
 [![](https://img.shields.io/badge/Cloud%20Run-https://gcp.fintics--web.chomookun.org-blue?logo=google-cloud)](https://gcp.fintics-web.chomookun.org)

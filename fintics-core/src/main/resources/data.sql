@@ -92,7 +92,8 @@ values
     ('order','USER','LINK'),
     ('profit','USER','VIEW'),
     ('profit','USER','LINK'),
-    ('admin','USER','VIEW');
+    ('admin','USER','VIEW'),
+    ('admin','USER','LINK');
 
 -- fintics_asset
 insert into `fintics_asset`

@@ -431,7 +431,7 @@ StrategyResult strategyResult = null
 List<Ohlcv> ohlcvs = tradeAsset.getOhlcvs(Ohlcv.Type.MINUTE, 1)
 def ohlcv = ohlcvs.first()
 def splitPeriod = 200
-def splitSize = 5
+def splitSize = 7
 def splitIndex = -1
 if (variables['splitIndex']) {
     splitIndex = variables['splitIndex'] as Integer
