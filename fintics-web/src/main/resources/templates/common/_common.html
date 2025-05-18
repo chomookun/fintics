@@ -16,15 +16,20 @@
             imgElement.dataset.assetId = asset.assetId;
             imgElement.dataset.favorite = asset.favorite;
             imgElement.onclick = function() {
-                let assetId = this.dataset.assetId;
-                let favorite = !JSON.parse(this.dataset.favorite);
-                let url = new URL(`${_apiUrl}/v1/assets/${assetId}/favorite`, document.location.origin);
-                let method = favorite ? 'POST' : 'DELETE';
-                _fetch(url, {
-                    method: method
-                }).then(() => {
-                    asset.favorite = favorite;
-                });
+                _confirm(/*[[#{web.global.changeItemConfirm(#{fintics.core.asset.Asset.favorite})}]]*/'')
+                    .then(result => {
+                        if (result) {
+                            let assetId = this.dataset.assetId;
+                            let favorite = !JSON.parse(this.dataset.favorite);
+                            let url = new URL(`${_apiUrl}/v1/assets/${assetId}/favorite`, document.location.origin);
+                            let method = favorite ? 'POST' : 'DELETE';
+                            _fetch(url, {
+                                method: method
+                            }).then(() => {
+                                asset.favorite = favorite;
+                            });
+                        }
+                    });
             };
         }
     }
