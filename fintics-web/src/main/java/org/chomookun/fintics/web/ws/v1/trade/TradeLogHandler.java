@@ -29,8 +29,8 @@ public class TradeLogHandler implements MessageListener {
     private final SimpMessagingTemplate simpMessagingTemplate;
 
     @PostConstruct
-    public void init() {
-        container.addMessageListener(this, TradeChannels.TRADE_LOG);
+    void initialize() {
+        container.addMessageListener(this, TradeChannels.TRADE_LOG_CHANNEL);
     }
 
     @Override

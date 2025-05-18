@@ -207,6 +207,7 @@ public class TradeService {
                         tradeAsset.setClose(tradeAssetEntity.getClose());
                         tradeAsset.setVolume(tradeAssetEntity.getVolume());
                         tradeAsset.setMessage(tradeAssetEntity.getMessage());
+                        tradeAsset.setStrategyResult(tradeAssetEntity.getStrategyResult());
                     }
                     return tradeAsset;
                 })

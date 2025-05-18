@@ -3,12 +3,15 @@ package org.chomookun.fintics.core.trade.entity;
 import lombok.*;
 import lombok.experimental.SuperBuilder;
 import org.chomookun.arch4j.core.common.data.BaseEntity;
+import org.chomookun.arch4j.core.common.data.converter.GenericObjectConverter;
 import org.chomookun.arch4j.core.common.data.converter.MapConverter;
 
 import jakarta.persistence.*;
+import org.chomookun.fintics.core.strategy.converter.StrategyResultConverter;
+import org.chomookun.fintics.core.strategy.runner.StrategyResult;
+
 import java.io.Serializable;
 import java.math.BigDecimal;
-import java.time.Instant;
 import java.time.LocalDateTime;
 import java.util.Map;
 
@@ -58,9 +61,14 @@ public class TradeAssetEntity extends BaseEntity {
     @Lob
     private String message;
 
-    @Column(name = "context")
+    @Column(name = "context", length = Integer.MAX_VALUE)
     @Lob
     @Convert(converter = MapConverter.class)
     private Map<String, Object> context;
+
+    @Column(name = "strategy_result", length = Integer.MAX_VALUE)
+    @Lob
+    @Convert(converter = StrategyResultConverter.class)
+    private StrategyResult strategyResult;
 
 }

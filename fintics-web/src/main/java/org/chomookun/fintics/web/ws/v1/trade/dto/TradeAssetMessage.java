@@ -1,6 +1,7 @@
 package org.chomookun.fintics.web.ws.v1.trade.dto;
 
 import lombok.*;
+import org.chomookun.fintics.core.strategy.runner.StrategyResult;
 import org.chomookun.fintics.core.trade.model.TradeAsset;
 
 import java.math.BigDecimal;
@@ -38,6 +39,8 @@ public class TradeAssetMessage {
 
     private String message;
 
+    private StrategyResult strategyResult;
+
     public static TradeAssetMessage from(TradeAsset tradeAsset) {
         return TradeAssetMessage.builder()
                 .tradeId(tradeAsset.getTradeId())
@@ -52,6 +55,7 @@ public class TradeAssetMessage {
                 .intraDayNetChange(tradeAsset.getIntraDayNetChange())
                 .intraDayNetChangePercentage(tradeAsset.getIntraDayNetChangePercentage())
                 .message(tradeAsset.getMessage())
+                .strategyResult(tradeAsset.getStrategyResult())
                 .build();
     }
 

@@ -48,7 +48,7 @@ public class TradeLogAppender extends AppenderBase<ILoggingEvent> {
         } catch (JsonProcessingException e) {
             throw new RuntimeException(e);
         }
-        stringRedisTemplate.convertAndSend(TradeChannels.TRADE_LOG.getTopic(), message);
+        stringRedisTemplate.convertAndSend(TradeChannels.TRADE_LOG, message);
     }
 
 }

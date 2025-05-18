@@ -167,6 +167,7 @@ public class TradeExecutor {
                 strategyRunner.setLog(log);
                 Instant strategyStartTime = Instant.now();
                 StrategyResult strategyResult = strategyRunner.run();
+                tradeAsset.setStrategyResult(strategyResult);
                 log.info("[{} - {}] strategy execution elapsed:{}", basketAsset.getAssetId(), basketAsset.getName(), Duration.between(strategyStartTime, Instant.now()));
                 log.info("[{} - {}] strategy result: {}", basketAsset.getAssetId(), basketAsset.getName(), strategyResult);
 

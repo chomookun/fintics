@@ -54,13 +54,13 @@ public class TradeAssetStore {
         } catch (JsonProcessingException e) {
             throw new RuntimeException(e);
         }
-        stringRedisTemplate.convertAndSend(TradeChannels.TRADE_ASSET.getTopic(), jsonString);
+        stringRedisTemplate.convertAndSend(TradeChannels.TRADE_ASSET, jsonString);
 
         // persist entity
         DefaultTransactionDefinition transactionDefinition = new DefaultTransactionDefinition(TransactionDefinition.PROPAGATION_REQUIRES_NEW);
         TransactionTemplate transactionTemplate = new TransactionTemplate(transactionManager, transactionDefinition);
         transactionTemplate.executeWithoutResult(transactionStatus -> {
-            TradeAssetEntity statusEntity = TradeAssetEntity.builder()
+            TradeAssetEntity tradeAssetEntity = TradeAssetEntity.builder()
                     .tradeId(tradeAsset.getTradeId())
                     .assetId(tradeAsset.getAssetId())
                     .dateTime(tradeAsset.getDateTime())
@@ -70,8 +70,9 @@ public class TradeAssetStore {
                     .volume(tradeAsset.getVolume())
                     .message(tradeAsset.getMessage())
                     .context(tradeAsset.getContext())
+                    .strategyResult(tradeAsset.getStrategyResult())
                     .build();
-            tradeAssetRepository.save(statusEntity);
+            tradeAssetRepository.save(tradeAssetEntity);
         });
     }
 

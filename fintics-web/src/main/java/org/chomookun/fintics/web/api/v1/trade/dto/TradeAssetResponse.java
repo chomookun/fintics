@@ -2,6 +2,7 @@ package org.chomookun.fintics.web.api.v1.trade.dto;
 
 import lombok.*;
 import org.chomookun.fintics.core.trade.model.TradeAsset;
+import org.chomookun.fintics.web.api.v1.order.dto.StrategyResultResponse;
 
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
@@ -38,8 +39,10 @@ public class TradeAssetResponse {
 
     private String message;
 
+    private StrategyResultResponse strategyResult;
+
     public static TradeAssetResponse from(TradeAsset tradeAsset) {
-        return TradeAssetResponse.builder()
+        TradeAssetResponse tradeAssetResponse = TradeAssetResponse.builder()
                 .tradeId(tradeAsset.getTradeId())
                 .assetId(tradeAsset.getAssetId())
                 .dateTime(tradeAsset.getDateTime())
@@ -53,6 +56,10 @@ public class TradeAssetResponse {
                 .intraDayNetChangePercentage(tradeAsset.getIntraDayNetChangePercentage())
                 .message(tradeAsset.getMessage())
                 .build();
+        if (tradeAsset.getStrategyResult() != null) {
+            tradeAssetResponse.setStrategyResult(StrategyResultResponse.from(tradeAsset.getStrategyResult()));
+        }
+        return tradeAssetResponse;
     }
 
     public static List<TradeAssetResponse> from(List<TradeAsset> profiles) {

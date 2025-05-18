@@ -178,6 +178,7 @@
                         basketItem.intraDayNetChange = tradeAsset.intraDayNetChange;
                         basketItem.intraDayNetChangePercentage = tradeAsset.intraDayNetChangePercentage;
                         basketItem.message = tradeAsset.message;
+                        basketItem.strategyResult = tradeAsset.strategyResult;
                     }
                 },
                 /**
@@ -575,6 +576,17 @@
                                              th:src="@{/static/image/icon-disabled.svg}"
                                             data-duice-bind="basketItem"
                                             data-duice-if="return !basketItem.enabled" alt="disabled"/>
+                                        <span class="code blink font-size--xx-small font-weight--bold"
+                                              data-duice-bind="basketItem"
+                                              data-duice-if="return !!basketItem.strategyResult;"
+                                              data-duice-execute="
+                                              let action = basketItem.strategyResult?.action;
+                                              let position = basketItem.strategyResult?.position;
+                                              this.innerHTML= `[${action} ${position}]`;
+                                              this.classList.toggle('color--green', action === 'BUY');
+                                              this.classList.toggle('color--red', action === 'SELL');
+                                              ">
+                                        </span>
                                         <br/>
                                         <span class="number font-weight--bold"
                                               data-duice-bind="basketItem"
@@ -600,15 +612,15 @@
                                               this.dataset.assetId = basketItem.assetId;
                                               |"
                                               onclick="openOrders(this.dataset.tradeId, this.dataset.assetId);">
-                                        <span data-duice-bind="basketItem" data-duice-if="return basketItem.buyCount > 0;">
-                                            <img class="icon" th:src="@{/static/image/icon-add.svg}" alt=""/>
-                                            <span data-duice-bind="basketItem" data-duice-property="buyCount" class="number"></span>
+                                            <span data-duice-bind="basketItem" data-duice-if="return basketItem.buyCount > 0;">
+                                                <img class="icon" th:src="@{/static/image/icon-add.svg}" alt=""/>
+                                                <span data-duice-bind="basketItem" data-duice-property="buyCount" class="number"></span>
+                                            </span>
+                                            <span data-duice-bind="basketItem" data-duice-if="return basketItem.sellCount > 0;">
+                                                <img class="icon" th:src="@{/static/image/icon-remove.svg}" alt=""/>
+                                                <span data-duice-bind="basketItem" data-duice-property="sellCount" class="number"></span>
+                                            </span>
                                         </span>
-                                        <span data-duice-bind="basketItem" data-duice-if="return basketItem.sellCount > 0;">
-                                            <img class="icon" th:src="@{/static/image/icon-remove.svg}" alt=""/>
-                                            <span data-duice-bind="basketItem" data-duice-property="sellCount" class="number"></span>
-                                        </span>
-                                    </span>
                                     </div>
                                 </div>
                             </td>

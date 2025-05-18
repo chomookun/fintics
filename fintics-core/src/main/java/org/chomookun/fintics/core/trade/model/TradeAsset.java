@@ -1,8 +1,12 @@
 package org.chomookun.fintics.core.trade.model;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.*;
 import lombok.experimental.SuperBuilder;
+import lombok.extern.slf4j.Slf4j;
+import org.chomookun.arch4j.core.common.support.ObjectMapperHolder;
 import org.chomookun.fintics.core.asset.model.Asset;
+import org.chomookun.fintics.core.strategy.runner.StrategyResult;
 import org.chomookun.fintics.core.trade.entity.TradeAssetEntity;
 import org.chomookun.fintics.core.ohlcv.model.Ohlcv;
 
@@ -17,6 +21,7 @@ import java.util.*;
 @SuperBuilder
 @NoArgsConstructor
 @AllArgsConstructor(access = AccessLevel.PRIVATE)
+@Slf4j
 public class TradeAsset extends Asset {
 
     private String tradeId;
@@ -36,6 +41,8 @@ public class TradeAsset extends Asset {
     private List<Ohlcv> minuteOhlcvs;
 
     private String message;
+
+    private StrategyResult strategyResult;
 
     @Builder.Default
     private Map<String,Object> context = new HashMap<>();
@@ -151,17 +158,23 @@ public class TradeAsset extends Asset {
                 .build();
     }
 
-    public static TradeAsset from(TradeAssetEntity assetEntity) {
+    /**
+     * Factory method
+     * @param tradeAssetEntity trade asset entity
+     * @return trade asset
+     */
+    public static TradeAsset from(TradeAssetEntity tradeAssetEntity) {
         return TradeAsset.builder()
-                .tradeId(assetEntity.getTradeId())
-                .assetId(assetEntity.getAssetId())
-                .dateTime(assetEntity.getDateTime())
-                .previousClose(assetEntity.getPreviousClose())
-                .open(assetEntity.getOpen())
-                .close(assetEntity.getClose())
-                .volume(assetEntity.getVolume())
-                .message(assetEntity.getMessage())
-                .context(assetEntity.getContext())
+                .tradeId(tradeAssetEntity.getTradeId())
+                .assetId(tradeAssetEntity.getAssetId())
+                .dateTime(tradeAssetEntity.getDateTime())
+                .previousClose(tradeAssetEntity.getPreviousClose())
+                .open(tradeAssetEntity.getOpen())
+                .close(tradeAssetEntity.getClose())
+                .volume(tradeAssetEntity.getVolume())
+                .message(tradeAssetEntity.getMessage())
+                .context(tradeAssetEntity.getContext())
+                .strategyResult(tradeAssetEntity.getStrategyResult())
                 .build();
     }
 

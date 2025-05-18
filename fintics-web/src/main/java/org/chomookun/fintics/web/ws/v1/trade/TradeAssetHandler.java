@@ -30,8 +30,8 @@ public class TradeAssetHandler implements MessageListener {
     private final SimpMessagingTemplate simpMessagingTemplate;
 
     @PostConstruct
-    public void init() {
-        container.addMessageListener(this, TradeChannels.TRADE_ASSET);
+    void initialize() {
+        container.addMessageListener(this, TradeChannels.TRADE_ASSET_CHANNEL);
     }
 
     @Override
