@@ -543,20 +543,20 @@
                             <td class="text-align--center">
                                 <span data-duice-bind="basketItem" data-duice-execute="this.innerHTML = basketItem.sort + 1;" class="number"></span>
                             </td>
-                            <td>
+                            <td class="text-align--center">
                                 <img data-duice-bind="basketItem" data-duice-execute="_applyAssetFavoriteIcon(this, basketItem, true);" alt=""/>
                                 <span data-duice-bind="basketItem" data-duice-property="symbol" class="code font-weight--bold"></span>
                             </td>
                             <td>
-                                <div class="display--flex align-items--center">
-                                    <img class="icon border-radius--50 font-size--large" data-duice-bind="basketItem" data-duice-property="icon" th:onerror="|this.src='@{/static/image/icon-asset.svg}';|" alt=""/>
-                                    &nbsp;
-                                    <div class="margin-left--1rem">
+                                <div class="display--flex flex-direction--column">
+                                    <div class="display--flex align-items--center gap--d5rem flex-wrap--wrap">
+                                        <img class="icon border-radius--50 font-size--large" data-duice-bind="basketItem" data-duice-property="icon" th:onerror="|this.src='@{/static/image/icon-asset.svg}';|" alt=""/>
                                         <a href="javascript:void(0);"
                                            data-duice-bind="basketItem"
                                            data-duice-execute="this.dataset.assetId = basketItem.assetId;"
                                            onclick="_assetDialog.open({assetId:this.dataset.assetId});">
-                                            <span data-duice-bind="basketItem"
+                                            <div class="text-truncate" style="max-width:300px;"
+                                                  data-duice-bind="basketItem"
                                                   data-duice-property="name"
                                                   data-duice-execute="
                                                     if (basketItem.quantity > 0) {
@@ -565,9 +565,11 @@
                                                     if (basketItem.holdingWeight === 0 && basketItem.enabled) {
                                                         this.style.fontStyle = 'italic';
                                                         this.style.textDecoration = 'line-through';
-                                                    }"></span>
+                                                    }"></div>
                                         </a>
-                                        (<span data-duice-bind="basketItem" data-duice-property="holdingWeight" class="number"></span><span class="code">%</span>)
+                                        <div>
+                                            (<span data-duice-bind="basketItem" data-duice-property="holdingWeight" class="number"></span><span class="code">%</span>)
+                                        </div>
                                         <img class="icon font-size--smaller"
                                              th:src="@{/static/image/icon-pin.svg}"
                                              data-duice-bind="basketItem"
@@ -576,18 +578,8 @@
                                              th:src="@{/static/image/icon-disabled.svg}"
                                             data-duice-bind="basketItem"
                                             data-duice-if="return !basketItem.enabled" alt="disabled"/>
-                                        <span class="code blink font-size--xx-small font-weight--bold"
-                                              data-duice-bind="basketItem"
-                                              data-duice-if="return !!basketItem.strategyResult;"
-                                              data-duice-execute="
-                                              let action = basketItem.strategyResult?.action;
-                                              let position = basketItem.strategyResult?.position;
-                                              this.innerHTML= `[${action} ${position}]`;
-                                              this.classList.toggle('color--green', action === 'BUY');
-                                              this.classList.toggle('color--red', action === 'SELL');
-                                              ">
-                                        </span>
-                                        <br/>
+                                    </div>
+                                    <div>
                                         <span class="number font-weight--bold"
                                               data-duice-bind="basketItem"
                                               data-duice-execute="
@@ -598,7 +590,6 @@
                                               this.classList.toggle('color--red', netChange < 0);
                                               this.innerHTML = `${close?.toLocaleString()||''} (${netChange} <small>/</small> ${netChangePercentage}%)`;
                                               "></span>
-                                        &nbsp;
                                         <span class="number font-size--xx-small font-style--italic"
                                               data-duice-bind="basketItem"
                                               data-duice-execute="
@@ -621,19 +612,32 @@
                                                 <span data-duice-bind="basketItem" data-duice-property="sellCount" class="number"></span>
                                             </span>
                                         </span>
+                                        <span class="code blink font-size--xx-small font-weight--bold"
+                                              data-duice-bind="basketItem"
+                                              data-duice-if="return !!basketItem.strategyResult;"
+                                              data-duice-execute="
+                                                      let action = basketItem.strategyResult?.action;
+                                                      let position = basketItem.strategyResult?.position;
+                                                      this.innerHTML= `[${action} ${position}]`;
+                                                      this.classList.toggle('color--green', action === 'BUY');
+                                                      this.classList.toggle('color--red', action === 'SELL');
+                                                      ">
+                                        </span>
                                     </div>
                                 </div>
                             </td>
                             <td class="text-align--center">
-                                <select class="code font-size--smaller"
-                                        data-duice-bind="basketItem"
-                                        data-duice-if="return !!basketItem.links"
-                                        data-duice-option="basketItem.links"
-                                        data-duice-option-value-property="url"
-                                        data-duice-option-text-property="name"
-                                        onchange="_openLink(this.value, '_blank'); this.value = '';">
-                                    <option value>Link...</option>
-                                </select>
+                                <label>
+                                    <select class="code font-size--smaller"
+                                            data-duice-bind="basketItem"
+                                            data-duice-if="return !!basketItem.links"
+                                            data-duice-option="basketItem.links"
+                                            data-duice-option-value-property="url"
+                                            data-duice-option-text-property="name"
+                                            onchange="_openLink(this.value, '_blank'); this.value = '';">
+                                        <option value>Link...</option>
+                                    </select>
+                                </label>
                             </td>
                             <td>
                                 <div class="display--flex">
