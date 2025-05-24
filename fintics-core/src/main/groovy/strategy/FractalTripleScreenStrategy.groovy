@@ -155,7 +155,7 @@ class Analyzer {
     Score getVolatilityScore() {
         def score = new Score()
         // dmi
-        score.dmiAdx = dmi.adx >= 25 ? 100 : 0
+        score.dmiAdx = dmis.take(3).any { it.adx >= 25 } ? 100 : 0
         // return
         return score
     }
@@ -274,7 +274,8 @@ class TripleScreenStrategy {
      * @return
      */
     BigDecimal getWaveOversoldThreshold() {
-        return (100 - tideAnalyzer.getMomentumScore().getAverage()) as BigDecimal
+        def value = (100 - tideAnalyzer.getMomentumScore().getAverage()) as BigDecimal
+        return value.max(10).min(90)
     }
 
     /**
@@ -282,7 +283,8 @@ class TripleScreenStrategy {
      * @return
      */
     BigDecimal getWaveOverboughtThreshold() {
-        return (0 + tideAnalyzer.getMomentumScore().getAverage()) as BigDecimal
+        def value = (0 + tideAnalyzer.getMomentumScore().getAverage()) as BigDecimal
+        return value.max(10).min(90)
     }
 
     /**
@@ -295,35 +297,25 @@ class TripleScreenStrategy {
         // tide 모멘텀 기준 포지션 산출
         def position = this.calculatePosition(maxPosition, minPosition)
 
-        // wave 변동성 구간
-        if (waveAnalyzer.getVolatilityScore() >= 50) {
-            // wave 과매도 시
-            if (waveAnalyzer.getOversoldScore() >= this.getWaveOversoldThreshold()) {
-                // ripple 상승 모멘텀
-                if (rippleAnalyzer.getMomentumScore() > 50) {
-                    // wave 평균가 기준 매수 포지션
-                    def buyPosition = this.adjustAveragePosition(position)
-                    strategyResult = StrategyResult.of(Action.BUY, buyPosition, "[WAVE OVERSOLD BUY] ${this.toString()}")
-                    // tide 과매수 시 매수 보류
-                    if (tideAnalyzer.getOverboughtScore() >= 50) {
-                        strategyResult = null
-                    }
-                }
-            }
-            // wave 과매수 시
-            if (waveAnalyzer.getOverboughtScore() >= this.getWaveOverboughtThreshold()) {
-                // ripple 하락 모멘텀
-                if (rippleAnalyzer.getMomentumScore() < 50) {
-                    // wave 평균가 기준 매도 포지션
-                    def sellPosition = this.adjustAveragePosition(position)
-                    strategyResult = StrategyResult.of(Action.SELL, sellPosition, "[WAVE OVERBOUGHT SELL] ${this.toString()}")
-                    // tide 과매도 시 매도 보류
-                    if (tideAnalyzer.getOversoldScore() >= 50) {
-                        strategyResult = null
-                    }
-                }
+        // wave 과매도 시
+        if (waveAnalyzer.getVolatilityScore() >= 50 && waveAnalyzer.getOversoldScore() >= this.getWaveOversoldThreshold()) {
+            // ripple 상승 모멘텀
+            if (rippleAnalyzer.getVolatilityScore() >= 50 && rippleAnalyzer.getMomentumScore() >= 75) {
+                // wave 평균가 기준 매수 포지션
+                def buyPosition = this.adjustAveragePosition(position)
+                strategyResult = StrategyResult.of(Action.BUY, buyPosition, "[WAVE OVERSOLD BUY] ${this.toString()}")
             }
         }
+        // wave 과매수 시
+        if (waveAnalyzer.getVolatilityScore() >= 50 && waveAnalyzer.getOverboughtScore() >= this.getWaveOverboughtThreshold()) {
+            // ripple 하락 모멘텀
+            if (rippleAnalyzer.getVolatilityScore() >= 50 && rippleAnalyzer.getMomentumScore() <= 25) {
+                // wave 평균가 기준 매도 포지션
+                def sellPosition = this.adjustAveragePosition(position)
+                strategyResult = StrategyResult.of(Action.SELL, sellPosition, "[WAVE OVERBOUGHT SELL] ${this.toString()}")
+            }
+        }
+
         // returns
         return Optional.ofNullable(strategyResult)
     }
@@ -334,9 +326,10 @@ class TripleScreenStrategy {
                 - tide.momentum:${tideAnalyzer.getMomentumScore().getAverage()}
                 - tide.oversold:${tideAnalyzer.getOversoldScore().getAverage()}
                 - tide.overbought:${tideAnalyzer.getOverboughtScore().getAverage()}
-                - wave.volatility:${waveAnalyzer.getVolatilityScore().getAverage()}
+                - wave.volatility:${waveAnalyzer.getVolatilityScore().getAverage()} (adx:${waveAnalyzer.dmis.take(3).collect{it.adx.intValue()}})
                 - wave.oversold(threshold):${waveAnalyzer.getOversoldScore().getAverage()}(${this.getWaveOversoldThreshold()})
                 - wave.overbought(threshold):${waveAnalyzer.getOverboughtScore().getAverage()}(${this.getWaveOverboughtThreshold()})
+                - ripple.volatility:${rippleAnalyzer.getVolatilityScore().getAverage()} (adx:${rippleAnalyzer.dmis.take(3).collect{it.adx.intValue()}})
                 - ripple.momentum:${rippleAnalyzer.getMomentumScore().getAverage()}"""
                 .split('\n').collect { it.trim() }.join('\n')
     }
@@ -384,16 +377,25 @@ static def calculateChannel(List<Ohlcv> ohlcvs, int period) {
     channel.middle = ((channel.upper + channel.lower) / 2).setScale(4, RoundingMode.HALF_UP)
 
     // todo 최근 이동평균 강도에 따라 상하단 조정
-    List<Ema> emas = Tools.indicators(ohlcvs, EmaContext.DEFAULT).take(20)
-    def emaChangeValue = emas.first().value - emas.last().value
-    channel.upper += emaChangeValue
-    channel.middle += emaChangeValue
-    channel.lower += emaChangeValue
+//    List<Ema> emas = Tools.indicators(ohlcvs, EmaContext.DEFAULT).take(20)
+//    def emaChangeValue = emas.first().value - emas.last().value
+//    channel.upper += emaChangeValue
+//    channel.middle += emaChangeValue
+//    channel.lower += emaChangeValue
 
     // return
     return channel
 }
 
+/**
+ * Calculates average position
+ */
+static def calculateAveragePosition(maxPosition, minPosition, TripleScreenStrategy microTripleScreenStrategy, TripleScreenStrategy mesoTripleScreenStrategy, TripleScreenStrategy macroTripleScreenStrategy) {
+    return [microTripleScreenStrategy, mesoTripleScreenStrategy, macroTripleScreenStrategy]
+            .collect{it.calculatePosition(maxPosition, minPosition)}
+            .average()
+            .setScale(2, RoundingMode.HALF_UP)
+}
 
 //===============================
 // config
@@ -516,7 +518,7 @@ def profitPercentage = balanceAsset?.getProfitPercentage() ?: 0.0
 //===============================
 // position
 //===============================
-def maxPosition = 1.0
+def maxPosition = calculateAveragePosition(1.0, basePosition, microTripleScreenStrategy, mesoTripleScreenStrategy, macroTripleScreenStrategy)
 def minPosition = basePosition
 
 //===============================
@@ -527,7 +529,8 @@ splitSize:${splitSize}, splitIndex:${splitIndex}
 splitLimits:${splitLimitPrices}
 splitLimitPrice:${splitLimitPrice}
 splitBuyLimited:${splitBuyLimited}
-position:[micro:${microTripleScreenStrategy.calculatePosition(maxPosition, minPosition)}, meso:${mesoTripleScreenStrategy.calculatePosition(maxPosition, minPosition)}, macro:${macroTripleScreenStrategy.calculatePosition(maxPosition, minPosition)}]
+position:[micro:${microTripleScreenStrategy.calculatePosition(1.0, basePosition)}, meso:${mesoTripleScreenStrategy.calculatePosition(1.0, basePosition)}, macro:${macroTripleScreenStrategy.calculatePosition(1.0, basePosition)}]
+max|minPosition: [${maxPosition}, ${minPosition}]
 microTripleScreenStrategy
 ${microTripleScreenStrategy}
 mesoTripleScreenStrategy
@@ -541,9 +544,9 @@ tradeAsset.setMessage(message)
 //===============================
 // execute strategy
 //===============================
-// micro strategy
-microTripleScreenStrategy.getResult(maxPosition, minPosition).ifPresent {
-    log.info("micro strategy result: {}", it)
+// macro strategy
+macroTripleScreenStrategy.getResult(maxPosition, minPosition).ifPresent {
+    log.info("macro strategy result: {}", it)
     strategyResult = it
 }
 // meso strategy
@@ -551,9 +554,9 @@ mesoTripleScreenStrategy.getResult(maxPosition, minPosition).ifPresent {
     log.info("meso strategy result: {}", it)
     strategyResult = it
 }
-// macro strategy
-macroTripleScreenStrategy.getResult(maxPosition, minPosition).ifPresent {
-    log.info("macro strategy result: {}", it)
+// micro strategy
+microTripleScreenStrategy.getResult(maxPosition, minPosition).ifPresent {
+    log.info("micro strategy result: {}", it)
     strategyResult = it
 }
 
