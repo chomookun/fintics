@@ -416,7 +416,7 @@
                 </div>
             </div>
             <div class="grid-column--span-12">
-                <div class="display--flex justify-content--space-between flex-wrap--wrap">
+                <div class="display--flex justify-content--space-between align-items--center flex-wrap--wrap">
                     <div class="s__width--100">
                         <img class="icon" data-th-src="@{/static/image/icon-basket.svg}" alt="basket"/>
                         <span class="font-weight--bold" data-th-text="#{fintics.core.basket.BasketAsset}"></span>
@@ -427,7 +427,7 @@
                             )
                         </span>
                     </div>
-                    <div class="s__width--100 display--flex s__flex-direction--column">
+                    <div class="s__width--100 display--flex s__flex-direction--column" style="line-height:2.0rem;">
                         <div>
                             <img class="icon" data-th-src="@{/static/image/icon-balance.svg}" alt="balance"/>
                             <span class="font-weight--bold">
@@ -509,7 +509,8 @@
                          class="display--flex flex-direction--column gap--1rem">
                         <!-- start: basket divider -->
                         <div data-duice-bind="basketItem"
-                             data-duice-if="return basketItem._type==='basketDivider';">
+                             data-duice-if="return basketItem._type==='basketDivider';"
+                             hidden>
                             <div class="padding-left--1rem" style="background-color:var(--duice-table-tbody-hover-background); border-left:var(--duice-form-element-border); border-left-width:2px;">
                                 <span data-duice-bind="basketItem" data-duice-property="name" class="font-size--larger font-weight--bold"></span>
                             </div>
@@ -518,19 +519,25 @@
                         <!-- start: basket asset -->
                         <div data-duice-bind="basketItem"
                              data-duice-if="return basketItem._type==='basketAsset';"
-                             class="display--flex flex-direction--column gap--1px">
+                             class="display--flex flex-direction--column gap--1px overflow--hidden"
+                             hidden>
                                 <!-- start: basket asset details -->
-                                <div class="display--flex align-items--center gap--d5rem flex-wrap--nowrap">
+                                <div class="display--flex align-items--center gap--d5rem flex-wrap--nowrap overflow--hidden">
                                     <div>
-                                        <img class="icon border-radius--50 font-size--x-large" data-duice-bind="basketItem" data-duice-property="icon" th:onerror="|this.src='@{/static/image/icon-asset.svg}';|" alt=""/>
+                                        <img class="icon border-radius--50 font-size--x-large"
+                                             th:src="@{/static/image/icon-asset.svg}"
+                                             data-duice-bind="basketItem"
+                                             data-duice-property="icon"
+                                             alt=""/>
                                     </div>
-                                    <div class="display--flex flex-direction--column">
-                                        <div class="display--flex flex-wrap--nowrap align-items--center gap--d5em" style="line-height:2rem;">
+                                    <div class="display--flex flex-direction--column overflow--hidden">
+                                        <div class="display--flex flex-wrap--nowrap align-items--center gap--d5em overflow--hidden" style="line-height:2rem;">
                                             <a href="javascript:void(0);"
                                                data-duice-bind="basketItem"
                                                data-duice-execute="this.dataset.assetId = basketItem.assetId;"
-                                               onclick="_assetDialog.open({assetId:this.dataset.assetId});">
-                                                <div class="text-truncate" style="max-width:25rem;"
+                                               onclick="_assetDialog.open({assetId:this.dataset.assetId});"
+                                               class="overflow--hidden">
+                                                <div class="text-truncate"
                                                      data-duice-bind="basketItem"
                                                      data-duice-property="name"
                                                      data-duice-execute="
@@ -543,7 +550,7 @@
                                                     }"></div>
                                             </a>
                                             <div>
-                                                (<span data-duice-bind="basketItem" data-duice-property="holdingWeight" class="number"></span><span class="code">%</span>)
+                                                [<span data-duice-bind="basketItem" data-duice-property="holdingWeight" class="number"></span><span class="code">%</span>]
                                             </div>
                                             <img class="icon font-size--smaller"
                                                  th:src="@{/static/image/icon-pin.svg}"
@@ -592,9 +599,13 @@
                                 </div>
                                 <!-- end: basket asset details -->
                                 <!-- start: basket asset valuation -->
-                                <div>
+                                <div data-duice-bind="basketItem">
                                     <span data-duice-bind="basketItem"
                                           data-duice-property="valuationAmount"
+                                          data-duice-execute="
+                                          if (!basketItem.valuationAmount) {
+                                            this.innerHTML = '0';
+                                          }"
                                           data-duice-format="number()"
                                           class="number font-weight--bold font-size--larger">-</span>
                                     &nbsp;
@@ -603,10 +614,21 @@
                                          this.classList.toggle('color--green', basketItem.profitAmount > 0);
                                          this.classList.toggle('color--red', basketItem.profitAmount < 0);
                                          " class="number font-weight--bold">
-                                        (<span data-duice-bind="basketItem" data-duice-property="profitAmount" data-duice-format="number()">-</span>
+                                        (<span data-duice-bind="basketItem"
+                                               data-duice-property="profitAmount"
+                                               data-duice-format="number()"
+                                               data-duice-execute="
+                                                if (!basketItem.profitAmount) {
+                                                    this.innerHTML = '0';
+                                                }"></span>
                                         <small>/</small>
-                                        <span data-duice-bind="basketItem" data-duice-property="profitPercentage">-</span>%)
-                                        <span class="code blink font-weight--bold"
+                                        <span data-duice-bind="basketItem"
+                                              data-duice-property="profitPercentage"
+                                              data-duice-execute="
+                                                if (!basketItem.profitAmount) {
+                                                    this.innerHTML = '0';
+                                                }"></span>%)
+                                        <span class="code blink font-weight--bold font-size--smaller text-decoration--underline"
                                                 data-duice-bind="basketItem"
                                                 data-duice-if="return !!basketItem.strategyResult;"
                                                 data-duice-execute="
@@ -669,6 +691,22 @@
                     </div>
                 </div>
                 <!-- end: basket items -->
+                <!-- start: basket loading -->
+                <div th:data-duice-bind="|monitorMap.get('${trade.tradeId}').basket|"
+                     th:data-duice-if="|return monitorMap.get('${trade.tradeId}').basket._status === 'loading'|"
+                     class="text-align--center"
+                     hidden>
+                    <span class="loading"></span>
+                </div>
+                <!-- end: basket loading -->
+                <!-- start: basket empty -->
+                <div th:data-duice-bind="|monitorMap.get('${trade.tradeId}').basket|"
+                     th:data-duice-if="|return monitorMap.get('${trade.tradeId}').basket._status == 'empty';|"
+                     class="text-align--center"
+                     hidden>
+                    <span data-th-text="#{web.global.itemNotFound(#{fintics.core.basket.BasketAsset})}"></span>
+                </div>
+                <!-- end: basket empty -->
             </div>
         </div>
     </div>
