@@ -583,7 +583,7 @@
                                 <!-- end: basket asset details -->
                                 <!-- start: basket asset valuation -->
                                 <div data-duice-bind="basketItem"
-                                     class="display--flex align-items--center gap--d5rem">
+                                     class="display--flex align-items--center gap--d5rem flex-wrap--wrap">
                                     <span data-duice-bind="basketItem"
                                           data-duice-property="valuationAmount"
                                           data-duice-execute="
@@ -592,11 +592,11 @@
                                           }"
                                           data-duice-format="number()"
                                           class="number font-weight--bold font-size--larger">-</span>
-                                    <span data-duice-bind="basketItem"
-                                          data-duice-execute="
+                                        <span data-duice-bind="basketItem"
+                                              data-duice-execute="
                                          this.classList.toggle('color--green', basketItem.profitAmount > 0);
                                          this.classList.toggle('color--red', basketItem.profitAmount < 0);
-                                         " class="number font-weight--bold">
+                                         " class="number font-weight--bold white-space--nowrap">
                                         (<span data-duice-bind="basketItem"
                                                data-duice-property="profitAmount"
                                                data-duice-format="number()"
@@ -619,25 +619,27 @@
                                           this.dataset.assetId = basketItem.assetId;
                                           |"
                                           onclick="openOrders(this.dataset.tradeId, this.dataset.assetId);">
-                                            <span data-duice-bind="basketItem" data-duice-if="return basketItem.buyCount > 0;">
-                                                <img class="icon" th:src="@{/static/image/icon-add.svg}" alt=""/>
-                                                <span data-duice-bind="basketItem" data-duice-property="buyCount" class="number badge background-color--green"></span>
+                                            <span data-duice-bind="basketItem"
+                                                  data-duice-if="return basketItem.buyCount > 0;"
+                                                  class="badge background-color--green">
+                                                <span data-duice-bind="basketItem" data-duice-property="buyCount" class="number"></span>
                                             </span>
-                                            <span data-duice-bind="basketItem" data-duice-if="return basketItem.sellCount > 0;">
-                                                <img class="icon" th:src="@{/static/image/icon-remove.svg}" alt=""/>
-                                                <span data-duice-bind="basketItem" data-duice-property="sellCount" class="number badge background-color--red"></span>
+                                            <span data-duice-bind="basketItem"
+                                                  data-duice-if="return basketItem.sellCount > 0;"
+                                                  class="badge background-color--red">
+                                                <span data-duice-bind="basketItem" data-duice-property="sellCount" class="number"></span>
                                             </span>
-                                        </span>
+                                    </span>
                                     <span class="code blink badge"
                                           data-duice-bind="basketItem"
                                           data-duice-if="return !!basketItem.strategyResult;"
                                           data-duice-execute="
-                                                      let action = basketItem.strategyResult?.action;
-                                                      let position = basketItem.strategyResult?.position;
-                                                      this.innerHTML= `${action} <small>|</small> ${position}`;
-                                                      this.classList.toggle('background-color--green', action === 'BUY');
-                                                      this.classList.toggle('background-color--red', action === 'SELL');
-                                                      "></span>
+                                                  let action = basketItem.strategyResult?.action;
+                                                  let position = basketItem.strategyResult?.position;
+                                                  this.innerHTML= `${action} <small>|</small> ${position}`;
+                                                  this.classList.toggle('background-color--green', action === 'BUY');
+                                                  this.classList.toggle('background-color--red', action === 'SELL');
+                                                  "></span>
                                 </div>
                                 <!-- end: basket asset valuation -->
                                 <!-- start: basket asset links and actions -->
