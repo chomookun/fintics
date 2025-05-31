@@ -592,8 +592,18 @@
                                           }"
                                           data-duice-format="number()"
                                           class="number font-weight--bold font-size--larger">-</span>
-                                        <span data-duice-bind="basketItem"
-                                              data-duice-execute="
+                                    <small>/</small>
+                                    <span data-duice-bind="basketItem"
+                                          data-duice-property="quantity"
+                                          data-duice-execute="
+                                          if (!basketItem.quantity) {
+                                            this.innerHTML = '0';
+                                          }"
+                                          data-duice-format="number()"
+                                          class="number">
+                                    </span>
+                                    <span data-duice-bind="basketItem"
+                                          data-duice-execute="
                                          this.classList.toggle('color--green', basketItem.profitAmount > 0);
                                          this.classList.toggle('color--red', basketItem.profitAmount < 0);
                                          " class="number font-weight--bold white-space--nowrap">
@@ -682,6 +692,7 @@
                                     <label class="display--flex height--100">
                                         <textarea data-duice-bind="basketItem"
                                                   data-duice-property="message"
+                                                  data-duice-execute="this.disabled = !basketItem.enabled;"
                                                   class="width--100 height--100 code font-size--smaller"
                                                   style="min-width:30em; min-height:7rem; line-height:1.1em; padding:0.1em 0.3em;"></textarea>
                                     </label>

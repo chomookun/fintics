@@ -138,7 +138,7 @@ public class BasketRebalanceScheduler {
      * @param content message content
      */
     protected void sendSystemNotification(String content) {
-        notificationService.sendNotification(finticsProperties.getSystemNotifierId(), this.getClass().getSimpleName(), content, null);
+        notificationService.sendNotification(finticsProperties.getSystemNotifierId(), this.getClass().getSimpleName(), content, null, false);
     }
 
 }

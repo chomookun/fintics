@@ -47,7 +47,7 @@ public abstract class AbstractTask {
         String subject = String.format("%s[%s]", execution.getTaskName(), execution.getExecutionId());
         String content = execution.toString();
         if (alarmId != null) {
-            notificationService.sendNotification(alarmId, subject, content, null);
+            notificationService.sendNotification(alarmId, subject, content, null, false);
         }
     }
 

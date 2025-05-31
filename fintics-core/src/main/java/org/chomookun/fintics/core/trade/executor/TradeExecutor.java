@@ -471,7 +471,7 @@ public class TradeExecutor {
                 String subject = String.format("[%s - %s] Error", trade.getName(), asset != null ? asset.getName() : "");
                 Throwable rootCause = ExceptionUtils.getRootCause(t);
                 String content = rootCause.getClass().getName() + "\n" + rootCause.getMessage();
-                notificationService.sendNotification(trade.getNotifierId(), subject, content, null);
+                notificationService.sendNotification(trade.getNotifierId(), subject, content, null, true);
             }
         }
     }
@@ -488,7 +488,7 @@ public class TradeExecutor {
                 content.append(String.format("- price: %s", order.getPrice())).append('\n');
                 content.append(String.format("- quantity: %s", order.getQuantity())).append('\n');
                 content.append(String.format("- strategyResult: %s", order.getStrategyResult())).append('\n');
-                notificationService.sendNotification(trade.getNotifierId(), subject.toString(), content.toString(), null);
+                notificationService.sendNotification(trade.getNotifierId(), subject.toString(), content.toString(), null, false);
             }
         }
     }
