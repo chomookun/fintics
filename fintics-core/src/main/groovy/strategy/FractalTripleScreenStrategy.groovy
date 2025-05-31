@@ -300,7 +300,7 @@ class TripleScreenStrategy {
         // wave 과매도 시
         if (waveAnalyzer.getVolatilityScore() >= 50 && waveAnalyzer.getOversoldScore() >= this.getWaveOversoldThreshold()) {
             // ripple 상승 모멘텀
-            if (rippleAnalyzer.getVolatilityScore() >= 50 && rippleAnalyzer.getMomentumScore() >= 75) {
+            if (rippleAnalyzer.getVolatilityScore() >= 50 && rippleAnalyzer.getMomentumScore() >= 70) {
                 // wave 평균가 기준 매수 포지션
                 def buyPosition = this.adjustAveragePosition(position)
                 strategyResult = StrategyResult.of(Action.BUY, buyPosition, "[WAVE OVERSOLD BUY] ${this.toString()}")
@@ -309,7 +309,7 @@ class TripleScreenStrategy {
         // wave 과매수 시
         if (waveAnalyzer.getVolatilityScore() >= 50 && waveAnalyzer.getOverboughtScore() >= this.getWaveOverboughtThreshold()) {
             // ripple 하락 모멘텀
-            if (rippleAnalyzer.getVolatilityScore() >= 50 && rippleAnalyzer.getMomentumScore() <= 25) {
+            if (rippleAnalyzer.getVolatilityScore() >= 50 && rippleAnalyzer.getMomentumScore() <= 30) {
                 // wave 평균가 기준 매도 포지션
                 def sellPosition = this.adjustAveragePosition(position)
                 strategyResult = StrategyResult.of(Action.SELL, sellPosition, "[WAVE OVERBOUGHT SELL] ${this.toString()}")
