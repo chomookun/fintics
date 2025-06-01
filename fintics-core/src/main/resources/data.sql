@@ -72,6 +72,12 @@ values
     ('profit','ko','수익현황'),
     ('admin','ko','관리자');
 
+-- core_notification
+insert into `core_notifier` (`notifier_id`,`system_required`,`name`, `client_type`, `client_properties`) values
+    ('fintics','Y','Fintics','TELEGRAM','bot-token=
+chat-id=
+');
+
 -- core_menu_role
 insert into `core_menu_role`
     (`menu_id`,`role_id`,`type`)

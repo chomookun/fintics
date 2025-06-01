@@ -9,7 +9,7 @@ core:
 # fintics
 fintics:
   core:
-    system-notifier-id: slack
+    system-notifier-id: fintics
     data-retention-months: 3
     asset:
       asset-client:
