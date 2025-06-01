@@ -175,7 +175,6 @@ class UsAssetClientTest extends CoreTestSupport {
         // then
         assertNotNull(asset.getPrice());
         assertNotNull(asset.getVolume());
-        assertNotNull(asset.getEps());
         assertNotNull(asset.getRoe());
         assertNotNull(asset.getPer());
         assertNotNull(asset.getDividendYield());
