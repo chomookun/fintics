@@ -147,33 +147,42 @@
         </div>
         <div class="panel-content">
             <form onsubmit="return false;" class="display--flex justify-content--space-between gap--1px flex-wrap--wrap">
-                <div class="display--flex flex-wrap--wrap gap--1px">
-                    <div>
+                <div class="display--flex flex-wrap--wrap gap--1px s__width--100">
+                    <div class="s__width--100">
                         <label>
-                            <select data-duice-bind="assetSearch" data-duice-property="market">
+                            <select data-duice-bind="assetSearch"
+                                    data-duice-property="market"
+                                    class="s__width--100">
                                 <option value="" data-th-text="|#{fintics.core.asset.Asset.market}...|"></option>
                                 <option th:each="market : ${markets}" th:value="${market}" th:text="${market}"></option>
                             </select>
                         </label>
                     </div>
-                    <div>
+                    <div class="s__width--100">
                         <label>
-                            <select data-duice-bind="assetSearch" data-duice-property="type">
+                            <select data-duice-bind="assetSearch"
+                                    data-duice-property="type"
+                                    class="s__width--100">
                                 <option value="" data-th-text="|#{fintics.core.asset.Asset.type}...|"></option>
                                 <option value="STOCK">STOCK</option>
                                 <option value="ETF">ETF</option>
                             </select>
                         </label>
                     </div>
-                    <div class="display--flex flex-wrap--nowrap gap--1px">
-                        <label>
-                            <select data-duice-bind="assetSearch" data-duice-property="key">
+                    <div class="display--flex flex-wrap--nowrap gap--1px s__width--100">
+                        <label class="flex--1">
+                            <select data-duice-bind="assetSearch"
+                                    data-duice-property="key"
+                                    class="s__width--100">
                                 <option value="name" th:text="#{fintics.core.asset.Asset.name}"></option>
                                 <option value="assetId" th:text="#{fintics.core.asset.Asset.assetId}"></option>
                             </select>
                         </label>
-                        <label>
-                            <input type="text" data-duice-bind="assetSearch" data-duice-property="value"/>
+                        <label class="flex--2">
+                            <input type="text"
+                                   data-duice-bind="assetSearch"
+                                   data-duice-property="value"
+                                   class="s__width--100"/>
                         </label>
                     </div>
                     <div class="display--flex flex-wrap--nowrap">
@@ -183,7 +192,7 @@
                         </label>
                     </div>
                 </div>
-                <div class="flex--1 display--flex gap--1px justify-content--end s__justify-content--start">
+                <div class="display--flex gap--1px justify-content--end s__justify-content--start s__width--100">
                     <button class="button" type="submit" onclick="getAssets(0); pushAssetSearch();">
                         <img class="icon" th:src="@{/static/image/icon-search.svg}" alt="search"/>
                         <span data-th-text="#{web.global.search}"></span>
@@ -196,25 +205,6 @@
             </form>
             <div class="overflow--auto box">
                 <table class="table width--100 border--none">
-                    <colgroup>
-                        <col/>
-                        <col/>
-                        <col/>
-                        <col/>
-                        <col/>
-                        <col/>
-                        <col/>
-                        <col/>
-                        <col/>
-                        <col/>
-                        <col/>
-                        <col/>
-                        <col/>
-                        <col/>
-                        <col/>
-                        <col/>
-                        <col/>
-                    </colgroup>
                     <thead>
                     <tr>
                         <th>
@@ -231,6 +221,11 @@
                         </th>
                         <th>
                             <span data-th-text="#{fintics.core.asset.Asset.type}"></span>
+                        </th>
+                        <th>
+                            <span data-th-text="#{fintics.core.asset.Asset.sector}"></span>
+                            /
+                            <span data-th-text="#{fintics.core.asset.Asset.industry}"></span>
                         </th>
                         <th>
                             <span data-th-text="#{fintics.core.asset.Asset.updatedDate}"></span>
@@ -320,21 +315,19 @@
                                   class="number">
                             </span>
                         </td>
-                        <td class="text-align--center">
+                        <td class="text-truncate" style="min-width:6rem;">
                             <img data-duice-bind="asset" data-duice-execute="_applyAssetFavoriteIcon(this, asset, true);" alt=""/>
                             <span data-duice-bind="asset" data-duice-property="symbol" class="code"></span>
                         </td>
-                        <td>
-                            <div class="text-truncate" style="width:22em;">
-                                <img class="icon border-radius--50 font-size--large" data-duice-bind="asset" data-duice-property="icon" th:onerror="|this.onerror=null; this.src='@{/static/image/icon-asset.svg}';|" alt=""/>
-                                &nbsp;
-                                <a href="javascript:void(0);"
-                                   data-duice-bind="asset"
-                                   data-duice-execute="this.dataset.assetId=asset.assetId;"
-                                   onclick="_assetDialog.open({assetId: this.dataset.assetId});">
-                                    <span data-duice-bind="asset" data-duice-property="name"></span>
-                                </a>
-                            </div>
+                        <td class="text-truncate">
+                            <img class="icon border-radius--50 font-size--large" data-duice-bind="asset" data-duice-property="icon" th:onerror="|this.onerror=null; this.src='@{/static/image/icon-asset.svg}';|" alt=""/>
+                            &nbsp;
+                            <a href="javascript:void(0);"
+                               data-duice-bind="asset"
+                               data-duice-execute="this.dataset.assetId=asset.assetId;"
+                               onclick="_assetDialog.open({assetId: this.dataset.assetId});">
+                                <span data-duice-bind="asset" data-duice-property="name"></span>
+                            </a>
                         </td>
                         <td class="text-align--center">
                             <span data-duice-bind="asset" data-duice-property="market" class="code badge"></span>
@@ -342,7 +335,15 @@
                         <td class="text-align--center">
                             <span data-duice-bind="asset" data-duice-property="type" class="code badge"></span>
                         </td>
-                        <td class="text-align--center">
+                        <td class="text-truncate">
+                            <label>
+                                <input type="text"
+                                       data-duice-bind="asset"
+                                       data-duice-execute="
+                                   this.value =`${asset.sector??''} / ${asset.industry??''}`;" readonly/>
+                            </label>
+                        </td>
+                        <td class="text-align--center white-space--nowrap">
                             <span data-duice-bind="asset" data-duice-property="updatedDate" class="date"></span>
                         </td>
                         <td class="text-align--right">
@@ -390,7 +391,7 @@
                                         data-duice-option-value-property="url"
                                         data-duice-option-text-property="name"
                                         onchange="_openLink(this.value, '_blank'); this.value = '';"
-                                        class="code font-size--smaller width--100">
+                                        class="code min-width--100">
                                     <option value>Link...</option>
                                 </select>
                             </label>
@@ -411,13 +412,13 @@
                     </tbody>
                 </table>
             </div>
-            <div class="display--flex justify-content--space-between">
-                <div class="flex--1">
+            <div class="display--flex justify-content--space-between gap--1rem">
+                <div class="flex--1 white-space--nowrap">
                     <span data-th-text="#{web.global.total}"></span>
                     <span data-duice-bind="assetSearch" data-duice-property="_total" data-duice-format="number(0)" class="number"></span>
                     <span data-th-text="#{web.global.rows}"></span>
                 </div>
-                <div class="flex--1 display--flex justify-content--center">
+                <div class="flex--2 text-align--center">
                     <duice-pagination
                             data-duice-bind="assetSearch"
                             data-duice-size-property="_size"

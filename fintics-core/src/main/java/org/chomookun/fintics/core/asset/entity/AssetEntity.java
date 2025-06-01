@@ -40,6 +40,12 @@ public class AssetEntity extends BaseEntity {
     @Comment("Type")
     private String type;
 
+    @Column(name = "sector")
+    private String sector;
+
+    @Column(name = "industry")
+    private String industry;
+
     @Column(name = "favorite", length = 1)
     @Convert(converter = BooleanConverter.class)
     @Comment("Favorite")

@@ -6,6 +6,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.chomookun.fintics.core.dividend.model.Dividend;
 import org.chomookun.fintics.core.ohlcv.model.Ohlcv;
 import org.junit.jupiter.api.Disabled;
+import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
 import org.chomookun.arch4j.core.common.test.CoreTestSupport;
 import org.chomookun.fintics.core.FinticsCoreConfiguration;
@@ -100,22 +101,6 @@ class UsAssetClientTest extends CoreTestSupport {
         );
     }
 
-    @Disabled
-    @Test
-    void getAssets() {
-        // when
-        List<Asset> assets = createUsAssetClient().getAssets();
-        // then
-        assertFalse(assets.isEmpty());
-        assertTrue(assets.stream().allMatch(asset ->
-                asset.getAssetId() != null &&
-                        asset.getName() != null &&
-                        asset.getMarket() != null &&
-                        asset.getExchange() != null &&
-                        asset.getType() != null));
-    }
-
-    @Disabled
     @Test
     void getStockAssets() {
         // given
@@ -136,7 +121,6 @@ class UsAssetClientTest extends CoreTestSupport {
                         asset.getType() != null));
     }
 
-    @Disabled
     @Test
     void getEtfAssets() {
         // when
@@ -151,7 +135,20 @@ class UsAssetClientTest extends CoreTestSupport {
                         asset.getType() != null));
     }
 
-    @Disabled
+    @Test
+    void getAssets() {
+        // when
+        List<Asset> assets = createUsAssetClient().getAssets();
+        // then
+        assertFalse(assets.isEmpty());
+        assertTrue(assets.stream().allMatch(asset ->
+                asset.getAssetId() != null &&
+                        asset.getName() != null &&
+                        asset.getMarket() != null &&
+                        asset.getExchange() != null &&
+                        asset.getType() != null));
+    }
+
     @ParameterizedTest
     @MethodSource({"getTestStockAssets", "getTestEtfAssets"})
     void getOhlcvs(Asset asset) {
@@ -161,7 +158,6 @@ class UsAssetClientTest extends CoreTestSupport {
         assertFalse(ohlcvs.isEmpty());
     }
 
-    @Disabled
     @ParameterizedTest
     @MethodSource({"getTestStockAssets", "getTestEtfAssets"})
     void getDividends(Asset asset) {
@@ -171,7 +167,6 @@ class UsAssetClientTest extends CoreTestSupport {
         log.info("dividends:{}", dividends);
     }
 
-    @Disabled
     @ParameterizedTest
     @MethodSource("getTestStockAssets")
     void populateStockAsset(Asset asset) {
@@ -189,7 +184,6 @@ class UsAssetClientTest extends CoreTestSupport {
         assertNotNull(asset.getTotalReturn());
     }
 
-    @Disabled
     @ParameterizedTest
     @MethodSource("getTestEtfAssets")
     void populateEtfAsset(Asset asset) {

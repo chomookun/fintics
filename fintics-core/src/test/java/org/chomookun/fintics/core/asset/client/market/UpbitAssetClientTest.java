@@ -3,6 +3,7 @@ package org.chomookun.fintics.core.asset.client.market;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.junit.jupiter.api.Disabled;
+import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
 import org.chomookun.arch4j.core.common.test.CoreTestSupport;
 import org.chomookun.fintics.core.FinticsCoreConfiguration;
@@ -29,7 +30,7 @@ class UpbitAssetClientTest extends CoreTestSupport {
         return new UpbitAssetClient(assetClientProperties);
     }
 
-    @Disabled
+    @Tag("manual")
     @Test
     void getAssets() {
         // when

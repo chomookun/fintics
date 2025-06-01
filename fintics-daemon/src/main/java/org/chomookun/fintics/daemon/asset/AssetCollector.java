@@ -86,6 +86,8 @@ public class AssetCollector extends AbstractTask {
                     assetEntity.setMarket(asset.getMarket());
                     assetEntity.setExchange(asset.getExchange());
                     assetEntity.setType(asset.getType());
+                    assetEntity.setSector(asset.getSector());
+                    assetEntity.setIndustry(asset.getIndustry());
 
                     // populate asset
                     try {

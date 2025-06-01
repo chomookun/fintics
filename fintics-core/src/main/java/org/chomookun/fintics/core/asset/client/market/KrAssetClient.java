@@ -107,15 +107,21 @@ public class KrAssetClient extends AssetClient implements SeibroClientSupport {
             case "12" -> exchange = "XKOS";
             default -> throw new RuntimeException("invalid exchange type");
         }
+
         // returns
         return rows.stream()
                 .map(row -> {
+                    // sector, industry
+                    String sector = row.get("BIG_CD_NM");
+                    String industry = row.get("MID_CD_NM");
                     return Asset.builder()
                             .assetId(toAssetId(MARKET_KR, row.get("SHOTN_ISIN")))
                             .name(row.get("KOR_SECN_NM"))
                             .market(MARKET_KR)
                             .exchange(exchange)
                             .type("STOCK")
+                            .sector(sector)
+                            .industry(industry)
                             .updatedDate(LocalDate.now())
                             .marketCap(convertStringToNumber(row.get("MARTP_TOTAMT"), null))
                             .build();
@@ -175,6 +181,16 @@ public class KrAssetClient extends AssetClient implements SeibroClientSupport {
                                 .setScale(0, RoundingMode.HALF_UP);
                     }
 
+                    // sector
+                    String sector = null;
+                    String etfBigSortNm = row.get("ETF_BIG_SORT_NM");
+                    if (etfBigSortNm != null) {
+                        sector = etfBigSortNm.split("/")[0].trim();
+                    }
+
+                    // industry
+                    String industry = row.get("ETF_SORT_NM");
+
                     // return
                     return Asset.builder()
                             .assetId(toAssetId(MARKET_KR, row.get("SHOTN_ISIN")))
@@ -182,6 +198,8 @@ public class KrAssetClient extends AssetClient implements SeibroClientSupport {
                             .market(MARKET_KR)
                             .exchange(exchange)
                             .type("ETF")
+                            .sector(sector)
+                            .industry(industry)
                             .marketCap(marketCap)
                             .build();
                 })

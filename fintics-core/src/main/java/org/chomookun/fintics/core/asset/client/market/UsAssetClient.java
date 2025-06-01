@@ -113,6 +113,8 @@ public class UsAssetClient extends AssetClient implements NasdaqClientSupport, Y
                             .market(MARKET_US)
                             .exchange(exchangeMic)
                             .type("STOCK")
+                            .sector(row.get("sector"))
+                            .industry(row.get("industry"))
                             .marketCap(marketCap)
                             .build();
                 })
@@ -173,31 +175,41 @@ public class UsAssetClient extends AssetClient implements NasdaqClientSupport, Y
      */
     Map<String, String> getExchangeMap(List<String> symbols) {
         Map<String, String> exchangeMicMap = new LinkedHashMap<>();
-        final int BATCH_SIZE = 100;
+        final int BATCH_SIZE = 1000;
         try {
             HttpHeaders headers = createYahooHeader();
             for (int i = 0; i < symbols.size(); i += BATCH_SIZE) {
-                List<String> batchSymbols = symbols.subList(i, Math.min(i + BATCH_SIZE, symbols.size()));
-                String symbolParam = String.join(",", batchSymbols);
-                String url = String.format("https://query2.finance.yahoo.com/v1/finance/quoteType/?symbol=%s&lang=en-US&region=US", symbolParam);
-                RequestEntity<Void> requestEntity = RequestEntity.get(url)
-                        .headers(headers)
-                        .build();
-                String responseBody = restTemplate.exchange(requestEntity, String.class).getBody();
-                JsonNode rootNode = objectMapper.readTree(responseBody);
-                JsonNode resultNode = rootNode.path("quoteType").path("result");
-                List<Map<String, String>> results = objectMapper.convertValue(resultNode, new TypeReference<>() {});
-                for (Map<String, String> result : results) {
-                    String symbol = result.get("symbol");
-                    String exchange = result.get("exchange");
-                    String exchangeMic = switch (exchange) {
-                        case "NGM" -> "XNAS";
-                        case "PCX" -> "XASE";
-                        // BATS Exchange to BATS (currently Cboe BZX Exchange)
-                        case "BTS" -> "BATS";
-                        default -> "XNYS";
-                    };
-                    exchangeMicMap.put(symbol, exchangeMic);
+                try {
+                    List<String> batchSymbols = symbols.subList(i, Math.min(i + BATCH_SIZE, symbols.size()));
+                    String symbolParam = String.join(",", batchSymbols);
+                    String url = String.format("https://query1.finance.yahoo.com/v1/finance/quoteType/?symbol=%s&lang=en-US&region=US", symbolParam);
+                    RequestEntity<Void> requestEntity = RequestEntity.get(url)
+                            .headers(headers)
+                            .build();
+                    String responseBody = restTemplate.exchange(requestEntity, String.class).getBody();
+                    JsonNode rootNode = objectMapper.readTree(responseBody);
+                    JsonNode resultNode = rootNode.path("quoteType").path("result");
+                    List<Map<String, String>> results = objectMapper.convertValue(resultNode, new TypeReference<>() {
+                    });
+                    for (Map<String, String> result : results) {
+                        String symbol = result.get("symbol");
+                        String exchange = result.get("exchange");
+                        String exchangeMic = switch (exchange) {
+                            case "NGM" -> "XNAS";
+                            case "PCX" -> "XASE";
+                            // BATS Exchange to BATS (currently Cboe BZX Exchange)
+                            case "BTS" -> "BATS";
+                            default -> "XNYS";
+                        };
+                        exchangeMicMap.put(symbol, exchangeMic);
+                    }
+                } catch (Exception e) {
+                    log.warn(e.getMessage());   // ignores errors for batch processing
+                } finally {
+                    // Sleep to avoid rate limit
+                    try {
+                        Thread.sleep(1000L);
+                    } catch (InterruptedException ignore) {}
                 }
             }
         } catch (Exception e) {
@@ -267,7 +279,7 @@ public class UsAssetClient extends AssetClient implements NasdaqClientSupport, Y
             if (name.equals("PreviousClose")) {
                 price = convertCurrencyToNumber(value, CURRENCY_USD, null);
             }
-            if (name.equals("ShareVolume")) {
+            if (name.equals("AverageVolume")) {
                 volume = convertStringToNumber(value, null);
             }
             if (name.equals("MarketCap")) {
@@ -278,7 +290,7 @@ public class UsAssetClient extends AssetClient implements NasdaqClientSupport, Y
             if (name.equals("EarningsPerShare")) {
                 eps = convertCurrencyToNumber(value, CURRENCY_USD, null);
             }
-            if (name.equals("PERatio")) {
+            if (name.equals("ForwardPE1Yr")) {
                 per = convertStringToNumber(value, null);
             }
             if(name.equals("Yield")) {

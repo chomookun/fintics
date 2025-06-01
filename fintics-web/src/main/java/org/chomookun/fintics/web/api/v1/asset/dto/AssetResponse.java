@@ -29,6 +29,10 @@ public class AssetResponse {
 
     private String type;
 
+    private String sector;
+
+    private String industry;
+
     private boolean favorite;
 
     private LocalDate updatedDate;
@@ -77,6 +81,8 @@ public class AssetResponse {
                 .market(asset.getMarket())
                 .exchange(asset.getExchange())
                 .type(asset.getType())
+                .sector(asset.getSector())
+                .industry(asset.getIndustry())
                 .favorite(asset.isFavorite())
                 .updatedDate(asset.getUpdatedDate())
                 .price(asset.getPrice())

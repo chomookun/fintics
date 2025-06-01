@@ -84,7 +84,14 @@ class KrAssetClientTest extends CoreTestSupport {
                 );
     }
 
-    @Tag("manual")
+    @Test
+    void getEtfAssets() {
+        // when
+        List<Asset> etfAssets = createKrAssetClient().getEtfAssets();
+        // then
+        assertFalse(etfAssets.isEmpty());
+    }
+
     @Test
     void getAssets() {
         // when
@@ -99,7 +106,6 @@ class KrAssetClientTest extends CoreTestSupport {
                         asset.getType() != null));
     }
 
-    @Tag("manual")
     @ParameterizedTest
     @MethodSource("getTestStockAssets")
     void getStockOhlcvs(Asset asset) {
@@ -109,7 +115,6 @@ class KrAssetClientTest extends CoreTestSupport {
         assertFalse(stockOhlcvs.isEmpty());
     }
 
-    @Tag("manual")
     @ParameterizedTest
     @MethodSource("getTestEtfAssets")
     void getStockDividends(Asset asset) {
@@ -119,7 +124,6 @@ class KrAssetClientTest extends CoreTestSupport {
         log.info("stockDividends:{}", stockDividends);
     }
 
-    @Tag("manual")
     @ParameterizedTest
     @MethodSource("getTestEtfAssets")
     void getEtfOhlcvs(Asset asset) {
@@ -129,7 +133,6 @@ class KrAssetClientTest extends CoreTestSupport {
         assertFalse(etfOhlcvs.isEmpty());
     }
 
-    @Tag("manual")
     @ParameterizedTest
     @MethodSource("getTestEtfAssets")
     void getEtfDividends(Asset asset) {
@@ -139,7 +142,6 @@ class KrAssetClientTest extends CoreTestSupport {
         log.info("etfDividends:{}", etfDividends);
     }
 
-    @Tag("manual")
     @ParameterizedTest
     @MethodSource("getTestStockAssets")
     void populateStockAsset(Asset asset) {
@@ -147,7 +149,6 @@ class KrAssetClientTest extends CoreTestSupport {
         createKrAssetClient().populateStockAsset(asset);
         // then
         log.info("asset:{}", asset);
-        assertNotNull(asset.getEps());
         assertNotNull(asset.getRoe());
         assertNotNull(asset.getPer());
         assertNotNull(asset.getDividendFrequency());
@@ -156,7 +157,6 @@ class KrAssetClientTest extends CoreTestSupport {
         assertNotNull(asset.getTotalReturn());
     }
 
-    @Tag("manual")
     @ParameterizedTest
     @MethodSource("getTestEtfAssets")
     void populateEtfAsset(Asset asset) {

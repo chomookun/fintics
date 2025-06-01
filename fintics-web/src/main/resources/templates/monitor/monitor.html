@@ -391,19 +391,23 @@
         </div>
         <div class="panel-content">
             <div class="display--grid grid-template-columns--12fr">
-                <div class="grid-column--span-6 s__grid-column--span-12" style="height:150px;">
+                <div class="grid-column--span-6 s__grid-column--span-12">
                     <div class="font-weight--bold">
                         <img class="icon" src="/static/image/icon-ohlcv.svg" alt="ohlcv">
                         <span>Daily</span>
                     </div>
-                    <canvas th:id="'tradeDailyOhlcvsChart-' + ${trade.tradeId}"></canvas>
+                    <div style="height:10rem;">
+                        <canvas th:id="'tradeDailyOhlcvsChart-' + ${trade.tradeId}"></canvas>
+                    </div>
                 </div>
-                <div class="grid-column--span-6 s__grid-column--span-12" style="height:150px;">
+                <div class="grid-column--span-6 s__grid-column--span-12">
                     <div class="font-weight--bold">
                         <img class="icon" src="/static/image/icon-ohlcv.svg" alt="ohlcv">
                         <span>Minute</span>
                     </div>
-                    <canvas th:id="'tradeMinuteOhlcvsChart-' + ${trade.tradeId}"></canvas>
+                    <div style="height:10rem;">
+                        <canvas th:id="'tradeMinuteOhlcvsChart-' + ${trade.tradeId}"></canvas>
+                    </div>
                 </div>
             </div>
             <div class="grid-column--span-12">

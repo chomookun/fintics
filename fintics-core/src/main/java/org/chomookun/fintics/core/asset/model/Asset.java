@@ -24,6 +24,10 @@ public class Asset {
 
     private String type;
 
+    private String sector;
+
+    private String industry;
+
     private boolean favorite;
 
     private LocalDate updatedDate;
@@ -63,6 +67,8 @@ public class Asset {
                 .market(assetEntity.getMarket())
                 .exchange(assetEntity.getExchange())
                 .type(assetEntity.getType())
+                .sector(assetEntity.getSector())
+                .industry(assetEntity.getIndustry())
                 .favorite(assetEntity.isFavorite())
                 .updatedDate(assetEntity.getUpdatedDate())
                 .price(assetEntity.getPrice())
