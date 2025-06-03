@@ -93,8 +93,8 @@ class UsAssetClientTest extends CoreTestSupport {
                         .type("ETF")
                         .build(),
                 Asset.builder()
-                        .assetId("US.RDVI")
-                        .name("FT Vest Rising Dividend Achievers Target Income ETF")
+                        .assetId("US.QQQ")
+                        .name("Invesco QQQ Trust Series 1")
                         .market("US")
                         .type("ETF")
                         .build()
