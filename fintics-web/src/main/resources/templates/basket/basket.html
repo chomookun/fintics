@@ -122,16 +122,21 @@
             </h2>
         </div>
         <div class="panel-content">
-            <form onsubmit="return false;" class="display--flex flex-wrap--wrap gap--1em justify-content--space-between">
-                <div class="display--flex">
-                    <div class="display--flex flex-wrap--nowrap gap--1px">
+            <form onsubmit="return false;" class="display--flex flex-wrap--wrap gap--1px justify-content--space-between">
+                <div class="s__width--100">
+                    <div class="display--flex flex-wrap--nowrap gap--1px s__width--100">
                         <label class="flex--1">
-                            <select data-duice-bind="basketSearch" data-duice-property="key">
+                            <select data-duice-bind="basketSearch"
+                                    data-duice-property="key"
+                                    class="width--100">
                                 <option value="name" data-th-text="#{fintics.core.basket.Basket.name}"></option>
                             </select>
                         </label>
                         <label class="flex--2">
-                            <input type="text" data-duice-bind="basketSearch" data-duice-property="value"
+                            <input type="text"
+                                   data-duice-bind="basketSearch"
+                                   data-duice-property="value"
+                                   class="width--100"
                                    th:placeholder="#{web.global.keyword}"/>
                         </label>
                     </div>
@@ -149,16 +154,6 @@
             </form>
             <div class="box overflow--auto">
                 <table class="table width--100 border--none">
-                    <colgroup>
-                        <col style="width:5rem;"/>
-                        <col/>
-                        <col/>
-                        <col/>
-                        <col/>
-                        <col/>
-                        <col/>
-                        <col style="width:5rem;"/>
-                    </colgroup>
                     <thead>
                     <tr>
                         <th data-th-text="#{web.global.no}"></th>
@@ -181,7 +176,7 @@
                                   class="number">
                             </span>
                         </td>
-                        <td>
+                        <td class="white-space--nowrap">
                             <a href="javascript:void(0);"
                                onclick="getBasket(this.dataset.basketId);"
                                data-duice-bind="basket"
@@ -196,9 +191,11 @@
                             <span data-duice-bind="basket" data-duice-property="basketAssets.length" class="badge"></span>
                         </td>
                         <td class="text-align--center">
-                            <input type="checkbox" data-duice-bind="basket" data-duice-property="rebalanceEnabled"/>
+                            <label>
+                                <input type="checkbox" data-duice-bind="basket" data-duice-property="rebalanceEnabled"/>
+                            </label>
                         </td>
-                        <td>
+                        <td class="white-space--nowrap">
                             <span data-duice-bind="basket" data-duice-property="rebalanceSchedule" class="code"></span>
                         </td>
                         <td class="text-align--center">
