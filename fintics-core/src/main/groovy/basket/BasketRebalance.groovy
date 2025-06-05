@@ -201,7 +201,7 @@ List<Item> finalItems = candidateItems.findAll {
     score += dividendYield      // 배당률 에 가중치
 
     // score / PER 로 저평가 회사 우선
-    it.score = (score / per).toBigDecimal().setScale(2, RoundingMode.HALF_UP)
+    it.score = (score / per).toBigDecimal().setScale(4, RoundingMode.HALF_UP)
 
     // adds remark
     it.remark = "ROE:${roe}, PER:${per}, dividendYield:${dividendYield}, etc:${it.remark}"
