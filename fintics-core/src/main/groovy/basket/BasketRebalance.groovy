@@ -197,8 +197,8 @@ List<Item> finalItems = candidateItems.findAll {
 
     // score
     def score = BigDecimal.ZERO
-    score += roe                // 기본 ROE
-    score += dividendYield      // 배당률 에 가중치
+    score += roe                            // 기본 ROE
+    score += dividendYield.min(roe/2)       // 배당률 가중치 (배당성향이 50% 이상인 경우는 50% 까지만 가중치 적용)
 
     // score / PER 로 저평가 회사 우선
     it.score = (score / per).toBigDecimal().setScale(4, RoundingMode.HALF_UP)
