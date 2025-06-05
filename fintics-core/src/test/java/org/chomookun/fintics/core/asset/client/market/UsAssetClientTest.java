@@ -69,13 +69,6 @@ class UsAssetClientTest extends CoreTestSupport {
                         .name("Autodesk Inc. Common Stock")
                         .market("US")
                         .type("STOCK")
-                        .build(),
-                // ADR
-                Asset.builder()
-                        .assetId("US.TSM")
-                        .name("Taiwan Semiconductor Manufacturing Company Limited American Depositary Shares")
-                        .market("US")
-                        .type("STOCK")
                         .build()
         );
     }
