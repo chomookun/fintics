@@ -544,9 +544,9 @@ tradeAsset.setMessage(message)
 //===============================
 // execute strategy
 //===============================
-// macro strategy
-macroTripleScreenStrategy.getResult(maxPosition, minPosition).ifPresent {
-    log.info("macro strategy result: {}", it)
+// micro strategy
+microTripleScreenStrategy.getResult(maxPosition, minPosition).ifPresent {
+    log.info("micro strategy result: {}", it)
     strategyResult = it
 }
 // meso strategy
@@ -554,9 +554,9 @@ mesoTripleScreenStrategy.getResult(maxPosition, minPosition).ifPresent {
     log.info("meso strategy result: {}", it)
     strategyResult = it
 }
-// micro strategy
-microTripleScreenStrategy.getResult(maxPosition, minPosition).ifPresent {
-    log.info("micro strategy result: {}", it)
+// macro strategy
+macroTripleScreenStrategy.getResult(maxPosition, minPosition).ifPresent {
+    log.info("macro strategy result: {}", it)
     strategyResult = it
 }
 
