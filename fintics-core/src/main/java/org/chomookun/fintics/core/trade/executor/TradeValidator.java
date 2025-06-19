@@ -30,7 +30,7 @@ public class TradeValidator {
         Objects.requireNonNull(orderBook.getBidPrice(), "bidPrice is required");
 
         // compares bid, ask price
-        if (orderBook.getBidPrice().compareTo(orderBook.getAskPrice()) >= 0) {
+        if (orderBook.getBidPrice().compareTo(orderBook.getAskPrice()) > 0) {
             throw new IllegalArgumentException(String.format("The bidPrice[%s] is greater than the askPrice[%s].", orderBook.getBidPrice(), orderBook.getAskPrice()));
         }
 
