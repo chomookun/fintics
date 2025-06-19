@@ -126,12 +126,14 @@ public class KisUsBrokerClient extends BrokerClient {
         // check holiday
         Set<LocalDate> fixedHolidays = new HashSet<>();
         int year = datetime.getYear();
-        fixedHolidays.add(LocalDate.of(year, Month.JANUARY, 1)); // New Year's Day
-        fixedHolidays.add(LocalDate.of(year, Month.JULY, 4));    // Independence Day
-        fixedHolidays.add(LocalDate.of(year, Month.DECEMBER, 25)); // Christmas Day
+        fixedHolidays.add(LocalDate.of(year, Month.JANUARY, 1));    // New Year's Day
+        fixedHolidays.add(LocalDate.of(year, Month.JUNE, 19));      // Juneteenth National Independence Day
+        fixedHolidays.add(LocalDate.of(year, Month.JULY, 4));       // Independence Day
+        fixedHolidays.add(LocalDate.of(year, Month.DECEMBER, 25));  // Christmas Day
         if (fixedHolidays.contains(datetime.toLocalDate())) {
             return false;
         }
+        // TODO checks ics file for holidays
         // default
         return true;
     }
