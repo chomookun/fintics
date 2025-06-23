@@ -532,7 +532,7 @@ public class TradeExecutor {
                 Order order = Order.builder()
                         .orderAt(Instant.now())
                         .type(Order.Type.SELL)
-                        .kind(Order.Kind.MARKET)
+                        .kind(Order.Kind.LIMIT)     // 해외의 경우 시장가 주문 시 체결이 안되는 경우가 많음
                         .assetId(cashAsset.getAssetId())
                         .quantity(cashAssetSellQuantity)
                         .price(cashAssetAskPrice)
@@ -574,7 +574,7 @@ public class TradeExecutor {
             Order order = Order.builder()
                     .orderAt(Instant.now())
                     .type(Order.Type.BUY)
-                    .kind(Order.Kind.MARKET)
+                    .kind(Order.Kind.LIMIT)     // 해외의 경우 시장가 주문 시 체결이 안되는 경우가 많음
                     .assetId(cashAsset.getAssetId())
                     .quantity(cashAssetBuyQuantity)
                     .price(cashAssetBuyPrice)
