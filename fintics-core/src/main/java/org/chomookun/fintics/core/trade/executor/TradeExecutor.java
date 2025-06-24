@@ -520,7 +520,9 @@ public class TradeExecutor {
                 .orElseThrow();
         OrderBook cashAssetOrderBook = brokerClient.getOrderBook(cashAsset);
         BigDecimal cashAssetAskPrice = cashAssetOrderBook.getAskPrice();
-        BigDecimal cashAssetSellQuantity = insufficientAmount.divide(cashAssetAskPrice, MathContext.DECIMAL32)
+        BigDecimal cashAssetTickPrice = cashAssetOrderBook.getTickPrice();
+        BigDecimal cashAssetSellPrice = cashAssetAskPrice.subtract(cashAssetTickPrice);
+        BigDecimal cashAssetSellQuantity = insufficientAmount.divide(cashAssetSellPrice, MathContext.DECIMAL32)
                 .setScale(0, RoundingMode.CEILING);
 
         // 현재 보유 수량 체크 후 필요한 수량 이상인 경우 매도
@@ -535,7 +537,7 @@ public class TradeExecutor {
                         .kind(Order.Kind.LIMIT)     // 해외의 경우 시장가 주문 시 체결이 안되는 경우가 많음
                         .assetId(cashAsset.getAssetId())
                         .quantity(cashAssetSellQuantity)
-                        .price(cashAssetAskPrice)
+                        .price(cashAssetSellPrice)
                         .build();
                 brokerClient.submitOrder(cashAsset, order);
 
@@ -565,7 +567,9 @@ public class TradeExecutor {
         Asset cashAsset = assetService.getAsset(trade.getCashAssetId())
                 .orElseThrow();
         OrderBook cashAssetOrderBook = brokerClient.getOrderBook(cashAsset);
-        BigDecimal cashAssetBuyPrice = cashAssetOrderBook.getAskPrice();
+        BigDecimal cashAssetBidPrice = cashAssetOrderBook.getBidPrice();
+        BigDecimal cashAssetTickPrice = cashAssetOrderBook.getTickPrice();
+        BigDecimal cashAssetBuyPrice = cashAssetBidPrice.add(cashAssetTickPrice);
         BigDecimal cashAssetBuyQuantity = overflowAmount.divide(cashAssetBuyPrice, MathContext.DECIMAL32)
                 .setScale(0, RoundingMode.DOWN);
 
