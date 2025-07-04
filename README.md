@@ -135,10 +135,10 @@ Growth 35% + Dividend 35% + Bond 15% + Cash 15%
 
 | Symbol   | Name                                         | Holding weight | Reference |
 |----------|----------------------------------------------|----------------|----------------------------------------------------------------------------|
-| **DGRW** | WisdomTree U.S. Quality Dividend Growth Fund | 8.75% | [Nasdaq](https://www.nasdaq.com/market-activity/etf/dgrw/dividend-history) |
-| **BALI** | iShares Advantage Large Cap Income ETF | 7% | [Nasdaq](https://www.nasdaq.com/market-activity/etf/bali/dividend-history) |
-| **DIVO** | Amplify CPW Enhanced Dividend Income ETF | 8.75% | [Nasdaq](https://www.nasdaq.com/market-activity/etf/divo/dividend-history) |
-| **JEPI** | JPMorgan Equity Premium Income ETF | 8.75% | [Nasdaq](https://www.nasdaq.com/market-activity/etf/jepi/dividend-history) |
+| **DGRW** | WisdomTree U.S. Quality Dividend Growth Fund | 8.75%          | [Nasdaq](https://www.nasdaq.com/market-activity/etf/dgrw/dividend-history) |
+| **BALI** | iShares Advantage Large Cap Income ETF | 8.75%          | [Nasdaq](https://www.nasdaq.com/market-activity/etf/bali/dividend-history) |
+| **DIVO** | Amplify CPW Enhanced Dividend Income ETF | 8.75%          | [Nasdaq](https://www.nasdaq.com/market-activity/etf/divo/dividend-history) |
+| **JEPI** | JPMorgan Equity Premium Income ETF | 8.75%          | [Nasdaq](https://www.nasdaq.com/market-activity/etf/jepi/dividend-history) |
 
 #### [15%] Bond ETF
 
