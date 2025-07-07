@@ -155,7 +155,7 @@ class Analyzer {
     Score getVolatilityScore() {
         def score = new Score()
         // dmi
-        score.dmiAdx = dmis.take(3).any { it.adx >= 25 } ? 100 : 0
+        score.dmiAdx = dmis.take(3).any { it.adx >= 20 } ? 100 : 0
         // return
         return score
     }
