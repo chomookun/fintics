@@ -40,7 +40,11 @@ public class Asset {
 
     private BigDecimal eps;
 
+    private BigDecimal epsGrowth;
+
     private BigDecimal roe;
+
+    private BigDecimal roeGrowth;
 
     private BigDecimal per;
 
@@ -75,6 +79,7 @@ public class Asset {
                 .volume(assetEntity.getVolume())
                 .marketCap(assetEntity.getMarketCap())
                 .eps(assetEntity.getEps())
+                .epsGrowth(assetEntity.getEpsGrowth())
                 .roe(assetEntity.getRoe())
                 .per(assetEntity.getPer())
                 .dividendFrequency(assetEntity.getDividendFrequency())

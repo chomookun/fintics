@@ -248,7 +248,9 @@ public class UsAssetClient extends AssetClient implements NasdaqClientSupport, Y
         BigDecimal totalEquity = null;
         BigDecimal netIncome = null;
         BigDecimal eps = null;
+        BigDecimal epsGrowth = null;
         BigDecimal roe = null;
+        BigDecimal roeGrowth = null;
         BigDecimal per = null;
         BigDecimal dividendYield = null;
         int dividendFrequency;
@@ -383,7 +385,9 @@ public class UsAssetClient extends AssetClient implements NasdaqClientSupport, Y
         asset.setVolume(volume);
         asset.setMarketCap(marketCap);
         asset.setEps(eps);
+        asset.setEpsGrowth(epsGrowth);  // nasdaq does not support previous yoy eps
         asset.setRoe(roe);
+        asset.setRoeGrowth(roeGrowth);  // nasdaq does not support previous yoy roe
         asset.setPer(per);
         asset.setDividendFrequency(dividendFrequency);
         asset.setDividendYield(dividendYield);

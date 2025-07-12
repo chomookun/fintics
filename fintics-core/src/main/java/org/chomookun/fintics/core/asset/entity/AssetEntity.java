@@ -71,9 +71,17 @@ public class AssetEntity extends BaseEntity {
     @Comment("EPS")
     private BigDecimal eps;
 
+    @Column(name = "eps_growth", scale = 2)
+    @Comment("EPS Growth")
+    private BigDecimal epsGrowth;
+
     @Column(name = "roe", scale = 2)
     @Comment("ROE")
     private BigDecimal roe;
+
+    @Column(name= "roe_growth", scale = 2)
+    @Comment("ROE Growth")
+    private BigDecimal roeGrowth;
 
     @Column(name = "per", scale = 2)
     @Comment("PER")

@@ -45,7 +45,11 @@ public class AssetResponse {
 
     private BigDecimal eps;
 
+    private BigDecimal epsGrowth;
+
     private BigDecimal roe;
+
+    private BigDecimal roeGrowth;
 
     private BigDecimal per;
 
@@ -89,7 +93,9 @@ public class AssetResponse {
                 .volume(asset.getVolume())
                 .marketCap(asset.getMarketCap())
                 .eps(asset.getEps())
+                .epsGrowth(asset.getEpsGrowth())
                 .roe(asset.getRoe())
+                .roeGrowth(asset.getRoeGrowth())
                 .per(asset.getPer())
                 .dividendFrequency(asset.getDividendFrequency())
                 .dividendYield(asset.getDividendYield())

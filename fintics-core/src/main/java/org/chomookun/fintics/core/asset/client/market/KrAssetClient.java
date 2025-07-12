@@ -238,7 +238,11 @@ public class KrAssetClient extends AssetClient implements SeibroClientSupport {
         BigDecimal volume = null;
         BigDecimal marketCap = asset.getMarketCap();
         BigDecimal eps = null;
+        BigDecimal previousEps = null;
+        BigDecimal epsGrowth = null;
         BigDecimal roe = null;
+        BigDecimal previousRoe = null;
+        BigDecimal roeGrowth = null;
         BigDecimal per = null;
         int dividendFrequency = 0;
         BigDecimal dividendYield = BigDecimal.ZERO;
@@ -276,22 +280,34 @@ public class KrAssetClient extends AssetClient implements SeibroClientSupport {
                             row.get("HB").startsWith("EPS"))
                     .findFirst().orElseThrow();
             List<BigDecimal> ttmEpses = new ArrayList<>();
+            List<BigDecimal> previousTtmEpses = new ArrayList<>();
             for (int i = 1; i < 20; i++ ) {
                 String name = String.format("A%s", i);
                 String value = epsRow.get(name);
                 if (i%5 == 1) {     // 1, 6, 11, 16는 연간 합산 자료임 (왜 이따구..)
                     continue;
                 }
-                if (value != null && value.trim().length() > 0) {
+                if (value == null || value.trim().length() < 1) {
+                    continue;
+                }
+                // ttmEps
+                if (ttmEpses.size() < 4) {
                     ttmEpses.add(convertStringToNumber(value, BigDecimal.ZERO));
                 }
-                if (ttmEpses.size() >= 4) {
-                    break;
+                // previous ttmEps
+                else {
+                    if (previousTtmEpses.size() < 4) {
+                        previousTtmEpses.add(convertStringToNumber(value, BigDecimal.ZERO));
+                    }
                 }
             }
             eps = ttmEpses.stream()
                     .reduce(BigDecimal.ZERO, BigDecimal::add)
                     .setScale(2, RoundingMode.FLOOR);
+            previousEps = previousTtmEpses.stream()
+                    .reduce(BigDecimal.ZERO, BigDecimal::add)
+                    .setScale(2, RoundingMode.FLOOR);
+            epsGrowth = eps.subtract(previousEps);
         } catch (Exception e) {
             throw new RuntimeException(e);
         }
@@ -324,23 +340,33 @@ public class KrAssetClient extends AssetClient implements SeibroClientSupport {
                             row.get("HB").contentEquals("ROE"))
                     .findFirst().orElseThrow();
             List<BigDecimal> ttmRoes = new ArrayList<>();
+            List<BigDecimal> previousTtmRoes = new ArrayList<>();
             for (int i = 1; i < 20; i++ ) {
                 String name = String.format("A%s", i);
                 String value = roeRow.get(name);
                 if (i%5 == 1) {     // 1, 6, 11, 16는 연간 합산 자료임 (왜 이따구..)
                     continue;
                 }
-                if (value != null && value.trim().length() > 0) {
-                    ttmRoes.add(convertStringToNumber(value, BigDecimal.ZERO));
+                if (value == null || value.trim().length() < 1) {
+                    continue;
                 }
-                if (ttmRoes.size() >= 4) {
-                    break;
+                if (ttmRoes.size() < 4) {
+                    ttmRoes.add(convertStringToNumber(value, BigDecimal.ZERO));
+                } else {
+                    if (previousTtmRoes.size() < 4) {
+                        previousTtmRoes.add(convertStringToNumber(value, BigDecimal.ZERO));
+                    }
                 }
             }
             roe = ttmRoes.stream()
                     .reduce(BigDecimal.ZERO, BigDecimal::add)
                     .divide(BigDecimal.valueOf(ttmRoes.size()), MathContext.DECIMAL32)
                     .setScale(2, RoundingMode.FLOOR);
+            previousRoe = previousTtmRoes.stream()
+                    .reduce(BigDecimal.ZERO, BigDecimal::add)
+                    .divide(BigDecimal.valueOf(previousTtmRoes.size()), MathContext.DECIMAL32)
+                    .setScale(2, RoundingMode.FLOOR);
+            roeGrowth = roe.subtract(previousRoe);
         } catch (Exception e) {
             throw new RuntimeException(e);
         }
@@ -379,7 +405,9 @@ public class KrAssetClient extends AssetClient implements SeibroClientSupport {
         asset.setVolume(volume);
         asset.setMarketCap(marketCap);
         asset.setEps(eps);
+        asset.setEpsGrowth(epsGrowth);
         asset.setRoe(roe);
+        asset.setRoeGrowth(roeGrowth);
         asset.setPer(per);
         asset.setDividendFrequency(dividendFrequency);
         asset.setDividendYield(dividendYield);

@@ -121,7 +121,9 @@ public class AssetCollector extends AbstractTask {
                             assetEntity.setVolume(asset.getVolume());
                             assetEntity.setMarketCap(asset.getMarketCap());
                             assetEntity.setEps(asset.getEps());
+                            assetEntity.setEpsGrowth(asset.getEpsGrowth());
                             assetEntity.setRoe(asset.getRoe());
+                            assetEntity.setRoeGrowth(asset.getRoeGrowth());
                             assetEntity.setPer(asset.getPer());
                             assetEntity.setDividendFrequency(asset.getDividendFrequency());
                             assetEntity.setDividendYield(asset.getDividendYield());

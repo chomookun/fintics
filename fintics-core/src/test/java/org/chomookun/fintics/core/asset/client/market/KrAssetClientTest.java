@@ -47,6 +47,13 @@ class KrAssetClientTest extends CoreTestSupport {
                         .market("KR")
                         .type("STOCK")
                         .marketCap(BigDecimal.TEN)
+                        .build(),
+                Asset.builder()
+                        .assetId("KR.000660")
+                        .name("SK Hynix")
+                        .market("KR")
+                        .type("STOCK")
+                        .marketCap(BigDecimal.TEN)
                         .build()
         );
     }
