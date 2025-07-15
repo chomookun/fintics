@@ -126,10 +126,9 @@ Growth 35% + Dividend 35% + Bond 15% + Cash 15%
 
 | Symbol   | Name                                             | Holding weight | Reference                                                                  |
 |----------|--------------------------------------------------|----------------|----------------------------------------------------------------------------|
-| **JEPQ** | JPMorgan Nasdaq Equity Premium Income ETF        | 8.75%          | [Nasdaq](https://www.nasdaq.com/market-activity/etf/jepq/dividend-history) |
-| **GPIQ** | Goldman Sachs Nasdaq-100 Core Premium Income ETF | 8.75%          | [Nasdaq](https://www.nasdaq.com/market-activity/etf/gpiq/dividend-history) |
-| **IQQQ** | ProShares Nasdaq-100 High Income ETF             | 8.75%          | [Nasdaq](https://www.nasdaq.com/market-activity/etf/iqqq/dividend-history) |
-| **QDVO** | Amplify CWP Growth & Income ETF | 8.75%          | [Nasdaq](https://www.nasdaq.com/market-activity/etf/gdvo/dividend-history) |
+| **JEPQ** | JPMorgan Nasdaq Equity Premium Income ETF        | 11.66%         | [Nasdaq](https://www.nasdaq.com/market-activity/etf/jepq/dividend-history) |
+| **GPIQ** | Goldman Sachs Nasdaq-100 Core Premium Income ETF | 11.66%         | [Nasdaq](https://www.nasdaq.com/market-activity/etf/gpiq/dividend-history) |
+| **QDVO** | Amplify CWP Growth & Income ETF | 11.66%         | [Nasdaq](https://www.nasdaq.com/market-activity/etf/gdvo/dividend-history) |
 
 #### [35%] Dividend Equity ETF
 
@@ -178,11 +177,12 @@ US Growth 17.5% + US Dividend 17.5% + KR Growth 17.5% + KR Dividend 17.5% + US B
 
 #### [17.5%] KR Growth Equity ETF
 
-| Symbol | Name | Holding weight | Reference |
-|------|--|----------------|-------------------------------------|
-| **472150** | TIGER 배당커버드콜액티브 | 5.83%          | [K-ETF](https://www.k-etf.com/etf/472150) |
-| **498400** | KODEX 200타겟위클리커버드콜 | 5.83%          | [K-ETF](https://www.k-etf.com/etf/498400) |
-| **496080** | TIGER 코리아밸류업 | 5.83%          | [K-ETF](https://www.k-etf.com/etf/496080) |
+| Symbol | Name               | Holding weight | Reference |
+|------|--------------------|----------------|-------------------------------------|
+| **472150** | TIGER 배당커버드콜액티브    | 4.37%          | [K-ETF](https://www.k-etf.com/etf/472150) |
+| **498400** | KODEX 200타겟위클리커버드콜 | 4.37%          | [K-ETF](https://www.k-etf.com/etf/498400) |
+| **496080** | TIGER 코리아밸류업       | 4.37%          | [K-ETF](https://www.k-etf.com/etf/496080) |
+| **475720** | RISE 200위클리커버드콜 | 4.37%          | [K-ETF](https://www.k-etf.com/etf/475720) |
 
 #### [17.5%] KR Dividend Equity ETF
 
