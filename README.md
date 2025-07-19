@@ -179,10 +179,9 @@ US Growth 17.5% + US Dividend 17.5% + KR Growth 17.5% + KR Dividend 17.5% + US B
 
 | Symbol | Name               | Holding weight | Reference |
 |------|--------------------|----------------|-------------------------------------|
-| **472150** | TIGER 배당커버드콜액티브    | 4.37%          | [K-ETF](https://www.k-etf.com/etf/472150) |
-| **498400** | KODEX 200타겟위클리커버드콜 | 4.37%          | [K-ETF](https://www.k-etf.com/etf/498400) |
-| **496080** | TIGER 코리아밸류업       | 4.37%          | [K-ETF](https://www.k-etf.com/etf/496080) |
-| **475720** | RISE 200위클리커버드콜 | 4.37%          | [K-ETF](https://www.k-etf.com/etf/475720) |
+| **472150** | TIGER 배당커버드콜액티브    | 5.83%          | [K-ETF](https://www.k-etf.com/etf/472150) |
+| **498400** | KODEX 200타겟위클리커버드콜 | 5.83%          | [K-ETF](https://www.k-etf.com/etf/498400) |
+| **496080** | TIGER 코리아밸류업       | 5.83%          | [K-ETF](https://www.k-etf.com/etf/496080) |
 
 #### [17.5%] KR Dividend Equity ETF
 
