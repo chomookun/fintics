@@ -103,7 +103,7 @@ def etfSymbols = assetService.getAssets(AssetSearch.builder()
         .favorite(true)
         .build(), Pageable.unpaged())
         .getContent()
-        .collect{it.getSymbol()};
+        .collect{it.getSymbol()}
 etfSymbols.each{
     def etfItems = getEtfItems(market, it)
     println ("etfItems[${it}]: ${etfItems}")
@@ -143,7 +143,7 @@ candidateItems = candidateItems
                 .symbol(item.symbol)
                 .name(item.name)
                 .remark(remark)
-                .build();
+                .build()
         }
 log.info("candidateItems: ${candidateItems}")
 
