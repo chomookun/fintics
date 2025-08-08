@@ -106,7 +106,7 @@ docker run -rm -p 8080:8080 docker.io/chomoookun/fintics-web:latest
 
 ---
 
-## 💼 My passive EMP(ETF Managed Portfolio)
+## 💼 My Passive EMP(ETF Managed Portfolio)
 
 ### Concept
 - Seeking a Balance Between Growth and Dividend
@@ -119,7 +119,7 @@ docker run -rm -p 8080:8080 docker.io/chomoookun/fintics-web:latest
 
 ps. Technical Indicator: RSI, CCI, Stochastic Slow, Williams %R 
 
-### 1. US Market (50% of passive)
+### 1. US Market (50% of Passive EMP)
 Growth 35% + Dividend 35% + Bond 15% + Cash 15%
 
 #### [35%] Growth Equity ETF
@@ -152,7 +152,7 @@ Growth 35% + Dividend 35% + Bond 15% + Cash 15%
 | **IGLD** | FT Vest Gold Strategy Target Income ETF | 2.14%          | [Nasdaq](https://www.nasdaq.com/market-activity/etf/igld/dividend-history) |
 
 
-### 2. KR Market (50% of passive)
+### 2. KR Market (50% of Passive EMP)
 US Growth 17.5% + US Dividend 17.5% + KR Growth 17.5% + KR Dividend 17.5% + US Bond 15% + Cash 15%
 
 #### [17.5%] US Growth Equity ETF
