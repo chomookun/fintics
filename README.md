@@ -159,21 +159,17 @@ US Growth 17.5% + US Dividend 17.5% + KR Growth 17.5% + KR Dividend 17.5% + US B
 
 | Symbol     | Name | Holding weight | Reference |
 |------------|----|----------------|--------------------------------------------|
-| **474220** | TIGER 미국테크TOP10타겟커버드콜 | 4.37% | [K-ETF](https://www.k-etf.com/etf/474220) |
-| **486290** | TIGER 미국나스닥100타겟데일리커버드콜 | 4.37% | [K-ETF](https://www.k-etf.com/etf/486290) |
-| **494300** | KODEX 미국나스닥100데일리커버드콜OTM | 4.37% | [K-ETF](https://www.k-etf.com/etf/494300) |
-| **491620** | RISE 미국테크100데일리고정커버드콜 | 4.37% | [K-ETF](https://www.k-etf.com/etf/491620)  |
+| **474220** | TIGER 미국테크TOP10타겟커버드콜 | 8.75%          | [K-ETF](https://www.k-etf.com/etf/474220) |
+| **486290** | TIGER 미국나스닥100타겟데일리커버드콜 | 8.75%          | [K-ETF](https://www.k-etf.com/etf/486290) |
 
 #### [17.5%] US Dividend Equity ETF
 
-| Symbol | Name | Holding weight | Reference                                |
-|------|------|----------------|------------------------------------------|
-| **441640** | KODEX 미국배당커버드콜액티브 | 2.91%          | [K-ETF](https://www.k-etf.com/etf/441640) |
-| **483290** | KODEX 미국배당다우존스타겟커버드콜 | 2.91%          | [K-ETF](https://www.k-etf.com/etf/483290) |
-| **494420** | PLUS 미국배당증가성장주데일리커버드콜 | 2.91%          | [K-ETF](https://www.k-etf.com/etf/494420) |
-| **490600** | RISE 미국배당100데일리고정커버드콜 | 2.91%          | [K-ETF](https://www.k-etf.com/etf/490600) |
-| **0036D0** | TIMEFOLIO 미국배당다우존스액티브 | 2.91%          | [K-ETF](https://www.k-etf.com/etf/0036D0)  |
-| **0046Y0** | ACE 미국배당퀄리티 | 2.91%          | [K-ETF](https://www.k-etf.com/etf/0046Y0) |
+| Symbol | Name | Holding weight | Reference                            |
+|------|--|----------------|--------------------------------------|
+| **441640** | KODEX 미국배당커버드콜액티브 | 4.37%          | [K-ETF](https://www.k-etf.com/etf/441640) |
+| **0046Y0** | ACE 미국배당퀄리티 | 4.37%          | [K-ETF](https://www.k-etf.com/etf/0046Y0) |
+| **0049M0** | ACE 미국배당퀄리티+커버드콜액티브 | 4.37%          | [K-ETF](https://www.k-etf.com/etf/0049M0)  |
+| **0036D0** | TIMEFOLIO 미국배당다우존스액티브 | 4.37%          | [K-ETF](https://www.k-etf.com/etf/0036D0) |
 
 #### [17.5%] KR Growth Equity ETF
 
@@ -187,11 +183,10 @@ US Growth 17.5% + US Dividend 17.5% + KR Growth 17.5% + KR Dividend 17.5% + US B
 
 | Symbol | Name                     | Holding weight | Reference |
 |------|--------------------------|----------------|-------------------------------------|
-| **441800** | TIMEFOLIO Korea플러스배당액티브  | 3.5% | [K-ETF](https://www.k-etf.com/etf/441800) |
-| **161510** | PLUS 고배당주                | 3.5% | [K-ETF](https://www.k-etf.com/etf/161510) |
-| **0018C0** | PLUS 고배당주위클리고정커버드콜       | 3.5% | [K-ETF](https://www.k-etf.com/etf/0018C0) |
-| **498410** | KODEX 금융고배당TOP10타겟위클리커버드콜 | 3.5% | [K-ETF](https://www.k-etf.com/etf/498410) |
-| **0052D0** | TIGER 코리아배당다우존스 | 3.5% | [K-ETF](https://www.k-etf.com/etf/0052D0) |
+| **441800** | TIMEFOLIO Korea플러스배당액티브  | 4.37%          | [K-ETF](https://www.k-etf.com/etf/441800) |
+| **161510** | PLUS 고배당주                | 4.37%          | [K-ETF](https://www.k-etf.com/etf/161510) |
+| **0018C0** | PLUS 고배당주위클리고정커버드콜       | 4.37%          | [K-ETF](https://www.k-etf.com/etf/0018C0) |
+| **0052D0** | TIGER 코리아배당다우존스 | 4.37%          | [K-ETF](https://www.k-etf.com/etf/0052D0) |
 
 #### [15%] US Bond ETF
 
