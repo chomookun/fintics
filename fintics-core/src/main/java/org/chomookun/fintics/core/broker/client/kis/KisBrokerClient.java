@@ -372,6 +372,10 @@ public class KisBrokerClient extends BrokerClient {
     BigDecimal getTickPrice(Asset asset, BigDecimal price) throws InterruptedException {
         // etf, etn, elw
         if(Arrays.asList("ETF","ETN","ELW").contains(asset.getType())) {
+            // 한국거래소 유가증권·파생상품시장 업무규정 시행세칙 개정에 따라 2023년 12월 11일부터 2000원 미만 ETF, ETN도 틱 사이즈는 기존 5원에서 1원으로 변경
+            if (price.compareTo(BigDecimal.valueOf(2_000)) <= 0) {
+                return BigDecimal.valueOf(1);
+            }
             return BigDecimal.valueOf(5);
         }
         // default fallback (stock)
