@@ -60,3 +60,8 @@ build
 vendor
 .bundle
 _site
+
+# eclipse
+**/.settings
+**/.project
+**/.classpath
