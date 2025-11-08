@@ -281,9 +281,10 @@ def getRankEtfItems(market, etfSymbols) {
 
         // score
         item.score = [
-                countScore,
-                weightScore,
-                valuationScore
+                 countScore
+                ,weightScore
+                // valuationScore 는 일단 제외 (종목 순환이 너무 빠름)
+                //,valuationScore
         ].average() as BigDecimal
 
         // remark
