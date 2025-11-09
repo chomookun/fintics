@@ -2,6 +2,8 @@ package org.chomookun.fintics.daemon.basket;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.chomookun.arch4j.core.execution.ExecutionService;
+import org.chomookun.arch4j.core.execution.model.Execution;
 import org.chomookun.arch4j.core.notification.NotificationService;
 import org.chomookun.fintics.core.FinticsCoreProperties;
 import org.chomookun.fintics.core.basket.rebalance.BasketRebalanceResult;
@@ -21,6 +23,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import java.util.concurrent.ScheduledFuture;
+import java.util.concurrent.atomic.AtomicLong;
 
 @Component
 @RequiredArgsConstructor
@@ -40,6 +43,8 @@ public class BasketRebalanceScheduler {
     private final FinticsCoreProperties finticsProperties;
 
     private final NotificationService notificationService;
+
+    private final ExecutionService executionService;
 
     /**
      * synchronizes scheduler with database
@@ -119,15 +124,23 @@ public class BasketRebalanceScheduler {
      */
     private synchronized void executeTask(String basketId) {
         StringBuilder stringBuilder = new StringBuilder();
+        Execution execution = Execution.builder()
+                .taskName(String.format("BasketRebalanceScheduler[%s]", basketId))
+                .build();
         try {
             Basket basket = basketService.getBasket(basketId).orElseThrow();
+            execution = executionService.start(String.format("BasketRebalanceScheduler[%s]", basket.getName()));
             stringBuilder.append(String.format("Basket rebalance completed - %s", basket.getName())).append('\n');
             BasketRebalanceTask basketRebalanceTask = basketRebalanceTaskFactory.getObject(basket);
             BasketRebalanceResult basketRebalanceResult = basketRebalanceTask.execute();
             stringBuilder.append(basketRebalanceResult.toFormattedString());
+            execution.setTotalCount(new AtomicLong(basketRebalanceResult.getBasketRebalanceAssets().size()));
+            execution.setSuccessCount(new AtomicLong(basketRebalanceResult.getBasketRebalanceAssets().size()));
+            executionService.success(execution);
         } catch (Throwable e) {
             log.warn(e.getMessage(), e);
             stringBuilder.append(e.getMessage());
+            executionService.fail(execution, e);
         } finally {
             sendSystemNotification(stringBuilder.toString());
         }
