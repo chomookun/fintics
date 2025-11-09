@@ -32,12 +32,64 @@ class GroovyBasketScriptRunnerTest extends CoreTestSupport {
                 .script(CoreTestUtil.readTestResourceAsString(this.getClass().getPackage(), "GroovyBasketScriptRunnerTest.groovy"))
                 .build();
         // when
-        GroovyBasketScriptRunner pythonBasketScriptRunner = GroovyBasketScriptRunner.builder()
+        GroovyBasketScriptRunner groovyBasketScriptRunner = GroovyBasketScriptRunner.builder()
                 .basket(basket)
                 .assetService(assetService)
                 .ohlcvService(ohlcvService)
                 .build();
-        List<BasketRebalanceAsset> basketRebalanceResults = pythonBasketScriptRunner.run();
+        List<BasketRebalanceAsset> basketRebalanceResults = groovyBasketScriptRunner.run();
+        // then
+        log.info("basketRebalanceResults: {}", basketRebalanceResults);
+    }
+
+    @Disabled
+    @Test
+    void runStockBasketRebalanceUs() {
+        // given
+        String script = CoreTestUtil.readFileAsString("src/main/scripts/basket/StockBasketRebalance.groovy");
+        String variables = "market=US\n" +
+                "growthHoldingCount=10\n" +
+                "growthHoldingWeight=3.5\n" +
+                "dividendHoldingCount=20\n" +
+                "dividendHoldingWeight=1.75\n";
+        Basket basket = Basket.builder()
+                .market("KR")
+                .script(script)
+                .variables(variables)
+                .build();
+        // when
+        GroovyBasketScriptRunner groovyBasketScriptRunner = GroovyBasketScriptRunner.builder()
+                .basket(basket)
+                .assetService(assetService)
+                .ohlcvService(ohlcvService)
+                .build();
+        List<BasketRebalanceAsset> basketRebalanceResults = groovyBasketScriptRunner.run();
+        // then
+        log.info("basketRebalanceResults: {}", basketRebalanceResults);
+    }
+
+    @Disabled
+    @Test
+    void runStockBasketRebalanceKr() {
+        // given
+        String script = CoreTestUtil.readFileAsString("src/main/scripts/basket/StockBasketRebalance.groovy");
+        String variables = "market=KR\n" +
+                "growthHoldingCount=10\n" +
+                "growthHoldingWeight=3.5\n" +
+                "dividendHoldingCount=20\n" +
+                "dividendHoldingWeight=1.75\n";
+        Basket basket = Basket.builder()
+                .market("KR")
+                .script(script)
+                .variables(variables)
+                .build();
+        // when
+        GroovyBasketScriptRunner groovyBasketScriptRunner = GroovyBasketScriptRunner.builder()
+                .basket(basket)
+                .assetService(assetService)
+                .ohlcvService(ohlcvService)
+                .build();
+        List<BasketRebalanceAsset> basketRebalanceResults = groovyBasketScriptRunner.run();
         // then
         log.info("basketRebalanceResults: {}", basketRebalanceResults);
     }

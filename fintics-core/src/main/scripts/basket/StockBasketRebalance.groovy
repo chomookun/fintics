@@ -103,6 +103,7 @@ static List<Item> getKrEtfItems(etfSymbol) {
 //=======================================
 // defines
 //=======================================
+log.info("== variables: ${variables}")
 def market = variables.market
 def growthHoldingCount = variables.growthHoldingCount as Integer
 def growthHoldingWeight = variables.growthHoldingWeight as BigDecimal
@@ -281,10 +282,9 @@ def getRankEtfItems(market, etfSymbols) {
 
         // score
         item.score = [
-                 countScore
-                ,weightScore
-                // valuationScore 는 일단 제외 (종목 순환이 너무 빠름)
-                //,valuationScore
+                countScore,
+                weightScore,
+                valuationScore
         ].average() as BigDecimal
 
         // remark
@@ -296,6 +296,7 @@ def getRankEtfItems(market, etfSymbols) {
 
     // sort by weight
     List<Item> topEtfItems = etfItems.sort { -(it.score ?: 0) }
+    log.info("[${market}] Ranked ETF items: ${topEtfItems}")
     return topEtfItems
 }
 
