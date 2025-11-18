@@ -58,7 +58,7 @@ static List<Item> getUsEtfItems(etfSymbol) {
         return top10Holdings
     } catch (Exception e) {
         println(e.getMessage())
-        return []
+        throw e
     }
 }
 
@@ -95,7 +95,7 @@ static List<Item> getKrEtfItems(etfSymbol) {
         return top10Holdings
     }catch (Exception e) {
         println(e.getMessage())
-        return []
+        throw e
     }
 }
 
