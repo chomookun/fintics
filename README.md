@@ -146,7 +146,7 @@ Equity(Growth) 35% + Equity(Dividend) 35% + Bond(Sovereign) 10% + Bond(Aggregate
 | **GOVI** | Invesco Equal Weight 0-30 Year Treasury ETF | 5%             | [Nasdaq](https://www.nasdaq.com/market-activity/etf/govi/dividend-history) |
 | **TIP**  | iShares TIPS Bond ETF | 5%             | [Nasdaq](https://www.nasdaq.com/market-activity/etf/tip/dividend-history)  |
 
-### [10%] Bond(Aggregate) ETF
+#### [10%] Bond(Aggregate) ETF
 | Symbol   | Name                           | Holding weight | Reference                                                                  |
 |----------|--------------------------------|----------------|----------------------------------------------------------------------------|
 | **FBND** | Fidelity Total Bond ETF | 3.33%          | [Nasdaq](https://www.nasdaq.com/market-activity/etf/fbnd/dividend-history) |
