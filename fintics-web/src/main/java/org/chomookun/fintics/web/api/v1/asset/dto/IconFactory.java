@@ -93,7 +93,7 @@ public class IconFactory {
                     case "ACE" -> "https://www.aceetf.co.kr/favicon.ico";
                     case "ARIRANG" -> "http://arirangetf.com/image/common/favicon.ico";
                     case "SOL" -> "https://www.soletf.com/static/pc/img/common/favicon.ico";
-                    case "TIMEFOLIO" -> "https://timefolio.co.kr/images/common/favicon.ico";
+                    case "TIMEFOLIO" -> "https://timefolio.co.kr/images/favicon-32x32.png";
                     case "RISE" -> "https://www.riseetf.co.kr/favicon.ico";
                     case "PLUS" -> "https://www.plusetf.co.kr/static/ClientUI/images/common/icon-favicon.ico";
                     default -> "https://ssl.pstatic.net/imgstock/fn/real/logo/stock/StockCommonETF.svg";
