@@ -242,9 +242,11 @@ class TripleScreenStrategy {
      * 모멘텀 Score 기준 position 산출
      * @return
      */
-    BigDecimal calculatePosition(BigDecimal maxPosition, BigDecimal minPosition) {
-        // 모멘텀 점수 계산 (50 이상일 때 포지션 증가)
-        def positionScore = (tideAnalyzer.getMomentumScore().getAverage() - 50).max(0)*2
+    BigDecimal calculatePosition(BigDecimal minPosition, BigDecimal maxPosition) {
+        // 모멘텀 점수 계산 (momentum score 1%당 포지션 1% 증가)
+        def positionScore = tideAnalyzer.getMomentumScore().getAverage() as BigDecimal
+        // clamp 0~100
+        positionScore = positionScore.max(BigDecimal.ZERO).min(new BigDecimal("100"))
         // 포지션 1%당 변화량 계산
         def positionPerScore = (maxPosition - minPosition)/100
         // 최종 포지션 계산
@@ -291,11 +293,11 @@ class TripleScreenStrategy {
      * gets strategy result
      * @return strategy result
      */
-    Optional<StrategyResult> getResult(BigDecimal maxPosition, BigDecimal minPosition) {
+    Optional<StrategyResult> getResult(BigDecimal minPosition, BigDecimal maxPosition) {
         StrategyResult strategyResult = null
 
         // tide 모멘텀 기준 포지션 산출
-        def position = this.calculatePosition(maxPosition, minPosition)
+        def position = this.calculatePosition(minPosition, maxPosition)
 
         // wave 과매도 시
         if (waveAnalyzer.getVolatilityScore() >= 50 && waveAnalyzer.getOversoldScore() >= this.getWaveOversoldThreshold()) {
@@ -390,9 +392,9 @@ static def calculateChannel(List<Ohlcv> ohlcvs, int period) {
 /**
  * Calculates average position
  */
-static def calculateAveragePosition(maxPosition, minPosition, TripleScreenStrategy microTripleScreenStrategy, TripleScreenStrategy mesoTripleScreenStrategy, TripleScreenStrategy macroTripleScreenStrategy) {
+static def calculateAveragePosition(minPosition, maxPosition, TripleScreenStrategy microTripleScreenStrategy, TripleScreenStrategy mesoTripleScreenStrategy, TripleScreenStrategy macroTripleScreenStrategy) {
     return [microTripleScreenStrategy, mesoTripleScreenStrategy, macroTripleScreenStrategy]
-            .collect{it.calculatePosition(maxPosition, minPosition)}
+            .collect{it.calculatePosition(minPosition, maxPosition)}
             .average()
             .setScale(2, RoundingMode.HALF_UP)
 }
@@ -518,8 +520,8 @@ def profitPercentage = balanceAsset?.getProfitPercentage() ?: 0.0
 //===============================
 // position
 //===============================
-def maxPosition = calculateAveragePosition(1.0, basePosition, microTripleScreenStrategy, mesoTripleScreenStrategy, macroTripleScreenStrategy)
 def minPosition = basePosition
+def maxPosition = calculateAveragePosition(minPosition, 1.0, microTripleScreenStrategy, mesoTripleScreenStrategy, macroTripleScreenStrategy)
 
 //===============================
 // message
@@ -529,8 +531,8 @@ splitSize:${splitSize}, splitIndex:${splitIndex}
 splitLimits:${splitLimitPrices}
 splitLimitPrice:${splitLimitPrice}
 splitBuyLimited:${splitBuyLimited}
-position:[micro:${microTripleScreenStrategy.calculatePosition(1.0, basePosition)}, meso:${mesoTripleScreenStrategy.calculatePosition(1.0, basePosition)}, macro:${macroTripleScreenStrategy.calculatePosition(1.0, basePosition)}]
-max|minPosition: [${maxPosition}, ${minPosition}]
+position:[micro:${microTripleScreenStrategy.calculatePosition(minPosition, 1.0)}, meso:${mesoTripleScreenStrategy.calculatePosition(minPosition, 1.0)}, macro:${macroTripleScreenStrategy.calculatePosition(minPosition, 1.0)}]
+min|maxPosition: [${minPosition}, ${maxPosition}]
 microTripleScreenStrategy
 ${microTripleScreenStrategy}
 mesoTripleScreenStrategy
@@ -544,19 +546,19 @@ tradeAsset.setMessage(message)
 //===============================
 // execute strategy
 //===============================
-// micro strategy
-microTripleScreenStrategy.getResult(maxPosition, minPosition).ifPresent {
-    log.info("micro strategy result: {}", it)
+// macro strategy
+macroTripleScreenStrategy.getResult(minPosition, maxPosition).ifPresent {
+    log.info("macro strategy result: {}", it)
     strategyResult = it
 }
-// meso strategy
-mesoTripleScreenStrategy.getResult(maxPosition, minPosition).ifPresent {
+// meso strategy (overrides macro)
+mesoTripleScreenStrategy.getResult(minPosition, maxPosition).ifPresent {
     log.info("meso strategy result: {}", it)
     strategyResult = it
 }
-// macro strategy
-macroTripleScreenStrategy.getResult(maxPosition, minPosition).ifPresent {
-    log.info("macro strategy result: {}", it)
+// micro strategy (overrides meso, macro)
+microTripleScreenStrategy.getResult(minPosition, maxPosition).ifPresent {
+    log.info("micro strategy result: {}", it)
     strategyResult = it
 }
 

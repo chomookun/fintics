@@ -1,7 +1,7 @@
 import groovy.json.JsonSlurper
 import groovy.transform.ToString
 import groovy.transform.builder.Builder
-import org.springframework.data.domain.Pageable
+import org.chomookun.fintics.core.basket.rebalance.BasketRebalanceAsset
 
 import java.math.RoundingMode
 
@@ -13,8 +13,10 @@ import java.math.RoundingMode
 class Item {
     String symbol
     String name
-    String remark
+    BigDecimal count
+    BigDecimal weight
     BigDecimal score
+    String remark
 }
 
 static List<Item> getEtfItems(market, etfSymbol) {
@@ -41,16 +43,24 @@ static List<Item> getUsEtfItems(etfSymbol) {
         if (top10Holdings == null || top10Holdings.size() < 10) {
             return []
         }
-        return top10Holdings.collect{
+        top10Holdings = top10Holdings.collect{
             Item.builder()
                     .symbol(it.ticker as String)
                     .name(it.name as String)
-                    .remark(etfSymbol)
+                    .weight(it.weight * 100 as BigDecimal) // Convert to percentage
                     .build()
         }
+        // re-calculate weight in top holdings
+        def top10Weight = top10Holdings.sum { it.weight } as BigDecimal
+        top10Holdings = top10Holdings.collect {
+            it.weight = (it.weight / top10Weight) * 100 // Convert to percentage
+            return it
+        }
+        // return top 10 holdings
+        return top10Holdings
     } catch (Exception e) {
         println(e.getMessage())
-        return []
+        throw e
     }
 }
 
@@ -70,161 +80,320 @@ static List<Item> getKrEtfItems(etfSymbol) {
         if (top10Holdings == null) {
             return []
         }
-        return top10Holdings.collect {
+        top10Holdings = top10Holdings.collect {
             Item.builder()
                     .symbol(it.itemCode as String)
                     .name(it.itemName as String)
-                    .remark(etfSymbol)
+                    .weight(it.etfWeight.replace("%", "") as BigDecimal)
                     .build()
         }
+        // re-calculate weight in top holdings
+        def top10Weight = top10Holdings.sum { it.weight } as BigDecimal
+        top10Holdings = top10Holdings.collect {
+            it.weight = (it.weight / top10Weight) * 100 // Convert to percentage
+            return it
+        }
+        // return top 10 holdings
+        return top10Holdings
     }catch (Exception e) {
         println(e.getMessage())
-        return []
+        throw e
     }
 }
+
 
 //=======================================
 // defines
 //=======================================
+log.info("== variables: ${variables}")
 def market = variables.market
-BigDecimal roeLimit = variables.roeLimit as BigDecimal
-BigDecimal perLimit = variables.perLimit as BigDecimal
-Integer maxAssetCount = variables.maxAssetCount as Integer
-BigDecimal holdingWeightPerAsset = variables.holdingWeightPerAsset as BigDecimal
-List<Item> candidateItems = []
+def growthHoldingCount = variables.growthHoldingCount as Integer
+def growthTotalHoldingWeight = variables.growthTotalHoldingWeight as BigDecimal
+def growthMaxHoldingWeight = variables.growthMaxHoldingWeight as BigDecimal
+def growthMinHoldingWeight = variables.growthMinHoldingWeight as BigDecimal
+def growthStepHoldingWeight = variables.growthStepHoldingWeight as BigDecimal
+def dividendHoldingCount = variables.dividendHoldingCount as Integer
+def dividendTotalHoldingWeight = variables.dividendTotalHoldingWeight as BigDecimal
+def dividendMaxHoldingWeight = variables.dividendMaxHoldingWeight as BigDecimal
+def dividendMinHoldingWeight = variables.dividendMinHoldingWeight as BigDecimal
+def dividendStepHoldingWeight = variables.dividendStepHoldingWeight as BigDecimal
 
-//=======================================
-// collect etf items
-//=======================================
-// ETF list
-def etfSymbols = assetService.getAssets(AssetSearch.builder()
-        .market(market)
-        .type("ETF")
-        .favorite(true)
-        .build(), Pageable.unpaged())
-        .getContent()
-        .collect{it.getSymbol()}
-etfSymbols.each{
-    def etfItems = getEtfItems(market, it)
-    println ("etfItems[${it}]: ${etfItems}")
-    candidateItems.addAll(etfItems)
-}
+// US Growth ETFs
+def usGrowthEtfs = [
+        // my selection
+        "JEPQ", // JPMorgan Nasdaq Equity Premium Income ETF
+        "GPIQ", // Goldman Sachs Nasdaq-100 Premium Income ETF
+        "QDVO", // Amplify ETF Trust Amplify CWP Growth & Income ETF
+        // growth
+        "QQQ",  // Invesco QQQ Trust
+        "SPY",  // SPDR S&P 500 ETF Trust
+        "VUG",  // Vanguard Growth ETF
+        "IUSG", // iShares Core S&P U.S. Growth ETF
+        "IVW",  // iShares S&P 500 Growth ETF
+        "XLK",  // Technology Select Sector SPDR Fund
+        "IYW",  // iShares U.S. Technology ETF
+        "VGT",  // Vanguard Information Tech ETF
+        // sector
+        "SMH",  // VanEck Vectors Semiconductor ETF
+        "SOXX", // iShares PHLX Semiconductor ETF
+        "ARTY", // iShares Future AI & Tech ETF
+        "AIQ",  // Global X Artificial Intelligence & Technology ETF
+        "BOTZ", // Global X Robotics & Artificial Intelligence ETF
+]
 
-//========================================
-// Favorite stocks
-//========================================
-def stockItems = assetService.getAssets(AssetSearch.builder()
-        .market(market)
-        .type("STOCK")
-        .favorite(true)
-        .build(), Pageable.unpaged())
-        .getContent()
-        .collect{
-            Item.builder()
-                    .symbol(it.getSymbol())
-                    .name(it.getName())
-                    .build()
+// US dividend ETFs
+def usDividendEtfs = [
+        // my selection
+        "DGRW", // WisdomTree U.S. Quality Dividend Growth Fund
+        "DIVO", // Amplify CWP Enhanced Dividend Income ETF
+        "JEPI", // JPMorgan Equity Premium Income ETF
+        "BALI", // iShares Advantage Large Cap Income ETF
+        // dividend
+        "DGRO", // iShares Core Dividend Growth ETF
+        "SHCH", // Schwab U.S. Dividend Equity ETF
+        "SDY",  // SPDR S&P Dividend ETF
+        "DVY",  // iShares Select Dividend ETF
+        "VYM",  // Vanguard High Dividend Yield ETF
+        "RDVY", // First Trust Rising Dividend Achievers ETF
+        "FDVV", // Fidelity High Dividend ETF
+        "FDRR", // Fidelity Dividend ETF for Rising Rates
+        "DLN",  // WisdomTree U.S. LargeCap Dividend Fund
+        "DTD",  // WisdomTree U.S. Total Dividend Fund
+        "DHS",  // WisdomTree U.S. High Dividend Fund
+        "MOAT", // VanEck Morningstar Wide Moat ETF
+]
+
+// KR Growth ETFs
+def krGrowthEtfs = [
+        // my selection
+        "472150",   // TIGER 배당커버드콜액티브
+        "498400",   // KODEX 200타겟위클리커버드콜
+        "496080",   // TIGER 코리아밸류업
+        // growth
+        "069500",   // KODEX 200
+        "494890",   // KODEX 200액티브
+        "451060",   // 1Q K200액티브
+        "495230",   // KoAct 코리아밸류업액티브
+        "385720",   // TIMEFOLIO 코스피액티브
+        "495060",   // TIMEFOLIO 코리아밸류업액티브
+        "325010",   // KODEX 성장주
+        "0074K0",   // KoAct K수출핵심기업TOP30액티브
+        "280920",   // PLUS 주도업종
+        "226380",   // ACE Fn성장소비주도주
+        "395760",   // PLUS ESG성장주액티브
+        "373490",   // KODEX 코리아혁신성장액티브
+        "444200",   // SOL 코리아메가테크액티브
+        // sector
+        "455850",   // SOL AI반도체소부장
+        "395160",   // KODEX AI반도체
+        "396500",   // TIGER Fn반도체TOP10
+]
+
+// KR dividend ETFs
+def krDividendEtfs = [
+        // my selection
+        "441800",   // TIMEFOLIO Korea플러스배당액티브
+        "161510",   // PLUS 고배당주
+        "279530",   // KODEX 고배당주
+        "0018C0",   // PLUS 고배당주위클리고정커버드콜
+        "0052D0",   // TIGER 코리아배당다우존스
+        // dividend
+        "104530",   // KIWOOM 고배당
+        "266160",   // RISE 고배당
+        "210780",   // TIGER 코스피고배당
+        "322410",   // HANARO 고배당
+        "211900",   // KODEX 배당성장
+        "476850",   // KoAct 배당성장액티브
+        "325020",   // KODEX 배당가치
+        "251590",   // PLUS 고배당저변동50
+        // 한국 시장에는 지배구조 문제(예시:LG/GS 계열사)로 주주환원 테마 ETF 추가
+        "447430",   // ACE 주주환원가치주액티브
+        "494330",   // ACE 라이프자산주주가치액티브
+        // sector
+        "498410",   // KODEX 금융고배당TOP10타겟위클리커버드콜
+        "139280",   // TIGER 경기방어
+        "266410",   // KODEX 필수소비재
+]
+
+/**
+ * gets rank ETF items for the given market and ETF symbols
+ * @param market
+ * @param etfSymbols
+ * @return
+ */
+def getRankEtfItems(market, etfSymbols) {
+    List<Item> etfItems = []
+    etfSymbols.each {
+        etfItems.addAll(getEtfItems(market, it))
+    }
+
+    // 우선주,Class 등 본주로 치환
+    Map<String, String> symbolAliasMap = [
+            "GOOG": "GOOGL",    // Google Inc. Class C => Class A
+            "005935": "005930", // 삼성전자 우선주 => 삼성전자
+            "005385": "005380", // 현대자동차1우 => 현대자동차
+            "005387": "005380"  // 현대자동차2우 => 현대자동차
+    ]
+    etfItems = etfItems.collect { item ->
+        def unifiedSymbol = symbolAliasMap.get(item.symbol, item.symbol)
+        item.symbol = unifiedSymbol
+        item
+    }
+
+    // group by symbol
+    etfItems = etfItems
+            .groupBy { it.symbol }
+            .collect { symbol, items ->
+                new Item(
+                        symbol: symbol,
+                        name: items[0].name,
+                        count: items.size(),
+                        weight: items*.weight.findAll().average() ?: 0
+                )
+            }
+
+    // filter stock
+    etfItems = etfItems.findAll{
+        def assetId = "${market}.${it.symbol}"
+        Asset asset = assetService.getAsset(assetId).orElse(null)
+        if (asset == null) {
+            return false
         }
-stockItems.each{
-    println ("stockItems: ${it}")
-    candidateItems.add(it)
-}
-
-
-//========================================
-// distinct items
-//========================================
-candidateItems = candidateItems
-        .groupBy { it.symbol }
-        .collect { symbol, items ->
-            def item = items[0]
-            def remark = items*.remark.join(',')
-            return Item.builder()
-                .symbol(item.symbol)
-                .name(item.name)
-                .remark(remark)
-                .build()
+        // STOCK 이 아니면 제외
+        if (asset.getType() != "STOCK") {
+            return false
         }
-log.info("candidateItems: ${candidateItems}")
-
-//=========================================
-// filter
-//=========================================
-List<Item> finalItems = candidateItems.findAll {
-    // checks already fixed
-    boolean alreadyFixed = basket.getBasketAssets().findAll{balanceAsset ->
-        balanceAsset.getSymbol() == it.symbol && balanceAsset.isFixed()
-    }
-    if (alreadyFixed) {
-        return false
-    }
-
-    // check asset
-    def assetId = "${market}.${it.symbol}"
-    Asset asset = assetService.getAsset(assetId).orElse(null)
-    if (asset == null) {
-        return false
-    }
-
-    // STOCK 이 아니면 제외
-    if (asset.getType() != "STOCK") {
-        return false
-    }
-
-    //  ROE
-    def roe = asset.getRoe() ?: 0.0
-    if (roe < roeLimit) {    // ROE 가 금리 * 2 이하는 수익성 없는 회사로 제외
-        return false
-    }
-    if (roe > 100) {        // ROE 가 100% 이상은 이상치 로 제외 (자사주 매입, 회계상 조정 등의 사유로 발생함)
-        return false
-    }
-
-    // PER
-    def per = asset.getPer() ?: 9999
-    if (per > perLimit) {   // PER 가 perLimit 이상은 고 평가된 회사로 제외
-        return false
-    }
-    if (per < 1) {      // PER 가 1 이하인 경우 회계상 이상 또는 다른 구조 적인 문제가 있는 경우 이므로 제외
-        return false
-    }
-
-    // dividendYield 가 ROE 를 초과 하는 경우 자본 잠식 가능성 있음 으로 제외
-    def dividendYield = asset.getDividendYield() ?: 0.0
-    if (dividendYield >= roe) {
-        return false
+        // default true
+        return true
     }
 
     // score
-    def score = BigDecimal.ZERO
-    score += roe                            // 기본 ROE
-    score += dividendYield.min(roe/2)       // 배당률 가중치 (배당성향이 50% 이상인 경우는 50% 까지만 가중치 적용)
+    etfItems = etfItems.collect { item ->
 
-    // score / PER 로 저평가 회사 우선
-    it.score = (score / per).toBigDecimal().setScale(4, RoundingMode.HALF_UP)
+        // count score - 전체 대상 ETF 개수 대비 해당 종목을 포함한 ETF 개수로 계산
+        def countScore = item.count / etfSymbols.size() * 100
 
-    // adds remark
-    it.remark = "ROE:${roe}, PER:${per}, dividendYield:${dividendYield}, etc:${it.remark}"
+        // 해당 종목에 포함된 ETF 에서 차지하는 보유비중 평균
+        def weightScore = item.weight
 
-    // return
-    return it
+        // Asset 정보 조회
+        def assetId = "${market}.${item.symbol}"
+        Asset asset = assetService.getAsset(assetId).orElse(null)
+        def roe = asset.getRoe() ?: 0.0
+        def per = asset.getPer() ?: 9999
+        def dividendYield = asset.getDividendYield() ?: 0.0
+
+        // 가격 score
+        def totalYield = BigDecimal.ZERO
+        totalYield += roe                            // 기본 ROE
+        totalYield += (dividendYield * 0.5)         // 배당률 가중치 (50%만 적용)
+        def valuationScore = BigDecimal.ZERO
+        valuationScore = totalYield / per
+        valuationScore = Math.min((valuationScore / 2.0).doubleValue(), 1.0) * 100
+        valuationScore = valuationScore * 0.33   // 100점 만점은 너무 과도하게 반영됨으로 score factor 적용해서 반영(현재 factor 3임으로 0.33 적용)
+
+        // score
+        item.score = [
+                countScore,
+                weightScore,
+                valuationScore
+        ].average() as BigDecimal
+
+        // remark
+        item.remark = "Count: ${item.count}(${countScore}), Weight: ${item.weight}%(${weightScore}), Price: ${valuationScore}, Score: ${item.score}"
+
+        // returns
+        return item
+    }
+
+    // sort by weight
+    List<Item> topEtfItems = etfItems.sort { -(it.score ?: 0) }
+    log.info("[${market}] Ranked ETF items: ${topEtfItems}")
+    return topEtfItems
 }
-log.info("finalItems: ${finalItems}")
+
+static Map<String, BigDecimal> calculateHoldingWeights(List<Item> items, BigDecimal totalHoldingWeight, BigDecimal maxHoldingWeight, BigDecimal minHoldingWeight, BigDecimal stepWeight) {
+    Map<String, BigDecimal> result = new LinkedHashMap<>()
+    for (int i = 0; i < items.size(); i++) {
+        def item = items.get(i)
+        def holdingWeight = maxHoldingWeight - (stepWeight * i)
+        holdingWeight = holdingWeight.max(minHoldingWeight)
+        result.put(item.symbol, holdingWeight)
+    }
+
+    for (int i = items.size() - 1; i >=0; i --) {
+        def totalWeight = result.values().sum() as BigDecimal
+        // check
+        if (totalWeight <= totalHoldingWeight) {
+            break;
+        }
+        // reduce
+        def symbol = items.get(i).symbol
+        result.put(symbol, minHoldingWeight)
+        // check
+        totalWeight = result.values().sum() as BigDecimal
+        if (totalWeight <= totalHoldingWeight) {
+            break;
+        }
+    }
+    // returns
+    return result
+}
 
 //=========================================
-// sort by score
+// collect all etf assets
 //=========================================
-def fixedAssetCount = basket.getBasketAssets().findAll{it.enabled && it.fixed}.size()
-def targetAssetCount = (maxAssetCount - fixedAssetCount) as Integer
-finalItems = finalItems
-        .sort{ -(it.score?:0)}
-        .take(targetAssetCount)
+def rankGrowthItems = []
+def rankDividendItems = []
+switch (market) {
+    case "US":
+        rankGrowthItems = getRankEtfItems(market, usGrowthEtfs)
+        rankDividendItems = getRankEtfItems(market, usDividendEtfs)
+        break
+    case "KR":
+        rankGrowthItems = getRankEtfItems(market, krGrowthEtfs)
+        rankDividendItems = getRankEtfItems(market, krDividendEtfs)
+        break
+    default:
+        throw new RuntimeException("Unsupported market: ${market}")
+}
+
+// Top growth items
+def topGrowthItems = rankGrowthItems.take(growthHoldingCount)
+
+// Top dividend items
+rankDividendItems.removeIf(dividendItem -> topGrowthItems.any {it.symbol == dividendItem.symbol})
+def topDividendItems = rankDividendItems.take(dividendHoldingCount)
+
+// linear ranking weight 생성
+def growthHoldingWeightMap = calculateHoldingWeights(topGrowthItems, growthTotalHoldingWeight, growthMaxHoldingWeight, growthMinHoldingWeight, growthStepHoldingWeight)
+def dividendHoldingWeightMap = calculateHoldingWeights(topDividendItems, dividendTotalHoldingWeight, dividendMaxHoldingWeight, dividendMinHoldingWeight, dividendStepHoldingWeight)
 
 //=========================================
 // return
 //=========================================
-List<BasketRebalanceAsset> basketRebalanceResults = finalItems.collect{
-    BasketRebalanceAsset.of(it.symbol, it.name, holdingWeightPerAsset, it.remark)
+List<BasketRebalanceAsset> basketRebalanceAssets = []
+topGrowthItems.forEach {
+    BigDecimal holdingWeight = growthHoldingWeightMap[it.symbol]
+    BasketRebalanceAsset asset = BasketRebalanceAsset.builder()
+            .symbol(it.symbol)
+            .name(it.name)
+            .holdingWeight(holdingWeight)
+            .remark("Growth ETF - ${it.remark}")
+            .build()
+    basketRebalanceAssets.add(asset)
 }
-log.info("basketRebalanceResults: ${basketRebalanceResults}")
-return basketRebalanceResults
+topDividendItems.forEach {
+    BigDecimal holdingWeight = dividendHoldingWeightMap[it.symbol]
+    BasketRebalanceAsset asset = BasketRebalanceAsset.builder()
+            .symbol(it.symbol)
+            .name(it.name)
+            .holdingWeight(holdingWeight)
+            .remark("Dividend ETF - ${it.remark}")
+            .build()
+    basketRebalanceAssets.add(asset)
+}
+
+log.info("basketRebalanceAssets: ${basketRebalanceAssets}")
+return basketRebalanceAssets
+

@@ -60,6 +60,8 @@ public class BasketRebalanceTask {
                 })
                 .filter(Objects::nonNull)
                 .toList();
+        // retrieve latest basket info
+        Basket basket = basketService.getBasket(this.basket.getBasketId()).orElseThrow();
         //===========================================
         // 1. 신규 리밸런싱 종목 추가
         //===========================================
