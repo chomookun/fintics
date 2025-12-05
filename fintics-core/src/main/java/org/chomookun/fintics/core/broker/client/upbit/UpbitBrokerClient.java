@@ -217,10 +217,12 @@ public class UpbitBrokerClient extends BrokerClient {
             String unitCurrency = row.get("unit_currency");
             String symbol = String.format("%s-%s", unitCurrency, currency);
             BigDecimal assetBalance = new BigDecimal(row.get("balance"));
+            BigDecimal lockedBalance = new BigDecimal(row.get("locked"));
             BigDecimal assetAverageBuyPrice = new BigDecimal(row.get("avg_buy_price"));
             if("KRW".equals(currency) && "KRW".equals(unitCurrency)) {
-                totalAmount = totalAmount.add(assetBalance);
-                cacheAmount = cacheAmount.add(assetBalance);
+                // '출금이나 주문 등에 잠겨 있는 잔액'이라는데 언제부터인지 원화보유량이 일부(대부분인듯)이 여기 해당 값으로 응답함.
+                totalAmount = totalAmount.add(assetBalance).add(lockedBalance);
+                cacheAmount = cacheAmount.add(assetBalance).add(lockedBalance);
             }else{
                 BigDecimal assetPurchaseAmount = assetAverageBuyPrice.multiply(assetBalance)
                         .setScale(0, RoundingMode.CEILING);
