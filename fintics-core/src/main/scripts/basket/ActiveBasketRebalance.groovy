@@ -127,18 +127,21 @@ def usGrowthEtfs = [
         // growth
         "QQQ",  // Invesco QQQ Trust
         "SPY",  // SPDR S&P 500 ETF Trust
+        "SPYG", // SPDR Portfolio S&P 500 Growth ETF
+        "VOO",  // Vanguard S&P 500 ETF
+        "VOOG", // Vanguard S&P 500 Growth ETF
         "VUG",  // Vanguard Growth ETF
         "IUSG", // iShares Core S&P U.S. Growth ETF
         "IVW",  // iShares S&P 500 Growth ETF
+        "MGK",  // Vanguard Mega Cap Growth ETF
         "XLK",  // Technology Select Sector SPDR Fund
         "IYW",  // iShares U.S. Technology ETF
         "VGT",  // Vanguard Information Tech ETF
-        // sector
-        "SMH",  // VanEck Vectors Semiconductor ETF
-        "SOXX", // iShares PHLX Semiconductor ETF
-        "ARTY", // iShares Future AI & Tech ETF
-        "AIQ",  // Global X Artificial Intelligence & Technology ETF
-        "BOTZ", // Global X Robotics & Artificial Intelligence ETF
+        "QGRW", // WisdomTree Trust WisdomTree U.S. Quality Growth Fund
+        "XNTK", // SPDR NYSE Technology ETF
+        "BAI",  // BlackRock ETF Trust iShares A.I. Innovation and Tech Active ET
+        "FXL",  // First Trust Technology AlphaDEX
+        "XT",   // iShares Exponential Technologies ETF
 ]
 
 // US dividend ETFs
@@ -183,10 +186,6 @@ def krGrowthEtfs = [
         "395760",   // PLUS ESG성장주액티브
         "373490",   // KODEX 코리아혁신성장액티브
         "444200",   // SOL 코리아메가테크액티브
-        // sector
-        "455850",   // SOL AI반도체소부장
-        "395160",   // KODEX AI반도체
-        "396500",   // TIGER Fn반도체TOP10
 ]
 
 // KR dividend ETFs
@@ -209,10 +208,6 @@ def krDividendEtfs = [
         // 한국 시장에는 지배구조 문제(예시:LG/GS 계열사)로 주주환원 테마 ETF 추가
         "447430",   // ACE 주주환원가치주액티브
         "494330",   // ACE 라이프자산주주가치액티브
-        // sector
-        "498410",   // KODEX 금융고배당TOP10타겟위클리커버드콜
-        "139280",   // TIGER 경기방어
-        "266410",   // KODEX 필수소비재
 ]
 
 /**
@@ -378,7 +373,7 @@ topGrowthItems.forEach {
     BasketRebalanceAsset asset = BasketRebalanceAsset.builder()
             .symbol(it.symbol)
             .name(it.name)
-            .holdingWeight(holdingWeight)
+            .holdingWeight(holdingWeight + 0.01)
             .remark("Growth ETF - ${it.remark}")
             .build()
     basketRebalanceAssets.add(asset)
@@ -388,7 +383,7 @@ topDividendItems.forEach {
     BasketRebalanceAsset asset = BasketRebalanceAsset.builder()
             .symbol(it.symbol)
             .name(it.name)
-            .holdingWeight(holdingWeight)
+            .holdingWeight(holdingWeight + 0.00)
             .remark("Dividend ETF - ${it.remark}")
             .build()
     basketRebalanceAssets.add(asset)
