@@ -3,14 +3,14 @@ spring:
   datasource:
     hikari:
       driver-class-Name: org.mariadb.jdbc.Driver
-      jdbc-url: jdbc:mariadb://10.0.0.1:3306,192.168.0.2:3306/fintics?failover=on&useUnicode=true&characterEncoding=UTF-8
+      jdbc-url: jdbc:mariadb://10.0.0.1:3306/fintics?useUnicode=true&characterEncoding=UTF-8
       username: fintics
       password: ENC(isMDWx6SPsHeZNBO/dAtcVlU9Akq0MSl)
       minimum-idle: 20
       maximum-pool-size: 40
   data:
     redis:
-      host: 192.168.0.2
+      host: 10.0.0.1
       port: 6379
       password: ~
 

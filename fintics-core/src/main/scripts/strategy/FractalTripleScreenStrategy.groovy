@@ -530,7 +530,7 @@ splitSize:${splitSize}, splitIndex:${splitIndex}
 splitLimits:${splitLimitPrices}
 splitLimitPrice:${splitLimitPrice}
 splitBuyLimited:${splitBuyLimited}
-position:${averagePosition}[micro:${microPosition}, meso:${mesoPosition}, macro:${macroPosition}]
+position:${averagePosition} (micro:${microPosition}, meso:${mesoPosition}, macro:${macroPosition})
 microTripleScreenStrategy
 ${microTripleScreenStrategy}
 mesoTripleScreenStrategy

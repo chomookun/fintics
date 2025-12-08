@@ -130,6 +130,7 @@ def usGrowthEtfs = [
         "SPYG", // SPDR Portfolio S&P 500 Growth ETF
         "VOO",  // Vanguard S&P 500 ETF
         "VOOG", // Vanguard S&P 500 Growth ETF
+        "SPMO", // Invesco S&P 500 Momentum ETF
         "VUG",  // Vanguard Growth ETF
         "IUSG", // iShares Core S&P U.S. Growth ETF
         "IVW",  // iShares S&P 500 Growth ETF
