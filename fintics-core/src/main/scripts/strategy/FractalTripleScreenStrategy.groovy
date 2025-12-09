@@ -290,6 +290,28 @@ class TripleScreenStrategy {
     }
 
     /**
+     * is wave oversold
+     * @return whether wave is oversold or not
+     */
+    boolean isWaveOversold() {
+        if (waveAnalyzer.getVolatilityScore() >= 50 && waveAnalyzer.getOversoldScore() >= this.getWaveOversoldThreshold()) {
+            return true
+        }
+        return false
+    }
+
+    /**
+     * is wave overbought
+     * @return whether wave is overbought or not
+     */
+    boolean isWaveOverbought() {
+        if (waveAnalyzer.getVolatilityScore() >= 50 && waveAnalyzer.getOverboughtScore() >= this.getWaveOverboughtThreshold()) {
+            return true
+        }
+        return false
+    }
+
+    /**
      * gets strategy result
      * @param position position
      * @return strategy result
@@ -297,24 +319,23 @@ class TripleScreenStrategy {
     Optional<StrategyResult> getResult(BigDecimal position) {
         StrategyResult strategyResult = null
         // wave 과매도 시
-        if (waveAnalyzer.getVolatilityScore() >= 50 && waveAnalyzer.getOversoldScore() >= this.getWaveOversoldThreshold()) {
+        if (this.isWaveOversold()) {
             // ripple 상승 모멘텀
-            if (rippleAnalyzer.getVolatilityScore() >= 50 && rippleAnalyzer.getMomentumScore() >= 70) {
+            if (rippleAnalyzer.getMomentumScore() >= 70) {
                 // wave 평균가 기준 매수 포지션
                 def buyPosition = this.adjustAveragePosition(position)
                 strategyResult = StrategyResult.of(Action.BUY, buyPosition, "[WAVE OVERSOLD BUY] ${this.toString()}")
             }
         }
         // wave 과매수 시
-        if (waveAnalyzer.getVolatilityScore() >= 50 && waveAnalyzer.getOverboughtScore() >= this.getWaveOverboughtThreshold()) {
+        if (this.isWaveOverbought()) {
             // ripple 하락 모멘텀
-            if (rippleAnalyzer.getVolatilityScore() >= 50 && rippleAnalyzer.getMomentumScore() <= 30) {
+            if (rippleAnalyzer.getMomentumScore() <= 30) {
                 // wave 평균가 기준 매도 포지션
                 def sellPosition = this.adjustAveragePosition(position)
                 strategyResult = StrategyResult.of(Action.SELL, sellPosition, "[WAVE OVERBOUGHT SELL] ${this.toString()}")
             }
         }
-
         // returns
         return Optional.ofNullable(strategyResult)
     }
@@ -552,12 +573,42 @@ macroTripleScreenStrategy.getResult(averagePosition).ifPresent {
 // meso strategy (overrides macro)
 mesoTripleScreenStrategy.getResult(averagePosition).ifPresent {
     log.info("meso strategy result: {}", it)
-    strategyResult = it
+    boolean accepted = true
+    // buy veto filter - 매수 시 상위 macro 스케일 wave가 과매수 상태이면 매수 중지
+    if (it.action == Action.BUY) {
+        if (macroTripleScreenStrategy.isWaveOverbought()) {
+            accepted = false
+        }
+    }
+    // sell veto filter - 매도 시 상위 macro 스케일 wave가 과매도 생태이면 매도 중지
+    if (it.action == Action.SELL) {
+        if (macroTripleScreenStrategy.isWaveOversold()) {
+            accepted = false
+        }
+    }
+    if (accepted) {
+        strategyResult = it
+    }
 }
 // micro strategy (overrides meso, macro)
 microTripleScreenStrategy.getResult(averagePosition).ifPresent {
     log.info("micro strategy result: {}", it)
-    strategyResult = it
+    boolean accepted = true
+    // buy veto filter - 매수 시 상위 meso 스케일 wave가 과매수 상태이면 매수 중지
+    if (it.action == Action.BUY) {
+        if (mesoTripleScreenStrategy.isWaveOverbought()) {
+            accepted = false
+        }
+    }
+    // sell veto filter - 매도 시 상위 meso 스케일 wave가 과매도 생태이면 매도 중지
+    if (it.action == Action.SELL) {
+        if (mesoTripleScreenStrategy.isWaveOversold()) {
+            accepted = false
+        }
+    }
+    if (accepted) {
+        strategyResult = it
+    }
 }
 
 //===============================
