@@ -66,6 +66,7 @@ public class TradeExecutor {
     private TradeAssetStore tradeAssetStore;
 
     public void execute(Trade trade, Strategy strategy, LocalDateTime dateTime, BrokerClient brokerClient) throws InterruptedException {
+        Instant startTime = Instant.now();
         log.info("=".repeat(80));
         log.info("[{}] execute trade", trade.getName());
 
@@ -268,6 +269,8 @@ public class TradeExecutor {
                 sendErrorNotificationIfEnabled(trade, basketAsset, e);
             }
         }
+        // logging
+        log.info("[{}] execution elapsed time: {}", trade.getName(), Duration.between(startTime, Instant.now()));
     }
 
     private boolean isOperatingTime(Trade trade, LocalDateTime dateTime) {

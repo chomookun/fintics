@@ -87,7 +87,6 @@ public class TradeRunnable implements Runnable {
         // start loop
         log.info("Start TradeRunnable: {}", tradeId);
         while(!Thread.currentThread().isInterrupted() && !interrupted) {
-            Instant tradeStartTime = Instant.now();
             try {
                 // wait interval
                 log.info("Waiting interval: {} seconds", interval);
@@ -103,14 +102,11 @@ public class TradeRunnable implements Runnable {
                         .atZone(timezone)
                         .toLocalDateTime();
                 tradeExecutor.execute(trade, strategy, dateTime, brokerClient);
-
             } catch (InterruptedException e) {
                 log.warn("TradeRunnable is interrupted.");
                 break;
             } catch (Throwable e) {
                 log.error(e.getMessage(), e);
-            } finally {
-                log.info("Trade elapsed time: {}",  Duration.between(tradeStartTime, Instant.now()));
             }
         }
         log.info("End TradeRunnable: {}", tradeId);
