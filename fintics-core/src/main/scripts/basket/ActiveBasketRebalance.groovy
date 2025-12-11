@@ -115,15 +115,10 @@ def stepHoldingWeight = variables.stepHoldingWeight as BigDecimal
 
 // US ETFs
 def usEtfs = [
-        // my selection
-        "JEPQ", // JPMorgan Nasdaq Equity Premium Income ETF
-        "GPIQ", // Goldman Sachs Nasdaq-100 Premium Income ETF
-        "QDVO", // Amplify ETF Trust Amplify CWP Growth & Income ETF
-        "DGRW", // WisdomTree U.S. Quality Dividend Growth Fund
-        "DIVO", // Amplify CWP Enhanced Dividend Income ETF
-        "BALI", // iShares Advantage Large Cap Income ETF
-        "JEPI", // JPMorgan Equity Premium Income ETF
         // growth
+        "JEPQ", // (*)JPMorgan Nasdaq Equity Premium Income ETF
+        "GPIQ", // (*)Goldman Sachs Nasdaq-100 Premium Income ETF
+        "QDVO", // (*)Amplify ETF Trust Amplify CWP Growth & Income ETF
         "QQQ",  // Invesco QQQ Trust
         "SPY",  // SPDR S&P 500 ETF Trust
         "SPYG", // SPDR Portfolio S&P 500 Growth ETF
@@ -144,6 +139,10 @@ def usEtfs = [
         "FXL",  // First Trust Technology AlphaDEX
         "XT",   // iShares Exponential Technologies ETF
         // dividend
+        "DGRW", // (*)WisdomTree U.S. Quality Dividend Growth Fund
+        "DIVO", // (*)Amplify CWP Enhanced Dividend Income ETF
+        "BALI", // (*)iShares Advantage Large Cap Income ETF
+        "JEPI", // (*)JPMorgan Equity Premium Income ETF
         "DGRO", // iShares Core Dividend Growth ETF
         "SHCH", // Schwab U.S. Dividend Equity ETF
         "SDY",  // SPDR S&P Dividend ETF
@@ -160,23 +159,17 @@ def usEtfs = [
 
 // KR ETFs
 def krEtfs = [
-        //-----------------------------------------
         // growth
-        //-----------------------------------------
-        // my selection
-        "472150",   // TIGER 배당커버드콜액티브
-        "498400",   // KODEX 200타겟위클리커버드콜
-        "496080",   // TIGER 코리아밸류업
-        "441800",   // TIMEFOLIO Korea플러스배당액티브
-        "161510",   // PLUS 고배당주
-        "279530",   // KODEX 고배당주
-        "0052D0",   // TIGER 코리아배당다우존스
-        // growth
+        "472150",   // (*)TIGER 배당커버드콜액티브
+        "498400",   // (*)KODEX 200타겟위클리커버드콜
+        "496080",   // (*)TIGER 코리아밸류업
+        "122090",   // PLUS 코스피50
+        "237350",   // KODEX 코스피100
         "069500",   // KODEX 200
         "494890",   // KODEX 200액티브
         "451060",   // 1Q K200액티브
-        "495230",   // KoAct 코리아밸류업액티브
         "385720",   // TIMEFOLIO 코스피액티브
+        "495230",   // KoAct 코리아밸류업액티브
         "495060",   // TIMEFOLIO 코리아밸류업액티브
         "325010",   // KODEX 성장주
         "0074K0",   // KoAct K수출핵심기업TOP30액티브
@@ -186,12 +179,18 @@ def krEtfs = [
         "373490",   // KODEX 코리아혁신성장액티브
         "444200",   // SOL 코리아메가테크액티브
         // dividend
+        "441800",   // (*)TIMEFOLIO Korea플러스배당액티브
+        "161510",   // (*)PLUS 고배당주
+        "279530",   // (*)KODEX 고배당주
+        "0052D0",   // (*)TIGER 코리아배당다우존스
+        "211900",   // KODEX 배당성장
+        "476850",   // KoAct 배당성장액티브
+        "211900",   // KODEX 코리아배당성장
+        "315960",   // RISE 대형고배당10TR
         "104530",   // KIWOOM 고배당
         "266160",   // RISE 고배당
         "210780",   // TIGER 코스피고배당
         "322410",   // HANARO 고배당
-        "211900",   // KODEX 배당성장
-        "476850",   // KoAct 배당성장액티브
         "325020",   // KODEX 배당가치
         "251590",   // PLUS 고배당저변동50
         "447430",   // ACE 주주환원가치주액티브
@@ -270,9 +269,6 @@ def getRankEtfItems(market, etfSymbols) {
         // returns
         return item
     }
-
-    // filter - 2개 이상 ETF에 포함된 종목
-    etfItems = etfItems.findAll { it.count >= 2 }
 
     // sort by weight
     List<Item> topEtfItems = etfItems.sort { -(it.score ?: 0) }
