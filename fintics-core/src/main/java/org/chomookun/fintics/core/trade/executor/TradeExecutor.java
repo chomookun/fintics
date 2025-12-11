@@ -155,6 +155,7 @@ public class TradeExecutor {
 
                 // executes trade asset decider
                 log.info("[{} - {}] strategy start", basketAsset.getAssetId(), basketAsset.getName());
+                Instant strategyStartTime = Instant.now();
                 StrategyRunnerContext strategyRunnerContext = StrategyRunnerContext.builder()
                         .strategy(strategy)
                         .variables(trade.getStrategyVariables())
@@ -166,7 +167,6 @@ public class TradeExecutor {
                         .build();
                 StrategyRunner strategyRunner = strategyRunnerFactory.getObject(strategyRunnerContext);
                 strategyRunner.setLog(log);
-                Instant strategyStartTime = Instant.now();
                 StrategyResult strategyResult = strategyRunner.run();
                 tradeAsset.setStrategyResult(strategyResult);
                 log.info("[{} - {}] strategy execution elapsed:{}", basketAsset.getAssetId(), basketAsset.getName(), Duration.between(strategyStartTime, Instant.now()));
