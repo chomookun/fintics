@@ -556,42 +556,12 @@ macroTripleScreenStrategy.getResult(macroEffectivePosition).ifPresent {
 // meso strategy (overrides macro)
 mesoTripleScreenStrategy.getResult(mesoEffectivePosition).ifPresent {
     log.info("meso strategy result: {}", it)
-    boolean accepted = true
-    // buy veto filter - 매수 시 상위 macro 스케일 wave가 과매수 상태이면 매수 중지
-    if (it.action == Action.BUY) {
-        if (macroTripleScreenStrategy.isWaveOverbought()) {
-            accepted = false
-        }
-    }
-    // sell veto filter - 매도 시 상위 macro 스케일 wave가 과매도 생태이면 매도 중지
-    if (it.action == Action.SELL) {
-        if (macroTripleScreenStrategy.isWaveOversold()) {
-            accepted = false
-        }
-    }
-    if (accepted) {
-        strategyResult = it
-    }
+    strategyResult = it
 }
 // micro strategy (overrides meso, macro)
 microTripleScreenStrategy.getResult(microEffectivePosition).ifPresent {
     log.info("micro strategy result: {}", it)
-    boolean accepted = true
-    // buy veto filter - 매수 시 상위 meso 스케일 wave가 과매수 상태이면 매수 중지
-    if (it.action == Action.BUY) {
-        if (mesoTripleScreenStrategy.isWaveOverbought()) {
-            accepted = false
-        }
-    }
-    // sell veto filter - 매도 시 상위 meso 스케일 wave가 과매도 생태이면 매도 중지
-    if (it.action == Action.SELL) {
-        if (mesoTripleScreenStrategy.isWaveOversold()) {
-            accepted = false
-        }
-    }
-    if (accepted) {
-        strategyResult = it
-    }
+    strategyResult = it
 }
 
 //===============================

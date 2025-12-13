@@ -7,6 +7,8 @@ import org.chomookun.arch4j.core.common.data.converter.BooleanConverter;
 import org.chomookun.fintics.core.order.model.Order;
 
 import jakarta.persistence.*;
+import org.chomookun.fintics.core.trade.model.Trade;
+
 import java.math.BigDecimal;
 import java.time.LocalTime;
 
@@ -52,6 +54,16 @@ public class TradeEntity extends BaseEntity {
 
     @Column(name = "invest_amount")
     private BigDecimal investAmount;
+
+    @Column(name = "dca_enabled")
+    @Convert(converter = BooleanConverter.class)
+    private boolean dcaEnabled;
+
+    @Column(name = "dca_frequency", length = 16)
+    private Trade.DCA_FREQUENCY dcaFrequency;
+
+    @Column(name = "dca_amount")
+    private BigDecimal dcaAmount;
 
     @Column(name = "order_kind", length = 16)
     private Order.Kind orderKind;

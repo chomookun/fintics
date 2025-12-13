@@ -35,6 +35,12 @@ public class Trade {
 
     private BigDecimal investAmount;
 
+    private boolean dcaEnabled;
+
+    private DCA_FREQUENCY dcaFrequency;
+
+    private BigDecimal dcaAmount;
+
     private Order.Kind orderKind;
 
     private String cashAssetId;
@@ -55,6 +61,8 @@ public class Trade {
 
     private boolean notifyOnOrder;
 
+    public enum DCA_FREQUENCY { DAILY, WEEKLY, MONTHLY }
+
     public static Trade from(TradeEntity tradeEntity) {
         return Trade.builder()
                 .tradeId(tradeEntity.getTradeId())
@@ -66,6 +74,9 @@ public class Trade {
                 .startTime(tradeEntity.getStartAt())
                 .endTime(tradeEntity.getEndAt())
                 .investAmount(tradeEntity.getInvestAmount())
+                .dcaEnabled(tradeEntity.isDcaEnabled())
+                .dcaFrequency(tradeEntity.getDcaFrequency())
+                .dcaAmount(tradeEntity.getDcaAmount())
                 .orderKind(tradeEntity.getOrderKind())
                 .cashAssetId(tradeEntity.getCashAssetId())
                 .cashBufferWeight(tradeEntity.getCashBufferWeight())

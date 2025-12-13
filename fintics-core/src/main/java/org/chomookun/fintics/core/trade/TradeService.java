@@ -113,6 +113,9 @@ public class TradeService {
         tradeEntity.setStartAt(trade.getStartTime());
         tradeEntity.setEndAt(trade.getEndTime());
         tradeEntity.setInvestAmount(trade.getInvestAmount());
+        tradeEntity.setDcaEnabled(trade.isDcaEnabled());
+        tradeEntity.setDcaFrequency(trade.getDcaFrequency());
+        tradeEntity.setDcaAmount(trade.getDcaAmount());
         tradeEntity.setOrderKind(trade.getOrderKind());
         tradeEntity.setCashAssetId(trade.getCashAssetId());
         tradeEntity.setCashBufferWeight(trade.getCashBufferWeight());

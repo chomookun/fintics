@@ -405,6 +405,21 @@
                         <span class="font-weight--bold tag-required" data-th-text="#{fintics.core.trade.Trade.investAmount}"></span>
                         <input class="width--100 font-weight--bold number" type="number" data-duice-bind="trade" data-duice-property="investAmount" data-duice-format="number()"/>
                     </label>
+                    <label>
+                        <input type="checkbox" data-duice-bind="trade" data-duice-property="dcaEnabled"/>
+                        <span class="font-weight--bold">DCA</span>
+                    </label>
+                    <label>
+                        <select data-duice-bind="trade" data-duice-property="dcaFrequency">
+                            <option>Frequency...</option>
+                            <option value="DAILY">Daily</option>
+                            <option value="WEEKLY">Weekly</option>
+                            <option value="MONTHLY">Monthly</option>
+                        </select>
+                    </label>
+                    <label>
+                        <input type="number" data-duice-bind="trade" data-duice-propery="dcaAmount" data-duice-format="number()" class="number" placeholder="Amount"/>
+                    </label>
                 </div>
                 <div class="grid-column--span-6">
                     <label>

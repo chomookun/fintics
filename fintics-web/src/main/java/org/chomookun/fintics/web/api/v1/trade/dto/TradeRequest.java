@@ -3,6 +3,7 @@ package org.chomookun.fintics.web.api.v1.trade.dto;
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.*;
 import org.chomookun.fintics.core.order.model.Order;
+import org.chomookun.fintics.core.trade.model.Trade;
 
 import java.math.BigDecimal;
 import java.time.LocalTime;
@@ -39,6 +40,15 @@ public class TradeRequest {
 
     @Schema(description = "invest amount")
     private BigDecimal investAmount;
+
+    @Schema(description = "DCA enabled", example = "false")
+    private boolean dcaEnabled;
+
+    @Schema(description = "DCA frequency")
+    private Trade.DCA_FREQUENCY dcaFrequency;
+
+    @Schema(description = "DCA amount")
+    private BigDecimal dcaAmount;
 
     @Schema(description = "order kind")
     private Order.Kind orderKind;

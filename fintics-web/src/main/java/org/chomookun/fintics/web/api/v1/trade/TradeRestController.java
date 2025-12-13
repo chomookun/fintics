@@ -78,6 +78,9 @@ public class TradeRestController {
                 .startTime(tradeRequest.getStartAt())
                 .endTime(tradeRequest.getEndAt())
                 .investAmount(tradeRequest.getInvestAmount())
+                .dcaEnabled(tradeRequest.isDcaEnabled())
+                .dcaFrequency(tradeRequest.getDcaFrequency())
+                .dcaAmount(tradeRequest.getDcaAmount())
                 .orderKind(tradeRequest.getOrderKind())
                 .cashAssetId(tradeRequest.getCashAssetId())
                 .cashBufferWeight(tradeRequest.getCashBufferWeight())
@@ -108,6 +111,9 @@ public class TradeRestController {
         trade.setStartTime(tradeRequest.getStartAt());
         trade.setEndTime(tradeRequest.getEndAt());
         trade.setInvestAmount(tradeRequest.getInvestAmount());
+        trade.setDcaEnabled(tradeRequest.isDcaEnabled());
+        trade.setDcaFrequency(tradeRequest.getDcaFrequency());
+        trade.setDcaAmount(tradeRequest.getDcaAmount());
         trade.setOrderKind(tradeRequest.getOrderKind());
         trade.setCashAssetId(tradeRequest.getCashAssetId());
         trade.setCashBufferWeight(tradeRequest.getCashBufferWeight());

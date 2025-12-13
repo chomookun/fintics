@@ -31,6 +31,12 @@ public class TradeResponse {
 
     private BigDecimal investAmount;
 
+    private boolean dcaEnabled;
+
+    private Trade.DCA_FREQUENCY dcaFrequency;
+
+    private BigDecimal dcaAmount;
+
     private Order.Kind orderKind;
 
     private String cashAssetId;
@@ -62,6 +68,9 @@ public class TradeResponse {
                 .startAt(trade.getStartTime())
                 .endAt(trade.getEndTime())
                 .investAmount(trade.getInvestAmount())
+                .dcaEnabled(trade.isDcaEnabled())
+                .dcaFrequency(trade.getDcaFrequency())
+                .dcaAmount(trade.getDcaAmount())
                 .orderKind(trade.getOrderKind())
                 .cashAssetId(trade.getCashAssetId())
                 .cashBufferWeight(trade.getCashBufferWeight())
