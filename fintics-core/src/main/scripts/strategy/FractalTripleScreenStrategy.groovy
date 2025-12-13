@@ -396,25 +396,8 @@ static def calculateChannel(List<Ohlcv> ohlcvs, int period) {
     channel.lower = (lowers.average() as BigDecimal).setScale(4, RoundingMode.HALF_UP)
     channel.middle = ((channel.upper + channel.lower) / 2).setScale(4, RoundingMode.HALF_UP)
 
-    // todo 최근 이동평균 강도에 따라 상하단 조정
-//    List<Ema> emas = Tools.indicators(ohlcvs, EmaContext.DEFAULT).take(20)
-//    def emaChangeValue = emas.first().value - emas.last().value
-//    channel.upper += emaChangeValue
-//    channel.middle += emaChangeValue
-//    channel.lower += emaChangeValue
-
     // return
     return channel
-}
-
-/**
- * Calculates average position
- */
-static def calculateAveragePosition(minPosition, maxPosition, TripleScreenStrategy microTripleScreenStrategy, TripleScreenStrategy mesoTripleScreenStrategy, TripleScreenStrategy macroTripleScreenStrategy) {
-    return [microTripleScreenStrategy, mesoTripleScreenStrategy, macroTripleScreenStrategy]
-            .collect{it.calculatePosition(minPosition, maxPosition)}
-            .average()
-            .setScale(2, RoundingMode.HALF_UP)
 }
 
 //===============================
@@ -541,7 +524,9 @@ def profitPercentage = balanceAsset?.getProfitPercentage() ?: 0.0
 def microPosition = microTripleScreenStrategy.calculatePosition(basePosition, 1.0)
 def mesoPosition  = mesoTripleScreenStrategy.calculatePosition(basePosition, 1.0)
 def macroPosition = macroTripleScreenStrategy.calculatePosition(basePosition, 1.0)
-def averagePosition = ([microPosition, mesoPosition, macroPosition].average() as BigDecimal).setScale(2, RoundingMode.HALF_UP)
+def microEffectivePosition = ([microPosition, mesoPosition, macroPosition].average() as BigDecimal).setScale(2, RoundingMode.HALF_UP)
+def mesoEffectivePosition = ([mesoPosition, macroPosition].average() as BigDecimal).setScale(2, RoundingMode.HALF_UP)
+def macroEffectivePosition = macroPosition
 
 //===============================
 // message
@@ -551,13 +536,11 @@ splitSize:${splitSize}, splitIndex:${splitIndex}
 splitLimits:${splitLimitPrices}
 splitLimitPrice:${splitLimitPrice}
 splitBuyLimited:${splitBuyLimited}
-position:${averagePosition} (micro:${microPosition}, meso:${mesoPosition}, macro:${macroPosition})
-microTripleScreenStrategy
-${microTripleScreenStrategy}
-mesoTripleScreenStrategy
-${mesoTripleScreenStrategy}
-macroTripleScreenStrategy
-${macroTripleScreenStrategy}
+position:(micro:${microPosition}, meso:${mesoPosition}, macro:${macroPosition})
+effectivePosition:(micro:${microEffectivePosition}, meso:${mesoEffectivePosition}, macro:${macroEffectivePosition})
+microTripleScreen:${microTripleScreenStrategy}
+mesoTripleScreen:${mesoTripleScreenStrategy}
+macroTripleScreen:${macroTripleScreenStrategy}
 """
 log.info("message: {}", message)
 tradeAsset.setMessage(message)
@@ -566,12 +549,12 @@ tradeAsset.setMessage(message)
 // execute strategy
 //===============================
 // macro strategy
-macroTripleScreenStrategy.getResult(averagePosition).ifPresent {
+macroTripleScreenStrategy.getResult(macroEffectivePosition).ifPresent {
     log.info("macro strategy result: {}", it)
     strategyResult = it
 }
 // meso strategy (overrides macro)
-mesoTripleScreenStrategy.getResult(averagePosition).ifPresent {
+mesoTripleScreenStrategy.getResult(mesoEffectivePosition).ifPresent {
     log.info("meso strategy result: {}", it)
     boolean accepted = true
     // buy veto filter - 매수 시 상위 macro 스케일 wave가 과매수 상태이면 매수 중지
@@ -591,7 +574,7 @@ mesoTripleScreenStrategy.getResult(averagePosition).ifPresent {
     }
 }
 // micro strategy (overrides meso, macro)
-microTripleScreenStrategy.getResult(averagePosition).ifPresent {
+microTripleScreenStrategy.getResult(microEffectivePosition).ifPresent {
     log.info("micro strategy result: {}", it)
     boolean accepted = true
     // buy veto filter - 매수 시 상위 meso 스케일 wave가 과매수 상태이면 매수 중지
