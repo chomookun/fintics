@@ -95,11 +95,9 @@ public class KisBrokerClient extends BrokerClient {
         return httpHeaders;
     }
 
-    private synchronized void sleep() throws InterruptedException {
-        synchronized (LOCK_OBJECT) {
-            long sleepMillis = production ? 200 : 1_000;
-            KisAccessThrottler.sleep(appKey, sleepMillis);
-        }
+    private void sleep() throws InterruptedException {
+        long sleepMillis = production ? 100 : 1_000;
+        KisAccessThrottler.sleep(appKey, sleepMillis);
     }
 
     @Override
