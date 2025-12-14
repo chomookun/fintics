@@ -38,8 +38,6 @@ import java.util.stream.Collectors;
 @Slf4j
 public class KisUsBrokerClient extends BrokerClient {
 
-    private final static Object LOCK_OBJECT = new Object();
-
     private final boolean production;
 
     private final String apiUrl;
@@ -103,11 +101,9 @@ public class KisUsBrokerClient extends BrokerClient {
     /**
      * Force to sleep
      */
-    private synchronized void sleep() throws InterruptedException {
-        synchronized (LOCK_OBJECT) {
-            long sleepMillis = production ? 200 : 1_000;
-            KisAccessThrottler.sleep(appKey, sleepMillis);
-        }
+    private void sleep() throws InterruptedException {
+        long sleepMillis = production ? 100 : 1_000;
+        KisAccessThrottler.sleep(appKey, sleepMillis);
     }
 
     /**
