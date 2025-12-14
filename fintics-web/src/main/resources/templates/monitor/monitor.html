@@ -428,6 +428,18 @@
                             (
                             <span data-th-text="#{fintics.core.trade.Trade.investAmount}"></span>:
                             <span data-th-text="${#numbers.formatDecimal(trade.investAmount,3,'COMMA',2,'POINT')}" class="number"></span>
+                            <span th:data-duice-bind="|monitorMap.get('${trade.tradeId}').trade|"
+                                  th:data-duice-if="|return monitorMap.get('${trade.tradeId}').trade.dcaEnabled;|"
+                                  class="font-size--smaller">
+                                <small>|</small>
+                                <span th:data-duice-bind="|monitorMap.get('${trade.tradeId}').trade|"
+                                      th:data-duice-property="dcaFrequency">
+                                </span>
+                                +<span th:data-duice-bind="|monitorMap.get('${trade.tradeId}').trade|"
+                                      th:data-duice-property="dcaAmount" data-duice-format="number()">
+                                </span>
+                            </span>
+
                             )
                         </span>
                     </div>
