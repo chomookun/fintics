@@ -35,7 +35,8 @@ static List<Item> getEtfItems(market, etfSymbol) {
 static List<Item> getUsEtfItems(etfSymbol) {
     try {
         def url= new URL("https://finviz.com/api/etf_holdings/${etfSymbol}/top_ten")
-        def responseJson= url.text
+        def connection = url.openConnection()
+        def responseJson = connection.inputStream.text
         def jsonSlurper = new JsonSlurper()
         def responseMap = jsonSlurper.parseText(responseJson)
         def top10Holdings = responseMap.get('rowData')
@@ -72,7 +73,9 @@ static List<Item> getUsEtfItems(etfSymbol) {
 static List<Item> getKrEtfItems(etfSymbol) {
     try {
         def url = new URL("https://m.stock.naver.com/api/stock/${etfSymbol}/etfAnalysis")
-        def responseJson = url.text
+        def connection = url.openConnection()
+        connection.setRequestProperty("User-Agent", "Mozilla/5.0")
+        def responseJson = connection.inputStream.text
         def jsonSlurper = new JsonSlurper()
         def responseMap = jsonSlurper.parseText(responseJson)
         def top10Holdings = responseMap.get('etfTop10MajorConstituentAssets')
@@ -136,7 +139,6 @@ def usEtfs = [
         "QGRW", // WisdomTree Trust WisdomTree U.S. Quality Growth Fund
         "XNTK", // SPDR NYSE Technology ETF
         "BAI",  // BlackRock ETF Trust iShares A.I. Innovation and Tech Active ET
-        "FXL",  // First Trust Technology AlphaDEX
         "XT",   // iShares Exponential Technologies ETF
         // dividend
         "DGRW", // (*)WisdomTree U.S. Quality Dividend Growth Fund
@@ -144,7 +146,7 @@ def usEtfs = [
         "BALI", // (*)iShares Advantage Large Cap Income ETF
         "JEPI", // (*)JPMorgan Equity Premium Income ETF
         "DGRO", // iShares Core Dividend Growth ETF
-        "SHCH", // Schwab U.S. Dividend Equity ETF
+        "SCHD", // Schwab U.S. Dividend Equity ETF
         "SDY",  // SPDR S&P Dividend ETF
         "DVY",  // iShares Select Dividend ETF
         "VYM",  // Vanguard High Dividend Yield ETF
@@ -163,37 +165,27 @@ def krEtfs = [
         "472150",   // (*)TIGER 배당커버드콜액티브
         "498400",   // (*)KODEX 200타겟위클리커버드콜
         "496080",   // (*)TIGER 코리아밸류업
-        "122090",   // PLUS 코스피50
-        "237350",   // KODEX 코스피100
         "069500",   // KODEX 200
         "494890",   // KODEX 200액티브
+        "122090",   // PLUS 코스피50
+        "237350",   // KODEX 코스피100
         "451060",   // 1Q K200액티브
-        "385720",   // TIMEFOLIO 코스피액티브
         "495230",   // KoAct 코리아밸류업액티브
         "495060",   // TIMEFOLIO 코리아밸류업액티브
-        "325010",   // KODEX 성장주
         "0074K0",   // KoAct K수출핵심기업TOP30액티브
-        "280920",   // PLUS 주도업종
-        "226380",   // ACE Fn성장소비주도주
-        "395760",   // PLUS ESG성장주액티브
-        "373490",   // KODEX 코리아혁신성장액티브
         "444200",   // SOL 코리아메가테크액티브
         // dividend
         "441800",   // (*)TIMEFOLIO Korea플러스배당액티브
         "161510",   // (*)PLUS 고배당주
         "279530",   // (*)KODEX 고배당주
         "0052D0",   // (*)TIGER 코리아배당다우존스
-        "211900",   // KODEX 배당성장
-        "476850",   // KoAct 배당성장액티브
-        "211900",   // KODEX 코리아배당성장
         "315960",   // RISE 대형고배당10TR
         "104530",   // KIWOOM 고배당
         "266160",   // RISE 고배당
         "210780",   // TIGER 코스피고배당
-        "322410",   // HANARO 고배당
+        "476850",   // KoAct 배당성장액티브
+        "211900",   // KODEX 코리아배당성장
         "325020",   // KODEX 배당가치
-        "251590",   // PLUS 고배당저변동50
-        "447430",   // ACE 주주환원가치주액티브
         "494330",   // ACE 라이프자산주주가치액티브
 ]
 
