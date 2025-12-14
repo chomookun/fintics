@@ -45,7 +45,7 @@ public class TradeRequest {
     private boolean dcaEnabled;
 
     @Schema(description = "DCA frequency")
-    private Trade.DCA_FREQUENCY dcaFrequency;
+    private Trade.DcaFrequency dcaFrequency;
 
     @Schema(description = "DCA amount")
     private BigDecimal dcaAmount;

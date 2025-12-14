@@ -60,7 +60,7 @@ public class TradeEntity extends BaseEntity {
     private boolean dcaEnabled;
 
     @Column(name = "dca_frequency", length = 16)
-    private Trade.DCA_FREQUENCY dcaFrequency;
+    private Trade.DcaFrequency dcaFrequency;
 
     @Column(name = "dca_amount")
     private BigDecimal dcaAmount;

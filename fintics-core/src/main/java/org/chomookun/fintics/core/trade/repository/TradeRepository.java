@@ -1,6 +1,5 @@
 package org.chomookun.fintics.core.trade.repository;
 
-import org.chomookun.fintics.core.broker.entity.BrokerEntity_;
 import org.chomookun.fintics.core.trade.entity.TradeEntity_;
 import org.chomookun.fintics.core.trade.entity.TradeEntity;
 import org.chomookun.fintics.core.trade.model.TradeSearch;
@@ -10,8 +9,10 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.JpaSpecificationExecutor;
 import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
+import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
+import java.math.BigDecimal;
 import java.util.List;
 
 @Repository
@@ -67,8 +68,25 @@ public interface TradeRepository extends JpaRepository<TradeEntity,String>, JpaS
      * @param tradeId trade id
      * @param sort sort
      */
-    @Modifying
-    @Query("update TradeEntity t set t.sort = :sort where t.tradeId= :tradeId")
-    void updateSort(String tradeId, Integer sort);
+    @Modifying(flushAutomatically = true, clearAutomatically = true)
+    @Query("""
+    update TradeEntity t
+    set t.sort = :sort
+    where t.tradeId= :tradeId
+    """)
+    void updateSort(@Param("tradeId") String tradeId, @Param("sort") Integer sort);
+
+    /**
+     * Updates invest amount
+     * @param tradeId trade id
+     * @param investAmount invest amount
+     */
+    @Modifying(flushAutomatically = true, clearAutomatically = true)
+    @Query("""
+    update TradeEntity t
+    set t.investAmount = :investAmount
+    where t.tradeId= :tradeId
+    """)
+    void updateInvestAmount(@Param("tradeId") String tradeId,  @Param("investAmount") BigDecimal investAmount);
 
 }

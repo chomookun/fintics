@@ -37,7 +37,7 @@ public class Trade {
 
     private boolean dcaEnabled;
 
-    private DCA_FREQUENCY dcaFrequency;
+    private DcaFrequency dcaFrequency;
 
     private BigDecimal dcaAmount;
 
@@ -61,7 +61,7 @@ public class Trade {
 
     private boolean notifyOnOrder;
 
-    public enum DCA_FREQUENCY { DAILY, WEEKLY, MONTHLY }
+    public enum DcaFrequency { DAILY, WEEKLY, MONTHLY }
 
     public static Trade from(TradeEntity tradeEntity) {
         return Trade.builder()

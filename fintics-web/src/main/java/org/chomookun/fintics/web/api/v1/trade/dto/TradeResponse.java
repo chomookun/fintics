@@ -33,7 +33,7 @@ public class TradeResponse {
 
     private boolean dcaEnabled;
 
-    private Trade.DCA_FREQUENCY dcaFrequency;
+    private Trade.DcaFrequency dcaFrequency;
 
     private BigDecimal dcaAmount;
 
