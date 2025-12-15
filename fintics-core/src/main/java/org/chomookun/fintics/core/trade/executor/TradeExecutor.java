@@ -91,6 +91,9 @@ public class TradeExecutor {
         Basket basket = basketService.getBasket(trade.getBasketId()).orElseThrow();
         log.info("[{}] basket: {}", trade.getName(), basket.getName());
 
+        // balance
+        Balance balance = brokerClient.getBalance();
+
         // checks buy condition
         for (BasketAsset basketAsset : basket.getBasketAssets()) {
             try {
@@ -146,7 +149,7 @@ public class TradeExecutor {
                 log.info("[{} - {}] minuteOhlcvs({}):{}", tradeAsset.getAssetId(), tradeAsset.getName(), tradeAsset.getMinuteOhlcvs().size(), tradeAsset.getMinuteOhlcvs().isEmpty() ? null : tradeAsset.getMinuteOhlcvs().get(0));
 
                 // balance
-                Balance balance = brokerClient.getBalance();
+//                Balance balance = brokerClient.getBalance();
                 BalanceAsset balanceAsset = balance.getBalanceAsset(basketAsset.getAssetId()).orElse(null);
 
                 // order book
