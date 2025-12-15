@@ -98,7 +98,7 @@ public class TradeExecutor {
         for (BasketAsset basketAsset : basket.getBasketAssets()) {
             try {
                 // prevent mixed message by overhead
-                Thread.sleep(100);
+//                Thread.sleep(100);
 
                 // logging
                 log.info("-".repeat(80));
@@ -148,8 +148,7 @@ public class TradeExecutor {
                 log.info("[{} - {}] dailyOhlcvs({}):{}", tradeAsset.getAssetId(), tradeAsset.getName(), tradeAsset.getDailyOhlcvs().size(), tradeAsset.getDailyOhlcvs().isEmpty() ? null : tradeAsset.getDailyOhlcvs().get(0));
                 log.info("[{} - {}] minuteOhlcvs({}):{}", tradeAsset.getAssetId(), tradeAsset.getName(), tradeAsset.getMinuteOhlcvs().size(), tradeAsset.getMinuteOhlcvs().isEmpty() ? null : tradeAsset.getMinuteOhlcvs().get(0));
 
-                // balance
-//                Balance balance = brokerClient.getBalance();
+                // balance asset
                 BalanceAsset balanceAsset = balance.getBalanceAsset(basketAsset.getAssetId()).orElse(null);
 
                 // order book
