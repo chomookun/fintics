@@ -97,9 +97,6 @@ public class TradeExecutor {
         // checks buy condition
         for (BasketAsset basketAsset : basket.getBasketAssets()) {
             try {
-                // prevent mixed message by overhead
-//                Thread.sleep(100);
-
                 // logging
                 log.info("-".repeat(80));
                 log.info("[{} - {}] check asset", basketAsset.getAssetId(), basketAsset.getName());
