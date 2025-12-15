@@ -160,22 +160,26 @@ Equity(Growth) 35% + Equity(Dividend) 35% + Bond(Sovereign) 10% + Bond(Aggregate
 
 
 ### 2. KR Market (50% of Passive EMP)
-US.Equity(Growth) 17.5% + US.Equity(Dividend) 17.5% + KR.Equity(Growth) 17.5% + KR.Equity(Dividend) 17.5% + US.Bond(Sovereign) 10% + US.Bond(Aggregate) 10% + Cash Equivalent 10%
+Global.Equity(Growth) 17.5% + Global.Equity(Dividend) 17.5% + KR.Equity(Growth) 17.5% + KR.Equity(Dividend) 17.5% + US.Bond(Sovereign) 10% + US.Bond(Aggregate) 10% + Cash Equivalent 10%
 
-#### [17.5%] US.Equity(Growth) ETF
+#### [17.5%] Global.Equity(Growth) ETF
 
-| Symbol     | Name | Holding weight | Reference |
-|------------|----|----------------|--------------------------------------------|
-| **474220** | TIGER 미국테크TOP10타겟커버드콜 | 8.75%          | [K-ETF](https://www.k-etf.com/etf/474220) |
-| **486290** | TIGER 미국나스닥100타겟데일리커버드콜 | 8.75%          | [K-ETF](https://www.k-etf.com/etf/486290) |
+| Symbol | Name | Holding weight | Reference |
+|------|--|----------------|-------------------------------------|
+| **474220** | TIGER 미국테크TOP10타겟커버드콜 | 4.37%          | [K-ETF](https://www.k-etf.com/etf/474220) |
+| **486290** | TIGER 미국나스닥100타겟데일리커버드콜 | 4.37%          | [K-ETF](https://www.k-etf.com/etf/486290) |
+| **482730** | TIGER 미국S&P500타겟데일리커버드콜 | 4.37%          | [K-ETF](https://www.k-etf.com/etf/482730) |
+| **0128D0** | PLUS 차이나항셍테크위클리타겟커버드콜 | 4.37%          | [K-ETF](https://www.k-etf.com/etf/0128D0) |
 
-#### [17.5%] US.Equity(Dividend) ETF
+#### [17.5%] Global.Equity(Dividend) ETF
 
-| Symbol | Name | Holding weight | Reference                            |
-|------|--|----------------|--------------------------------------|
-| **441640** | KODEX 미국배당커버드콜액티브 | 5.83%          | [K-ETF](https://www.k-etf.com/etf/441640) |
-| **0046Y0** | ACE 미국배당퀄리티 | 5.83%          | [K-ETF](https://www.k-etf.com/etf/0046Y0) |
-| **0049M0** | ACE 미국배당퀄리티+커버드콜액티브 | 5.83%          | [K-ETF](https://www.k-etf.com/etf/0049M0)  |
+| Symbol | Name                | Holding weight | Reference                            |
+|------|---------------------|----------------|--------------------------------------|
+| **441640** | KODEX 미국배당커버드콜액티브   | 3.5%           | [K-ETF](https://www.k-etf.com/etf/441640) |
+| **0046Y0** | ACE 미국배당퀄리티         | 3.5%           | [K-ETF](https://www.k-etf.com/etf/0046Y0) |
+| **0049M0** | ACE 미국배당퀄리티+커버드콜액티브 | 3.5%           | [K-ETF](https://www.k-etf.com/etf/0049M0)  |
+| **0036D0** | TIMEFOLIO 미국배당다우존스액티브     | 3.5%           | [K-ETF](https://www.k-etf.com/etf/0036D0)  |
+| **487950** | KODEX 대만테크고배당다우존스         | 3.5%           | [K-ETF](https://www.k-etf.com/etf/487950)  |
 
 #### [17.5%] KR.Equity(Growth) ETF
 
@@ -204,10 +208,11 @@ US.Equity(Growth) 17.5% + US.Equity(Dividend) 17.5% + KR.Equity(Growth) 17.5% + 
 
 #### [10%] US.Bond(Aggregate) ETF
 
-| Symbol   | Name                     | Holding weight | Reference                                                                  |
-|----------|--------------------------|----------------|----------------------------------------------------------------------------|
-| **468630** | KODEX iShares미국투자등급회사채액티브 | 5%             | [K-ETF](https://www.k-etf.com/etf/468630) |
-| **468380** | KODEX iShares미국하이일드액티브 | 5%             | [K-ETF](https://www.k-etf.com/etf/468380) |
+| Symbol | Name | Holding weight | Reference                                                            |
+|------|----|----------------|----------------------------------------------------------------------|
+| **468630** | KODEX iShares미국투자등급회사채액티브 | 3.33%          | [K-ETF](https://www.k-etf.com/etf/468630) |
+| **468380** | KODEX iShares미국하이일드액티브 | 3.33%          | [K-ETF](https://www.k-etf.com/etf/468380) |
+| **0022T0** | SOL 국제금커버드콜액티브 | 3.33%          | [K-ETF](https://www.k-etf.com/etf/0022T0) |
 
 #### [10%] Cash Equivalent ETF
 | Symbol   | Name | Holding weight | Reference                                                            |
