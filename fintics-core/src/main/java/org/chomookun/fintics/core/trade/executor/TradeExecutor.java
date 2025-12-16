@@ -147,6 +147,10 @@ public class TradeExecutor {
 
                 // balance asset
                 BalanceAsset balanceAsset = balance.getBalanceAsset(basketAsset.getAssetId()).orElse(null);
+                if (balanceAsset != null) {
+                    // updates current price
+                    balanceAsset.setPrice(minuteOhlcvs.get(0).getClose());
+                }
 
                 // order book
                 OrderBook orderBook = brokerClient.getOrderBook(basketAsset);

@@ -233,6 +233,7 @@ public class UpbitBrokerClient extends BrokerClient {
                         .name(symbol)
                         .build();
                 OrderBook orderBook = getOrderBook(asset);
+                BigDecimal price = orderBook.getPrice();
                 BigDecimal assetValuationAmount = orderBook.getPrice().multiply(assetBalance)
                         .setScale(2, RoundingMode.CEILING);
                 valuationAmount = valuationAmount.add(assetValuationAmount);
@@ -245,11 +246,9 @@ public class UpbitBrokerClient extends BrokerClient {
                 BalanceAsset balanceAsset = BalanceAsset.builder()
                         .assetId(toAssetId(symbol))
                         .name(symbol)
+                        .price(price)
                         .quantity(assetBalance)
                         .orderableQuantity(assetBalance)
-                        .purchaseAmount(assetPurchaseAmount)
-                        .valuationAmount(assetValuationAmount)
-                        .profitAmount(assetProfitAmount)
                         .build();
                 balanceAssets.add(balanceAsset);
             }

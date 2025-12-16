@@ -17,27 +17,34 @@ public class BalanceAsset extends Asset {
 
     private String accountNo;
 
+    private BigDecimal price;
+
     private BigDecimal quantity;
 
     private BigDecimal orderableQuantity;
 
     private BigDecimal purchasePrice;
 
-    private BigDecimal purchaseAmount;
+    public BigDecimal getPurchaseAmount() {
+        return purchasePrice.multiply(quantity);
+    }
 
-    private BigDecimal valuationPrice;
+    public BigDecimal getValuationPrice() {
+        return price;
+    }
 
-    private BigDecimal valuationAmount;
+    public BigDecimal getValuationAmount() {
+        return price.multiply(quantity);
+    }
 
-    private BigDecimal profitAmount;
+    public BigDecimal getProfitAmount() {
+        return getValuationAmount().subtract(getPurchaseAmount());
+    }
 
     public BigDecimal getProfitPercentage() {
-        if (profitAmount != null && purchaseAmount != null) {
-            return getProfitAmount().divide(getPurchaseAmount(), MathContext.DECIMAL32)
-                    .multiply(BigDecimal.valueOf(100))
-                    .setScale(2, RoundingMode.HALF_UP);
-        }
-        return null;
+        return getProfitAmount().divide(getPurchaseAmount(), MathContext.DECIMAL32)
+                .multiply(BigDecimal.valueOf(100))
+                .setScale(2, RoundingMode.FLOOR);
     }
 
 }
