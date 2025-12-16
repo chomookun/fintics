@@ -62,13 +62,6 @@ class UsAssetClientTest extends CoreTestSupport {
                         .name("Alphabet Inc. Class C Capital Stock")
                         .market("US")
                         .type("STOCK")
-                        .build(),
-                // Mid cap
-                Asset.builder()
-                        .assetId("US.ADSK")
-                        .name("Autodesk Inc. Common Stock")
-                        .market("US")
-                        .type("STOCK")
                         .build()
         );
     }
