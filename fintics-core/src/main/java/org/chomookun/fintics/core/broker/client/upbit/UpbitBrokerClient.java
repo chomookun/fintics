@@ -216,17 +216,14 @@ public class UpbitBrokerClient extends BrokerClient {
             String currency = row.get("currency");
             String unitCurrency = row.get("unit_currency");
             String symbol = String.format("%s-%s", unitCurrency, currency);
-            BigDecimal assetBalance = new BigDecimal(row.get("balance"));
-            BigDecimal lockedBalance = new BigDecimal(row.get("locked"));
+            BigDecimal balance = new BigDecimal(row.get("balance"));
+            BigDecimal locked = new BigDecimal(row.get("locked"));
             BigDecimal assetAverageBuyPrice = new BigDecimal(row.get("avg_buy_price"));
             if("KRW".equals(currency) && "KRW".equals(unitCurrency)) {
-                // '출금이나 주문 등에 잠겨 있는 잔액'이라는데 언제부터인지 원화보유량이 일부(대부분인듯)이 여기 해당 값으로 응답함.
-                totalAmount = totalAmount.add(assetBalance).add(lockedBalance);
-                cacheAmount = cacheAmount.add(assetBalance).add(lockedBalance);
+                // '출금이나 주문 등에 잠겨 있는 잔액'은 주문 미결 금액으로 해당 금액도 총 자산에 포함되어야 함
+                totalAmount = totalAmount.add(balance).add(locked);
+                cacheAmount = cacheAmount.add(balance).add(locked);
             }else{
-                BigDecimal assetPurchaseAmount = assetAverageBuyPrice.multiply(assetBalance)
-                        .setScale(0, RoundingMode.CEILING);
-                purchaseAmount = purchaseAmount.add(assetPurchaseAmount);
                 // upbit 의 경우 평가 금액 확인 불가로 order book 재조회 후 산출
                 Asset asset = Asset.builder()
                         .assetId(toAssetId(symbol))
@@ -234,25 +231,25 @@ public class UpbitBrokerClient extends BrokerClient {
                         .build();
                 OrderBook orderBook = getOrderBook(asset);
                 BigDecimal price = orderBook.getPrice();
-                BigDecimal assetValuationAmount = orderBook.getPrice().multiply(assetBalance)
-                        .setScale(2, RoundingMode.CEILING);
-                valuationAmount = valuationAmount.add(assetValuationAmount);
-                totalAmount = totalAmount.add(assetValuationAmount);
-                // profit amount
-                BigDecimal assetProfitAmount = assetValuationAmount.subtract(assetPurchaseAmount)
-                        .setScale(2, RoundingMode.CEILING);
-                profitAmount = profitAmount.add(assetProfitAmount);
-                // add
+                BigDecimal quantity = balance;
+                BigDecimal orderableQuantity = balance;
+                BigDecimal purchasePrice = assetAverageBuyPrice;
                 BalanceAsset balanceAsset = BalanceAsset.builder()
                         .assetId(toAssetId(symbol))
                         .name(symbol)
+                        .currency(getDefinition().getCurrency())
                         .price(price)
-                        .quantity(assetBalance)
-                        .orderableQuantity(assetBalance)
+                        .quantity(quantity)
+                        .orderableQuantity(orderableQuantity)
+                        .purchasePrice(purchasePrice)
                         .build();
+                // 원화 평가금을 총 금액에 추가
+                totalAmount = totalAmount.add(balanceAsset.getValuationAmount());
+                // adds to balance assets
                 balanceAssets.add(balanceAsset);
             }
         }
+        // returns balance
         return Balance.builder()
                 .totalAmount(totalAmount.setScale(0, RoundingMode.CEILING))
                 .cashAmount(cacheAmount.setScale(0, RoundingMode.CEILING))

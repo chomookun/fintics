@@ -22,6 +22,8 @@ public class Asset {
 
     private String exchange;
 
+    private Currency currency;
+
     private String type;
 
     private String sector;

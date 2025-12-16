@@ -472,6 +472,7 @@ public class KisBrokerClient extends BrokerClient {
                                     .assetId(toAssetId(row.get("pdno")))
                                     .name(row.get("prdt_name"))
                                     .market(getDefinition().getMarket())
+                                    .currency(getDefinition().getCurrency())
                                     .price(new BigDecimal(row.get("prpr")))
                                     .quantity(new BigDecimal(row.get("hldg_qty")))
                                     .orderableQuantity(new BigDecimal(row.get("ord_psbl_qty")))
