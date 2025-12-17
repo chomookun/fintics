@@ -1,7 +1,9 @@
 import groovy.json.JsonSlurper
 import groovy.transform.ToString
 import groovy.transform.builder.Builder
+import org.chomookun.fintics.core.asset.model.AssetSearch
 import org.chomookun.fintics.core.basket.rebalance.BasketRebalanceAsset
+import org.springframework.data.domain.Pageable
 
 import java.math.RoundingMode
 
@@ -13,7 +15,8 @@ import java.math.RoundingMode
 class Item {
     String symbol
     String name
-    BigDecimal count
+    Set<String> etfs
+    Integer count
     BigDecimal weight
     BigDecimal score
     String remark
@@ -51,12 +54,6 @@ static List<Item> getUsEtfItems(etfSymbol) {
                     .weight(it.weight * 100 as BigDecimal) // Convert to percentage
                     .build()
         }
-        // re-calculate weight in top holdings
-        def top10Weight = top10Holdings.sum { it.weight } as BigDecimal
-        top10Holdings = top10Holdings.collect {
-            it.weight = (it.weight / top10Weight) * 100 // Convert to percentage
-            return it
-        }
         // return top 10 holdings
         return top10Holdings
     } catch (Exception e) {
@@ -75,7 +72,12 @@ static List<Item> getKrEtfItems(etfSymbol) {
         def url = new URL("https://m.stock.naver.com/api/stock/${etfSymbol}/etfAnalysis")
         def connection = url.openConnection()
         connection.setRequestProperty("User-Agent", "Mozilla/5.0")
-        def responseJson = connection.inputStream.text
+        def responseJson
+        try {
+            responseJson = connection.inputStream.text
+        } catch (Exception e) {
+            return []
+        }
         def jsonSlurper = new JsonSlurper()
         def responseMap = jsonSlurper.parseText(responseJson)
         def top10Holdings = responseMap.get('etfTop10MajorConstituentAssets')
@@ -84,17 +86,18 @@ static List<Item> getKrEtfItems(etfSymbol) {
             return []
         }
         top10Holdings = top10Holdings.collect {
+            def weightStr = (it.etfWeight ?: "").toString()
+                    .replace("%", "")
+                    .trim()
+
+            // 숫자 없는 케이스 방어
+            def weightVal = (weightStr.isNumber() ? new BigDecimal(weightStr) : BigDecimal.ZERO)
+
             Item.builder()
                     .symbol(it.itemCode as String)
                     .name(it.itemName as String)
-                    .weight(it.etfWeight.replace("%", "") as BigDecimal)
+                    .weight(weightVal)
                     .build()
-        }
-        // re-calculate weight in top holdings
-        def top10Weight = top10Holdings.sum { it.weight } as BigDecimal
-        top10Holdings = top10Holdings.collect {
-            it.weight = (it.weight / top10Weight) * 100 // Convert to percentage
-            return it
         }
         // return top 10 holdings
         return top10Holdings
@@ -109,12 +112,14 @@ static List<Item> getKrEtfItems(etfSymbol) {
 // defines
 //=======================================
 log.info("== variables: ${variables}")
-def market = variables.market
+def market = variables.market as String
 def totalHoldingWeight = variables.totalHoldingWeight as BigDecimal
 def holdingCount = variables.holdingCount as Integer
 def maxHoldingWeight = variables.maxHoldingWeight as BigDecimal
 def minHoldingWeight = variables.minHoldingWeight as BigDecimal
 def stepHoldingWeight = variables.stepHoldingWeight as BigDecimal
+def favoriteEnabled = variables.favoriteEnabled?.toString()?.toBoolean() ?: false
+def favoriteCount = variables.favoriteCount as Integer
 
 // US ETFs
 def usEtfs = [
@@ -189,6 +194,34 @@ def krEtfs = [
         "494330",   // ACE 라이프자산주주가치액티브
 ]
 
+// 데이터베이스에 등록된 즐겨찾기 ETF 심볼 추가
+if (favoriteEnabled) {
+    List<Asset> favoriteEtfs = assetService.getAssets(AssetSearch.builder()
+            .market(market)
+            .type("ETF")
+            .favorite(true)
+            .build(), Pageable.unpaged())
+            .getContent()
+            .take(favoriteCount)
+    log.info("Favorite ETF for market ${market}:")
+    favoriteEtfs.each {
+        log.info("[${it.symbol}] ${it.name}")
+    }
+    List<String> favoriteEtfSymbols = favoriteEtfs.collect{it.symbol}
+    switch (market) {
+        case "US":
+            usEtfs.addAll(favoriteEtfSymbols)
+            usEtfs.unique()
+            break
+        case "KR":
+            krEtfs.addAll(favoriteEtfSymbols)
+            krEtfs.unique()
+            break
+        default:
+            throw new RuntimeException("Unsupported market: ${market}")
+    }
+}
+
 /**
  * gets rank ETF items for the given market and ETF symbols
  * @param market
@@ -197,8 +230,13 @@ def krEtfs = [
  */
 def getRankEtfItems(market, etfSymbols) {
     List<Item> etfItems = []
-    etfSymbols.each {
-        etfItems.addAll(getEtfItems(market, it))
+    etfSymbols.each { etfSymbol ->
+        def items = getEtfItems(market, etfSymbol)
+        items.each { item ->
+            if (item.etfs == null) item.etfs = new LinkedHashSet<>()
+            item.etfs.add(etfSymbol)
+        }
+        etfItems.addAll(items)
     }
 
     // 우선주,Class 등 본주로 치환
@@ -218,11 +256,14 @@ def getRankEtfItems(market, etfSymbols) {
     etfItems = etfItems
             .groupBy { it.symbol }
             .collect { symbol, items ->
+                def weightSum = items*.weight.findAll().sum() ?: 0
+                def mergedEtfs = new LinkedHashSet<>(items.collectMany { it.etfs ?: [] })
                 new Item(
                         symbol: symbol,
                         name: items[0].name,
-                        count: items.size(),
-                        weight: items*.weight.findAll().average() ?: 0
+                        etfs: mergedEtfs as Set<String>,
+                        count: mergedEtfs.size(),
+                        weight: weightSum as BigDecimal
                 )
             }
 
@@ -243,21 +284,10 @@ def getRankEtfItems(market, etfSymbols) {
 
     // score
     etfItems = etfItems.collect { item ->
-        // count score - 전체 대상 ETF 개수 대비 해당 종목을 포함한 ETF 개수로 계산
-        def countScore = item.count / etfSymbols.size() * 100
-
-        // 해당 종목에 포함된 ETF 에서 차지하는 보유비중 평균
-        def weightScore = item.weight
-
         // score
-        item.score = [
-                countScore,
-                weightScore
-        ].average() as BigDecimal
-
+        item.score = item.weight
         // remark
-        item.remark = "Count: ${item.count}(${countScore}), Weight: ${item.weight}%(${weightScore}), Score: ${item.score}"
-
+        item.remark = "etfs:[${item.etfs.join(',')}], count:${item.count}, weight:${item.weight}%, Score:${item.score}"
         // returns
         return item
     }
