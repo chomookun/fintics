@@ -7,6 +7,9 @@ import org.chomookun.fintics.core.basket.entity.BasketAssetEntity;
 import org.chomookun.fintics.core.basket.entity.BasketDividerEntity;
 import org.chomookun.fintics.core.basket.entity.BasketEntity;
 import org.chomookun.fintics.core.basket.model.BasketDivider;
+import org.chomookun.fintics.core.basket.rebalance.BasketRebalanceTask;
+import org.chomookun.fintics.core.basket.rebalance.BasketRebalanceTaskExecutor;
+import org.chomookun.fintics.core.basket.rebalance.BasketRebalanceTaskFactory;
 import org.chomookun.fintics.core.basket.repository.BasketRepository;
 import org.chomookun.fintics.core.trade.repository.TradeRepository;
 import org.chomookun.fintics.core.basket.model.Basket;
@@ -34,6 +37,8 @@ public class BasketService {
     private final BasketRepository basketRepository;
 
     private final TradeRepository tradeRepository;
+
+    private final BasketRebalanceTaskExecutor basketRebalanceTaskExecutor;
 
     @PersistenceContext
     private final EntityManager entityManager;
@@ -117,9 +122,10 @@ public class BasketService {
                     .build();
             basketEntity.getBasketDividers().add(basketDividerEntity);
         }
-        // save
+        // saves
         BasketEntity savedBasketEntity = basketRepository.saveAndFlush(basketEntity);
         entityManager.refresh(savedBasketEntity);
+        // returns
         return Basket.from(savedBasketEntity);
     }
 

@@ -534,8 +534,8 @@ def macroEffectivePosition = macroPosition
 def message = """
 splitSize:${splitSize}, splitIndex:${splitIndex}
 splitLimits:${splitLimitPrices}
-splitLimitPrice:${splitLimitPrice}
-splitBuyLimited:${splitBuyLimited}
+splitLimitPrice:${splitLimitPrice}, splitBuyLimited:${splitBuyLimited}
+sellProfitPercentageThreshold:${sellProfitPercentageThreshold}
 position:(micro:${microPosition}, meso:${mesoPosition}, macro:${macroPosition})
 effectivePosition:(micro:${microEffectivePosition}, meso:${mesoEffectivePosition}, macro:${macroEffectivePosition})
 microTripleScreen:${microTripleScreenStrategy}

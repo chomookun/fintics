@@ -8,6 +8,7 @@ import org.chomookun.arch4j.core.notification.NotificationService;
 import org.chomookun.fintics.core.FinticsCoreProperties;
 import org.chomookun.fintics.core.basket.rebalance.BasketRebalanceResult;
 import org.chomookun.fintics.core.basket.rebalance.BasketRebalanceTask;
+import org.chomookun.fintics.core.basket.rebalance.BasketRebalanceTaskExecutor;
 import org.chomookun.fintics.core.basket.rebalance.BasketRebalanceTaskFactory;
 import org.chomookun.fintics.core.basket.model.Basket;
 import org.chomookun.fintics.core.basket.model.BasketSearch;
@@ -45,6 +46,8 @@ public class BasketRebalanceScheduler {
     private final NotificationService notificationService;
 
     private final ExecutionService executionService;
+
+    private final BasketRebalanceTaskExecutor basketRebalanceTaskExecutor;
 
     /**
      * synchronizes scheduler with database
@@ -129,13 +132,13 @@ public class BasketRebalanceScheduler {
                 .build();
         try {
             Basket basket = basketService.getBasket(basketId).orElseThrow();
+            stringBuilder.append(String.format("Submit Basket rebalance - %s", basket.getName())).append('\n');
             execution = executionService.start(String.format("BasketRebalanceScheduler[%s]", basket.getName()));
-            stringBuilder.append(String.format("Basket rebalance completed - %s", basket.getName())).append('\n');
+
+            // submit tasks
             BasketRebalanceTask basketRebalanceTask = basketRebalanceTaskFactory.getObject(basket);
-            BasketRebalanceResult basketRebalanceResult = basketRebalanceTask.execute();
-            stringBuilder.append(basketRebalanceResult.toFormattedString());
-            execution.setTotalCount(new AtomicLong(basketRebalanceResult.getBasketRebalanceAssets().size()));
-            execution.setSuccessCount(new AtomicLong(basketRebalanceResult.getBasketRebalanceAssets().size()));
+            basketRebalanceTaskExecutor.submitTask(basketRebalanceTask);
+
             executionService.success(execution);
         } catch (Throwable e) {
             log.warn(e.getMessage(), e);

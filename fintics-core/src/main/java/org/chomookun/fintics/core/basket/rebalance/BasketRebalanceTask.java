@@ -2,6 +2,7 @@ package org.chomookun.fintics.core.basket.rebalance;
 
 import ch.qos.logback.classic.Logger;
 import lombok.Builder;
+import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
 import org.chomookun.fintics.core.broker.model.Balance;
 import org.chomookun.fintics.core.broker.model.BalanceAsset;
@@ -22,6 +23,7 @@ import java.util.Objects;
 @Slf4j
 public class BasketRebalanceTask {
 
+    @Getter
     private final Basket basket;
 
     private final BasketService basketService;

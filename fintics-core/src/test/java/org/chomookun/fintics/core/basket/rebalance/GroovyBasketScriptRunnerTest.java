@@ -23,7 +23,6 @@ class GroovyBasketScriptRunnerTest extends CoreTestSupport {
 
     private final OhlcvService ohlcvService;
 
-    @Disabled
     @Test
     void run() {
         // given
@@ -37,21 +36,26 @@ class GroovyBasketScriptRunnerTest extends CoreTestSupport {
                 .assetService(assetService)
                 .ohlcvService(ohlcvService)
                 .build();
-        List<BasketRebalanceAsset> basketRebalanceResults = groovyBasketScriptRunner.run();
+        List<BasketRebalanceAsset> basketRebalanceAssets = groovyBasketScriptRunner.run();
         // then
-        log.info("basketRebalanceResults: {}", basketRebalanceResults);
+        log.info("basketRebalanceAssets: {}", basketRebalanceAssets);
     }
 
     @Disabled
     @Test
-    void runStockBasketRebalanceUs() {
+    void runActiveBasketRebalanceUs() {
         // given
-        String script = CoreTestUtil.readFileAsString("src/main/scripts/basket/StockBasketRebalance.groovy");
-        String variables = "market=US\n" +
-                "growthHoldingCount=10\n" +
-                "growthHoldingWeight=3.5\n" +
-                "dividendHoldingCount=20\n" +
-                "dividendHoldingWeight=1.75\n";
+        String script = CoreTestUtil.readFileAsString("src/main/scripts/basket/ActiveBasketRebalance.groovy");
+        String variables = """
+                market=US
+                totalHoldingWeight=70
+                holdingCount=40
+                maxHoldingWeight=3.0
+                minHoldingWeight=0.5
+                stepHoldingWeight=0.07
+                favoriteEnabled=true
+                favoriteCount=1000
+                """;
         Basket basket = Basket.builder()
                 .market("KR")
                 .script(script)
@@ -63,21 +67,26 @@ class GroovyBasketScriptRunnerTest extends CoreTestSupport {
                 .assetService(assetService)
                 .ohlcvService(ohlcvService)
                 .build();
-        List<BasketRebalanceAsset> basketRebalanceResults = groovyBasketScriptRunner.run();
+        List<BasketRebalanceAsset> basketRebalanceAssets = groovyBasketScriptRunner.run();
         // then
-        log.info("basketRebalanceResults: {}", basketRebalanceResults);
+        log.info("basketRebalanceAssets: {}", basketRebalanceAssets);
     }
 
     @Disabled
     @Test
-    void runStockBasketRebalanceKr() {
+    void runActiveBasketRebalanceKr() {
         // given
-        String script = CoreTestUtil.readFileAsString("src/main/scripts/basket/StockBasketRebalance.groovy");
-        String variables = "market=KR\n" +
-                "growthHoldingCount=10\n" +
-                "growthHoldingWeight=3.5\n" +
-                "dividendHoldingCount=20\n" +
-                "dividendHoldingWeight=1.75\n";
+        String script = CoreTestUtil.readFileAsString("src/main/scripts/basket/ActiveBasketRebalance.groovy");
+        String variables = """
+                market=KR
+                totalHoldingWeight=70
+                holdingCount=40
+                maxHoldingWeight=3.0
+                minHoldingWeight=0.5
+                stepHoldingWeight=0.07
+                favoriteEnabled=true
+                favoriteCount=1000
+                """;
         Basket basket = Basket.builder()
                 .market("KR")
                 .script(script)
@@ -89,9 +98,9 @@ class GroovyBasketScriptRunnerTest extends CoreTestSupport {
                 .assetService(assetService)
                 .ohlcvService(ohlcvService)
                 .build();
-        List<BasketRebalanceAsset> basketRebalanceResults = groovyBasketScriptRunner.run();
+        List<BasketRebalanceAsset> basketRebalanceAssets = groovyBasketScriptRunner.run();
         // then
-        log.info("basketRebalanceResults: {}", basketRebalanceResults);
+        log.info("basketRebalanceAssets: {}", basketRebalanceAssets);
     }
 
 }

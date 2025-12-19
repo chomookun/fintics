@@ -15,11 +15,9 @@ import org.apache.commons.lang3.exception.ExceptionUtils;
 import org.chomookun.arch4j.core.common.support.texttable.TextTable;
 import org.chomookun.arch4j.core.common.data.PageableUtils;
 import org.chomookun.fintics.core.basket.model.BasketDivider;
+import org.chomookun.fintics.core.basket.rebalance.*;
 import org.chomookun.fintics.web.api.v1.basket.dto.BasketRequest;
 import org.chomookun.fintics.web.api.v1.basket.dto.BasketResponse;
-import org.chomookun.fintics.core.basket.rebalance.BasketRebalanceAsset;
-import org.chomookun.fintics.core.basket.rebalance.BasketScriptRunner;
-import org.chomookun.fintics.core.basket.rebalance.BasketScriptRunnerFactory;
 import org.chomookun.fintics.core.basket.model.Basket;
 import org.chomookun.fintics.core.basket.model.BasketAsset;
 import org.chomookun.fintics.core.basket.model.BasketSearch;
@@ -51,6 +49,9 @@ public class BasketRestController {
     private final BasketService basketService;
 
     private final BasketScriptRunnerFactory basketScriptRunnerFactory;
+
+    private final BasketRebalanceTaskExecutor basketRebalanceTaskExecutor;
+    private final BasketRebalanceTaskFactory basketRebalanceTaskFactory;
 
     @Operation(summary = "Gets baskets")
     @GetMapping
@@ -120,6 +121,9 @@ public class BasketRestController {
         basket.setBasketDividers(basketDividers);
         // save
         Basket savedBasket = basketService.saveBasket(basket);
+        // submit rebalance task
+        BasketRebalanceTask basketRebalanceTask = basketRebalanceTaskFactory.getObject(savedBasket);
+        basketRebalanceTaskExecutor.submitTask(basketRebalanceTask);
         // response
         return ResponseEntity.status(HttpStatus.CREATED)
                 .body(BasketResponse.from(savedBasket));
@@ -166,6 +170,10 @@ public class BasketRestController {
         basket.setBasketDividers(basketDividers);
         // save
         Basket savedBasket = basketService.saveBasket(basket);
+        // submit rebalance task
+        BasketRebalanceTask basketRebalanceTask = basketRebalanceTaskFactory.getObject(savedBasket);
+        basketRebalanceTaskExecutor.submitTask(basketRebalanceTask);
+        // response
         return ResponseEntity.ok(BasketResponse.from(savedBasket));
     }
 
