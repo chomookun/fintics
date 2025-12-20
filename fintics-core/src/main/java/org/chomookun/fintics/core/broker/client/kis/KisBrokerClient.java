@@ -111,6 +111,11 @@ public class KisBrokerClient extends BrokerClient {
         return !isHoliday(datetime);
     }
 
+    @Override
+    public boolean isOhlcvTrusted() throws InterruptedException {
+        return production;
+    }
+
     /**
      * Checks holiday
      * @see <a href="https://apiportal.koreainvestment.com/apiservice/apiservice-domestic-index-quotations#L_5c488ab2-59fd-486e-bf74-b68e813e35c0">

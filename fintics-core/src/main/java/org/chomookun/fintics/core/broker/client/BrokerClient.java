@@ -30,6 +30,8 @@ public abstract class BrokerClient {
 
     public abstract boolean isOpened(LocalDateTime datetime) throws InterruptedException;
 
+    public abstract boolean isOhlcvTrusted() throws InterruptedException;
+
     public abstract List<Ohlcv> getMinuteOhlcvs(Asset asset) throws InterruptedException;
 
     public abstract List<Ohlcv> getDailyOhlcvs(Asset asset) throws InterruptedException;

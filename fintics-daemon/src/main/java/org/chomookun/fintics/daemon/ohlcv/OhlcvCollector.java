@@ -65,12 +65,23 @@ public class OhlcvCollector extends AbstractTask {
                 if (basket == null) {
                     continue;
                 }
+                // broker client
+                Broker broker = brokerRepository.findById(trade.getBrokerId())
+                        .map(Broker::from)
+                        .orElseThrow();
+                BrokerClient brokerClient = tradeClientFactory.getObject(broker);
+
+                // ✅ checks trusted ohlcv
+                if (!brokerClient.isOhlcvTrusted()) {
+                    log.debug("OhlcvCollector - skip ohlcv (untrusted broker): {}", brokerClient.getClass().getSimpleName());
+                    continue;
+                }
                 List<BasketAsset> basketAssets = basket.getBasketAssets();
                 for (BasketAsset basketAsset : basketAssets) {
                     execution.getTotalCount().incrementAndGet();
                     try {
-                        saveMinuteOhlcvs(trade, basketAsset);
-                        saveDailyOhlcvs(trade, basketAsset);
+                        saveMinuteOhlcvs(brokerClient, basketAsset);
+                        saveDailyOhlcvs(brokerClient, basketAsset);
                         execution.getSuccessCount().incrementAndGet();
                     } catch (Throwable e){
                         log.warn(e.getMessage());
@@ -94,15 +105,10 @@ public class OhlcvCollector extends AbstractTask {
 
     /**
      * saves minute ohlcvs
-     * @param trade trade
+     * @param brokerClient broker client
      * @param basketAsset basket asset
      */
-    private void saveMinuteOhlcvs(Trade trade, BasketAsset basketAsset) throws InterruptedException {
-        // current
-        Broker broker = brokerRepository.findById(trade.getBrokerId())
-                .map(Broker::from)
-                .orElseThrow();
-        BrokerClient brokerClient = tradeClientFactory.getObject(broker);
+    private void saveMinuteOhlcvs(BrokerClient brokerClient, BasketAsset basketAsset) throws InterruptedException {
         List<Ohlcv> minuteOhlcvs = brokerClient.getMinuteOhlcvs(basketAsset);
         if(minuteOhlcvs.isEmpty()) {
             return;
@@ -125,14 +131,10 @@ public class OhlcvCollector extends AbstractTask {
 
     /**
      * saves daily ohlcvs
-     * @param trade trade
+     * @param brokerClient broker client
      * @param basketAsset basket asset
      */
-    private void saveDailyOhlcvs(Trade trade, BasketAsset basketAsset) throws InterruptedException {
-        Broker broker = brokerRepository.findById(trade.getBrokerId())
-                .map(Broker::from)
-                .orElseThrow();
-        BrokerClient brokerClient = tradeClientFactory.getObject(broker);
+    private void saveDailyOhlcvs(BrokerClient brokerClient, BasketAsset basketAsset) throws InterruptedException {
         List<Ohlcv> dailyOhlcvs = brokerClient.getDailyOhlcvs(basketAsset);
         if(dailyOhlcvs.isEmpty()) {
             return;

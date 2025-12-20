@@ -99,6 +99,11 @@ public class AlpacaBrokerClient extends BrokerClient {
         }
     }
 
+    @Override
+    public boolean isOhlcvTrusted() throws InterruptedException {
+        return false;
+    }
+
     /**
      * Gets ohlcvs
      * @param symbol symbol

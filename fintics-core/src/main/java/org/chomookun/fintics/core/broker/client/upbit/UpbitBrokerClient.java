@@ -80,6 +80,11 @@ public class UpbitBrokerClient extends BrokerClient {
         return true;
     }
 
+    @Override
+    public boolean isOhlcvTrusted() throws InterruptedException {
+        return true;
+    }
+
     private synchronized static void sleep() throws InterruptedException {
         Thread.sleep(300);
     }

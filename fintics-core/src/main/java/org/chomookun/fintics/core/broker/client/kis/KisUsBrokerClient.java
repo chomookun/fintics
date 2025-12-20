@@ -134,6 +134,11 @@ public class KisUsBrokerClient extends BrokerClient {
         return true;
     }
 
+    @Override
+    public boolean isOhlcvTrusted() throws InterruptedException {
+        return production;
+    }
+
     /**
      * Converts MIC code to kis exchange code (3 length)
      * 한국투자증권 rest api 상 미국거래소 코드가 2종류가 존재함. 해당 method 는 3자리 미국거래소 로 변환

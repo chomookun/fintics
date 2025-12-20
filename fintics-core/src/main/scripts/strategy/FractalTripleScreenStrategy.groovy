@@ -108,20 +108,6 @@ class Analyzer {
     }
 
     /**
-     * adjust average position
-     * @param position
-     * @return average position
-     */
-    BigDecimal adjustAveragePosition(BigDecimal position) {
-        def averagePrice = this.getAverageClose()
-        def currentPrice = this.getCurrentClose()
-        def averageWeight = averagePrice/currentPrice as BigDecimal
-        def averagePosition = ((position * averageWeight) as BigDecimal)
-                .setScale(2, RoundingMode.HALF_UP)
-        return averagePosition
-    }
-
-    /**
      * gets momentum score
      * @return momentum score
      */
@@ -155,7 +141,7 @@ class Analyzer {
     Score getVolatilityScore() {
         def score = new Score()
         // dmi
-        score.dmiAdx = dmis.take(3).any { it.adx >= 20 } ? 100 : 0
+        score.dmiAdx = dmis.take(2)*.adx.average() >= 20 ? 100 : 0
         // return
         return score
     }
@@ -167,13 +153,13 @@ class Analyzer {
     Score getOversoldScore() {
         def score = new Score()
         // rsi: 30 이하인 경우 과매도 판정
-        score.rsi = rsis.take(3).any{it.value <= 30} ? 100 : 0
+        score.rsi = rsis.take(2)*.value.average() <= 30 ? 100 : 0
         // cci: -100 이하인 경우 과매도 판정
-        score.cci = ccis.take(3).any{it.value <= -100} ? 100 : 0
+        score.cci = ccis.take(2)*.value.average() <= -100 ? 100 : 0
         // stochastic slow: 20 이하인 경우 과매도 판정
-        score.stochasticSlow = stochasticSlows.take(3).any{it.slowK <= 20} ? 100 : 0
+        score.stochasticSlow = stochasticSlows.take(2)*.slowK.average() <= 20 ? 100 : 0
         // williams r: -80 이하인 경우 과매도 판정
-        score.williamsR = williamsRs.take(3).any{it.value <= -80} ? 100 : 0
+        score.williamsR = williamsRs.take(2)*.value.average() <= -80 ? 100 : 0
         // return
         return score
     }
@@ -185,13 +171,13 @@ class Analyzer {
     Score getOverboughtScore() {
         def score = new Score()
         // rsi: 70 이상인 경우 과매수 구간 판정
-        score.rsi = rsis.take(3).any{it.value >= 70} ? 100 : 0
+        score.rsi = rsis.take(2)*.value.average() >= 70 ? 100 : 0
         // cci: 100 이상인 경우 과매수 판정
-        score.cci = ccis.take(3).any{it.value >= 100} ? 100 : 0
+        score.cci = ccis.take(2)*.value.average() >= 100 ? 100 : 0
         // stochastic slow: 80 이상인 경우 과매수 판정
-        score.stochasticSlow = stochasticSlows.take(3).any{it.slowK >= 80} ? 100 : 0
+        score.stochasticSlow = stochasticSlows.take(2)*.slowK.average() >= 80 ? 100 : 0
         // williams r: -20 이상인 경우 과매수 판정
-        score.williamsR = williamsRs.take(3).any{it.value >= -20} ? 100 : 0
+        score.williamsR = williamsRs.take(2)*.value.average() >= -20 ? 100 : 0
         // return
         return score
     }
@@ -312,16 +298,41 @@ class TripleScreenStrategy {
     }
 
     /**
+     * is ripple bullish
+     * @return whether ripple is bullish or not
+     */
+    boolean isRippleBullish() {
+        if (rippleAnalyzer.getVolatilityScore() >= 50 && rippleAnalyzer.getMomentumScore() >= 70) {
+            return true
+        }
+        return false
+    }
+
+    /**
+     * is ripple bearish
+     * @return whether ripple is bearish or not
+     */
+    boolean isRippleBearish() {
+        if (rippleAnalyzer.getVolatilityScore() >= 50 && rippleAnalyzer.getMomentumScore() <= 30) {
+            return true
+        }
+        return false
+    }
+
+    /**
      * gets strategy result
-     * @param position position
      * @return strategy result
      */
-    Optional<StrategyResult> getResult(BigDecimal position) {
+    Optional<StrategyResult> getResult(BigDecimal minPosition, BigDecimal maxPosition) {
         StrategyResult strategyResult = null
+
+        // tide 모멘텀 기준 포지션 산출
+        def position = this.calculatePosition(minPosition, maxPosition)
+
         // wave 과매도 시
         if (this.isWaveOversold()) {
             // ripple 상승 모멘텀
-            if (rippleAnalyzer.getMomentumScore() >= 70) {
+            if (this.isRippleBullish()) {
                 // wave 평균가 기준 매수 포지션
                 def buyPosition = this.adjustAveragePosition(position)
                 strategyResult = StrategyResult.of(Action.BUY, buyPosition, "[WAVE OVERSOLD BUY] ${this.toString()}")
@@ -330,7 +341,7 @@ class TripleScreenStrategy {
         // wave 과매수 시
         if (this.isWaveOverbought()) {
             // ripple 하락 모멘텀
-            if (rippleAnalyzer.getMomentumScore() <= 30) {
+            if (this.isRippleBearish()) {
                 // wave 평균가 기준 매도 포지션
                 def sellPosition = this.adjustAveragePosition(position)
                 strategyResult = StrategyResult.of(Action.SELL, sellPosition, "[WAVE OVERBOUGHT SELL] ${this.toString()}")
@@ -524,6 +535,7 @@ def profitPercentage = balanceAsset?.getProfitPercentage() ?: 0.0
 def microPosition = microTripleScreenStrategy.calculatePosition(basePosition, 1.0)
 def mesoPosition  = mesoTripleScreenStrategy.calculatePosition(basePosition, 1.0)
 def macroPosition = macroTripleScreenStrategy.calculatePosition(basePosition, 1.0)
+// effective position (상위 scale position 과의 평균값)
 def microEffectivePosition = ([microPosition, mesoPosition, macroPosition].average() as BigDecimal).setScale(2, RoundingMode.HALF_UP)
 def mesoEffectivePosition = ([mesoPosition, macroPosition].average() as BigDecimal).setScale(2, RoundingMode.HALF_UP)
 def macroEffectivePosition = macroPosition
@@ -545,22 +557,22 @@ macroTripleScreen:${macroTripleScreenStrategy}
 log.info("message: {}", message)
 tradeAsset.setMessage(message)
 
-//===============================
+//===================================================================================
 // execute strategy
-//===============================
-// macro strategy
-macroTripleScreenStrategy.getResult(macroEffectivePosition).ifPresent {
-    log.info("macro strategy result: {}", it)
+//===================================================================================
+// micro strategy (overrides meso, macro)
+microTripleScreenStrategy.getResult(basePosition, microEffectivePosition).ifPresent {
+    log.info("micro strategy result: {}", it)
     strategyResult = it
 }
 // meso strategy (overrides macro)
-mesoTripleScreenStrategy.getResult(mesoEffectivePosition).ifPresent {
+mesoTripleScreenStrategy.getResult(basePosition, mesoEffectivePosition).ifPresent {
     log.info("meso strategy result: {}", it)
     strategyResult = it
 }
-// micro strategy (overrides meso, macro)
-microTripleScreenStrategy.getResult(microEffectivePosition).ifPresent {
-    log.info("micro strategy result: {}", it)
+// macro strategy
+macroTripleScreenStrategy.getResult(basePosition, macroEffectivePosition).ifPresent {
+    log.info("macro strategy result: {}", it)
     strategyResult = it
 }
 
