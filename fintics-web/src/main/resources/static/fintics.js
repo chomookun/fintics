@@ -1,11 +1,8 @@
 /**
  * creates daily ohlcvs chart
- * @param elementId
- * @returns {On}
- * @private
  */
-function _createDailyOhlcvsChart(elementId) {
-    return new Chart(document.getElementById(elementId), {
+function _createDailyOhlcvsChart(element) {
+    return new Chart(element, {
         type: 'line',
         data: {
             datasets: []
@@ -72,12 +69,9 @@ function _createDailyOhlcvsChart(elementId) {
 
 /**
  * create minute ohlcvs chart
- * @param elementId
- * @returns {On}
- * @private
  */
-function _createMinuteOhlcvsChart(elementId) {
-    return new Chart(document.getElementById(elementId), {
+function _createMinuteOhlcvsChart(element) {
+    return new Chart(element, {
         type: 'line',
         data: {
             datasets: []

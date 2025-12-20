@@ -11,13 +11,79 @@
         Chart.defaults.font.size = 8;
         Chart.defaults.animation = false;
         const trades = new duice.ArrayProxy(/*[[${trades}]]*/[]);
+
+        /**
+         * creates ohlcv chart
+         * @param container
+         * @param basketAsset
+         */
+        function drawOhlcvChart(container, basketAsset) {
+            if (container.chart) {
+                container.chart.remove();
+                container.chart = null;
+            }
+            let chart = LightweightCharts.createChart(container);
+            const chartOptions = {
+                layout: {
+                    background: {color: 'transparent'},
+                    attributionLogo: false,
+                    fontSize: 9,
+                    textColor: '#aaa',
+                },
+                grid: {
+                    vertLines: { color: 'rgba(128, 128, 128, 0.12)' },
+                    horzLines: { color: 'rgba(128, 128, 128, 0.12)' }
+                },
+                timeScale: {
+                    timeVisible: true,
+                },
+                priceScale: {
+                    autoScale: true,
+                },
+            };
+            chart.applyOptions(chartOptions);
+            let candlestickSeries = chart.addCandlestickSeries({
+                upColor: '#26a69a',
+                downColor: '#ef5350',
+                borderVisible: false,
+                wickUpColor: '#26a69a',
+                wickDownColor: '#ef5350'
+            });
+            candlestickSeries.setData([]);
+            container.chart = chart;
+
+            // token to identify chart instance
+            const token = Symbol('ohlcvChart');
+            container._chartToken = token;
+
+            // retrieves ohlcv data
+            let url = new URL(`${_apiUrl}/v1/assets/${basketAsset.assetId}/ohlcvs`, location.origin);
+            url.searchParams.set('type', 'DAILY');
+            _fetch(url, {_suppressAlert:true})
+                .then(response => response.json())
+                .then(ohlcvs => {
+                    // ✅ 차트가 이미 교체/삭제됐으면 무시
+                    if (container._chartToken !== token) return;
+                    let ohlcvSeries = ohlcvs.map(it => {
+                        return {
+                            time: Math.floor(new Date(it.dateTime).getTime()/1000),
+                            open: it.open,
+                            high: it.high,
+                            low: it.low,
+                            close: it.close,
+                            volume: it.volume
+                        };
+                    }).reverse();
+                    candlestickSeries.setData(ohlcvSeries);
+                    chart.timeScale().fitContent();
+                });
+        }
+
         // creates monitor map
         const monitorMap = new Map();
         trades.forEach(trade => {
             const monitor = new duice.ObjectProxy({
                 trade: trade,
-                dailyOhlcvsChart: null,
-                minuteOhlcvsChart: null,
                 basket: new duice.ObjectProxy({
                     basketItems: []
                 }),
@@ -28,9 +94,6 @@
                  */
                 initialize: function() {
                     let _this = this;
-                    // creates chart
-                    this.dailyOhlcvsChart = _createDailyOhlcvsChart(`tradeDailyOhlcvsChart-${trade.tradeId}`);
-                    this.minuteOhlcvsChart = _createMinuteOhlcvsChart(`tradeMinuteOhlcvsChart-${trade.tradeId}`);
                     // subscribes web socket
                     _webSocketClient.subscribe({
                         destination: `/trades/${_this.trade.tradeId}/log`,
@@ -60,8 +123,6 @@
                  */
                 refresh: async function () {
                     await this.getBasket();
-                    this.getDailyOhlcvsChart();
-                    this.getMinuteOhlcvsChart();
                     this.getTradeAssets();
                     this.getBalance();
                     this.getOrders();
@@ -92,63 +153,6 @@
                             this.basket._status = data.length < 1 ? 'empty' : null;
                             duice.ObjectProxy.assign(this.basket, data);
                         });
-                },
-                /**
-                 * gets daily ohlcvs chart
-                 */
-                getDailyOhlcvsChart: function() {
-                    this.dailyOhlcvsChart.options.scales.x.max = new Date();
-                    this.dailyOhlcvsChart.data.datasets.length = 0;
-                    const promises = this.basket.basketItems
-                        .filter(it => it._type === 'basketAsset')
-                        .map(async basketAsset => {
-                            let url = new URL(`${_apiUrl}/v1/assets/${basketAsset.assetId}/ohlcvs`, location.origin);
-                            url.searchParams.set('type', 'DAILY');
-                            return _fetch(url, {_suppressAlert:true})
-                                .then(response => response.json())
-                                .then(ohlcvs => {
-                                    let timeSeries = _createTimeSeries(ohlcvs);
-                                    return {
-                                        label: basketAsset.name,
-                                        data: timeSeries,
-                                        borderWidth: 1,
-                                        pointStyle: false
-                                    };
-                                });
-                        });
-                    Promise.all(promises).then(results => {
-                        results.forEach(dataset => this.dailyOhlcvsChart.data.datasets.push(dataset));
-                        this.dailyOhlcvsChart.update();
-                    });
-                },
-                /**
-                 * gets minute ohlcvs chart
-                 */
-                getMinuteOhlcvsChart: function() {
-                    this.minuteOhlcvsChart.options.scales.x.max = new Date();
-                    this.minuteOhlcvsChart.data.datasets.length = 0;
-                    // daily
-                    const promises = this.basket.basketItems
-                        .filter(it => it._type === 'basketAsset')
-                        .map(async basketAsset => {
-                            let url = new URL(`${_apiUrl}/v1/assets/${basketAsset.assetId}/ohlcvs`, location.origin);
-                            url.searchParams.set('type', 'MINUTE');
-                            return _fetch(url, {_suppressAlert:true})
-                                .then(response => response.json())
-                                .then(ohlcvs => {
-                                    let timeSeries = _createTimeSeries(ohlcvs);
-                                    return {
-                                        label: basketAsset.name,
-                                        data: timeSeries,
-                                        borderWidth: 1,
-                                        pointStyle: false
-                                    };
-                                });
-                        });
-                    Promise.all(promises).then(results => {
-                        results.forEach(dataset => this.minuteOhlcvsChart.data.datasets.push(dataset));
-                        this.minuteOhlcvsChart.update();
-                    });
                 },
                 /**
                  * gets trade assets
@@ -390,26 +394,6 @@
             </h2>
         </div>
         <div class="panel-content">
-            <div class="display--grid grid-template-columns--12fr">
-                <div class="grid-column--span-6 s__grid-column--span-12">
-                    <div class="font-weight--bold">
-                        <img class="icon" src="/static/image/icon-ohlcv.svg" alt="ohlcv">
-                        <span>Daily</span>
-                    </div>
-                    <div style="height:10rem;">
-                        <canvas th:id="'tradeDailyOhlcvsChart-' + ${trade.tradeId}"></canvas>
-                    </div>
-                </div>
-                <div class="grid-column--span-6 s__grid-column--span-12">
-                    <div class="font-weight--bold">
-                        <img class="icon" src="/static/image/icon-ohlcv.svg" alt="ohlcv">
-                        <span>Minute</span>
-                    </div>
-                    <div style="height:10rem;">
-                        <canvas th:id="'tradeMinuteOhlcvsChart-' + ${trade.tradeId}"></canvas>
-                    </div>
-                </div>
-            </div>
             <div class="grid-column--span-12">
                 <div>
                     <img class="icon" data-th-src="@{/static/image/icon-log.svg}" alt="log"/>
@@ -703,6 +687,18 @@
                                     </div>
                                 </div>
                                 <!-- end: basket asset links and actions -->
+                                <!-- start: chart -->
+                                <div>
+                                    <div style="height:7rem;"
+                                         data-duice-bind="basketItem"
+                                         data-duice-execute="
+                                         if (!basketItem.assetId) {
+                                            return;
+                                         }
+                                         drawOhlcvChart(this, basketItem);
+                                     "></div>
+                                </div>
+                                <!-- end: chart -->
                                 <!-- start: basket log -->
                                 <div>
                                     <label class="display--flex height--100">
