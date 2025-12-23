@@ -2,7 +2,7 @@ package org.chomookun.fintics.core.strategy.runner;
 
 import ch.qos.logback.classic.Logger;
 import org.chomookun.arch4j.core.common.pbe.PbePropertiesUtil;
-import org.chomookun.fintics.core.broker.model.BalanceAsset;
+import org.chomookun.fintics.core.balance.model.BalanceAsset;
 import org.chomookun.fintics.core.basket.model.BasketAsset;
 import org.chomookun.fintics.core.broker.model.OrderBook;
 import org.chomookun.fintics.core.strategy.model.Strategy;

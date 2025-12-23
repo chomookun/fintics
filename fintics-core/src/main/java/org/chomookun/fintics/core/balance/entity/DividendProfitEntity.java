@@ -1,4 +1,4 @@
-package org.chomookun.fintics.core.profit.entity;
+package org.chomookun.fintics.core.balance.entity;
 
 import jakarta.persistence.*;
 import lombok.*;
@@ -11,14 +11,14 @@ import java.math.BigDecimal;
 import java.time.LocalDate;
 
 @Entity
-@Table(name = "fintics_balance_history")
-@IdClass(BalanceHistoryEntity.Pk.class)
+@Table(name = "fintics_dividend_profit")
+@IdClass(DividendProfitEntity.Pk.class)
 @Data
 @EqualsAndHashCode(callSuper = true)
 @SuperBuilder
 @NoArgsConstructor
 @AllArgsConstructor
-public class BalanceHistoryEntity extends BaseEntity {
+public class DividendProfitEntity extends BaseEntity {
 
     @Getter
     @Builder
@@ -26,7 +26,7 @@ public class BalanceHistoryEntity extends BaseEntity {
     @AllArgsConstructor
     public static class Pk implements Serializable {
         private String brokerId;
-        private LocalDate date;
+        private String logicalHash;
     }
 
     @Id
@@ -35,24 +35,29 @@ public class BalanceHistoryEntity extends BaseEntity {
     private String brokerId;
 
     @Id
+    @Column(name= "logical_hash", length = 32)
+    private String logicalHash;
+
     @Column(name = "date")
     @Comment("Date")
     private LocalDate date;
 
-    @Column(name = "total_amount", length = 4)
-    @Comment("Total Amount")
-    private BigDecimal totalAmount;
+    @Column(name = "asset_id", length = 32)
+    private String assetId;
 
-    @Column(name = "cash_amount", length = 4)
-    @Comment("Cash Amount")
-    private BigDecimal cashAmount;
+    @Column(name = "symbol", length = 32)
+    private String symbol;
 
-    @Column(name = "purchase_amount", length = 4)
-    @Comment("Purchase Amount")
-    private BigDecimal purchaseAmount;
+    @Column(name = "name")
+    private String name;
 
-    @Column(name = "valuation_amount", length = 4)
-    @Comment("Valuation Amount")
-    private BigDecimal valuationAmount;
+    @Column(name = "payment_date")
+    private LocalDate paymentDate;
+
+    @Column(name = "holding_quantity")
+    private BigDecimal holdingQuantity;
+
+    @Column(name = "dividend_amount", scale = 4)
+    private BigDecimal dividendAmount;
 
 }

@@ -1,14 +1,12 @@
-package org.chomookun.fintics.core.broker.model;
+package org.chomookun.fintics.core.balance.model;
 
 import lombok.*;
 import lombok.experimental.SuperBuilder;
 import org.chomookun.fintics.core.asset.model.Asset;
-import org.springframework.security.core.parameters.P;
 
 import java.math.BigDecimal;
 import java.math.MathContext;
 import java.math.RoundingMode;
-import java.util.Optional;
 
 @Data
 @EqualsAndHashCode(callSuper = true)

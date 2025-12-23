@@ -1,8 +1,8 @@
-package org.chomookun.fintics.web.api.v1.profit.dto;
+package org.chomookun.fintics.web.api.v1.trade.dto;
 
 import lombok.Builder;
 import lombok.Getter;
-import org.chomookun.fintics.core.broker.model.RealizedProfit;
+import org.chomookun.fintics.core.balance.model.RealizedProfit;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;

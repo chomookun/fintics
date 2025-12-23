@@ -1,13 +1,17 @@
-package org.chomookun.fintics.web.api.v1.profit.dto;
+package org.chomookun.fintics.web.api.v1.balance.dto;
 
 import lombok.Builder;
 import lombok.Getter;
-import org.chomookun.fintics.core.profit.model.Profit;
+import org.chomookun.fintics.core.balance.model.Profit;
+import org.chomookun.fintics.web.api.v1.trade.dto.BalanceHistoryResponse;
+import org.chomookun.fintics.web.api.v1.trade.dto.DividendProfitResponse;
+import org.chomookun.fintics.web.api.v1.trade.dto.RealizedProfitResponse;
 
 import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.List;
 
+@Deprecated
 @Getter
 @Builder
 public class ProfitResponse {

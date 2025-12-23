@@ -1,7 +1,7 @@
-package org.chomookun.fintics.core.profit.model;
+package org.chomookun.fintics.core.balance.model;
 
 import lombok.*;
-import org.chomookun.fintics.core.profit.entity.BalanceHistoryEntity;
+import org.chomookun.fintics.core.balance.entity.BalanceHistoryEntity;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;

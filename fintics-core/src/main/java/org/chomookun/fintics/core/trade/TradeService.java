@@ -7,7 +7,11 @@ import org.chomookun.arch4j.core.common.pbe.PbePropertiesUtil;
 import org.chomookun.fintics.core.asset.model.Asset;
 import org.chomookun.fintics.core.asset.repository.AssetRepository;
 import org.chomookun.fintics.core.asset.AssetService;
-import org.chomookun.fintics.core.broker.model.Balance;
+import org.chomookun.fintics.core.balance.BalanceService;
+import org.chomookun.fintics.core.balance.model.Balance;
+import org.chomookun.fintics.core.balance.model.BalanceHistory;
+import org.chomookun.fintics.core.balance.model.DividendProfit;
+import org.chomookun.fintics.core.balance.model.RealizedProfit;
 import org.chomookun.fintics.core.basket.model.Basket;
 import org.chomookun.fintics.core.basket.model.BasketAsset;
 import org.chomookun.fintics.core.basket.BasketService;
@@ -36,6 +40,8 @@ import org.springframework.transaction.annotation.Transactional;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.PersistenceContext;
 import java.math.BigDecimal;
+import java.time.Instant;
+import java.time.LocalDate;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -48,22 +54,23 @@ public class TradeService {
 
     private final TradeAssetRepository tradeAssetRepository;
 
-    private final OrderRepository orderRepository;
+//    private final OrderRepository orderRepository;
 
     private final BasketService basketService;
 
-    private final BrokerService brokerService;
-
-    private final AssetService assetService;
-
-    private final OrderService orderService;
-
-    private final BrokerClientFactory brokerClientFactory;
-
-    private final AssetRepository assetRepository;
+//    private final BrokerService brokerService;
+//
+//    private final AssetService assetService;
+//
+//    private final OrderService orderService;
+//
+//    private final BrokerClientFactory brokerClientFactory;
+//
+//    private final AssetRepository assetRepository;
 
     @PersistenceContext
     private final EntityManager entityManager;
+//    private final BalanceService balanceService;
 
     /**
      * gets trades
@@ -217,77 +224,94 @@ public class TradeService {
                 .collect(Collectors.toList());
     }
 
-    public Page<Order> getOrders(String tradeId, String assetId, Order.Type type, Order.Result result, Pageable pageable) {
-        // order search
-        OrderSearch orderSearch = OrderSearch.builder()
-                .tradeId(tradeId)
-                .assetId(assetId)
-                .type(type)
-                .result(result)
-                .build();
-        // sort
-        Sort sort = Sort.by(OrderEntity_.ORDER_AT).descending();
-        pageable = PageRequest.of(pageable.getPageNumber(), pageable.getPageSize(), sort);
-
-        // find
-        Page<OrderEntity> orderEntityPage = orderRepository.findAll(orderSearch, pageable);
-        List<Order> orders = orderEntityPage.getContent().stream()
-                .map(Order::from)
-                .toList();
-        long total = orderEntityPage.getTotalElements();
-        return new PageImpl<>(orders, pageable, total);
-    }
-
-    public Optional<Balance> getBalance(String tradeId) throws InterruptedException {
-        Trade trade = getTrade(tradeId).orElseThrow();
-        if(trade.getBrokerId() != null) {
-            Broker broker = brokerService.getBroker(trade.getBrokerId()).orElseThrow();
-            BrokerClient brokerClient = brokerClientFactory.getObject(broker);
-            Balance balance = brokerClient.getBalance();
-            balance.getBalanceAssets().forEach(balanceAsset -> {
-                assetRepository.findById(balanceAsset.getAssetId()).ifPresent(assetEntity -> {
-                    balanceAsset.setMarket(assetEntity.getMarket());
-                    balanceAsset.setType(assetEntity.getType());
-                    balanceAsset.setExchange(assetEntity.getExchange());
-                });
-            });
-            return Optional.of(balance);
-        }else{
-            return Optional.empty();
-        }
-    }
-
-    /**
-     * submit order
-     * @param order order
-     * @return submitted order
-     */
-    @Transactional
-    public Order submitOrder(Order order) {
-        try {
-            Trade trade = getTrade(order.getTradeId()).orElseThrow();
-            Broker broker = brokerService.getBroker(trade.getBrokerId()).orElseThrow();
-            BrokerClient brokerClient = brokerClientFactory.getObject(broker);
-            Asset asset = assetService.getAsset(order.getAssetId()).orElseThrow();
-            // price
-            OrderBook orderBook = brokerClient.getOrderBook(asset);
-            BigDecimal tickPrice = orderBook.getTickPrice();
-            BigDecimal price = switch (order.getType()) {
-                case BUY -> orderBook.getBidPrice().add(tickPrice);
-                case SELL -> orderBook.getAskPrice().subtract(tickPrice);
-            };
-            order.setPrice(price);
-            // submit
-            brokerClient.submitOrder(asset, order);
-            order.setResult(Order.Result.COMPLETED);
-        } catch (Throwable e) {
-            order.setResult(Order.Result.FAILED);
-            throw new RuntimeException(e);
-        } finally {
-            orderService.saveOrder(order);
-        }
-        // return
-        return order;
-    }
+//    public Page<Order> getOrders(String tradeId, Instant orderAtFrom, Instant orderAtTo, String assetId, Order.Type type, Order.Result result, Pageable pageable) {
+//        // order search
+//        OrderSearch orderSearch = OrderSearch.builder()
+//                .tradeId(tradeId)
+//                .orderAtFrom(orderAtFrom)
+//                .orderAtTo(orderAtTo)
+//                .assetId(assetId)
+//                .type(type)
+//                .result(result)
+//                .build();
+//        // sort
+//        Sort sort = Sort.by(OrderEntity_.ORDER_AT).descending();
+//        pageable = PageRequest.of(pageable.getPageNumber(), pageable.getPageSize(), sort);
+//
+//        // find
+//        Page<OrderEntity> orderEntityPage = orderRepository.findAll(orderSearch, pageable);
+//        List<Order> orders = orderEntityPage.getContent().stream()
+//                .map(Order::from)
+//                .toList();
+//        long total = orderEntityPage.getTotalElements();
+//        return new PageImpl<>(orders, pageable, total);
+//    }
+//
+//    /**
+//     * submit order
+//     * @param order order
+//     * @return submitted order
+//     */
+//    @Transactional
+//    public Order submitOrder(Order order) {
+//        try {
+//            Trade trade = getTrade(order.getTradeId()).orElseThrow();
+//            Broker broker = brokerService.getBroker(trade.getBrokerId()).orElseThrow();
+//            BrokerClient brokerClient = brokerClientFactory.getObject(broker);
+//            Asset asset = assetService.getAsset(order.getAssetId()).orElseThrow();
+//            // price
+//            OrderBook orderBook = brokerClient.getOrderBook(asset);
+//            BigDecimal tickPrice = orderBook.getTickPrice();
+//            BigDecimal price = switch (order.getType()) {
+//                case BUY -> orderBook.getBidPrice().add(tickPrice);
+//                case SELL -> orderBook.getAskPrice().subtract(tickPrice);
+//            };
+//            order.setPrice(price);
+//            // submit
+//            brokerClient.submitOrder(asset, order);
+//            order.setResult(Order.Result.COMPLETED);
+//        } catch (Throwable e) {
+//            order.setResult(Order.Result.FAILED);
+//            throw new RuntimeException(e);
+//        } finally {
+//            orderService.saveOrder(order);
+//        }
+//        // return
+//        return order;
+//    }
+//
+//    public Optional<Balance> getBalance(String tradeId) throws InterruptedException {
+//        Trade trade = getTrade(tradeId).orElseThrow();
+//        if(trade.getBrokerId() != null) {
+//            Broker broker = brokerService.getBroker(trade.getBrokerId()).orElseThrow();
+//            BrokerClient brokerClient = brokerClientFactory.getObject(broker);
+//            Balance balance = brokerClient.getBalance();
+//            balance.getBalanceAssets().forEach(balanceAsset -> {
+//                assetRepository.findById(balanceAsset.getAssetId()).ifPresent(assetEntity -> {
+//                    balanceAsset.setMarket(assetEntity.getMarket());
+//                    balanceAsset.setType(assetEntity.getType());
+//                    balanceAsset.setExchange(assetEntity.getExchange());
+//                });
+//            });
+//            return Optional.of(balance);
+//        }else{
+//            return Optional.empty();
+//        }
+//    }
+//
+//    public List<BalanceHistory> getBalanceHistories(String tradeId, LocalDate dateFrom, LocalDate dateTo) {
+//        Trade trade = getTrade(tradeId).orElseThrow();
+//        return balanceService.getBalanceHistories(trade.getBrokerId(), dateFrom, dateTo);
+//    }
+//
+//    public List<RealizedProfit> getRealizedProfits(String tradeId, LocalDate dateFrom, LocalDate dateTo) {
+//        Trade trade = getTrade(tradeId).orElseThrow();
+//        return balanceService.getRealizedProfits(trade.getBrokerId(), dateFrom, dateTo);
+//    }
+//
+//    public List<DividendProfit> getDividendProfits(String tradeId, LocalDate dateFrom, LocalDate dateTo) {
+//        Trade trade = getTrade(tradeId).orElseThrow();
+//        return balanceService.getDividendProfits(trade.getBrokerId(), dateFrom, dateTo);
+//    }
 
 }

@@ -20,7 +20,7 @@ values
     ('trade','Y','Trade Access Authority'),
     ('trade:edit','Y','Trade Edit Authority'),
     ('order','Y','Order Access Authority'),
-    ('profit','Y','Profit Access Authority');
+    ('balance','Y','Balance Access Authority');
 
 -- core_role_authority
 insert into `core_role_authority`
@@ -33,7 +33,7 @@ values
     ('USER','broker'),
     ('USER','trade'),
     ('USER','order'),
-    ('USER','profit');
+    ('USER','balance');
 
 -- core_menu
 insert into `core_menu`
@@ -46,7 +46,6 @@ values
     ('broker','Y','Y',null,'/broker',null,5,'/static/image/icon-broker.svg'),
     ('trade','Y','Y',null,'/trade',null,6,'/static/image/icon-trade.svg'),
     ('order','Y','Y',null,'/order',null,7,'/static/image/icon-order.svg'),
-    ('profit','Y','Y',null,'/profit',null,8,'/static/image/icon-profit.svg'),
     ('admin','N','Y',null,'/admin','_blank',99,'/static/image/icon-admin.svg');
 
 -- core_menu_i18n
@@ -69,7 +68,6 @@ values
     ('broker','ko','브로커'),
     ('trade','ko','트레이드'),
     ('order','ko','거래'),
-    ('profit','ko','수익현황'),
     ('admin','ko','관리자');
 
 -- core_notification
@@ -96,8 +94,6 @@ values
     ('trade','USER','LINK'),
     ('order','USER','VIEW'),
     ('order','USER','LINK'),
-    ('profit','USER','VIEW'),
-    ('profit','USER','LINK'),
     ('admin','USER','VIEW'),
     ('admin','USER','LINK');
 

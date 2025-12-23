@@ -2,12 +2,12 @@ package org.chomookun.fintics.core.broker.client;
 
 import lombok.Getter;
 import org.chomookun.fintics.core.asset.model.Asset;
-import org.chomookun.fintics.core.broker.model.Balance;
+import org.chomookun.fintics.core.balance.model.Balance;
 import org.chomookun.fintics.core.ohlcv.model.Ohlcv;
 import org.chomookun.fintics.core.order.model.Order;
 import org.chomookun.fintics.core.broker.model.OrderBook;
-import org.chomookun.fintics.core.broker.model.DividendProfit;
-import org.chomookun.fintics.core.broker.model.RealizedProfit;
+import org.chomookun.fintics.core.balance.model.DividendProfit;
+import org.chomookun.fintics.core.balance.model.RealizedProfit;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;

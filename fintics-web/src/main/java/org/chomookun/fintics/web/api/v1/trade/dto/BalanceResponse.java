@@ -1,7 +1,7 @@
 package org.chomookun.fintics.web.api.v1.trade.dto;
 
 import lombok.*;
-import org.chomookun.fintics.core.broker.model.Balance;
+import org.chomookun.fintics.core.balance.model.Balance;
 
 import java.math.BigDecimal;
 import java.util.ArrayList;

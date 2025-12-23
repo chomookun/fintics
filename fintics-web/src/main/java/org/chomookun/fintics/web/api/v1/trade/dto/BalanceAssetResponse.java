@@ -2,7 +2,7 @@ package org.chomookun.fintics.web.api.v1.trade.dto;
 
 import lombok.*;
 import lombok.experimental.SuperBuilder;
-import org.chomookun.fintics.core.broker.model.BalanceAsset;
+import org.chomookun.fintics.core.balance.model.BalanceAsset;
 import org.chomookun.fintics.web.api.v1.asset.dto.AssetResponse;
 
 import java.math.BigDecimal;

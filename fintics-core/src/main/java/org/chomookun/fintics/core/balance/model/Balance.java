@@ -1,4 +1,4 @@
-package org.chomookun.fintics.core.broker.model;
+package org.chomookun.fintics.core.balance.model;
 
 import lombok.*;
 

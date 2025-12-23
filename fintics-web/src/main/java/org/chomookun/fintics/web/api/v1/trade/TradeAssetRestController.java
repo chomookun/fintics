@@ -14,7 +14,7 @@ import java.util.List;
 
 @Tag(name = "trade")
 @RestController
-@RequestMapping("/api/v1/trades")
+@RequestMapping("/api/v1/trades/{tradeId}/assets")
 @PreAuthorize("hasAuthority('trade')")
 @RequiredArgsConstructor
 @Slf4j
@@ -23,7 +23,7 @@ public class TradeAssetRestController {
     private final TradeService tradeService;
 
     @Operation(summary = "Returns list of trade asset")
-    @GetMapping("{tradeId}/assets")
+    @GetMapping
     public ResponseEntity<List<TradeAssetResponse>> getTradeAssets(@PathVariable("tradeId") String tradeId) {
         List<TradeAssetResponse> tradeAssetResponses = tradeService.getTradeAssets(tradeId).stream()
                 .map(TradeAssetResponse::from)

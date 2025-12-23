@@ -4,8 +4,9 @@ import ch.qos.logback.classic.Logger;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
-import org.chomookun.fintics.core.broker.model.Balance;
-import org.chomookun.fintics.core.broker.model.BalanceAsset;
+import org.chomookun.fintics.core.balance.BalanceService;
+import org.chomookun.fintics.core.balance.model.Balance;
+import org.chomookun.fintics.core.balance.model.BalanceAsset;
 import org.chomookun.fintics.core.basket.model.Basket;
 import org.chomookun.fintics.core.basket.model.BasketAsset;
 import org.chomookun.fintics.core.basket.BasketService;
@@ -29,6 +30,8 @@ public class BasketRebalanceTask {
     private final BasketService basketService;
 
     private final TradeService tradeService;
+
+    private final BalanceService balanceService;
 
     private final BasketScriptRunnerFactory basketScriptRunnerFactory;
 
@@ -54,7 +57,7 @@ public class BasketRebalanceTask {
         List<Balance> balances = trades.stream()
                 .map(trade -> {
                     try {
-                        return tradeService.getBalance(trade.getTradeId()).orElseThrow();
+                        return balanceService.getBalance(trade.getBrokerId()).orElseThrow();
                     } catch (Throwable e) {
                         log.warn(e.getMessage());
                         return null;

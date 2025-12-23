@@ -1,10 +1,11 @@
-package org.chomookun.fintics.core.profit.repository;
+package org.chomookun.fintics.core.balance.repository;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.chomookun.arch4j.core.common.test.CoreTestSupport;
 import org.chomookun.fintics.core.FinticsCoreConfiguration;
-import org.chomookun.fintics.core.profit.entity.BalanceHistoryEntity;
+import org.chomookun.fintics.core.balance.entity.BalanceHistoryEntity;
+import org.chomookun.fintics.core.balance.repository.BalanceHistoryRepository;
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.SpringBootTest;
 

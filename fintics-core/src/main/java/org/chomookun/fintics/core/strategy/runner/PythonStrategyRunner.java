@@ -3,7 +3,7 @@ package org.chomookun.fintics.core.strategy.runner;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.Builder;
-import org.chomookun.fintics.core.broker.model.BalanceAsset;
+import org.chomookun.fintics.core.balance.model.BalanceAsset;
 import org.chomookun.fintics.core.basket.model.BasketAsset;
 import org.chomookun.fintics.core.broker.model.OrderBook;
 import org.chomookun.fintics.core.strategy.model.Strategy;

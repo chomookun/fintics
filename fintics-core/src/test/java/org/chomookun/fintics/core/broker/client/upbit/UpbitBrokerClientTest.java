@@ -2,11 +2,10 @@ package org.chomookun.fintics.core.broker.client.upbit;
 
 import lombok.extern.slf4j.Slf4j;
 import org.chomookun.fintics.core.asset.model.Asset;
-import org.chomookun.fintics.core.broker.model.Balance;
+import org.chomookun.fintics.core.balance.model.Balance;
 import org.chomookun.fintics.core.ohlcv.model.Ohlcv;
 import org.chomookun.fintics.core.order.model.Order;
 import org.chomookun.fintics.core.broker.model.OrderBook;
-import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
 
