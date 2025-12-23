@@ -59,7 +59,6 @@ values
     ('broker','en','Broker'),
     ('trade','en','Trade'),
     ('order','en','Order'),
-    ('profit','en','Profit'),
     ('admin','en','Admin'),
     ('monitor','ko','모니터'),
     ('asset','ko','종목'),
