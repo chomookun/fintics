@@ -59,11 +59,10 @@ public class BasketRebalanceTask {
                     try {
                         return balanceService.getBalance(trade.getBrokerId()).orElseThrow();
                     } catch (Throwable e) {
-                        log.warn(e.getMessage());
-                        return null;
+                        log.error(e.getMessage(), e);
+                        throw new RuntimeException(e);
                     }
                 })
-                .filter(Objects::nonNull)
                 .toList();
         // retrieve latest basket info
         Basket basket = basketService.getBasket(this.basket.getBasketId()).orElseThrow();
