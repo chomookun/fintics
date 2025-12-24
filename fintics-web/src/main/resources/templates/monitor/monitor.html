@@ -8,8 +8,8 @@
     <th:block th:insert="common/_asset-dialog.html"/>
     <th:block th:insert="common/_submit-order-dialog.html"/>
     <script th:inline="javascript">
-        Chart.defaults.font.size = 8;
-        Chart.defaults.animation = false;
+        // Chart.defaults.font.size = 8;
+        // Chart.defaults.animation = false;
         const trades = new duice.ArrayProxy(/*[[${trades}]]*/[]);
         const chartRefMap = new Map();
 
@@ -22,6 +22,7 @@
                     basketItems: []
                 }),
                 balance: {},
+                balanceHistoriesChart: null,
                 orders: [],
                 /**
                  * initialize
@@ -56,10 +57,155 @@
                  * refresh
                  */
                 refresh: async function () {
+                    this.getBalance();
+                    this.getBalanceHistories();
                     await this.getBasket();
                     this.getTradeAssets();
-                    this.getBalance();
                     this.getOrders();
+                },
+                /**
+                 * gets balance
+                 */
+                getBalance: function() {
+                    let url = new URL(`${_apiUrl}/v1/trades/${this.trade.tradeId}/balance`, document.location.origin);
+                    _fetch(url, {_suppressAlert:true})
+                        .then(response => response.json())
+                        .then(balance => {
+                            this.applyBalance(balance);
+                        });
+                },
+                /**
+                 * applies balance
+                 * @param balance balance
+                 */
+                applyBalance: function(balance) {
+                    duice.ObjectProxy.assign(this.balance, balance);
+                    balance.balanceAssets.forEach(balanceAsset => {
+                        let basketAsset = this.basket.basketItems
+                            .filter(it => it._type === 'basketAsset')
+                            .find(it => it.assetId === balanceAsset.assetId);
+                        if (basketAsset) {
+                            duice.ObjectProxy.assign(basketAsset, {
+                                quantity: balanceAsset.quantity,
+                                orderableQuantity: balanceAsset.orderableQuantity,
+                                purchasePrice: balanceAsset.purchasePrice,
+                                purchaseAmount: balanceAsset.purchaseAmount,
+                                valuationPrice: balanceAsset.valuationPrice,
+                                valuationAmount: balanceAsset.valuationAmount,
+                                profitAmount: balanceAsset.profitAmount,
+                                profitPercentage: balanceAsset.profitPercentage
+                            });
+                        }
+                    });
+                },
+                getBalanceHistories: function() {
+                    if (!this.balanceHistoriesChart) {
+                        const chartId = `balanceHistoriesChart-${this.trade.tradeId}`;
+                        const chartElement = document.getElementById(chartId);
+                        this.balanceHistoriesChart = new Chart(chartElement, {
+                            type: 'bar',
+                            data: {
+                                labels: [],
+                                datasets: []
+                            },
+                            options: {
+                                responsive: true,
+                                maintainAspectRatio: false,
+                                animation: false,
+                                plugins: {
+                                    legend: {
+                                        labels: {
+                                            font: {
+                                                size: 10,
+                                            }
+                                        }
+                                    },
+                                },
+                                scales: {
+                                    x: {
+                                        stacked: true,
+                                        barPercentage: 0.1,
+                                        categoryPercentage: 0.1,
+                                        ticks: {
+                                            font: {
+                                                size: 8,
+                                                family: 'monospace'
+                                            }
+                                        }
+                                    },
+                                    y: {
+                                        stacked: true,
+                                        ticks: {
+                                            font: {
+                                                size: 8,
+                                                family: 'monospace'
+                                            }
+                                        },
+                                        afterDataLimits: (axis) => {
+                                            axis.max = axis.max * 1.25;
+                                        }
+                                    }
+                                }
+                            }
+                        });
+                    }
+
+                    let url = new URL(`${_apiUrl}/v1/trades/${this.trade.tradeId}/balance-histories`, location.origin);
+                    url.searchParams.set('dateFrom', dateFns.format(dateFns.subDays(new Date(), 30), 'YYYY-MM-DD'));
+                    url.searchParams.set('dateTo', dateFns.format(new Date(), 'YYYY-MM-DD'));
+                    _fetch(url, {_suppressAlert:true})
+                        .then(response => response.json())
+                        .then(balanceHistories => {
+                            this.balanceHistoriesChart.data.labels.length = 0;
+                            this.balanceHistoriesChart.data.datasets.length = 0;
+                            let labels = balanceHistories.map(row => dateFns.format(row.date, 'MM-DD')).reverse();
+                            let totalAmounts = balanceHistories.map(row => row.totalAmount).reverse();
+                            let cashAmounts = balanceHistories.map(row => row.cashAmount).reverse();
+                            let valuationAmounts = balanceHistories.map(row => row.valuationAmount).reverse();
+                            this.balanceHistoriesChart.data.labels.push(...labels);
+                            this.balanceHistoriesChart.data.datasets.push({
+                                label: 'Cash Amount',
+                                data: cashAmounts,
+                                stack: 'group1',
+                                backgroundColor: 'rgba(90, 90, 90, 0.7)',
+                                fill: false,
+                                datalabels: { display: false }
+                            }, {
+                                label: 'Valuation Amount',
+                                data: valuationAmounts,
+                                stack: 'group1',
+                                backgroundColor: 'rgba(80, 170, 120, 0.7)',
+                                fill: false,
+                                datalabels: { display: false }
+                            }, {
+                                type: 'line',
+                                label: 'Total Amount',
+                                data: totalAmounts,
+                                borderColor: 'gray',
+                                borderWidth: 1,
+                                borderDash: [3, 1],
+                                fill: false,
+                                datalabels: {
+                                    align: 'top',
+                                    anchor: 'start',
+                                    font: {
+                                        family: 'monospace',
+                                        size: 8,
+                                        weight: 'bold'
+                                    },
+                                    color: 'gray',
+                                    formatter: (value, context) => {
+                                        const totalCount = context.chart.data.datasets[context.datasetIndex].data.length;
+                                        const stepSize = Math.ceil(totalCount / 10);
+                                        return context.dataIndex === totalCount - 1 ||
+                                        (totalCount - context.dataIndex - 1) % stepSize === 0
+                                            ? new Intl.NumberFormat().format(value)
+                                            : null;
+                                    }
+                                }
+                            });
+                            this.balanceHistoriesChart.update();
+                        });
                 },
                 getBasket: async function() {
                     let url = `${_apiUrl}/v1/baskets/${this.trade.basketId}`;
@@ -188,41 +334,6 @@
                             }
                         }
                     }
-                },
-                /**
-                 * gets balance
-                 */
-                getBalance: function() {
-                    let url = new URL(`${_apiUrl}/v1/trades/${this.trade.tradeId}/balance`, document.location.origin);
-                    _fetch(url, {_suppressAlert:true})
-                        .then(response => response.json())
-                        .then(balance => {
-                            this.applyBalance(balance);
-                        });
-                },
-                /**
-                 * applies balance
-                 * @param balance balance
-                 */
-                applyBalance: function(balance) {
-                    duice.ObjectProxy.assign(this.balance, balance);
-                    balance.balanceAssets.forEach(balanceAsset => {
-                        let basketAsset = this.basket.basketItems
-                            .filter(it => it._type === 'basketAsset')
-                            .find(it => it.assetId === balanceAsset.assetId);
-                        if (basketAsset) {
-                            duice.ObjectProxy.assign(basketAsset, {
-                                quantity: balanceAsset.quantity,
-                                orderableQuantity: balanceAsset.orderableQuantity,
-                                purchasePrice: balanceAsset.purchasePrice,
-                                purchaseAmount: balanceAsset.purchaseAmount,
-                                valuationPrice: balanceAsset.valuationPrice,
-                                valuationAmount: balanceAsset.valuationAmount,
-                                profitAmount: balanceAsset.profitAmount,
-                                profitPercentage: balanceAsset.profitPercentage
-                            });
-                        }
-                    });
                 },
                 getOrders: function() {
                     let url = new URL(`${_apiUrl}/v1/trades/${this.trade.tradeId}/orders`, document.location.origin);
@@ -398,105 +509,115 @@
         </div>
         <div class="panel-content">
             <div class="grid-column--span-12">
-                <div>
-                    <img class="icon" data-th-src="@{/static/image/icon-log.svg}" alt="log"/>
-                    <span class="font-weight--bold" data-th-text="#{web.global.log}"></span>
-                </div>
-                <div style="height:200px;">
-                    <textarea th:id="'tradeLog-' + ${trade.tradeId}" class="tradeLog width--100 height--100 code font-size--smaller"></textarea>
-                </div>
-            </div>
-            <div class="grid-column--span-12">
-                <div class="display--flex justify-content--space-between align-items--center flex-wrap--wrap">
-                    <div class="s__width--100">
-                        <img class="icon" data-th-src="@{/static/image/icon-basket.svg}" alt="basket"/>
-                        <span class="font-weight--bold" data-th-text="#{fintics.core.basket.BasketAsset}"></span>
+                <div class="s__width--100 display--flex s__flex-direction--column" style="line-height:2.0rem;">
+                    <span>
+                        <small>|</small>
                         <span class="font-weight--bold">
-                            (
                             <span data-th-text="#{fintics.core.trade.Trade.investAmount}"></span>:
                             <span data-th-text="${#numbers.formatDecimal(trade.investAmount,3,'COMMA',2,'POINT')}" class="number"></span>
                             <span th:data-duice-bind="|monitorMap.get('${trade.tradeId}').trade|"
                                   th:data-duice-if="|return monitorMap.get('${trade.tradeId}').trade.dcaEnabled;|"
                                   class="font-size--smaller">
-                                <small>|</small>
-                                <span th:data-duice-bind="|monitorMap.get('${trade.tradeId}').trade|"
-                                      th:data-duice-property="dcaFrequency">
-                                </span>
-                                +<span th:data-duice-bind="|monitorMap.get('${trade.tradeId}').trade|"
-                                      th:data-duice-property="dcaAmount" data-duice-format="number()">
-                                </span>
+                            <small>(</small>
+                            <span th:data-duice-bind="|monitorMap.get('${trade.tradeId}').trade|"
+                                  th:data-duice-property="dcaFrequency">
                             </span>
-
-                            )
+                            +<span th:data-duice-bind="|monitorMap.get('${trade.tradeId}').trade|"
+                                   th:data-duice-property="dcaAmount" data-duice-format="number()">
+                            </span>
+                            <small>)</small>
+                            </span>
                         </span>
+                    </span>
+                </div>
+                <div>
+                    <small>|</small>
+                    <span class="font-weight--bold" data-th-text="#{web.global.log}"></span>
+                    <div style="height:200px;">
+                        <textarea th:id="'tradeLog-' + ${trade.tradeId}" class="tradeLog width--100 height--100 code font-size--smaller"></textarea>
                     </div>
-                    <div class="s__width--100 display--flex s__flex-direction--column" style="line-height:2.0rem;">
-                        <div>
-                            <img class="icon" data-th-src="@{/static/image/icon-balance.svg}" alt="balance"/>
-                            <span class="font-weight--bold">
-                            <span data-th-text="#{fintics.core.broker.Balance.totalAmount}"></span>:
+                </div>
+            </div>
+            <div class="grid-column--span-12">
+                <h3>
+                    <img class="icon" data-th-src="@{/static/image/icon-balance.svg}" alt="balance"/>
+                    <span data-th-text="#{fintics.core.balance.Balance}"></span>
+                </h3>
+                <div class="s__width--100 display--flex s__flex-direction--column" style="line-height:2.0rem;">
+                    <div>
+                        <small>|</small>
+                        <span class="font-weight--bold">
+                            <span data-th-text="#{fintics.core.balance.Balance.totalAmount}"></span>:
                             <span th:data-duice-bind="|monitorMap.get('${trade.tradeId}').balance|"
                                   th:data-duice-property="totalAmount" data-duice-format="number()" class="number">
                             </span>
                         </span>
-                        </div>
-                        <div>
-                            <small>|</small>
-                            <span data-th-text="#{fintics.core.broker.Balance.profitAmount}"></span>:
-                            <span th:data-duice-bind="|monitorMap.get('${trade.tradeId}').balance|"
-                                  th:data-duice-property="profitAmount"
-                                  th:data-duice-execute="|
+                    </div>
+                    <div>
+                        <small>|</small>
+                        <span data-th-text="#{fintics.core.balance.Balance.profitAmount}"></span>:
+                        <span th:data-duice-bind="|monitorMap.get('${trade.tradeId}').balance|"
+                              th:data-duice-property="profitAmount"
+                              th:data-duice-execute="|
                               let profitAmount = monitorMap.get('${trade.tradeId}').balance.profitAmount;
                               if (profitAmount > 0) this.classList.add('color--green');
                               if (profitAmount < 0) this.classList.add('color--red');
                               |"
-                                  data-duice-format="number()"
-                                  class="number font-weight--bold"></span>
-                        </div>
-                        <div>
-                            <small>|</small>
-                            <span data-th-text="#{fintics.core.broker.Balance.realizedProfitAmount}"></span>:
-                            <span th:data-duice-bind="|monitorMap.get('${trade.tradeId}').balance|"
-                                  th:data-duice-property="realizedProfitAmount"
-                                  th:data-duice-execute="|
+                              data-duice-format="number()"
+                              class="number font-weight--bold"></span>
+                    </div>
+                    <div>
+                        <small>|</small>
+                        <span data-th-text="#{fintics.core.balance.Balance.realizedProfitAmount}"></span>:
+                        <span th:data-duice-bind="|monitorMap.get('${trade.tradeId}').balance|"
+                              th:data-duice-property="realizedProfitAmount"
+                              th:data-duice-execute="|
                               let realizedProfitAmount = monitorMap.get('${trade.tradeId}').balance.realizedProfitAmount;
                               if (realizedProfitAmount > 0) this.classList.add('color--green');
                               if (realizedProfitAmount < 0) this.classList.add('color--red');
                               |"
-                                  data-duice-format="number()"
-                                  class="number font-weight--bold"></span>
-                        </div>
-                        <div>
-                            <small>|</small>
-                            <span data-th-text="#{fintics.core.broker.Balance.purchaseAmount}"></span>:
-                            <span th:data-duice-bind="|monitorMap.get('${trade.tradeId}').balance|"
-                                  th:data-duice-property="purchaseAmount" data-duice-format="number()" class="number"></span>
-                        </div>
-                        <div>
-                            <small>|</small>
-                            <span data-th-text="#{fintics.core.broker.Balance.valuationAmount}"></span>:
-                            <span th:data-duice-bind="|monitorMap.get('${trade.tradeId}').balance|"
-                                  th:data-duice-property="valuationAmount" data-duice-format="number()" class="number"></span>
-                        </div>
-                        <div>
-                            <small>|</small>
-                            <span data-th-text="#{fintics.core.broker.Balance.cashAmount}"></span>:
-                            <span th:data-duice-bind="|monitorMap.get('${trade.tradeId}').balance|"
-                                  th:data-duice-property="cashAmount" data-duice-format="number()" class="number"></span>
-                        </div>
-                        <div>
-                            <small>|</small>
-                            <span class="font-size--smaller" style="font-style:italic;" th:data-duice-bind="|monitorMap.get('${trade.tradeId}').trade|"
-                                th:data-duice-execute="|
+                              data-duice-format="number()"
+                              class="number font-weight--bold"></span>
+                    </div>
+                    <div>
+                        <small>|</small>
+                        <span data-th-text="#{fintics.core.balance.Balance.purchaseAmount}"></span>:
+                        <span th:data-duice-bind="|monitorMap.get('${trade.tradeId}').balance|"
+                              th:data-duice-property="purchaseAmount" data-duice-format="number()" class="number"></span>
+                    </div>
+                    <div>
+                        <small>|</small>
+                        <span data-th-text="#{fintics.core.balance.Balance.valuationAmount}"></span>:
+                        <span th:data-duice-bind="|monitorMap.get('${trade.tradeId}').balance|"
+                              th:data-duice-property="valuationAmount" data-duice-format="number()" class="number"></span>
+                    </div>
+                    <div>
+                        <small>|</small>
+                        <span data-th-text="#{fintics.core.balance.Balance.cashAmount}"></span>:
+                        <span th:data-duice-bind="|monitorMap.get('${trade.tradeId}').balance|"
+                              th:data-duice-property="cashAmount" data-duice-format="number()" class="number"></span>
+                    </div>
+                    <div>
+                        <small>|</small>
+                        <span class="font-size--smaller" style="font-style:italic;" th:data-duice-bind="|monitorMap.get('${trade.tradeId}').trade|"
+                              th:data-duice-execute="|
                                 let trade = monitorMap.get('${trade.tradeId}').trade;
                                 let cashAssetId = trade.cashAssetId;
                                 let cashBufferWeight = trade.cashBufferWeight;
                                 if (cashAssetId && cashBufferWeight) {
                                     this.innerHTML += ' (#{fintics.core.trade.Trade.cashAssetId}: ' + cashAssetId + ' - ' + cashBufferWeight + '%)' ;
                                 }|"></span>
-                        </div>
                     </div>
                 </div>
+                <div>
+                    <canvas th:id="|balanceHistoriesChart-${trade.tradeId}|"></canvas>
+                </div>
+            </div>
+            <div class="grid-column--span-12">
+                <h3>
+                    <img class="icon" data-th-src="@{/static/image/icon-basket.svg}" alt="basket"/>
+                    <span class="font-weight--bold" data-th-text="#{fintics.core.basket.BasketAsset}"></span>
+                </h3>
                 <!-- start: basket items -->
                 <div class="display--grid grid-template-columns--12fr gap--1rem">
                     <div th:data-duice-bind="|monitorMap.get('${trade.tradeId}').basket.basketItems|"
