@@ -722,6 +722,12 @@
                                         <span data-duice-bind="realizedProfit" data-duice-property="feeAmount" data-duice-format="number()" class="number"></span>
                                     </td>
                                 </tr>
+                                <tr th:data-duice-bind="|monitorMap.get('${trade.tradeId}').profitSummary.realizedProfits|"
+                                    th:data-duice-if="|return monitorMap.get('${trade.tradeId}').profitSummary.realizedProfits.length < 1;|" hidden>
+                                    <td colspan="100%" class="text-align--center padding--1rem">
+                                        <span data-th-text="#{web.global.itemNotFound(#{fintics.core.balance.RealizedProfit})}"></span>
+                                    </td>
+                                </tr>
                                 </tbody>
                             </table>
                         </div>
@@ -784,6 +790,12 @@
                                                 <span data-duice-bind="dividendProfit"
                                                       data-duice-property="paymentDate"
                                                       data-duice-format="date('yyyy-MM-dd')" class="date"></span>
+                                    </td>
+                                </tr>
+                                <tr th:data-duice-bind="|monitorMap.get('${trade.tradeId}').profitSummary.dividendProfits|"
+                                    th:data-duice-if="|return monitorMap.get('${trade.tradeId}').profitSummary.dividendProfits.length < 1;|" hidden>
+                                    <td colspan="100%" class="text-align--center padding--1rem">
+                                        <span data-th-text="#{web.global.itemNotFound(#{fintics.core.balance.DividendProfit})}"></span>
                                     </td>
                                 </tr>
                                 </tbody>
