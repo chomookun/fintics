@@ -320,7 +320,7 @@
         </span>
         <span id="tradeBalanceTabButton" class="tab-item">
             <img class="icon" th:src="@{/static/image/icon-balance.svg}" alt="balance"/>
-            <span data-th-text="#{fintics.core.broker.Balance}"></span>
+            <span data-th-text="#{fintics.core.balance.Balance}"></span>
         </span>
     </div>
     <!-- ====================================== -->
@@ -717,38 +717,38 @@
         <div class="panel-title">
             <h2>
                 <img class="icon" th:src="@{/static/image/icon-balance.svg}" alt="balance"/>
-                <span data-th-text="#{fintics.core.broker.Balance}"></span>
+                <span data-th-text="#{fintics.core.balance.Balance}"></span>
             </h2>
         </div>
         <div class="panel-content">
             <div class="display--grid grid-template-columns--12fr gap--1rem">
                 <div class="grid-column--span-6 s__grid-column--span-12">
                     <label>
-                        <span class="font-weight--bold" data-th-text="#{fintics.core.broker.Balance.totalAmount}"></span>
+                        <span class="font-weight--bold" data-th-text="#{fintics.core.balance.Balance.totalAmount}"></span>
                         <input class="width--100 font-weight--bold number" type="number" data-duice-bind="balance" data-duice-property="totalAmount" data-duice-format="number()"/>
                     </label>
                 </div>
                 <div class="grid-column--span-6 s__grid-column--span-12">
                     <label>
-                        <span data-th-text="#{fintics.core.broker.Balance.cashAmount}" class="font-weight--bold"></span>
+                        <span data-th-text="#{fintics.core.balance.Balance.cashAmount}" class="font-weight--bold"></span>
                         <input type="number" data-duice-bind="balance" data-duice-property="cashAmount" data-duice-format="number()" class="width--100 number"/>
                     </label>
                 </div>
                 <div class="grid-column--span-6 s__grid-column--span-12">
                     <label>
-                        <span class="font-weight--bold" data-th-text="#{fintics.core.broker.Balance.purchaseAmount}"></span>
+                        <span class="font-weight--bold" data-th-text="#{fintics.core.balance.Balance.purchaseAmount}"></span>
                         <input class="width--100 number" type="number" data-duice-bind="balance" data-duice-property="purchaseAmount" data-duice-format="number()"/>
                     </label>
                 </div>
                 <div class="grid-column--span-6 s__grid-column--span-12">
                     <label>
-                        <span class="font-weight--bold width--100" data-th-text="#{fintics.core.broker.Balance.valuationAmount}"></span>
+                        <span class="font-weight--bold width--100" data-th-text="#{fintics.core.balance.Balance.valuationAmount}"></span>
                         <input class="width--100 number" type="number" data-duice-bind="balance" data-duice-property="valuationAmount" data-duice-format="number()"/>
                     </label>
                 </div>
                 <div class="grid-column--span-6 s__grid-column--span-12">
                     <label>
-                        <span class="font-weight--bold" data-th-text="#{fintics.core.broker.Balance.profitAmount}"></span>
+                        <span class="font-weight--bold" data-th-text="#{fintics.core.balance.Balance.profitAmount}"></span>
                         <input class="width--100 number font-weight--bold"
                                type="number"
                                data-duice-bind="balance"
@@ -762,7 +762,7 @@
                 </div>
                 <div class="grid-column--span-6 s__grid-column--span-12">
                     <label>
-                        <span data-th-text="#{fintics.core.broker.Balance.realizedProfitAmount}" class="font-weight--bold width--100"></span>
+                        <span data-th-text="#{fintics.core.balance.Balance.realizedProfitAmount}" class="font-weight--bold width--100"></span>
                         <input class="width--100 number font-weight--bold"
                                type="number"
                                data-duice-bind="balance"
@@ -775,7 +775,7 @@
                     </label>
                 </div>
                 <div class="grid-column--span-12">
-                    <span class="font-weight--bold width--100" data-th-text="#{fintics.core.broker.BalanceAsset}"></span>
+                    <span class="font-weight--bold width--100" data-th-text="#{fintics.core.balance.BalanceAsset}"></span>
                     <div class="overflow--auto">
                         <table class="table width--100">
                             <colgroup>
@@ -794,11 +794,11 @@
                                 <th data-th-text="#{web.global.no}"></th>
                                 <th data-th-text="#{fintics.core.asset.Asset.symbol}"></th>
                                 <th data-th-text="#{fintics.core.asset.Asset.name}"></th>
-                                <th data-th-text="#{fintics.core.broker.BalanceAsset.quantity}"></th>
-                                <th data-th-text="#{fintics.core.broker.BalanceAsset.purchaseAmount}" class="text-align--right"></th>
-                                <th data-th-text="#{fintics.core.broker.BalanceAsset.valuationAmount}" class="text-align--right"></th>
-                                <th data-th-text="#{fintics.core.broker.BalanceAsset.profitAmount}" class="text-align--right"></th>
-                                <th data-th-text="#{fintics.core.broker.BalanceAsset.profitPercentage}" class="text-align--right"></th>
+                                <th data-th-text="#{fintics.core.balance.BalanceAsset.quantity}"></th>
+                                <th data-th-text="#{fintics.core.balance.BalanceAsset.purchaseAmount}" class="text-align--right"></th>
+                                <th data-th-text="#{fintics.core.balance.BalanceAsset.valuationAmount}" class="text-align--right"></th>
+                                <th data-th-text="#{fintics.core.balance.BalanceAsset.profitAmount}" class="text-align--right"></th>
+                                <th data-th-text="#{fintics.core.balance.BalanceAsset.profitPercentage}" class="text-align--right"></th>
                                 <th class="text-align--right">-</th>
                             </tr>
                             </thead>
