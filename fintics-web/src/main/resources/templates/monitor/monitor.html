@@ -22,6 +22,11 @@
                     basketItems: []
                 }),
                 balance: {},
+                profitSummary: {
+                    balanceHistories: [],
+                    realizedProfits: [],
+                    dividendProfits: []
+                },
                 balanceHistoriesChart: null,
                 orders: [],
                 /**
@@ -58,7 +63,7 @@
                  */
                 refresh: async function () {
                     this.getBalance();
-                    this.getBalanceHistories();
+                    this.getProfitSummary();
                     await this.getBasket();
                     this.getTradeAssets();
                     this.getOrders();
@@ -98,7 +103,7 @@
                         }
                     });
                 },
-                getBalanceHistories: function() {
+                getProfitSummary: function() {
                     if (!this.balanceHistoriesChart) {
                         const chartId = `balanceHistoriesChart-${this.trade.tradeId}`;
                         const chartElement = document.getElementById(chartId);
@@ -150,12 +155,15 @@
                         });
                     }
 
-                    let url = new URL(`${_apiUrl}/v1/trades/${this.trade.tradeId}/balance-histories`, location.origin);
+                    let url = new URL(`${_apiUrl}/v1/trades/${this.trade.tradeId}/profit-summary`, location.origin);
                     url.searchParams.set('dateFrom', dateFns.format(dateFns.subDays(new Date(), 30), 'YYYY-MM-DD'));
                     url.searchParams.set('dateTo', dateFns.format(new Date(), 'YYYY-MM-DD'));
                     _fetch(url, {_suppressAlert:true})
                         .then(response => response.json())
-                        .then(balanceHistories => {
+                        .then(profitSummary => {
+                            duice.ObjectProxy.assign(this.profitSummary, profitSummary);
+                            console.warn('== profitSummary', profitSummary);
+                            let balanceHistories = profitSummary.balanceHistories;
                             this.balanceHistoriesChart.data.labels.length = 0;
                             this.balanceHistoriesChart.data.datasets.length = 0;
                             let labels = balanceHistories.map(row => dateFns.format(row.date, 'MM-DD')).reverse();
@@ -167,14 +175,14 @@
                                 label: 'Cash Amount',
                                 data: cashAmounts,
                                 stack: 'group1',
-                                backgroundColor: 'rgba(90, 90, 90, 0.7)',
+                                backgroundColor: 'rgba(128, 128, 128, 0.5)',
                                 fill: false,
                                 datalabels: { display: false }
                             }, {
                                 label: 'Valuation Amount',
                                 data: valuationAmounts,
                                 stack: 'group1',
-                                backgroundColor: 'rgba(80, 170, 120, 0.7)',
+                                backgroundColor: 'rgba(80, 170, 120, 0.5)',
                                 fill: false,
                                 datalabels: { display: false }
                             }, {
@@ -610,7 +618,154 @@
                     </div>
                 </div>
                 <div>
-                    <canvas th:id="|balanceHistoriesChart-${trade.tradeId}|"></canvas>
+                    <div class="font-weight--bold">
+                        <small>|</small>
+                        <span data-th-text="#{fintics.core.balance.ProfitSummary.balanceProfitAmount}"></span>:
+                        <span th:data-duice-bind="|monitorMap.get('${trade.tradeId}').profitSummary|"
+                              th:data-duice-property="balanceProfitAmount" data-duice-format="number()" class="number"></span>
+                        (
+                        <span th:data-duice-bind="|monitorMap.get('${trade.tradeId}').profitSummary|"
+                              th:data-duice-property="balanceProfitPercentage" data-duice-format="number()" class="number"></span>
+                        %
+                        )
+                    </div>
+                    <div>
+                        <canvas th:id="|balanceHistoriesChart-${trade.tradeId}|"></canvas>
+                    </div>
+                </div>
+                <div class="display--grid grid-template-columns--12fr gap--1px">
+                    <div class="grid-column--span-6 s__grid-column--span-12">
+                        <div class="font-weight--bold">
+                            <small>|</small>
+                            <span data-th-text="#{fintics.core.balance.ProfitSummary.realizedProfitAmount}"></span>:
+                            <span th:data-duice-bind="|monitorMap.get('${trade.tradeId}').profitSummary|"
+                                  th:data-duice-property="realizedProfitAmount" data-duice-format="number()" class="number"></span>
+                            (
+                            <span th:data-duice-bind="|monitorMap.get('${trade.tradeId}').profitSummary|"
+                                  th:data-duice-property="realizedProfitPercentage" data-duice-format="number()" class="number"></span>
+                            %
+                            )
+                        </div>
+                        <div class="overflow--scroll box" style="max-height:200px;">
+                            <table class="table border--none font-size--smaller" style="min-width:100%;">
+                                <thead>
+                                <tr>
+                                    <th data-th-text="#{fintics.core.balance.RealizedProfit.date}"></th>
+                                    <th data-th-text="#{fintics.core.balance.RealizedProfit.name}"></th>
+                                    <th data-th-text="#{fintics.core.balance.RealizedProfit.balanceAmount}"></th>
+                                    <th data-th-text="#{fintics.core.balance.RealizedProfit.balancePercentage}"></th>
+                                    <th data-th-text="#{fintics.core.balance.RealizedProfit.quantity}"></th>
+                                    <th data-th-text="#{fintics.core.balance.RealizedProfit.purchasePrice}"></th>
+                                    <th data-th-text="#{fintics.core.balance.RealizedProfit.purchaseAmount}"></th>
+                                    <th data-th-text="#{fintics.core.balance.RealizedProfit.disposePrice}"></th>
+                                    <th data-th-text="#{fintics.core.balance.RealizedProfit.disposeAmount}"></th>
+                                    <th data-th-text="#{fintics.core.balance.RealizedProfit.feeAmount}"></th>
+                                </tr>
+                                </thead>
+                                <tbody>
+                                <tr th:data-duice-bind="|monitorMap.get('${trade.tradeId}').profitSummary.realizedProfits|" data-duice-foreach="realizedProfit,status">
+                                    <td class="text-align--center white-space--nowrap">
+                                                <span data-duice-bind="realizedProfit"
+                                                      data-duice-property="date"
+                                                      data-duice-format="date('yyyy-MM-dd')" class="date text-align--center"></span>
+                                    </td>
+                                    <td class="text-truncate">
+                                        <span data-duice-bind="realizedProfit" data-duice-property="name"></span>
+                                    </td>
+                                    <td class="text-align--right white-space--nowrap">
+                                                <span data-duice-bind="realizedProfit" data-duice-property="profitAmount" data-duice-format="number()"
+                                                      data-duice-execute="
+                                                      this.classList.toggle('color--green', realizedProfit.profitAmount > 0);
+                                                      this.classList.toggle('color--red', realizedProfit.profitAmount < 0);
+                                                      " class="font-weight--bold number"></span>
+                                    </td>
+                                    <td class="text-align--right white-space--nowrap">
+                                                <span data-duice-bind="realizedProfit" data-duice-property="profitPercentage" data-duice-format="number()"
+                                                      data-duice-execute="
+                                                      this.classList.toggle('color--green', realizedProfit.profitPercentage > 0);
+                                                      this.classList.toggle('color--red', realizedProfit.profitPercentage < 0);
+                                                      " class="font-weight--bold number"></span>
+                                        <span class="code">%</span>
+                                    </td>
+                                    <td class="text-align--right">
+                                        <span data-duice-bind="realizedProfit" data-duice-property="quantity" data-duice-format="number()" class="number"></span>
+                                    </td>
+                                    <td class="text-align--right">
+                                        <span data-duice-bind="realizedProfit" data-duice-property="purchasePrice" data-duice-format="number()" class="number"></span>
+                                    </td>
+                                    <td class="text-align--right">
+                                        <span data-duice-bind="realizedProfit" data-duice-property="purchaseAmount" data-duice-format="number()" class="number"></span>
+                                    </td>
+                                    <td class="text-align--right">
+                                        <span data-duice-bind="realizedProfit" data-duice-property="disposePrice" data-duice-format="number()" class="number"></span>
+                                    </td>
+                                    <td class="text-align--right">
+                                        <span data-duice-bind="realizedProfit" data-duice-property="disposeAmount" data-duice-format="number()" class="number"></span>
+                                    </td>
+                                    <td class="text-align--right">
+                                        <span data-duice-bind="realizedProfit" data-duice-property="feeAmount" data-duice-format="number()" class="number"></span>
+                                    </td>
+                                </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                    <div class="grid-column--span-6 s__grid-column--span-12">
+                        <div class="font-weight--bold">
+                            <small>|</small>
+                            <span data-th-text="#{fintics.core.balance.ProfitSummary.dividendProfitAmount}"></span>:
+                            <span th:data-duice-bind="|monitorMap.get('${trade.tradeId}').profitSummary|"
+                                  th:data-duice-property="dividendProfitAmount" data-duice-format="number()" class="number"></span>
+                            (
+                            <span th:data-duice-bind="|monitorMap.get('${trade.tradeId}').profitSummary|"
+                                  th:data-duice-property="dividendProfitPercentage" data-duice-format="number()" class="number"></span>
+                            %
+                            )
+                        </div>
+                        <div class="overflow--scroll box" style="max-height:200px;">
+                            <table class="table border--none font-size--smaller" style="min-width:100%;">
+                                <thead>
+                                <tr>
+                                    <th data-th-text="#{fintics.core.balance.DividendProfit.date}"></th>
+                                    <th data-th-text="#{fintics.core.balance.DividendProfit.name}"></th>
+                                    <th data-th-text="#{fintics.core.balance.DividendProfit.dividendAmount}"></th>
+                                    <th data-th-text="#{fintics.core.balance.DividendProfit.holdingQuantity}"></th>
+                                    <th data-th-text="#{fintics.core.balance.DividendProfit.paymentDate}"></th>
+                                </tr>
+                                </thead>
+                                <tbody>
+                                <tr th:data-duice-bind="|monitorMap.get('${trade.tradeId}').profitSummary.dividendProfits|" data-duice-foreach="dividendProfit,status">
+                                    <td class="text-align--center white-space--nowrap">
+                                                <span data-duice-bind="dividendProfit"
+                                                      data-duice-property="date"
+                                                      data-duice-format="date('yyyy-MM-dd')" class="date"></span>
+                                    </td>
+                                    <td class="text-truncate">
+                                        <span data-duice-bind="dividendProfit" data-duice-property="name"></span>
+                                    </td>
+                                    <td class="text-align--right">
+                                                <span data-duice-bind="dividendProfit"
+                                                      data-duice-property="dividendAmount"
+                                                      data-duice-execute="
+                                                      this.classList.toggle('color--green', dividendProfit.dividendAmount > 0);
+                                                      this.classList.toggle('color--red', dividendProfit.dividendAmount < 0);
+                                                      "
+                                                      data-duice-format="number()"
+                                                      class="font-weight--bold number"></span>
+                                    </td>
+                                    <td class="text-align--right">
+                                        <span data-duice-bind="dividendProfit" data-duice-property="holdingQuantity" data-duice-format="number()" class="number"></span>
+                                    </td>
+                                    <td class="text-align--center text-truncate">
+                                                <span data-duice-bind="dividendProfit"
+                                                      data-duice-property="paymentDate"
+                                                      data-duice-format="date('yyyy-MM-dd')" class="date"></span>
+                                    </td>
+                                </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
                 </div>
             </div>
             <div class="grid-column--span-12">

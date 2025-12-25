@@ -1,20 +1,16 @@
-package org.chomookun.fintics.web.api.v1.balance.dto;
+package org.chomookun.fintics.web.api.v1.trade.dto;
 
 import lombok.Builder;
 import lombok.Getter;
-import org.chomookun.fintics.core.balance.model.Profit;
-import org.chomookun.fintics.web.api.v1.trade.dto.BalanceHistoryResponse;
-import org.chomookun.fintics.web.api.v1.trade.dto.DividendProfitResponse;
-import org.chomookun.fintics.web.api.v1.trade.dto.RealizedProfitResponse;
+import org.chomookun.fintics.core.balance.model.ProfitSummary;
 
 import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.List;
 
-@Deprecated
 @Getter
 @Builder
-public class ProfitResponse {
+public class ProfitSummaryResponse {
 
     private String brokerId;
 
@@ -46,8 +42,8 @@ public class ProfitResponse {
      * @param profit profit
      * @return profit response
      */
-    public static ProfitResponse from(Profit profit) {
-        return ProfitResponse.builder()
+    public static ProfitSummaryResponse from(ProfitSummary profit) {
+        return ProfitSummaryResponse.builder()
                 .brokerId(profit.getBrokerId())
                 .totalAmount(profit.getTotalAmount())
                 .balanceProfitAmount(profit.getBalanceProfitAmount())

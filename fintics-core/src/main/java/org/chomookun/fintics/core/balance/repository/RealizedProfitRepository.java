@@ -1,6 +1,7 @@
 package org.chomookun.fintics.core.balance.repository;
 
 import org.chomookun.fintics.core.balance.entity.BalanceHistoryEntity;
+import org.chomookun.fintics.core.balance.entity.DividendProfitEntity;
 import org.chomookun.fintics.core.balance.entity.RealizedProfitEntity;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
@@ -21,17 +22,11 @@ public interface RealizedProfitRepository extends JpaRepository<RealizedProfitEn
         """)
     Optional<LocalDate> findLastDateByBrokerId(@Param("brokerId") String brokerId);
 
-    /**
-     * Find all by broker id
-     * @param brokerId broker id
-     * @param dateFrom date from
-     * @param dateTo date to
-     * @return list of realized profits
-     */
     @Query("""
         select a from RealizedProfitEntity a
         where a.brokerId = :brokerId
-        and a.date between :dateFrom and :dateTo
+        and (:dateFrom is null or a.date >= :dateFrom)
+        and (:dateTo is null or a.date <= :dateTo)
         order by a.date desc
         """)
     List<RealizedProfitEntity> findAllByBrokerId(
@@ -39,4 +34,5 @@ public interface RealizedProfitRepository extends JpaRepository<RealizedProfitEn
             @Param("dateFrom") LocalDate dateFrom,
             @Param("dateTo") LocalDate dateTo
     );
+
 }
