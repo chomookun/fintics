@@ -94,7 +94,7 @@ public class KisBrokerClient extends BrokerClient {
     }
 
     private void sleep() throws InterruptedException {
-        long sleepMillis = production ? 100 : 1_000;
+        long sleepMillis = production ? 200 : 2_000;    // 메뉴얼상은 초당 20건 제약으로 하나 10건만 보내도 응답거부가 많음으로 초당 5건으로 처리
         KisAccessThrottler.sleep(appKey, sleepMillis);
     }
 
