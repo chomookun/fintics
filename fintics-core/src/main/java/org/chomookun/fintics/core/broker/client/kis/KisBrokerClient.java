@@ -41,8 +41,6 @@ import java.util.stream.Collectors;
 @Slf4j
 public class KisBrokerClient extends BrokerClient {
 
-    private final static Object LOCK_OBJECT = new Object();
-
     private final boolean production;
 
     private final String apiUrl;

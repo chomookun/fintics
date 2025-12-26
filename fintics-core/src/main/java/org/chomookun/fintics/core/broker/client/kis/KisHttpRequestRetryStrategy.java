@@ -16,7 +16,7 @@ public class KisHttpRequestRetryStrategy extends DefaultHttpRequestRetryStrategy
      * Constructor
      */
     public KisHttpRequestRetryStrategy() {
-        super(RETRY_COUNT,  TimeValue.ofMilliseconds(100L));
+        super(RETRY_COUNT,  TimeValue.ofMilliseconds(500L));
     }
 
     @Override
