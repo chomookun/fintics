@@ -894,15 +894,23 @@ public class KisUsBrokerClient extends BrokerClient {
                         }
                         return date;
                     });
+                    // 한·미 조세조약 15% 원천징수 적용
+                    BigDecimal taxAmount = dividendAmount.multiply(new BigDecimal("0.15"))
+                            .setScale(2, RoundingMode.DOWN);
+                    // 실제 정산 금액
+                    BigDecimal netAmount = dividendAmount.subtract(taxAmount)
+                            .setScale(2, RoundingMode.DOWN);
 
                     // dividend history
                     DividendProfit dividendHistory = DividendProfit.builder()
                             .date(recordDate)
                             .symbol(symbol)
                             .name(name)
+                            .paymentDate(paymentDate)
                             .holdingQuantity(holdingQuantity)
                             .dividendAmount(dividendAmount)
-                            .paymentDate(paymentDate)
+                            .taxAmount(taxAmount)
+                            .netAmount(netAmount)
                             .build();
                     dividendProfits.add(dividendHistory);
                 }

@@ -943,11 +943,16 @@ public class KisBrokerClient extends BrokerClient {
                         BigDecimal holdingQuantity = Optional.ofNullable(row.get("cblc_qty"))
                                 .filter(it -> !it.isBlank())
                                 .map(BigDecimal::new)
-                                .orElse(null);
+                                .orElse(BigDecimal.ZERO);
                         BigDecimal dividendAmount = Optional.ofNullable(row.get("last_alct_amt"))
                                 .filter(it -> !it.isBlank())
                                 .map(BigDecimal::new)
-                                .orElse(null);
+                                .orElse(BigDecimal.ZERO);
+                        BigDecimal taxAmount = Optional.ofNullable(row.get("tax_amt"))
+                                .filter(it -> !it.isBlank())
+                                .map(BigDecimal::new)
+                                .orElse(BigDecimal.ZERO);
+                        BigDecimal netAmount = dividendAmount.subtract(taxAmount);
                         return DividendProfit.builder()
                                 .assetId(toAssetId(symbol))
                                 .symbol(symbol)
@@ -956,6 +961,8 @@ public class KisBrokerClient extends BrokerClient {
                                 .paymentDate(paymentDate)
                                 .holdingQuantity(holdingQuantity)
                                 .dividendAmount(dividendAmount)
+                                .taxAmount(taxAmount)
+                                .netAmount(netAmount)
                                 .build();
                     })
                     .collect(Collectors.toList());

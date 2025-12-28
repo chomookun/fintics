@@ -28,6 +28,10 @@ public class ProfitSummaryResponse {
 
     private BigDecimal dividendProfitPercentage;
 
+    private BigDecimal dividendProfitTaxAmount;
+
+    private BigDecimal dividendProfitNetAmount;
+
     @Builder.Default
     private List<BalanceHistoryResponse> balanceHistories = new ArrayList<>();
 
@@ -39,26 +43,28 @@ public class ProfitSummaryResponse {
 
     /**
      * factory method
-     * @param profit profit
+     * @param profitSummary profit
      * @return profit response
      */
-    public static ProfitSummaryResponse from(ProfitSummary profit) {
+    public static ProfitSummaryResponse from(ProfitSummary profitSummary) {
         return ProfitSummaryResponse.builder()
-                .brokerId(profit.getBrokerId())
-                .totalAmount(profit.getTotalAmount())
-                .balanceProfitAmount(profit.getBalanceProfitAmount())
-                .balanceProfitPercentage(profit.getBalanceProfitPercentage())
-                .realizedProfitAmount(profit.getRealizedProfitAmount())
-                .realizedProfitPercentage(profit.getRealizedProfitPercentage())
-                .dividendProfitAmount(profit.getDividendProfitAmount())
-                .dividendProfitPercentage(profit.getDividendProfitPercentage())
-                .balanceHistories(profit.getBalanceHistories().stream()
+                .brokerId(profitSummary.getBrokerId())
+                .totalAmount(profitSummary.getTotalAmount())
+                .balanceProfitAmount(profitSummary.getBalanceProfitAmount())
+                .balanceProfitPercentage(profitSummary.getBalanceProfitPercentage())
+                .realizedProfitAmount(profitSummary.getRealizedProfitAmount())
+                .realizedProfitPercentage(profitSummary.getRealizedProfitPercentage())
+                .dividendProfitAmount(profitSummary.getDividendProfitAmount())
+                .dividendProfitPercentage(profitSummary.getDividendProfitPercentage())
+                .dividendProfitTaxAmount(profitSummary.getDividendProfitTaxAmount())
+                .dividendProfitNetAmount(profitSummary.getDividendProfitNetAmount())
+                .balanceHistories(profitSummary.getBalanceHistories().stream()
                         .map(BalanceHistoryResponse::from)
                         .toList())
-                .realizedProfits(profit.getRealizedProfits().stream()
+                .realizedProfits(profitSummary.getRealizedProfits().stream()
                         .map(RealizedProfitResponse::from)
                         .toList())
-                .dividendProfits(profit.getDividendProfits().stream()
+                .dividendProfits(profitSummary.getDividendProfits().stream()
                         .map(DividendProfitResponse::from)
                         .toList())
                 .build();

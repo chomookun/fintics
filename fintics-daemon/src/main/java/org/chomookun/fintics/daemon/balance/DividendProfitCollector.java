@@ -4,11 +4,8 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.chomookun.arch4j.core.common.data.IdGenerator;
 import org.chomookun.fintics.core.balance.entity.DividendProfitEntity;
-import org.chomookun.fintics.core.balance.entity.RealizedProfitEntity;
 import org.chomookun.fintics.core.balance.model.DividendProfit;
-import org.chomookun.fintics.core.balance.model.RealizedProfit;
 import org.chomookun.fintics.core.balance.repository.DividendProfitRepository;
-import org.chomookun.fintics.core.balance.repository.RealizedProfitRepository;
 import org.chomookun.fintics.core.broker.client.BrokerClient;
 import org.chomookun.fintics.core.broker.client.BrokerClientFactory;
 import org.chomookun.fintics.core.broker.model.Broker;
@@ -69,6 +66,8 @@ public class DividendProfitCollector extends AbstractTask {
                             .paymentDate(it.getPaymentDate())
                             .holdingQuantity(it.getHoldingQuantity())
                             .dividendAmount(it.getDividendAmount())
+                            .taxAmount(it.getTaxAmount())
+                            .netAmount(it.getNetAmount())
                             .build();
                 }).collect(Collectors.toList());
         this.saveEntities("dividendProfitEntities", dividendProfitEntities, transactionManager, dividendProfitRepository);

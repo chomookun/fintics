@@ -644,11 +644,12 @@
                 <div class="display--grid grid-template-columns--12fr gap--d5rem">
                     <div class="grid-column--span-6 s__grid-column--span-12">
                         <div>
-                            <small>|</small>
-                            <span class="font-weight--bold" data-th-text="#{fintics.core.balance.ProfitSummary.realizedProfitAmount}"></span>:
-                            <span class="font-weight--bold"
-                                  th:data-duice-bind="|monitorMap.get('${trade.tradeId}').profitSummary|"
-                                  th:data-duice-execute="|
+                            <div>
+                                <small>|</small>
+                                <span class="font-weight--bold" data-th-text="#{fintics.core.balance.ProfitSummary.realizedProfitAmount}"></span>:
+                                <span class="font-weight--bold"
+                                      th:data-duice-bind="|monitorMap.get('${trade.tradeId}').profitSummary|"
+                                      th:data-duice-execute="|
                                       let realizedProfitAmount = monitorMap.get('${trade.tradeId}').profitSummary.realizedProfitAmount;
                                       this.classList.toggle('color--green', realizedProfitAmount > 0);
                                       this.classList.toggle('color--red', realizedProfitAmount < 0);
@@ -660,7 +661,8 @@
                                       data-duice-property="realizedProfitPercentage" data-duice-format="number(2)" class="number"></span>
                                 %
                                 )
-                            </span>
+                                </span>
+                            </div>
                         </div>
                         <div class="overflow--scroll box" style="max-height:150px;">
                             <table class="table border--none font-size--smaller" style="min-width:100%;">
@@ -733,12 +735,13 @@
                         </div>
                     </div>
                     <div class="grid-column--span-6 s__grid-column--span-12">
-                        <div>
-                            <small>|</small>
-                            <span class="font-weight--bold" data-th-text="#{fintics.core.balance.ProfitSummary.dividendProfitAmount}"></span>:
-                            <span class="font-weight--bold"
-                                  th:data-duice-bind="|monitorMap.get('${trade.tradeId}').profitSummary|"
-                                  th:data-duice-execute="|
+                        <div class="s__width--100 display--flex">
+                            <div>
+                                <small>|</small>
+                                <span class="font-weight--bold" data-th-text="#{fintics.core.balance.ProfitSummary.dividendProfitAmount}"></span>:
+                                <span class="font-weight--bold"
+                                      th:data-duice-bind="|monitorMap.get('${trade.tradeId}').profitSummary|"
+                                      th:data-duice-execute="|
                                       let dividendProfitAmount = monitorMap.get('${trade.tradeId}').profitSummary.dividendProfitAmount;
                                       this.classList.toggle('color--green', dividendProfitAmount > 0);
                                       this.classList.toggle('color--red', dividendProfitAmount < 0);
@@ -750,7 +753,20 @@
                                       th:data-duice-property="dividendProfitPercentage" data-duice-format="number(2)" class="number"></span>
                                 %
                                 )
-                            </span>
+                                </span>
+                            </div>
+                            <div>
+                                <small>|</small>
+                                <span class="font-weight--bold" data-th-text="#{fintics.core.balance.ProfitSummary.dividendProfitTaxAmount}"></span>:
+                                <span th:data-duice-bind="|monitorMap.get('${trade.tradeId}').profitSummary|"
+                                      th:data-duice-property="dividendProfitTaxAmount" data-duice-format="number()" class="number"></span>
+                            </div>
+                            <div>
+                                <small>|</small>
+                                <span class="font-weight--bold" data-th-text="#{fintics.core.balance.ProfitSummary.dividendProfitNetAmount}"></span>:
+                                <span th:data-duice-bind="|monitorMap.get('${trade.tradeId}').profitSummary|"
+                                      th:data-duice-property="dividendProfitNetAmount" data-duice-format="number()" class="number"></span>
+                            </div>
                         </div>
                         <div class="overflow--scroll box" style="max-height:150px;">
                             <table class="table border--none font-size--smaller" style="min-width:100%;">
@@ -758,8 +774,10 @@
                                 <tr>
                                     <th data-th-text="#{fintics.core.balance.DividendProfit.date}"></th>
                                     <th data-th-text="#{fintics.core.balance.DividendProfit.name}"></th>
-                                    <th data-th-text="#{fintics.core.balance.DividendProfit.dividendAmount}"></th>
                                     <th data-th-text="#{fintics.core.balance.DividendProfit.holdingQuantity}"></th>
+                                    <th data-th-text="#{fintics.core.balance.DividendProfit.dividendAmount}"></th>
+                                    <th data-th-text="#{fintics.core.balance.DividendProfit.taxAmount}"></th>
+                                    <th data-th-text="#{fintics.core.balance.DividendProfit.netAmount}"></th>
                                     <th data-th-text="#{fintics.core.balance.DividendProfit.paymentDate}"></th>
                                 </tr>
                                 </thead>
@@ -774,6 +792,9 @@
                                         <span data-duice-bind="dividendProfit" data-duice-property="name"></span>
                                     </td>
                                     <td class="text-align--right">
+                                        <span data-duice-bind="dividendProfit" data-duice-property="holdingQuantity" data-duice-format="number()" class="number"></span>
+                                    </td>
+                                    <td class="text-align--right">
                                                 <span data-duice-bind="dividendProfit"
                                                       data-duice-property="dividendAmount"
                                                       data-duice-execute="
@@ -784,7 +805,16 @@
                                                       class="font-weight--bold number"></span>
                                     </td>
                                     <td class="text-align--right">
-                                        <span data-duice-bind="dividendProfit" data-duice-property="holdingQuantity" data-duice-format="number()" class="number"></span>
+                                                <span data-duice-bind="dividendProfit"
+                                                      data-duice-property="taxAmount"
+                                                      data-duice-format="number()"
+                                                      class="number"></span>
+                                    </td>
+                                    <td class="text-align--right">
+                                                <span data-duice-bind="dividendProfit"
+                                                      data-duice-property="netAmount"
+                                                      data-duice-format="number()"
+                                                      class="font-weight--bold number"></span>
                                     </td>
                                     <td class="text-align--center text-truncate">
                                                 <span data-duice-bind="dividendProfit"

@@ -60,4 +60,11 @@ public class DividendProfitEntity extends BaseEntity {
     @Column(name = "dividend_amount", scale = 4)
     private BigDecimal dividendAmount;
 
+    @Column(name = "tax_amount", scale = 4)
+    private BigDecimal taxAmount;
+
+    @Column(name = "net_amount", scale = 4)
+    private BigDecimal netAmount;
+
+
 }

@@ -28,6 +28,10 @@ public class ProfitSummary {
 
     private BigDecimal dividendProfitPercentage;
 
+    private BigDecimal dividendProfitTaxAmount;
+
+    private BigDecimal dividendProfitNetAmount;
+
     @Builder.Default
     private List<BalanceHistory> balanceHistories = new ArrayList<>();
 
