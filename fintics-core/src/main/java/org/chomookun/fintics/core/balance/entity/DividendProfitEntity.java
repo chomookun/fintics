@@ -51,9 +51,6 @@ public class DividendProfitEntity extends BaseEntity {
     @Column(name = "name")
     private String name;
 
-    @Column(name = "payment_date")
-    private LocalDate paymentDate;
-
     @Column(name = "holding_quantity")
     private BigDecimal holdingQuantity;
 
@@ -66,5 +63,7 @@ public class DividendProfitEntity extends BaseEntity {
     @Column(name = "net_amount", scale = 4)
     private BigDecimal netAmount;
 
+    @Column(name = "payment_date")
+    private LocalDate paymentDate;
 
 }

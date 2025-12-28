@@ -21,8 +21,6 @@ public class DividendProfit {
 
     private String name;
 
-    private LocalDate paymentDate;
-
     private BigDecimal holdingQuantity;
 
     private BigDecimal dividendAmount;
@@ -31,6 +29,8 @@ public class DividendProfit {
 
     private BigDecimal netAmount;
 
+    private LocalDate paymentDate;
+
     public static DividendProfit from(DividendProfitEntity dividendProfitEntity) {
         return DividendProfit.builder()
                 .brokerId(dividendProfitEntity.getBrokerId())
@@ -38,11 +38,11 @@ public class DividendProfit {
                 .assetId(dividendProfitEntity.getAssetId())
                 .symbol(dividendProfitEntity.getSymbol())
                 .name(dividendProfitEntity.getName())
-                .paymentDate(dividendProfitEntity.getPaymentDate())
                 .holdingQuantity(dividendProfitEntity.getHoldingQuantity())
                 .dividendAmount(dividendProfitEntity.getDividendAmount())
                 .taxAmount(dividendProfitEntity.getTaxAmount())
                 .netAmount(dividendProfitEntity.getNetAmount())
+                .paymentDate(dividendProfitEntity.getPaymentDate())
                 .build();
     }
 

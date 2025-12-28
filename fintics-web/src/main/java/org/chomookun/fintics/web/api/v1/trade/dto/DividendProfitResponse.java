@@ -13,26 +13,32 @@ public class DividendProfitResponse {
 
     private String assetId;
 
+    private LocalDate date;
+
     private String symbol;
 
     private String name;
-
-    private LocalDate date;
-
-    private LocalDate paymentDate;
 
     private BigDecimal holdingQuantity;
 
     private BigDecimal dividendAmount;
 
-    public static DividendProfitResponse from(DividendProfit dividendHistory) {
+    private BigDecimal taxAmount;
+
+    private BigDecimal netAmount;
+
+    private LocalDate paymentDate;
+
+    public static DividendProfitResponse from(DividendProfit dividendProfit) {
         return DividendProfitResponse.builder()
-                .date(dividendHistory.getDate())
-                .symbol(dividendHistory.getSymbol())
-                .name(dividendHistory.getName())
-                .holdingQuantity(dividendHistory.getHoldingQuantity())
-                .dividendAmount(dividendHistory.getDividendAmount())
-                .paymentDate(dividendHistory.getPaymentDate())
+                .date(dividendProfit.getDate())
+                .symbol(dividendProfit.getSymbol())
+                .name(dividendProfit.getName())
+                .holdingQuantity(dividendProfit.getHoldingQuantity())
+                .dividendAmount(dividendProfit.getDividendAmount())
+                .taxAmount(dividendProfit.getTaxAmount())
+                .netAmount(dividendProfit.getNetAmount())
+                .paymentDate(dividendProfit.getPaymentDate())
                 .build();
     }
 

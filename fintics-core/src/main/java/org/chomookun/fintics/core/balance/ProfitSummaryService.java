@@ -78,11 +78,11 @@ public class ProfitSummaryService {
                 .realizedProfitPercentage(realizedProfitPercentage)
                 .dividendProfitAmount(dividendProfitAmount)
                 .dividendProfitPercentage(dividendProfitPercentage)
+                .dividendProfitTaxAmount(dividendProfitTaxAmount)
+                .dividendProfitNetAmount(dividendProfitNetAmount)
                 .balanceHistories(balanceHistories)
                 .realizedProfits(realizedProfits)
                 .dividendProfits(dividendProfits)
-                .dividendProfitTaxAmount(dividendProfitTaxAmount)
-                .dividendProfitNetAmount(dividendProfitNetAmount)
                 .build();
     }
 

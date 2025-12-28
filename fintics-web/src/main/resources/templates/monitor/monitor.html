@@ -617,6 +617,12 @@
                                 }|"></span>
                     </div>
                 </div>
+            </div>
+            <div class="grid-column--span-12">
+                <h3>
+                    <img class="icon" data-th-src="@{/static/image/icon-profit.svg}" alt="balance"/>
+                    <span data-th-text="#{fintics.core.balance.ProfitSummary}"></span>
+                </h3>
                 <div>
                     <div>
                         <small>|</small>
@@ -735,7 +741,7 @@
                         </div>
                     </div>
                     <div class="grid-column--span-6 s__grid-column--span-12">
-                        <div class="s__width--100 display--flex">
+                        <div class="s__width--100 display--flex s__flex-direction--column">
                             <div>
                                 <small>|</small>
                                 <span class="font-weight--bold" data-th-text="#{fintics.core.balance.ProfitSummary.dividendProfitAmount}"></span>:
