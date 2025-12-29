@@ -330,17 +330,17 @@
                         basketItem.intraDayNetChangePercentage = tradeAsset.intraDayNetChangePercentage;
                         basketItem.message = tradeAsset.message;
                         basketItem.strategyResult = tradeAsset.strategyResult;
-                        // updates chart
-                        let chartId = `${basketItem.tradeId}-${basketItem.assetId}`;
-                        let chartRef = chartRefMap.get(chartId);
-                        if (chartRef) {
-                            let lastOhlcv = chartRef.lastOhlcv;
-                            if (lastOhlcv) {
-                                lastOhlcv.close = tradeAsset.close;
-                                lastOhlcv.volume = tradeAsset.volume;
-                                chartRef.candlestickSeries.update(lastOhlcv);
-                            }
-                        }
+                        // updates chart (disabled for performance reason)
+                        // let chartId = `${basketItem.tradeId}-${basketItem.assetId}`;
+                        // let chartRef = chartRefMap.get(chartId);
+                        // if (chartRef) {
+                        //     let lastOhlcv = chartRef.lastOhlcv;
+                        //     if (lastOhlcv) {
+                        //         lastOhlcv.close = tradeAsset.close;
+                        //         lastOhlcv.volume = tradeAsset.volume;
+                        //         chartRef.candlestickSeries.update(lastOhlcv);
+                        //     }
+                        // }
                     }
                 },
                 getOrders: function() {
