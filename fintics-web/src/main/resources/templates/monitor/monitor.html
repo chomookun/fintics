@@ -710,7 +710,7 @@
                 </div>
                 <div class="display--grid grid-template-columns--12fr gap--d5rem">
                     <div class="grid-column--span-6 s__grid-column--span-12">
-                        <div>
+                        <div class="s__width--100 display--flex s__flex-direction--column">
                             <div>
                                 <small>|</small>
                                 <span class="font-weight--bold" data-th-text="#{fintics.core.balance.ProfitSummary.realizedProfitAmount}"></span>:
@@ -729,6 +729,12 @@
                                 %
                                 )
                                 </span>
+                            </div>
+                            <div>
+                                <small>|</small>
+                                <span class="font-weight--bold" data-th-text="#{fintics.core.balance.ProfitSummary.realizedProfitTaxableAmount}"></span>:
+                                <span th:data-duice-bind="|monitorMap.get('${trade.tradeId}').profitSummary|"
+                                      th:data-duice-property="realizedProfitTaxableAmount" data-duice-format="number()" class="number"></span>
                             </div>
                         </div>
                         <div class="overflow--scroll box" style="max-height:150px;">

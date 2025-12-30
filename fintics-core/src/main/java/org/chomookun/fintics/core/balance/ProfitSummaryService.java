@@ -57,6 +57,32 @@ public class ProfitSummaryService {
                 .multiply(BigDecimal.valueOf(100))
                 .setScale(4, RoundingMode.FLOOR);
 
+        // realized profit taxable amount
+        BigDecimal realizedProfitTaxableAmount = BigDecimal.ZERO;
+        for (RealizedProfit realizedProfit : realizedProfits) {
+            // 한국 주식 시장인 경우
+            if (Objects.equals(broker.getMarket(), "KR")) {
+                // 국내 상장 해외 ETF 의 경우 매매차익 배당소득세로 과세 대상 (정확한 구분이 힘들고 추정치 임으로 종목명에 "미국/차이나" 포함 여부로 판단)
+                if (realizedProfit.getName().contains("미국")
+                || realizedProfit.getName().contains("차이나")
+                ) {
+                    // 손익통산이 아니므로 손실은 제외하고 수익분 과세 대상
+                    if (realizedProfit.getProfitAmount().compareTo(BigDecimal.ZERO) > 0) {
+                        realizedProfitTaxableAmount = realizedProfitTaxableAmount.add(realizedProfit.getProfitAmount());
+                    }
+                }
+                // 그외 국내 주식/ETF 는 비과세
+                else {
+                    realizedProfitTaxableAmount = realizedProfitTaxableAmount.add(BigDecimal.ZERO);
+                }
+            }
+            // 한국 주식 외에는 과세 대상 (손익통산)
+            else {
+                realizedProfitTaxableAmount = realizedProfitTaxableAmount.add(realizedProfit.getProfitAmount());
+            }
+        }
+
+
         // dividend profit
         List<DividendProfit> dividendProfits = dividendProfitRepository.findAllByBrokerId(brokerId, dateFrom, dateTo).stream()
                 .map(DividendProfit::from)
@@ -74,7 +100,7 @@ public class ProfitSummaryService {
                 .map(DividendProfit::getNetAmount)
                 .reduce(BigDecimal.ZERO, BigDecimal::add);
 
-        // dividend taxable amount
+        // dividend profit taxable amount
         BigDecimal dividendProfitTaxableAmount = BigDecimal.ZERO;
         if (Objects.equals(broker.getMarket(), "KR")) {
             dividendProfitTaxableAmount = dividendProfitTaxAmount.divide(BigDecimal.valueOf(0.154), MathContext.DECIMAL32)
@@ -91,6 +117,7 @@ public class ProfitSummaryService {
                 .balanceProfitPercentage(balanceProfitPercentage)
                 .realizedProfitAmount(realizedProfitAmount)
                 .realizedProfitPercentage(realizedProfitPercentage)
+                .realizedProfitTaxableAmount(realizedProfitTaxableAmount)
                 .dividendProfitAmount(dividendProfitAmount)
                 .dividendProfitPercentage(dividendProfitPercentage)
                 .dividendProfitTaxAmount(dividendProfitTaxAmount)

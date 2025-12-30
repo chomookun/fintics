@@ -24,6 +24,8 @@ public class ProfitSummary {
 
     private BigDecimal realizedProfitPercentage;
 
+    private BigDecimal realizedProfitTaxableAmount;
+
     private BigDecimal dividendProfitAmount;
 
     private BigDecimal dividendProfitPercentage;

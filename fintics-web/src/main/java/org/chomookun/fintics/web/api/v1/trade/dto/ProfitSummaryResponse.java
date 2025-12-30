@@ -24,6 +24,8 @@ public class ProfitSummaryResponse {
 
     private BigDecimal realizedProfitPercentage;
 
+    private BigDecimal realizedProfitTaxableAmount;
+
     private BigDecimal dividendProfitAmount;
 
     private BigDecimal dividendProfitPercentage;
@@ -56,6 +58,7 @@ public class ProfitSummaryResponse {
                 .balanceProfitPercentage(profitSummary.getBalanceProfitPercentage())
                 .realizedProfitAmount(profitSummary.getRealizedProfitAmount())
                 .realizedProfitPercentage(profitSummary.getRealizedProfitPercentage())
+                .realizedProfitTaxableAmount(profitSummary.getRealizedProfitTaxableAmount())
                 .dividendProfitAmount(profitSummary.getDividendProfitAmount())
                 .dividendProfitPercentage(profitSummary.getDividendProfitPercentage())
                 .dividendProfitTaxAmount(profitSummary.getDividendProfitTaxAmount())
