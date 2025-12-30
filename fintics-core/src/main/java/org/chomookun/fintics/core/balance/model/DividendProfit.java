@@ -5,6 +5,8 @@ import lombok.Getter;
 import org.chomookun.fintics.core.balance.entity.DividendProfitEntity;
 
 import java.math.BigDecimal;
+import java.math.MathContext;
+import java.math.RoundingMode;
 import java.time.LocalDate;
 
 @Getter

@@ -30,6 +30,8 @@ public class ProfitSummary {
 
     private BigDecimal dividendProfitTaxAmount;
 
+    private BigDecimal dividendProfitTaxableAmount;
+
     private BigDecimal dividendProfitNetAmount;
 
     @Builder.Default

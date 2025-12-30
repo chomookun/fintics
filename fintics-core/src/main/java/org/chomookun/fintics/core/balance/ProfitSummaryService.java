@@ -5,6 +5,8 @@ import org.chomookun.fintics.core.balance.model.*;
 import org.chomookun.fintics.core.balance.repository.BalanceHistoryRepository;
 import org.chomookun.fintics.core.balance.repository.DividendProfitRepository;
 import org.chomookun.fintics.core.balance.repository.RealizedProfitRepository;
+import org.chomookun.fintics.core.broker.BrokerService;
+import org.chomookun.fintics.core.broker.model.Broker;
 import org.springframework.stereotype.Service;
 
 import java.math.BigDecimal;
@@ -12,10 +14,13 @@ import java.math.MathContext;
 import java.math.RoundingMode;
 import java.time.LocalDate;
 import java.util.List;
+import java.util.Objects;
 
 @Service
 @RequiredArgsConstructor
 public class ProfitSummaryService {
+
+    private final BrokerService brokerService;
 
     private final BalanceHistoryRepository balanceHistoryRepository;
 
@@ -24,6 +29,7 @@ public class ProfitSummaryService {
     private final DividendProfitRepository dividendProfitRepository;
 
     public ProfitSummary getProfitSummary(String brokerId, LocalDate dateFrom, LocalDate dateTo) {
+        Broker broker= brokerService.getBroker(brokerId).orElseThrow();
         List<BalanceHistory> balanceHistories = balanceHistoryRepository.findAllByBrokerId(brokerId, dateFrom, dateTo).stream()
                 .map(BalanceHistory::from)
                 .toList();
@@ -68,6 +74,15 @@ public class ProfitSummaryService {
                 .map(DividendProfit::getNetAmount)
                 .reduce(BigDecimal.ZERO, BigDecimal::add);
 
+        // dividend taxable amount
+        BigDecimal dividendProfitTaxableAmount = BigDecimal.ZERO;
+        if (Objects.equals(broker.getMarket(), "KR")) {
+            dividendProfitTaxableAmount = dividendProfitTaxAmount.divide(BigDecimal.valueOf(0.154), MathContext.DECIMAL32)
+                    .setScale(0, RoundingMode.CEILING);
+        } else {
+            dividendProfitTaxableAmount = dividendProfitAmount;
+        }
+
         // returns
         return ProfitSummary.builder()
                 .brokerId(brokerId)
@@ -79,6 +94,7 @@ public class ProfitSummaryService {
                 .dividendProfitAmount(dividendProfitAmount)
                 .dividendProfitPercentage(dividendProfitPercentage)
                 .dividendProfitTaxAmount(dividendProfitTaxAmount)
+                .dividendProfitTaxableAmount(dividendProfitTaxableAmount)
                 .dividendProfitNetAmount(dividendProfitNetAmount)
                 .balanceHistories(balanceHistories)
                 .realizedProfits(realizedProfits)

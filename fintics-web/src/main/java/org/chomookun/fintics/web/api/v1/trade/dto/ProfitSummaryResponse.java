@@ -30,6 +30,8 @@ public class ProfitSummaryResponse {
 
     private BigDecimal dividendProfitTaxAmount;
 
+    private BigDecimal dividendProfitTaxableAmount;
+
     private BigDecimal dividendProfitNetAmount;
 
     @Builder.Default
@@ -57,6 +59,7 @@ public class ProfitSummaryResponse {
                 .dividendProfitAmount(profitSummary.getDividendProfitAmount())
                 .dividendProfitPercentage(profitSummary.getDividendProfitPercentage())
                 .dividendProfitTaxAmount(profitSummary.getDividendProfitTaxAmount())
+                .dividendProfitTaxableAmount(profitSummary.getDividendProfitTaxableAmount())
                 .dividendProfitNetAmount(profitSummary.getDividendProfitNetAmount())
                 .balanceHistories(profitSummary.getBalanceHistories().stream()
                         .map(BalanceHistoryResponse::from)

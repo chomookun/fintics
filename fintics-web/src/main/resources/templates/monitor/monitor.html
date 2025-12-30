@@ -22,6 +22,9 @@
                     basketItems: []
                 }),
                 balance: {},
+                profitSummarySearch: new duice.ObjectProxy({
+                    period: '1M'
+                }),
                 profitSummary: {
                     balanceHistories: [],
                     realizedProfits: [],
@@ -157,8 +160,24 @@
                     }
 
                     let url = new URL(`${_apiUrl}/v1/trades/${this.trade.tradeId}/profit-summary`, location.origin);
-                    url.searchParams.set('dateFrom', dateFns.format(dateFns.subDays(new Date(), 30), 'YYYY-MM-DD'));
-                    url.searchParams.set('dateTo', dateFns.format(new Date(), 'YYYY-MM-DD'));
+                    let dateFrom = new Date();
+                    let dateTo = new Date();
+                    switch (this.profitSummarySearch.period) {
+                        case '1M':
+                            dateFrom = dateFns.subMonths(dateTo, 1);
+                            break;
+                        case '3M':
+                            dateFrom = dateFns.subMonths(dateTo, 3);
+                            break;
+                        case '6M':
+                            dateFrom = dateFns.subMonths(dateTo, 6);
+                            break;
+                        case '1Y':
+                            dateFrom = dateFns.subYears(dateTo, 1);
+                            break;
+                    }
+                    url.searchParams.set('dateFrom', dateFns.format(dateFrom, 'YYYY-MM-DD'));
+                    url.searchParams.set('dateTo', dateFns.format(dateTo, 'YYYY-MM-DD'));
                     _fetch(url, {_suppressAlert:true})
                         .then(response => response.json())
                         .then(profitSummary => {
@@ -547,10 +566,12 @@
                 </div>
             </div>
             <div class="grid-column--span-12">
-                <h3>
-                    <img class="icon" data-th-src="@{/static/image/icon-balance.svg}" alt="balance"/>
-                    <span data-th-text="#{fintics.core.balance.Balance}"></span>
-                </h3>
+                <div class="display--flex gap--1rem">
+                    <h3>
+                        <img class="icon" data-th-src="@{/static/image/icon-balance.svg}" alt="balance"/>
+                        <span data-th-text="#{fintics.core.balance.Balance}"></span>
+                    </h3>
+                </div>
                 <div class="s__width--100 display--flex s__flex-direction--column" style="line-height:2.0rem;">
                     <div>
                         <small>|</small>
@@ -619,10 +640,50 @@
                 </div>
             </div>
             <div class="grid-column--span-12">
-                <h3>
-                    <img class="icon" data-th-src="@{/static/image/icon-profit.svg}" alt="balance"/>
-                    <span data-th-text="#{fintics.core.balance.ProfitSummary}"></span>
-                </h3>
+                <div class="display--flex gap--1rem">
+                    <h3>
+                        <img class="icon" data-th-src="@{/static/image/icon-profit.svg}" alt="balance"/>
+                        <span data-th-text="#{fintics.core.balance.ProfitSummary}"></span>
+                    </h3>
+                    <div class="display--flex align-items--center font-size--xx-small gap--1px">
+                        <button type="button" class="button"
+                                th:data-duice-bind="|monitorMap.get('${trade.tradeId}').profitSummarySearch|"
+                                th:data-duice-execute="|
+                                this.classList.toggle('font-weight--bold', monitorMap.get('${trade.tradeId}').profitSummarySearch.period === '1M');
+                                |"
+                                th:data-trade-id="${trade.tradeId}"
+                                onclick="monitorMap.get(this.dataset.tradeId).profitSummarySearch.period = '1M'; monitorMap.get(this.dataset.tradeId).getProfitSummary();">
+                            1M
+                        </button>
+                        <button type="button" class="button"
+                                th:data-duice-bind="|monitorMap.get('${trade.tradeId}').profitSummarySearch|"
+                                th:data-duice-execute="|
+                                this.classList.toggle('font-weight--bold', monitorMap.get('${trade.tradeId}').profitSummarySearch.period === '3M');
+                                |"
+                                th:data-trade-id="${trade.tradeId}"
+                                onclick="monitorMap.get(this.dataset.tradeId).profitSummarySearch.period = '3M'; monitorMap.get(this.dataset.tradeId).getProfitSummary();">
+                            3M
+                        </button>
+                        <button type="button" class="button"
+                                th:data-duice-bind="|monitorMap.get('${trade.tradeId}').profitSummarySearch|"
+                                th:data-duice-execute="|
+                                this.classList.toggle('font-weight--bold', monitorMap.get('${trade.tradeId}').profitSummarySearch.period === '6M');
+                                |"
+                                th:data-trade-id="${trade.tradeId}"
+                                onclick="monitorMap.get(this.dataset.tradeId).profitSummarySearch.period = '6M'; monitorMap.get(this.dataset.tradeId).getProfitSummary();">
+                            6M
+                        </button>
+                        <button type="button" class="button"
+                                th:data-duice-bind="|monitorMap.get('${trade.tradeId}').profitSummarySearch|"
+                                th:data-duice-execute="|
+                                this.classList.toggle('font-weight--bold', monitorMap.get('${trade.tradeId}').profitSummarySearch.period === '1Y');
+                                |"
+                                th:data-trade-id="${trade.tradeId}"
+                                onclick="monitorMap.get(this.dataset.tradeId).profitSummarySearch.period = '1Y'; monitorMap.get(this.dataset.tradeId).getProfitSummary();">
+                            1Y
+                        </button>
+                    </div>
+                </div>
                 <div>
                     <div>
                         <small>|</small>
@@ -766,6 +827,12 @@
                                 <span class="font-weight--bold" data-th-text="#{fintics.core.balance.ProfitSummary.dividendProfitTaxAmount}"></span>:
                                 <span th:data-duice-bind="|monitorMap.get('${trade.tradeId}').profitSummary|"
                                       th:data-duice-property="dividendProfitTaxAmount" data-duice-format="number()" class="number"></span>
+                            </div>
+                            <div>
+                                <small>|</small>
+                                <span class="font-weight--bold" data-th-text="#{fintics.core.balance.ProfitSummary.dividendProfitTaxableAmount}"></span>:
+                                <span th:data-duice-bind="|monitorMap.get('${trade.tradeId}').profitSummary|"
+                                      th:data-duice-property="dividendProfitTaxableAmount" data-duice-format="number()" class="number"></span>
                             </div>
                             <div>
                                 <small>|</small>
