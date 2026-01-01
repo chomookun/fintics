@@ -129,20 +129,19 @@ Equity(Growth) 35% + Equity(Dividend) 35% + Bond(Sovereign) 10% + Bond(Aggregate
 
 | Symbol | Name    | Holding weight | Reference                                                                  |
 |------|---------|----------------|----------------------------------------------------------------------------|
+| **SPUS** | SP Funds S&P 500 Sharia Industry Exclusions ETF        | 8.75%          | [Nasdaq](https://www.nasdaq.com/market-activity/etf/spus/dividend-history) |
 | **QDVO** | Amplify CWP Growth & Income ETF | 8.75%          | [Nasdaq](https://www.nasdaq.com/market-activity/etf/gdvo/dividend-history) |
 | **GPIQ** | Goldman Sachs Nasdaq-100 Core Premium Income ETF | 8.75%          | [Nasdaq](https://www.nasdaq.com/market-activity/etf/gpiq/dividend-history) |
 | **JEPQ** | JPMorgan Nasdaq Equity Premium Income ETF | 8.75%          | [Nasdaq](https://www.nasdaq.com/market-activity/etf/jepq/dividend-history) |
-| **SPUS** | SP Funds S&P 500 Sharia Industry Exclusions ETF        | 8.75%          | [Nasdaq](https://www.nasdaq.com/market-activity/etf/spus/dividend-history) |
 
 #### [35%] Equity(Dividend) ETF
 
 | Symbol | Name       | Holding weight | Reference                                                                  |
 |------|------------|----------------|----------------------------------------------------------------------------|
-| **DGRW** | WisdomTree U.S. Quality Dividend Growth Fund | 7.0%           | [Nasdaq](https://www.nasdaq.com/market-activity/etf/dgrw/dividend-history) |
-| **DIVO** | Amplify CPW Enhanced Dividend Income ETF | 7.0%           | [Nasdaq](https://www.nasdaq.com/market-activity/etf/divo/dividend-history) |
-| **BALI** | iShares Advantage Large Cap Income ETF | 7.0%           | [Nasdaq](https://www.nasdaq.com/market-activity/etf/bali/dividend-history) |
-| **JEPI** | JPMorgan Equity Premium Income ETF | 7.0%           | [Nasdaq](https://www.nasdaq.com/market-activity/etf/jepi/dividend-history) |
-| **IDVO** | Amplify CWP International Enhanced Dividend Income ETF | 7.0%           | [Nasdaq](https://www.nasdaq.com/market-activity/etf/idvo/dividend-history) |
+| **DGRW** | WisdomTree U.S. Quality Dividend Growth Fund | 8.75%          | [Nasdaq](https://www.nasdaq.com/market-activity/etf/dgrw/dividend-history) |
+| **DIVO** | Amplify CPW Enhanced Dividend Income ETF | 8.75%          | [Nasdaq](https://www.nasdaq.com/market-activity/etf/divo/dividend-history) |
+| **BALI** | iShares Advantage Large Cap Income ETF | 8.75%          | [Nasdaq](https://www.nasdaq.com/market-activity/etf/bali/dividend-history) |
+| **IDVO** | Amplify CWP International Enhanced Dividend Income ETF | 8.75%          | [Nasdaq](https://www.nasdaq.com/market-activity/etf/idvo/dividend-history) |
 
 #### [10%] Bond(Sovereign) ETF
 
