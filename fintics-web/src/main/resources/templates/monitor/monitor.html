@@ -423,6 +423,24 @@
                     .then(() => {
                         this.getBalance();
                     });
+                },
+                rebalanceTradeAsset: function(assetId) {
+                    _confirm(/*[[#{fintics.web.trade.rebalanceConfirm}]]*/'').then(result =>{
+                        if (result === true) {
+                            let url = new URL(`${_apiUrl}/v1/trades/${this.trade.tradeId}/rebalance`, document.location.origin);
+                            _fetch(url, {
+                                method: 'POST',
+                                headers: {'Content-Type': 'application/json'},
+                                body: JSON.stringify({
+                                   assetId: assetId
+                                })
+                            }).then(response => {
+                                if (response.ok) {
+                                    this.getBalance();
+                                }
+                            });
+                        }
+                    });
                 }
             });
             // saves monitor to map
@@ -1107,6 +1125,14 @@
                                                 th:classappend="!${#authorization.expression('hasAuthority(''trade:edit'')')}?'locked'">
                                             <img class="icon" th:src="@{/static/image/icon-remove.svg}" alt="sell"/>
                                             <span data-th-text="#{fintics.core.order.Order.Type.SELL}"></span>
+                                        </button>
+                                        <button class="button" type="button"
+                                                data-duice-bind="basketItem"
+                                                data-duice-execute="this.dataset.assetId=basketItem.assetId;"
+                                                th:attr="onclick=|monitorMap.get('${trade.tradeId}').rebalanceTradeAsset(this.dataset.assetId);|"
+                                                th:classappend="!${#authorization.expression('hasAuthority(''trade:edit'')')}?'locked'">
+                                            <img class="icon" th:src="@{/static/image/icon-refresh.svg}" alt="sell"/>
+                                            <span data-th-text="#{fintics.web.trade.rebalance}"></span>
                                         </button>
                                     </div>
                                 </div>
