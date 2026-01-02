@@ -140,8 +140,8 @@ Equity(Growth) 35% + Equity(Dividend) 35% + Bond(Sovereign) 10% + Bond(Aggregate
 |------|------------|----------------|----------------------------------------------------------------------------|
 | **DGRW** | WisdomTree U.S. Quality Dividend Growth Fund | 8.75%          | [Nasdaq](https://www.nasdaq.com/market-activity/etf/dgrw/dividend-history) |
 | **DIVO** | Amplify CPW Enhanced Dividend Income ETF | 8.75%          | [Nasdaq](https://www.nasdaq.com/market-activity/etf/divo/dividend-history) |
-| **BALI** | iShares Advantage Large Cap Income ETF | 8.75%          | [Nasdaq](https://www.nasdaq.com/market-activity/etf/bali/dividend-history) |
 | **IDVO** | Amplify CWP International Enhanced Dividend Income ETF | 8.75%          | [Nasdaq](https://www.nasdaq.com/market-activity/etf/idvo/dividend-history) |
+| **BALI** | iShares Advantage Large Cap Income ETF | 8.75%          | [Nasdaq](https://www.nasdaq.com/market-activity/etf/bali/dividend-history) |
 
 #### [10%] Bond(Sovereign) ETF
 
@@ -197,10 +197,9 @@ US.Equity(Growth) 17.5% + US.Equity(Dividend) 17.5% + KR.Equity(Growth) 17.5% + 
 
 | Symbol | Name   | Holding weight | Reference |
 |------|--------|----------------|-------------------------------------|
-| **441800** | TIMEFOLIO Korea플러스배당액티브 | 4.37%          | [K-ETF](https://www.k-etf.com/etf/441800) |
-| **161510** | PLUS 고배당주 | 4.37%          | [K-ETF](https://www.k-etf.com/etf/161510) |
-| **279530** | KODEX 고배당주       | 4.37%          | [K-ETF](https://www.k-etf.com/etf/279530) |
-| **0052D0** | TIGER 코리아배당다우존스 | 4.37%          | [K-ETF](https://www.k-etf.com/etf/0052D0) |
+| **441800** | TIMEFOLIO Korea플러스배당액티브 | 5.83%          | [K-ETF](https://www.k-etf.com/etf/441800) |
+| **161510** | PLUS 고배당주 | 5.83%          | [K-ETF](https://www.k-etf.com/etf/161510) |
+| **0052D0** | TIGER 코리아배당다우존스 | 5.83%          | [K-ETF](https://www.k-etf.com/etf/0052D0) |
 
 #### [10%] US.Bond(Sovereign) ETF
 
