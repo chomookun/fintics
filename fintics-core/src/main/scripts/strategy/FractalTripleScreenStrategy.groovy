@@ -225,39 +225,6 @@ class TripleScreenStrategy {
     }
 
     /**
-     * 모멘텀 Score 기준 position 산출
-     * @return
-     */
-    BigDecimal calculatePosition(BigDecimal minPosition, BigDecimal maxPosition) {
-        // 모멘텀 점수 계산 (momentum score 1%당 포지션 1% 증가)
-        def positionScore = tideAnalyzer.getMomentumScore().getAverage() as BigDecimal
-        // clamp 0~100
-        positionScore = positionScore.max(BigDecimal.ZERO).min(new BigDecimal("100"))
-        // 포지션 1%당 변화량 계산
-        def positionPerScore = (maxPosition - minPosition)/100
-        // 최종 포지션 계산
-        def position = minPosition + (positionPerScore * positionScore) as BigDecimal
-        // 소수점 2자리로 제한
-        position = position.setScale(2, RoundingMode.HALF_UP)
-        // return
-        return position
-    }
-
-    /**
-     * adjust average position
-     * @param position
-     * @return average position
-     */
-    BigDecimal adjustAveragePosition(BigDecimal position) {
-        def averagePrice = waveAnalyzer.getAverageClose()
-        def currentPrice = waveAnalyzer.getCurrentClose()
-        def averageWeight = averagePrice/currentPrice as BigDecimal
-        def averagePosition = ((position * averageWeight) as BigDecimal)
-                .setScale(2, RoundingMode.HALF_UP)
-        return averagePosition
-    }
-
-    /**
      * 과매도 임계치 - tide 모멘텀 가중치 기준 가변 적용
      * @return
      */
@@ -320,14 +287,44 @@ class TripleScreenStrategy {
     }
 
     /**
+     * 모멘텀 Score 기준 position 산출
+     * @return
+     */
+    BigDecimal calculatePosition(BigDecimal minPosition, BigDecimal maxPosition) {
+        // 모멘텀 점수 계산 (momentum score 1%당 포지션 1% 증가)
+        def positionScore = tideAnalyzer.getMomentumScore().getAverage() as BigDecimal
+        // clamp 0~100
+        positionScore = positionScore.max(BigDecimal.ZERO).min(new BigDecimal("100"))
+        // 포지션 1%당 변화량 계산
+        def positionPerScore = (maxPosition - minPosition)/100
+        // 최종 포지션 계산
+        def position = minPosition + (positionPerScore * positionScore) as BigDecimal
+        // 소수점 2자리로 제한
+        position = position.setScale(2, RoundingMode.HALF_UP)
+        // return
+        return position
+    }
+
+    /**
+     * adjust average position
+     * @param position
+     * @return average position
+     */
+    BigDecimal adjustAveragePosition(BigDecimal position) {
+        def averagePrice = waveAnalyzer.getAverageClose()
+        def currentPrice = waveAnalyzer.getCurrentClose()
+        def averageWeight = averagePrice/currentPrice as BigDecimal
+        def averagePosition = ((position * averageWeight) as BigDecimal)
+                .setScale(2, RoundingMode.HALF_UP)
+        return averagePosition
+    }
+
+    /**
      * gets strategy result
      * @return strategy result
      */
-    Optional<StrategyResult> getResult(BigDecimal minPosition, BigDecimal maxPosition) {
+    Optional<StrategyResult> getResult(BigDecimal position) {
         StrategyResult strategyResult = null
-
-        // tide 모멘텀 기준 포지션 산출
-        def position = this.calculatePosition(minPosition, maxPosition)
 
         // wave 과매도 시
         if (this.isWaveOversold()) {
@@ -335,7 +332,7 @@ class TripleScreenStrategy {
             if (this.isRippleBullish()) {
                 // wave 평균가 기준 매수 포지션
                 def buyPosition = this.adjustAveragePosition(position)
-                strategyResult = StrategyResult.of(Action.BUY, buyPosition, "[WAVE OVERSOLD BUY] ${this.toString()}")
+                strategyResult = StrategyResult.of(Action.BUY, buyPosition, "WAVE OVERSOLD BUY[position:${position}, buyPosition:${buyPosition}]: ${this.toString()}")
             }
         }
         // wave 과매수 시
@@ -344,7 +341,7 @@ class TripleScreenStrategy {
             if (this.isRippleBearish()) {
                 // wave 평균가 기준 매도 포지션
                 def sellPosition = this.adjustAveragePosition(position)
-                strategyResult = StrategyResult.of(Action.SELL, sellPosition, "[WAVE OVERBOUGHT SELL] ${this.toString()}")
+                strategyResult = StrategyResult.of(Action.SELL, sellPosition, "WAVE OVERBOUGHT SELL[position:${position},sellPosition:${sellPosition}]: ${this.toString()}")
             }
         }
         // returns
@@ -561,17 +558,17 @@ tradeAsset.setMessage(message)
 // execute strategy
 //===================================================================================
 // micro strategy (overrides meso, macro)
-microTripleScreenStrategy.getResult(basePosition, microEffectivePosition).ifPresent {
+microTripleScreenStrategy.getResult(microEffectivePosition).ifPresent {
     log.info("micro strategy result: {}", it)
     strategyResult = it
 }
 // meso strategy (overrides macro)
-mesoTripleScreenStrategy.getResult(basePosition, mesoEffectivePosition).ifPresent {
+mesoTripleScreenStrategy.getResult(mesoEffectivePosition).ifPresent {
     log.info("meso strategy result: {}", it)
     strategyResult = it
 }
 // macro strategy
-macroTripleScreenStrategy.getResult(basePosition, macroEffectivePosition).ifPresent {
+macroTripleScreenStrategy.getResult(macroEffectivePosition).ifPresent {
     log.info("macro strategy result: {}", it)
     strategyResult = it
 }
