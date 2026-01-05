@@ -76,7 +76,7 @@ public class RealizedProfitCollector extends AbstractTask {
     }
 
     String generateLogicalHash(RealizedProfit realizedProfit) {
-        // 종목별 실현속인임. 부분 매도 등을 고려하여 날짜+종목코드 조합으로 논리키 생성
+        // 종목별 실현손인임. 한 종목이 여러번 매도 또는 부분 매도 등을 고려하여 날짜+종목코드 조합으로 논리키 생성
         String logicalKey = String.join("|", List.of(
                 realizedProfit.getDate().format(DateTimeFormatter.BASIC_ISO_DATE),
                 realizedProfit.getSymbol()));
