@@ -123,8 +123,6 @@ ps. Technical Indicator: RSI, CCI, Stochastic Slow, Williams %R
 
 Equity(Growth) 35% + Equity(Dividend) 35% + Bond(Sovereign) 10% + Bond(Aggregate) 10% + Cash Equivalent 10%
 
-<img src="docs/assets/image/basket-passive-us.png" width="600" alt=""/>
-
 #### [35%] Equity(Growth) ETF
 
 | Symbol | Name    | Holding weight | Reference                                                                  |
@@ -166,8 +164,6 @@ Equity(Growth) 35% + Equity(Dividend) 35% + Bond(Sovereign) 10% + Bond(Aggregate
 ### 2. KR Market (50% of Passive EMP)
 
 US.Equity(Growth) 17.5% + US.Equity(Dividend) 17.5% + KR.Equity(Growth) 17.5% + KR.Equity(Dividend) 17.5% + US.Bond(Sovereign) 10% + US.Bond(Aggregate) 10% + Cash Equivalent 10%
-
-<img src="docs/assets/image/basket-passive-kr.png" width="600" alt=""/>
 
 #### [17.5%] US.Equity(Growth) ETF
 
