@@ -122,8 +122,10 @@ public class BasketRestController {
         // save
         Basket savedBasket = basketService.saveBasket(basket);
         // submit rebalance task
-        BasketRebalanceTask basketRebalanceTask = basketRebalanceTaskFactory.getObject(savedBasket);
-        basketRebalanceTaskExecutor.submitTask(basketRebalanceTask);
+        if (savedBasket.isRebalanceEnabled()) {
+            BasketRebalanceTask basketRebalanceTask = basketRebalanceTaskFactory.getObject(savedBasket);
+            basketRebalanceTaskExecutor.submitTask(basketRebalanceTask);
+        }
         // response
         return ResponseEntity.status(HttpStatus.CREATED)
                 .body(BasketResponse.from(savedBasket));
@@ -171,8 +173,10 @@ public class BasketRestController {
         // save
         Basket savedBasket = basketService.saveBasket(basket);
         // submit rebalance task
-        BasketRebalanceTask basketRebalanceTask = basketRebalanceTaskFactory.getObject(savedBasket);
-        basketRebalanceTaskExecutor.submitTask(basketRebalanceTask);
+        if (savedBasket.isRebalanceEnabled()) {
+            BasketRebalanceTask basketRebalanceTask = basketRebalanceTaskFactory.getObject(savedBasket);
+            basketRebalanceTaskExecutor.submitTask(basketRebalanceTask);
+        }
         // response
         return ResponseEntity.ok(BasketResponse.from(savedBasket));
     }
