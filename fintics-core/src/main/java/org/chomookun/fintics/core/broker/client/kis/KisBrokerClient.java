@@ -831,7 +831,6 @@ public class KisBrokerClient extends BrokerClient {
             // temp list
             List<Map<String, String>> output1 = objectMapper.convertValue(rootNode.path("output1"), new TypeReference<>() {});
             List<RealizedProfit> tempRealizedProfits = output1.stream()
-                    .filter(row -> new BigDecimal(row.get("sll_qty")).compareTo(BigDecimal.ZERO) > 0)
                     .map(row -> {
                         return RealizedProfit.builder()
                                 .date(LocalDate.parse(row.get("trad_dt"), DateTimeFormatter.BASIC_ISO_DATE))
