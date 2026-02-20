@@ -124,9 +124,11 @@ def favoriteCount = variables.favoriteCount as Integer
 // US ETFs
 def usEtfs = [
         // growth
+        "SPUS", // (*)SP Funds S&P 500 Sharia Industry Exclusions ETF
         "JEPQ", // (*)JPMorgan Nasdaq Equity Premium Income ETF
         "GPIQ", // (*)Goldman Sachs Nasdaq-100 Premium Income ETF
         "QDVO", // (*)Amplify ETF Trust Amplify CWP Growth & Income ETF
+        "SPTE", // (*)SP Funds Trust SP Funds S&P Global Technology ETF
         "QQQ",  // Invesco QQQ Trust
         "SPY",  // SPDR S&P 500 ETF Trust
         "SPYG", // SPDR Portfolio S&P 500 Growth ETF
@@ -148,17 +150,19 @@ def usEtfs = [
         // dividend
         "DGRW", // (*)WisdomTree U.S. Quality Dividend Growth Fund
         "DIVO", // (*)Amplify CWP Enhanced Dividend Income ETF
+        "IDVO", // (*)Amplify CWP International Enhanced Dividend Income ETF
         "BALI", // (*)iShares Advantage Large Cap Income ETF
-        "JEPI", // (*)JPMorgan Equity Premium Income ETF
+        "DLN",  // (*)WisdomTree U.S. LargeCap Dividend Fund
+        "JEPI", // JPMorgan Equity Premium Income ETF
         "DGRO", // iShares Core Dividend Growth ETF
         "SCHD", // Schwab U.S. Dividend Equity ETF
+        "SPYD", // State Street SPDR Portfolio S&P 500 High Dividend ETF
         "SDY",  // SPDR S&P Dividend ETF
         "DVY",  // iShares Select Dividend ETF
         "VYM",  // Vanguard High Dividend Yield ETF
         "RDVY", // First Trust Rising Dividend Achievers ETF
         "FDVV", // Fidelity High Dividend ETF
         "FDRR", // Fidelity Dividend ETF for Rising Rates
-        "DLN",  // WisdomTree U.S. LargeCap Dividend Fund
         "DTD",  // WisdomTree U.S. Total Dividend Fund
         "DHS",  // WisdomTree U.S. High Dividend Fund
         "MOAT", // VanEck Morningstar Wide Moat ETF
