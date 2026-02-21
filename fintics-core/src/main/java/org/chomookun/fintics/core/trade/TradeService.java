@@ -126,13 +126,14 @@ public class TradeService {
     @Transactional
     public void changeTradeSort(String tradeId, Integer sort) {
         TradeEntity tradeEntity = tradeRepository.findById(tradeId).orElseThrow();
+        double originSort = Optional.ofNullable(tradeEntity.getSort()).orElse(0);
         double finalSort = sort;
         // up
-        if (sort < tradeEntity.getSort()) {
+        if (sort < originSort) {
             finalSort = sort - 0.5;
         }
         // down
-        if (sort > tradeEntity.getSort()) {
+        if (sort > originSort) {
             finalSort = sort + 0.5;
         }
         // updates sort
