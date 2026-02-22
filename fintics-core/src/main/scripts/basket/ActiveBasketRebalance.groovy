@@ -153,18 +153,19 @@ def usEtfs = [
         "IDVO", // (*)Amplify CWP International Enhanced Dividend Income ETF
         "BALI", // (*)iShares Advantage Large Cap Income ETF
         "DLN",  // (*)WisdomTree U.S. LargeCap Dividend Fund
-        "JEPI", // JPMorgan Equity Premium Income ETF
         "DGRO", // iShares Core Dividend Growth ETF
-        "SCHD", // Schwab U.S. Dividend Equity ETF
-        "SPYD", // State Street SPDR Portfolio S&P 500 High Dividend ETF
         "SDY",  // SPDR S&P Dividend ETF
         "DVY",  // iShares Select Dividend ETF
-        "VYM",  // Vanguard High Dividend Yield ETF
         "RDVY", // First Trust Rising Dividend Achievers ETF
+        "VYM",  // Vanguard High Dividend Yield ETF
         "FDVV", // Fidelity High Dividend ETF
+        "SPYD", // State Street SPDR Portfolio S&P 500 High Dividend ETF
+        "HDV",  // iShares Core High Dividend ETF
+        "DHS",  // WisdomTree U.S. High Dividend Fund
+        "SCHD", // Schwab U.S. Dividend Equity ETF
         "FDRR", // Fidelity Dividend ETF for Rising Rates
         "DTD",  // WisdomTree U.S. Total Dividend Fund
-        "DHS",  // WisdomTree U.S. High Dividend Fund
+        "JEPI", // JPMorgan Equity Premium Income ETF
         "MOAT", // VanEck Morningstar Wide Moat ETF
 ]
 
