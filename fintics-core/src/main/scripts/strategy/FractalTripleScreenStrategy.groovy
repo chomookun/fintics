@@ -412,20 +412,6 @@ static def calculateChannel(List<Ohlcv> ohlcvs, int period) {
 // config
 //===============================
 log.info("variables: {}", variables)
-// micro strategy
-def microTideOhlcvType = variables['micro.tide.ohlcv.type'] as Ohlcv.Type
-def microTideOhlcvPeriod = variables['micro.tide.ohlcv.period'] as Integer
-def microWaveOhlcvType = variables['micro.wave.ohlcv.type'] as Ohlcv.Type
-def microWaveOhlcvPeriod = variables['micro.wave.ohlcv.period'] as Integer
-def microRippleOhlcvType = variables['micro.ripple.ohlcv.type'] as Ohlcv.Type
-def microRippleOhlcvPeriod = variables['micro.ripple.ohlcv.period'] as Integer
-// meso strategy
-def mesoTideOhlcvType = variables['meso.tide.ohlcv.type'] as Ohlcv.Type
-def mesoTideOhlcvPeriod = variables['meso.tide.ohlcv.period'] as Integer
-def mesoWaveOhlcvType = variables['meso.wave.ohlcv.type'] as Ohlcv.Type
-def mesoWaveOhlcvPeriod = variables['meso.wave.ohlcv.period'] as Integer
-def mesoRippleOhlcvType = variables['meso.ripple.ohlcv.type'] as Ohlcv.Type
-def mesoRippleOhlcvPeriod = variables['meso.ripple.ohlcv.period'] as Integer
 // macro strategy
 def macroTideOhlcvType = variables['macro.tide.ohlcv.type'] as Ohlcv.Type
 def macroTideOhlcvPeriod = variables['macro.tide.ohlcv.period'] as Integer
@@ -433,6 +419,20 @@ def macroWaveOhlcvType = variables['macro.wave.ohlcv.type'] as Ohlcv.Type
 def macroWaveOhlcvPeriod = variables['macro.wave.ohlcv.period'] as Integer
 def macroRippleOhlcvType = variables['macro.ripple.ohlcv.type'] as Ohlcv.Type
 def macroRippleOhlcvPeriod = variables['macro.ripple.ohlcv.period'] as Integer
+// meso strategy
+def mesoTideOhlcvType = variables['meso.tide.ohlcv.type'] as Ohlcv.Type
+def mesoTideOhlcvPeriod = variables['meso.tide.ohlcv.period'] as Integer
+def mesoWaveOhlcvType = variables['meso.wave.ohlcv.type'] as Ohlcv.Type
+def mesoWaveOhlcvPeriod = variables['meso.wave.ohlcv.period'] as Integer
+def mesoRippleOhlcvType = variables['meso.ripple.ohlcv.type'] as Ohlcv.Type
+def mesoRippleOhlcvPeriod = variables['meso.ripple.ohlcv.period'] as Integer
+// micro strategy
+def microTideOhlcvType = variables['micro.tide.ohlcv.type'] as Ohlcv.Type
+def microTideOhlcvPeriod = variables['micro.tide.ohlcv.period'] as Integer
+def microWaveOhlcvType = variables['micro.wave.ohlcv.type'] as Ohlcv.Type
+def microWaveOhlcvPeriod = variables['micro.wave.ohlcv.period'] as Integer
+def microRippleOhlcvType = variables['micro.ripple.ohlcv.type'] as Ohlcv.Type
+def microRippleOhlcvPeriod = variables['micro.ripple.ohlcv.period'] as Integer
 // etc
 def basePosition = variables['basePosition'] as BigDecimal
 def sellProfitPercentageThreshold = variables['sellProfitPercentageThreshold'] as BigDecimal
@@ -466,16 +466,16 @@ if (basketAsset.getVariable('splitIndex')) {
 //===============================
 // strategy
 //===============================
-// micro strategy
-def microTripleScreenStrategy = TripleScreenStrategy.builder()
-        .name("micro")
+// macro strategy
+def macroTripleScreenStrategy = TripleScreenStrategy.builder()
+        .name("macro")
         .tradeAsset(tradeAsset)
-        .tideOhlcvType(microTideOhlcvType)
-        .tideOhlcvPeriod(microTideOhlcvPeriod)
-        .waveOhlcvType(microWaveOhlcvType)
-        .waveOhlcvPeriod(microWaveOhlcvPeriod)
-        .rippleOhlcvType(microRippleOhlcvType)
-        .rippleOhlcvPeriod(microRippleOhlcvPeriod)
+        .tideOhlcvType(macroTideOhlcvType)
+        .tideOhlcvPeriod(macroTideOhlcvPeriod)
+        .waveOhlcvType(macroWaveOhlcvType)
+        .waveOhlcvPeriod(macroWaveOhlcvPeriod)
+        .rippleOhlcvType(macroRippleOhlcvType)
+        .rippleOhlcvPeriod(macroRippleOhlcvPeriod)
         .build()
 // meso strategy
 def mesoTripleScreenStrategy = TripleScreenStrategy.builder()
@@ -488,16 +488,16 @@ def mesoTripleScreenStrategy = TripleScreenStrategy.builder()
         .rippleOhlcvType(mesoRippleOhlcvType)
         .rippleOhlcvPeriod(mesoRippleOhlcvPeriod)
         .build()
-// macro strategy
-def macroTripleScreenStrategy = TripleScreenStrategy.builder()
-        .name("macro")
+// micro strategy
+def microTripleScreenStrategy = TripleScreenStrategy.builder()
+        .name("micro")
         .tradeAsset(tradeAsset)
-        .tideOhlcvType(macroTideOhlcvType)
-        .tideOhlcvPeriod(macroTideOhlcvPeriod)
-        .waveOhlcvType(macroWaveOhlcvType)
-        .waveOhlcvPeriod(macroWaveOhlcvPeriod)
-        .rippleOhlcvType(macroRippleOhlcvType)
-        .rippleOhlcvPeriod(macroRippleOhlcvPeriod)
+        .tideOhlcvType(microTideOhlcvType)
+        .tideOhlcvPeriod(microTideOhlcvPeriod)
+        .waveOhlcvType(microWaveOhlcvType)
+        .waveOhlcvPeriod(microWaveOhlcvPeriod)
+        .rippleOhlcvType(microRippleOhlcvType)
+        .rippleOhlcvPeriod(microRippleOhlcvPeriod)
         .build()
 
 //===============================
@@ -529,13 +529,13 @@ def profitPercentage = balanceAsset?.getProfitPercentage() ?: 0.0
 //===============================
 // position
 //===============================
-def microPosition = microTripleScreenStrategy.calculatePosition(basePosition, 1.0)
-def mesoPosition  = mesoTripleScreenStrategy.calculatePosition(basePosition, 1.0)
 def macroPosition = macroTripleScreenStrategy.calculatePosition(basePosition, 1.0)
+def mesoPosition  = mesoTripleScreenStrategy.calculatePosition(basePosition, 1.0)
+def microPosition = microTripleScreenStrategy.calculatePosition(basePosition, 1.0)
 // effective position (상위 scale position 과의 평균값)
-def microEffectivePosition = ([microPosition, mesoPosition, macroPosition].average() as BigDecimal).setScale(2, RoundingMode.HALF_UP)
-def mesoEffectivePosition = ([mesoPosition, macroPosition].average() as BigDecimal).setScale(2, RoundingMode.HALF_UP)
 def macroEffectivePosition = macroPosition
+def mesoEffectivePosition = ([mesoPosition, macroPosition].average() as BigDecimal).setScale(2, RoundingMode.HALF_UP)
+def microEffectivePosition = ([microPosition, mesoPosition, macroPosition].average() as BigDecimal).setScale(2, RoundingMode.HALF_UP)
 
 //===============================
 // message
@@ -545,11 +545,11 @@ splitSize:${splitSize}, splitIndex:${splitIndex}
 splitLimits:${splitLimitPrices}
 splitLimitPrice:${splitLimitPrice}, splitBuyLimited:${splitBuyLimited}
 sellProfitPercentageThreshold:${sellProfitPercentageThreshold}
-position:(micro:${microPosition}, meso:${mesoPosition}, macro:${macroPosition})
-effectivePosition:(micro:${microEffectivePosition}, meso:${mesoEffectivePosition}, macro:${macroEffectivePosition})
-microTripleScreen:${microTripleScreenStrategy}
-mesoTripleScreen:${mesoTripleScreenStrategy}
+position:(macro:${macroPosition}, meso:${mesoPosition}, micro:${microPosition})
+effectivePosition:(macro:${macroEffectivePosition}, meso:${mesoEffectivePosition}, micro:${microEffectivePosition})
 macroTripleScreen:${macroTripleScreenStrategy}
+mesoTripleScreen:${mesoTripleScreenStrategy}
+microTripleScreen:${microTripleScreenStrategy}
 """
 log.info("message: {}", message)
 tradeAsset.setMessage(message)
@@ -557,17 +557,17 @@ tradeAsset.setMessage(message)
 //===================================================================================
 // execute strategy
 //===================================================================================
-// micro strategy (overrides meso, macro)
+// micro strategy
 microTripleScreenStrategy.getResult(microEffectivePosition).ifPresent {
     log.info("micro strategy result: {}", it)
     strategyResult = it
 }
-// meso strategy (overrides macro)
+// meso strategy (overrides micro)
 mesoTripleScreenStrategy.getResult(mesoEffectivePosition).ifPresent {
     log.info("meso strategy result: {}", it)
     strategyResult = it
 }
-// macro strategy
+// macro strategy (overrides meso, micro)
 macroTripleScreenStrategy.getResult(macroEffectivePosition).ifPresent {
     log.info("macro strategy result: {}", it)
     strategyResult = it
