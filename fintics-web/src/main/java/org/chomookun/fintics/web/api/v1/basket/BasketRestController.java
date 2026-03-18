@@ -35,8 +35,12 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.mvc.method.annotation.StreamingResponseBody;
 
 import java.nio.charset.StandardCharsets;
+import java.util.LinkedHashMap;
 import java.util.List;
+import java.util.Map;
+import java.util.concurrent.atomic.AtomicInteger;
 import java.util.stream.Collectors;
+import java.util.stream.IntStream;
 
 @Tag(name = "basket")
 @RestController
@@ -229,7 +233,18 @@ public class BasketRestController {
                 basketRebalanceRunner.setLog(logger);
                 List<BasketRebalanceAsset> basketRebalanceAssets = basketRebalanceRunner.run();
                 // prints results
-                TextTable textTable = TextTable.valueOf(basketRebalanceAssets);
+                AtomicInteger no = new AtomicInteger(1);
+                List<Map<String,Object>> basketRebalanceAssetMaps = basketRebalanceAssets.stream()
+                        .map(it -> {
+                            Map<String, Object> map = new LinkedHashMap<>();
+                            map.put("no", no.getAndIncrement());
+                            map.put("symbol", it.getSymbol());
+                            map.put("name", it.getName());
+                            map.put("holdingWeight", it.getHoldingWeight());
+                            map.put("remark", it.getRemark());
+                            return map;
+                        }).collect(Collectors.toList());
+                TextTable textTable = TextTable.valueOf(basketRebalanceAssetMaps);
                 logger.info("# Basket Rebalance Assets [{}]", basketRebalanceAssets.size());
                 logger.info("{}", textTable);
                 // Flush after logging to ensure logs are sent
