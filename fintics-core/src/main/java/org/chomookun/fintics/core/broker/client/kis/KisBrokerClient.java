@@ -740,6 +740,11 @@ public class KisBrokerClient extends BrokerClient {
         }
         // 거래소ID구분코드 (한국거래소: KRX, 대체거래소(넥스트레이드): NXT)
         String excgIdDvsnCd = "KRX";
+        // quantity가 0인 경우 취소
+        String rvseCnclDvsnCd = "01";
+        if (order.getQuantity().compareTo(BigDecimal.ZERO) == 0) {
+            rvseCnclDvsnCd = "02";
+        }
         // request
         Map<String, String> payloadMap = new LinkedHashMap<>();
         payloadMap.put("CANO", accountNo.split("-")[0]);
@@ -748,7 +753,7 @@ public class KisBrokerClient extends BrokerClient {
         payloadMap.put("KRX_FWDG_ORD_ORGNO", "");
         payloadMap.put("ORGN_ODNO", order.getBrokerOrderId());
         payloadMap.put("ORD_DVSN", ordDvsn);
-        payloadMap.put("RVSE_CNCL_DVSN_CD", "01");
+        payloadMap.put("RVSE_CNCL_DVSN_CD", rvseCnclDvsnCd);
         payloadMap.put("ORD_QTY", "0");
         payloadMap.put("ORD_UNPR", String.valueOf(order.getPrice().longValue()));
         payloadMap.put("QTY_ALL_ORD_YN", "Y");

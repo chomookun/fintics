@@ -100,6 +100,13 @@ public class TradeOrderRestController {
             Broker broker = brokerService.getBroker(trade.getBrokerId()).orElseThrow();
             BrokerClient brokerClient = brokerClientFactory.getObject(broker);
             Asset asset = assetService.getAsset(order.getAssetId()).orElseThrow();
+
+            // cancels previous orders
+            List<Order> previousOrders = brokerClient.getWaitingOrders();
+            for (Order previousOrder : previousOrders) {
+
+            }
+
             // price
             OrderBook orderBook = brokerClient.getOrderBook(asset);
             BigDecimal tickPrice = orderBook.getTickPrice();

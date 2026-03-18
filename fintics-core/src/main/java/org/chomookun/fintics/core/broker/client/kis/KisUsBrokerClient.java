@@ -709,6 +709,11 @@ public class KisUsBrokerClient extends BrokerClient {
         headers.add("tr_id", trId);
         // ovrsExcgCd
         String ovrsExcgCd = getOvrsExcgCd(asset);
+        // quantity가 0인 경우 취소
+        String rvseCnclDvsnCd = "01";
+        if (order.getQuantity().compareTo(BigDecimal.ZERO) == 0) {
+            rvseCnclDvsnCd = "02";
+        }
         // payload
         Map<String, String> payloadMap = new LinkedHashMap<>();
         payloadMap.put("CANO", accountNo.split("-")[0]);
@@ -716,7 +721,7 @@ public class KisUsBrokerClient extends BrokerClient {
         payloadMap.put("OVRS_EXCG_CD", ovrsExcgCd);
         payloadMap.put("PDNO", order.getSymbol());
         payloadMap.put("ORGN_ODNO", order.getBrokerOrderId());
-        payloadMap.put("RVSE_CNCL_DVSN_CD", "01");
+        payloadMap.put("RVSE_CNCL_DVSN_CD", rvseCnclDvsnCd);
         payloadMap.put("ORD_QTY", quantity.toString());
         payloadMap.put("OVRS_ORD_UNPR", price.toString());
         payloadMap.put("ORD_SVR_DVSN_CD", "0");
