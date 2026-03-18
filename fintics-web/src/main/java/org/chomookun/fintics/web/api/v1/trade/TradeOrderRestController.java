@@ -101,12 +101,6 @@ public class TradeOrderRestController {
             BrokerClient brokerClient = brokerClientFactory.getObject(broker);
             Asset asset = assetService.getAsset(order.getAssetId()).orElseThrow();
 
-            // cancels previous orders
-            List<Order> previousOrders = brokerClient.getWaitingOrders();
-            for (Order previousOrder : previousOrders) {
-
-            }
-
             // price
             OrderBook orderBook = brokerClient.getOrderBook(asset);
             BigDecimal tickPrice = orderBook.getTickPrice();
@@ -115,7 +109,13 @@ public class TradeOrderRestController {
                 case SELL -> orderBook.getAskPrice().subtract(tickPrice);
             };
             order.setPrice(price);
-            // submit
+            // cancels previous orders
+            List<Order> previousOrders = brokerClient.getWaitingOrders();
+            for (Order previousOrder : previousOrders) {
+                previousOrder.setQuantity(BigDecimal.ZERO);
+                brokerClient.amendOrder(asset, previousOrder);
+            }
+            // submit new order
             brokerClient.submitOrder(asset, order);
             order.setResult(Order.Result.COMPLETED);
         } catch (Throwable e) {

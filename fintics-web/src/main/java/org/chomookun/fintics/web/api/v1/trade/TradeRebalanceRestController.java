@@ -33,6 +33,7 @@ import java.math.BigDecimal;
 import java.math.MathContext;
 import java.math.RoundingMode;
 import java.time.Instant;
+import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
 
@@ -102,7 +103,6 @@ public class TradeRebalanceRestController {
             orderType = Order.Type.SELL;
             orderQuantity = diffQuantity.abs();
         }
-
         // order kind and price
         Order.Kind orderKind = Order.Kind.LIMIT;
         BigDecimal tickPrice = orderBook.getTickPrice();
@@ -110,8 +110,7 @@ public class TradeRebalanceRestController {
             case BUY -> orderBook.getBidPrice().add(tickPrice);
             case SELL -> orderBook.getAskPrice().subtract(tickPrice);
         };
-
-        // submit
+        // defines order
         Order order = Order.builder()
                 .orderAt(Instant.now())
                 .type(orderType)
@@ -121,10 +120,16 @@ public class TradeRebalanceRestController {
                 .price(orderPrice)
                 .quantity(orderQuantity)
                 .build();
+        // cancels previous orders
+        List<Order> previousOrders = brokerClient.getWaitingOrders();
+        for (Order previousOrder : previousOrders) {
+            previousOrder.setQuantity(BigDecimal.ZERO);
+            brokerClient.amendOrder(asset, previousOrder);
+        }
+        // submit new order
         brokerClient.submitOrder(basketAsset, order);
         order.setResult(Order.Result.COMPLETED);
         Order savedOrder = orderService.saveOrder(order);
-
         // response
         RebalanceResponse rebalanceResponse = RebalanceResponse.builder()
                 .tradeId(tradeId)
