@@ -124,7 +124,7 @@ public class TradeRebalanceRestController {
         List<Order> previousOrders = brokerClient.getWaitingOrders();
         for (Order previousOrder : previousOrders) {
             previousOrder.setQuantity(BigDecimal.ZERO);
-            brokerClient.amendOrder(asset, previousOrder);
+            brokerClient.amendOrder(basketAsset, previousOrder);
         }
         // submit new order
         brokerClient.submitOrder(basketAsset, order);
