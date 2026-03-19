@@ -141,7 +141,7 @@ class Analyzer {
     Score getVolatilityScore() {
         def score = new Score()
         // dmi
-        score.dmiAdx = dmis.take(2)*.adx.average() >= 20 ? 100 : 0
+        score.dmiAdx = dmis.take(1)*.adx.average() >= 20 ? 100 : 0
         // return
         return score
     }
@@ -153,13 +153,13 @@ class Analyzer {
     Score getOversoldScore() {
         def score = new Score()
         // rsi: 30 이하인 경우 과매도 판정
-        score.rsi = rsis.take(2)*.value.average() <= 30 ? 100 : 0
+        score.rsi = rsis.take(1)*.value.average() <= 30 ? 100 : 0
         // cci: -100 이하인 경우 과매도 판정
-        score.cci = ccis.take(2)*.value.average() <= -100 ? 100 : 0
+        score.cci = ccis.take(1)*.value.average() <= -100 ? 100 : 0
         // stochastic slow: 20 이하인 경우 과매도 판정
-        score.stochasticSlow = stochasticSlows.take(2)*.slowK.average() <= 20 ? 100 : 0
+        score.stochasticSlow = stochasticSlows.take(1)*.slowK.average() <= 20 ? 100 : 0
         // williams r: -80 이하인 경우 과매도 판정
-        score.williamsR = williamsRs.take(2)*.value.average() <= -80 ? 100 : 0
+        score.williamsR = williamsRs.take(1)*.value.average() <= -80 ? 100 : 0
         // return
         return score
     }
@@ -171,13 +171,13 @@ class Analyzer {
     Score getOverboughtScore() {
         def score = new Score()
         // rsi: 70 이상인 경우 과매수 구간 판정
-        score.rsi = rsis.take(2)*.value.average() >= 70 ? 100 : 0
+        score.rsi = rsis.take(1)*.value.average() >= 70 ? 100 : 0
         // cci: 100 이상인 경우 과매수 판정
-        score.cci = ccis.take(2)*.value.average() >= 100 ? 100 : 0
+        score.cci = ccis.take(1)*.value.average() >= 100 ? 100 : 0
         // stochastic slow: 80 이상인 경우 과매수 판정
-        score.stochasticSlow = stochasticSlows.take(2)*.slowK.average() >= 80 ? 100 : 0
+        score.stochasticSlow = stochasticSlows.take(1)*.slowK.average() >= 80 ? 100 : 0
         // williams r: -20 이상인 경우 과매수 판정
-        score.williamsR = williamsRs.take(2)*.value.average() >= -20 ? 100 : 0
+        score.williamsR = williamsRs.take(1)*.value.average() >= -20 ? 100 : 0
         // return
         return score
     }
