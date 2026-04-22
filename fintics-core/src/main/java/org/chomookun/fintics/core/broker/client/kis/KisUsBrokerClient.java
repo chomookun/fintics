@@ -48,6 +48,8 @@ public class KisUsBrokerClient extends BrokerClient {
 
     private final String accountNo;
 
+    private final int rateLimit;
+
     private final boolean insecure;
 
     private final RestTemplate restTemplate;
@@ -66,6 +68,9 @@ public class KisUsBrokerClient extends BrokerClient {
         this.appKey = properties.getProperty("appKey");
         this.appSecret = properties.getProperty("appSecret");
         this.accountNo = properties.getProperty("accountNo");
+        this.rateLimit = Optional.ofNullable(properties.getProperty("rateLimit"))
+                .map(Integer::parseInt)
+                .orElse(5); // 메뉴얼상은 초당 20건 제약으로 하나 10건만 보내도 응답거부가 많음으로 초당 5건을 기본값으로 정의
         this.insecure = Optional.ofNullable(properties.getProperty("insecure"))
                 .map(Boolean::parseBoolean)
                 .orElse(Boolean.FALSE);
@@ -102,7 +107,8 @@ public class KisUsBrokerClient extends BrokerClient {
      * Force to sleep
      */
     private void sleep() throws InterruptedException {
-        long sleepMillis = production ? 200 : 2_000;    // 메뉴얼상은 초당 20건 제약으로 하나 10건만 보내도 응답거부가 많음으로 초당 5건으로 처리
+        long sleepMillis = 1000 / this.rateLimit;
+//        long sleepMillis = production ? 200 : 2_000;    // 메뉴얼상은 초당 20건 제약으로 하나 10건만 보내도 응답거부가 많음으로 초당 5건으로 처리
         KisAccessThrottler.sleep(appKey, sleepMillis);
     }
 
