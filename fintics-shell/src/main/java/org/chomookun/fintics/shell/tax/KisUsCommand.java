@@ -31,6 +31,8 @@ import java.util.List;
 @Slf4j
 public class KisUsCommand {
 
+     final static DecimalFormat NUMBER_FORMAT = new DecimalFormat("#,###");
+
     /**
      * 한국투자증권 미국 주식 세금 보고서 PDF 파일을 엑셀로 변환하는 명령어
      * @param inputPdfFilePath 한국투자증권 양도소득세 PDF 파일 경로
@@ -62,18 +64,6 @@ public class KisUsCommand {
             }
         }
 
-        // sum of feeAmount
-        BigDecimal totalFeeAmount = inputPdfRows.stream()
-                .map(InputPdfRow::getFeeAmount)
-                .reduce(BigDecimal.ZERO, BigDecimal::add);
-        log.info("Total fee amount: {}", totalFeeAmount);
-
-        // sum of profitAmount
-        BigDecimal totalProfitAmount = inputPdfRows.stream()
-                .map(InputPdfRow::getProfitAmount)
-                .reduce(BigDecimal.ZERO, BigDecimal::add);
-        log.info("Total profit amount: {}", totalProfitAmount);
-
         // creates excel output file
         List<OutputExcelRow> outputExcelRows = convertInputPdfRowsToOutputExcelRows(inputPdfRows);
 
@@ -85,7 +75,6 @@ public class KisUsCommand {
         String[] parts = excelOutFile.getName().split("\\.");
         String prefixFilename = parts[0];
         String extension = parts[1];
-
         for (int from = 0; from < totalSize; from += chunkSize) {
             int to = Math.min(from + chunkSize, totalSize);
             List<OutputExcelRow> chunk = outputExcelRows.subList(from, to);
@@ -93,9 +82,33 @@ public class KisUsCommand {
             // 여기서 각 500개 단위 처리
             File finalExcelOutputFile = new File(dir, prefixFilename + "_" + (from / chunkSize + 1) + "." + extension);
             exportOutputExcelRowsToFile(chunk, finalExcelOutputFile.getAbsolutePath());
-        }
 
+            // 확인을 위한 값 (한투자료, 홈텍스 업로드용 파알, 홈텍스 로딩 후 결과 확인용)
+            long count = chunk.size();
+            BigDecimal profitAmount = chunk.stream()
+                    .map(OutputExcelRow::getProfitAmount)
+                    .reduce(BigDecimal.ZERO, BigDecimal::add);
+            log.info("-".repeat(80));
+            log.info("- file: {}", finalExcelOutputFile.getCanonicalPath());
+            log.info("- count: {}", count);
+            log.info("- profitAmount: {}", NUMBER_FORMAT.format(profitAmount));
+            log.info("-".repeat(80));
+        }
         document.close();
+
+        // logging total
+        long totalCount =  inputPdfRows.size();
+        BigDecimal totalFeeAmount = inputPdfRows.stream()
+                .map(InputPdfRow::getFeeAmount)
+                .reduce(BigDecimal.ZERO, BigDecimal::add);
+        BigDecimal totalProfitAmount = inputPdfRows.stream()
+                .map(InputPdfRow::getProfitAmount)
+                .reduce(BigDecimal.ZERO, BigDecimal::add);
+        log.info("=".repeat(80));
+        log.info("= Total Count: {}", NUMBER_FORMAT.format(totalCount));
+        log.info("= Total fee amount: {}", NUMBER_FORMAT.format(totalFeeAmount));
+        log.info("= Total profit amount: {}", NUMBER_FORMAT.format(totalProfitAmount));
+        log.info("=".repeat(80));
     }
 
     List<InputPdfRow> convertTableToPdfInputRows(Table table) {
@@ -176,6 +189,7 @@ public class KisUsCommand {
                     .buyPrice(inputPdfRow.getBuyPrice())
                     .buyAmount(inputPdfRow.getBuyAmount())
                     .feeAmount(inputPdfRow.getFeeAmount())
+                    .profitAmount(inputPdfRow.getProfitAmount())
                     .nonTaxAmount(BigDecimal.ZERO)
                     .taxReduceKind("")
                     .taxReduceRate("")
@@ -263,6 +277,7 @@ public class KisUsCommand {
             workbook.write(out);
         }
         workbook.close();
+
     }
 
     @Data
@@ -306,6 +321,7 @@ public class KisUsCommand {
         private BigDecimal buyPrice;            // 주당취득가액
         private BigDecimal buyAmount;           // 취득가액
         private BigDecimal feeAmount;           // 필요경비
+        private BigDecimal profitAmount;
         private BigDecimal nonTaxAmount;        // 비과세 양도소득금액
         private String taxReduceKind;           // 감면 종류
         private String taxReduceRate;           // 감면율
