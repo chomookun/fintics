@@ -446,6 +446,9 @@ def ohlcv = ohlcvs.first()
 def splitPeriod = 200
 def splitSize = 10
 def splitIndex = -1
+if (variables['splitSize']) {
+    splitSize = variables['splitSize'] as Integer
+}
 if (variables['splitIndex']) {
     splitIndex = variables['splitIndex'] as Integer
 }
