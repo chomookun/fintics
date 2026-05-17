@@ -876,6 +876,7 @@ public class KisUsBrokerClient extends BrokerClient {
 
         // 종목 별 배당 내역 조회
         for (String symbol : symbols) {
+            String assetId = String.format("US.%s", symbol);
             // 권리 내역
             List<Map<String, String>> periodRights = getPeriodRights(symbol, dateFrom, dateTo);
             for (Map<String,String> periodRight : periodRights) {
@@ -911,8 +912,9 @@ public class KisUsBrokerClient extends BrokerClient {
                             .setScale(2, RoundingMode.DOWN);
 
                     // dividend history
-                    DividendProfit dividendHistory = DividendProfit.builder()
+                    DividendProfit dividendProfit = DividendProfit.builder()
                             .date(paymentDate)
+                            .assetId(assetId)
                             .symbol(symbol)
                             .name(name)
                             .holdingQuantity(holdingQuantity)
@@ -921,7 +923,7 @@ public class KisUsBrokerClient extends BrokerClient {
                             .netAmount(netAmount)
                             .baseDate(recordDate)
                             .build();
-                    dividendProfits.add(dividendHistory);
+                    dividendProfits.add(dividendProfit);
                 }
             }
         }
