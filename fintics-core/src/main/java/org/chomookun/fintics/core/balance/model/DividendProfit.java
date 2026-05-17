@@ -5,8 +5,6 @@ import lombok.Getter;
 import org.chomookun.fintics.core.balance.entity.DividendProfitEntity;
 
 import java.math.BigDecimal;
-import java.math.MathContext;
-import java.math.RoundingMode;
 import java.time.LocalDate;
 
 @Getter
@@ -31,7 +29,7 @@ public class DividendProfit {
 
     private BigDecimal netAmount;
 
-    private LocalDate paymentDate;
+    private LocalDate baseDate;
 
     public static DividendProfit from(DividendProfitEntity dividendProfitEntity) {
         return DividendProfit.builder()
@@ -44,7 +42,7 @@ public class DividendProfit {
                 .dividendAmount(dividendProfitEntity.getDividendAmount())
                 .taxAmount(dividendProfitEntity.getTaxAmount())
                 .netAmount(dividendProfitEntity.getNetAmount())
-                .paymentDate(dividendProfitEntity.getPaymentDate())
+                .baseDate(dividendProfitEntity.getBaseDate())
                 .build();
     }
 

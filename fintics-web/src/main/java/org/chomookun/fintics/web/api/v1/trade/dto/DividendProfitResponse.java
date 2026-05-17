@@ -27,7 +27,7 @@ public class DividendProfitResponse {
 
     private BigDecimal netAmount;
 
-    private LocalDate paymentDate;
+    private LocalDate baseDate;
 
     public static DividendProfitResponse from(DividendProfit dividendProfit) {
         return DividendProfitResponse.builder()
@@ -38,7 +38,7 @@ public class DividendProfitResponse {
                 .dividendAmount(dividendProfit.getDividendAmount())
                 .taxAmount(dividendProfit.getTaxAmount())
                 .netAmount(dividendProfit.getNetAmount())
-                .paymentDate(dividendProfit.getPaymentDate())
+                .baseDate(dividendProfit.getBaseDate())
                 .build();
     }
 

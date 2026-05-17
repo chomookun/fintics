@@ -875,12 +875,11 @@ public class KisUsBrokerClient extends BrokerClient {
         symbols.addAll(getPeriodOrderedSymbols(dateFrom, dateTo));
 
         // 종목 별 배당 내역 조회
-        for (String symobl : symbols) {
+        for (String symbol : symbols) {
             // 권리 내역
-            List<Map<String, String>> periodRights = getPeriodRights(symobl, dateFrom, dateTo);
+            List<Map<String, String>> periodRights = getPeriodRights(symbol, dateFrom, dateTo);
             for (Map<String,String> periodRight : periodRights) {
                 LocalDate recordDate = LocalDate.parse(periodRight.get("bass_dt"), DateTimeFormatter.BASIC_ISO_DATE);
-                String symbol = periodRight.get("pdno");
                 String name = periodRight.get("prdt_name");
                 BigDecimal dividendPerUnit = new BigDecimal(periodRight.get("alct_frcr_unpr"));
 
@@ -913,14 +912,14 @@ public class KisUsBrokerClient extends BrokerClient {
 
                     // dividend history
                     DividendProfit dividendHistory = DividendProfit.builder()
-                            .date(recordDate)
+                            .date(paymentDate)
                             .symbol(symbol)
                             .name(name)
-                            .paymentDate(paymentDate)
                             .holdingQuantity(holdingQuantity)
                             .dividendAmount(dividendAmount)
                             .taxAmount(taxAmount)
                             .netAmount(netAmount)
+                            .baseDate(recordDate)
                             .build();
                     dividendProfits.add(dividendHistory);
                 }

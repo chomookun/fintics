@@ -1,9 +1,8 @@
 package org.chomookun.fintics.core.balance.repository;
 
-import org.chomookun.fintics.core.balance.entity.BalanceHistoryEntity;
-import org.chomookun.fintics.core.balance.entity.DividendProfitEntity;
 import org.chomookun.fintics.core.balance.entity.RealizedProfitEntity;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
@@ -34,5 +33,14 @@ public interface RealizedProfitRepository extends JpaRepository<RealizedProfitEn
             @Param("dateFrom") LocalDate dateFrom,
             @Param("dateTo") LocalDate dateTo
     );
+
+    @Modifying
+    @Query("""
+    DELETE FROM RealizedProfitEntity a
+    WHERE a.brokerId = :brokerId
+    AND a.date >= :startDate
+    AND a.date <= :endDate
+    """)
+    void deleteRealizedProfitsByBrokerId(@Param("brokerId") String brokerId, @Param("startDate") LocalDate startDate, @Param("endDate") LocalDate endDate);
 
 }

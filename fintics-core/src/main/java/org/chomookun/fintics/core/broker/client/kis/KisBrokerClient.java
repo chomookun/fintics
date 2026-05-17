@@ -944,11 +944,7 @@ public class KisBrokerClient extends BrokerClient {
                     .map(row -> {
                         String symbol = row.get("shtn_pdno");
                         String name = row.get("prdt_name");
-                        LocalDate date = LocalDate.parse(row.get("bass_dt"), DateTimeFormatter.BASIC_ISO_DATE);
-                        LocalDate paymentDate = Optional.ofNullable(row.get("cash_dfrm_dt"))
-                                .filter(it -> !it.isBlank())
-                                .map(it -> LocalDate.parse(it, DateTimeFormatter.BASIC_ISO_DATE))
-                                .orElse(null);
+                        LocalDate date = LocalDate.parse(row.get("cash_dfrm_dt"), DateTimeFormatter.BASIC_ISO_DATE);
                         BigDecimal holdingQuantity = Optional.ofNullable(row.get("cblc_qty"))
                                 .filter(it -> !it.isBlank())
                                 .map(BigDecimal::new)
@@ -962,16 +958,20 @@ public class KisBrokerClient extends BrokerClient {
                                 .map(BigDecimal::new)
                                 .orElse(BigDecimal.ZERO);
                         BigDecimal netAmount = dividendAmount.subtract(taxAmount);
+                        LocalDate baseDate = Optional.ofNullable(row.get("bass_dt"))
+                                .filter(it -> !it.isBlank())
+                                .map(it -> LocalDate.parse(it, DateTimeFormatter.BASIC_ISO_DATE))
+                                .orElse(null);
                         return DividendProfit.builder()
                                 .assetId(toAssetId(symbol))
                                 .symbol(symbol)
                                 .name(name)
                                 .date(date)
-                                .paymentDate(paymentDate)
                                 .holdingQuantity(holdingQuantity)
                                 .dividendAmount(dividendAmount)
                                 .taxAmount(taxAmount)
                                 .netAmount(netAmount)
+                                .baseDate(baseDate)
                                 .build();
                     })
                     .collect(Collectors.toList());

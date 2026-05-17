@@ -14,6 +14,7 @@ import org.chomookun.fintics.daemon.common.AbstractTask;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.PlatformTransactionManager;
+import org.springframework.transaction.support.TransactionTemplate;
 
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
@@ -40,7 +41,14 @@ public class RealizedProfitCollector extends AbstractTask {
                 .toList();
         for (Broker broker : brokers) {
             try {
-                collectRealizedProfits(broker);
+                TransactionTemplate transactionTemplate = new TransactionTemplate(transactionManager);
+                transactionTemplate.executeWithoutResult(status -> {
+                    try {
+                        collectRealizedProfits(broker);
+                    } catch (Throwable e) {
+                        throw new RuntimeException(e);
+                    }
+                });
             } catch (Throwable e) {
                 log.warn(e.getMessage(), e);
             }
@@ -49,6 +57,8 @@ public class RealizedProfitCollector extends AbstractTask {
 
     void collectRealizedProfits(Broker broker) throws Exception {
         BrokerClient brokerClient = brokerClientFactory.getObject(broker);
+        // 결제일 관련해서 증권사에서 넘어오는 거래일자가 변경되는 경우가 있음으로 1주일간 데이터는 초기화 후 갱신
+        realizedProfitRepository.deleteRealizedProfitsByBrokerId(broker.getBrokerId(), LocalDate.now().minusDays(7), LocalDate.now());
         LocalDate dateFrom = realizedProfitRepository.findLastDateByBrokerId(broker.getBrokerId())
                 .orElse(LocalDate.now().minusYears(1));
         LocalDate dateTo = LocalDate.now();

@@ -1,8 +1,8 @@
 package org.chomookun.fintics.core.balance.repository;
 
-import org.chomookun.fintics.core.balance.entity.BalanceHistoryEntity;
 import org.chomookun.fintics.core.balance.entity.DividendProfitEntity;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
@@ -33,5 +33,14 @@ public interface DividendProfitRepository extends JpaRepository<DividendProfitEn
             @Param("dateFrom") LocalDate dateFrom,
             @Param("dateTo") LocalDate dateTo
     );
+
+    @Modifying
+    @Query("""
+    DELETE FROM DividendProfitEntity a
+    WHERE a.brokerId = :brokerId
+    AND a.date >= :startDate
+    AND a.date <= :endDate
+    """)
+    void deleteDividendProfitsByBrokerId(@Param("brokerId") String brokerId, @Param("startDate") LocalDate startDate, @Param("endDate") LocalDate endDate);
 
 }
