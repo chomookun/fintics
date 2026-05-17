@@ -1064,18 +1064,14 @@ public class KisUsBrokerClient extends BrokerClient {
 
         List<Map<String, String>> periodRights = output.stream()
                 .filter(it -> Objects.equals(it.get("pdno"), symbol))       // like 검색으로 반환됨으로 해당 심볼만 필터링
-                // 글로벌 티커 충돌 방지: 주당 배당금에 소수점(.)이 없는 데이터(베트남 동 단위)는 제외
                 .filter(it -> {
-                    String pdNo = it.get("pdno");
-                    String dividendAmount = it.get("alct_frcr_unpr"); // 한투 API 배당금 필드명
-                    if ("TIP".equals(pdNo)) {
-                        log.info("== pdNo:{}, dividendAmount:{}", pdNo, dividendAmount);
-                    }
-                    if (dividendAmount != null && dividendAmount.contains(".")) {
-                        return true;
-                    } else {
+                    String pdNo = it.getOrDefault("pdno", "");
+                    String prdtName = it.getOrDefault("prdt_name", "");
+                    // 글로벌 티커 충돌 방지: TIP (인플레이션 미국채) 의 경우 베트남 종목이랑 TIP 티커 중복이므로 제외.
+                    if (pdNo.contains("TIP") && prdtName.contains("TIN NGHIA")) {
                         return false;
                     }
+                    return true;
                 })
                 .toList();
         // returns
