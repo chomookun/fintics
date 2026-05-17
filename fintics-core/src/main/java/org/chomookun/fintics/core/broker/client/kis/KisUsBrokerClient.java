@@ -1067,7 +1067,11 @@ public class KisUsBrokerClient extends BrokerClient {
                 // 글로벌 티커 충돌 방지: 주당 배당금에 소수점(.)이 없는 데이터(베트남 동 단위)는 제외
                 .filter(it -> {
                     String dividendAmount = it.get("alct_frcr_unpr"); // 한투 API 배당금 필드명
-                    return dividendAmount != null && dividendAmount.contains(".");
+                    if (dividendAmount != null && dividendAmount.contains(".")) {
+                        return true;
+                    } else {
+                        return false;
+                    }
                 })
                 .toList();
         // returns
