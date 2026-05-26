@@ -121,25 +121,26 @@ ps. Technical Indicator: RSI, CCI, Stochastic Slow, Williams %R
 
 ### 1. US Market (50% of Passive EMP)
 
-Equity(Growth) 35% + Equity(Dividend) 35% + Bond(Sovereign) 10% + Bond(Aggregate) 10% + Cash Equivalent 10%
+Equity(Growth) 30% + Equity(Dividend) 30% + Bond(Sovereign) 10% + Bond(Aggregate) 10% + Cash Equivalent 20%
 
-#### [35%] Equity(Growth) ETF
+#### [30%] Equity(Growth) ETF
 
-| Symbol | Name    | Holding weight | Reference                                                                  |
-|------|---------|----------------|----------------------------------------------------------------------------|
-| **SPUS** | SP Funds S&P 500 Sharia Industry Exclusions ETF        | 8.75%          | [Nasdaq](https://www.nasdaq.com/market-activity/etf/spus/dividend-history) |
-| **QDVO** | Amplify CWP Growth & Income ETF | 8.75%          | [Nasdaq](https://www.nasdaq.com/market-activity/etf/gdvo/dividend-history) |
-| **GPIQ** | Goldman Sachs Nasdaq-100 Core Premium Income ETF | 8.75%          | [Nasdaq](https://www.nasdaq.com/market-activity/etf/gpiq/dividend-history) |
-| **JEPQ** | JPMorgan Nasdaq Equity Premium Income ETF | 8.75%          | [Nasdaq](https://www.nasdaq.com/market-activity/etf/jepq/dividend-history) |
+| Symbol   | Name | Holding weight | Reference                                                 |
+|----------|--|----------------|-----------------------------------------------------------|
+| **SPUS** | SP Funds S&P 500 Sharia Industry Exclusions ETF | 7.5%           | [Nasdaq](https://www.nasdaq.com/market-activity/etf/spus) |
+| **QDVO** | Amplify CWP Growth & Income ETF | 7.5%           | [Nasdaq](https://www.nasdaq.com/market-activity/etf/gdvo) |
+| **GPIQ** | Goldman Sachs Nasdaq-100 Core Premium Income ETF | 7.5%           | [Nasdaq](https://www.nasdaq.com/market-activity/etf/gpiq) |
+| **JEPQ** | JPMorgan Nasdaq Equity Premium Income ETF | 7.5%           | [Nasdaq](https://www.nasdaq.com/market-activity/etf/jepq) |
 
-#### [35%] Equity(Dividend) ETF
 
-| Symbol | Name       | Holding weight | Reference                                                                  |
-|------|------------|----------------|----------------------------------------------------------------------------|
-| **DGRW** | WisdomTree U.S. Quality Dividend Growth Fund | 8.75%          | [Nasdaq](https://www.nasdaq.com/market-activity/etf/dgrw/dividend-history) |
-| **DIVO** | Amplify CPW Enhanced Dividend Income ETF | 8.75%          | [Nasdaq](https://www.nasdaq.com/market-activity/etf/divo/dividend-history) |
-| **IDVO** | Amplify CWP International Enhanced Dividend Income ETF | 8.75%          | [Nasdaq](https://www.nasdaq.com/market-activity/etf/idvo/dividend-history) |
-| **BALI** | iShares Advantage Large Cap Income ETF | 8.75%          | [Nasdaq](https://www.nasdaq.com/market-activity/etf/bali/dividend-history) |
+#### [30%] Equity(Dividend) ETF
+
+| Symbol   | Name | Holding weight | Reference                                                 |
+|----------|--|----------------|-----------------------------------------------------------|
+| **DGRW** | WisdomTree U.S. Quality Dividend Growth Fund | 7.5%           | [Nasdaq](https://www.nasdaq.com/market-activity/etf/dgrw) |
+| **DIVO** | Amplify CPW Enhanced Dividend Income ETF | 7.5%           | [Nasdaq](https://www.nasdaq.com/market-activity/etf/divo) |
+| **DLN**  | WisdomTree U.S. LargeCap Dividend Fund | 7.5%           | [Nasdaq](https://www.nasdaq.com/market-activity/etf/dln/) |
+| **JEPI** | JPMorgan Equity Premium Income ETF | 7.5%          | [Nasdaq](https://www.nasdaq.com/market-activity/etf/jepi) |
 
 #### [10%] Bond(Sovereign) ETF
 
@@ -155,47 +156,47 @@ Equity(Growth) 35% + Equity(Dividend) 35% + Bond(Sovereign) 10% + Bond(Aggregate
 | **PYLD** | PIMCO Multisector Bond Active ETF | 3.33%          | [Nasdaq](https://www.nasdaq.com/market-activity/etf/pyld/dividend-history) |
 | **IGLD** | FT Vest Gold Strategy Target Income ETF | 3.33%          | [Nasdaq](https://www.nasdaq.com/market-activity/etf/igld/dividend-history) |
 
-#### [10%] Cash Equivalent ETF
+#### [20%] Cash Equivalent ETF
 | Symbol   | Name                   | Holding weight | Reference                                                                  |
 |----------|------------------------|----------------|----------------------------------------------------------------------------|
-| **SGOV** | iShares 0-3 Month Treasury Bond ETF | 10%            | [Nasdaq](https://www.nasdaq.com/market-activity/etf/sgov/dividend-history) |
+| **SGOV** | iShares 0-3 Month Treasury Bond ETF | 20%            | [Nasdaq](https://www.nasdaq.com/market-activity/etf/sgov/dividend-history) |
 
 
 ### 2. KR Market (50% of Passive EMP)
 
-US.Equity(Growth) 17.5% + US.Equity(Dividend) 17.5% + KR.Equity(Growth) 17.5% + KR.Equity(Dividend) 17.5% + US.Bond(Sovereign) 10% + US.Bond(Aggregate) 10% + Cash Equivalent 10%
+US.Equity(Growth) 15% + US.Equity(Dividend) 15% + KR.Equity(Growth) 15% + KR.Equity(Dividend) 15% + US.Bond(Sovereign) 10% + US.Bond(Aggregate) 10% + Cash Equivalent 20%
 
-#### [17.5%] US.Equity(Growth) ETF
+#### [15%] US.Equity(Growth) ETF
 
 | Symbol     | Name | Holding weight | Reference |
 |------------|--|----------------|-------------------------------------|
-| **474220** | TIGER 미국테크TOP10타겟커버드콜 | 5.83%          | [K-ETF](https://www.k-etf.com/etf/474220) |
-| **0144L0** | KODEX 미국성장커버드콜액티브 | 5.83%          | [K-ETF](https://www.k-etf.com/etf/0144L0) |
-| **486290** | TIGER 미국나스닥100타겟데일리커버드콜 | 5.83%          | [K-ETF](https://www.k-etf.com/etf/486290) |
+| **474220** | TIGER 미국테크TOP10타겟커버드콜 | 5.0%           | [K-ETF](https://www.k-etf.com/etf/474220) |
+| **0144L0** | KODEX 미국성장커버드콜액티브 | 5.0%           | [K-ETF](https://www.k-etf.com/etf/0144L0) |
+| **486290** | TIGER 미국나스닥100타겟데일리커버드콜 | 5.0%           | [K-ETF](https://www.k-etf.com/etf/486290) |
 
-#### [17.5%] US.Equity(Dividend) ETF
+#### [15%] US.Equity(Dividend) ETF
 
 | Symbol | Name                | Holding weight | Reference                            |
 |------|---------------------|----------------|--------------------------------------|
-| **441640** | KODEX 미국배당커버드콜액티브   | 5.83%          | [K-ETF](https://www.k-etf.com/etf/441640) |
-| **0046Y0** | ACE 미국배당퀄리티         | 5.83%          | [K-ETF](https://www.k-etf.com/etf/0046Y0) |
-| **0049M0** | ACE 미국배당퀄리티+커버드콜액티브 | 5.83%          | [K-ETF](https://www.k-etf.com/etf/0049M0)  |
+| **441640** | KODEX 미국배당커버드콜액티브   | 5.0%           | [K-ETF](https://www.k-etf.com/etf/441640) |
+| **0046Y0** | ACE 미국배당퀄리티         | 5.0%           | [K-ETF](https://www.k-etf.com/etf/0046Y0) |
+| **0049M0** | ACE 미국배당퀄리티+커버드콜액티브 | 5.0%           | [K-ETF](https://www.k-etf.com/etf/0049M0)  |
 
-#### [17.5%] KR.Equity(Growth) ETF
+#### [15%] KR.Equity(Growth) ETF
 
 | Symbol | Name               | Holding weight | Reference |
 |------|--------------------|----------------|-------------------------------------|
-| **472150** | TIGER 배당커버드콜액티브    | 5.83%          | [K-ETF](https://www.k-etf.com/etf/472150) |
-| **498400** | KODEX 200타겟위클리커버드콜 | 5.83%          | [K-ETF](https://www.k-etf.com/etf/498400) |
-| **496080** | TIGER 코리아밸류업       | 5.83%          | [K-ETF](https://www.k-etf.com/etf/496080) |
+| **472150** | TIGER 배당커버드콜액티브    | 5.0%           | [K-ETF](https://www.k-etf.com/etf/472150) |
+| **498400** | KODEX 200타겟위클리커버드콜 | 5.0%           | [K-ETF](https://www.k-etf.com/etf/498400) |
+| **496080** | TIGER 코리아밸류업       | 5.0%           | [K-ETF](https://www.k-etf.com/etf/496080) |
 
-#### [17.5%] KR.Equity(Dividend) ETF
+#### [15%] KR.Equity(Dividend) ETF
 
 | Symbol | Name   | Holding weight | Reference |
 |------|--------|----------------|-------------------------------------|
-| **441800** | TIMEFOLIO Korea플러스배당액티브 | 5.83%          | [K-ETF](https://www.k-etf.com/etf/441800) |
-| **161510** | PLUS 고배당주 | 5.83%          | [K-ETF](https://www.k-etf.com/etf/161510) |
-| **0052D0** | TIGER 코리아배당다우존스 | 5.83%          | [K-ETF](https://www.k-etf.com/etf/0052D0) |
+| **441800** | TIMEFOLIO Korea플러스배당액티브 | 5.0%           | [K-ETF](https://www.k-etf.com/etf/441800) |
+| **161510** | PLUS 고배당주 | 5.0%           | [K-ETF](https://www.k-etf.com/etf/161510) |
+| **0052D0** | TIGER 코리아배당다우존스 | 5.0%           | [K-ETF](https://www.k-etf.com/etf/0052D0) |
 
 #### [10%] US.Bond(Sovereign) ETF
 
@@ -213,7 +214,7 @@ US.Equity(Growth) 17.5% + US.Equity(Dividend) 17.5% + KR.Equity(Growth) 17.5% + 
 | **468380** | KODEX iShares미국하이일드액티브 | 3.33%          | [K-ETF](https://www.k-etf.com/etf/468380) |
 | **0022T0** | SOL 국제금커버드콜액티브 | 3.33%          | [K-ETF](https://www.k-etf.com/etf/0022T0) |
 
-#### [10%] Cash Equivalent ETF
+#### [20%] Cash Equivalent ETF
 | Symbol   | Name | Holding weight | Reference                                                            |
 |----------|--|---------------|----------------------------------------------------------------------|
 | **488770** | KODEX 머니마켓액티브 | 10%           | [K-ETF](https://www.k-etf.com/etf/488770) |
