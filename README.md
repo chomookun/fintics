@@ -136,11 +136,10 @@ Equity(Growth) 30% + Equity(Dividend) 30% + Bond(Sovereign) 10% + Bond(Aggregate
 #### [30%] Equity(Dividend) ETF
 
 | Symbol   | Name | Holding weight | Reference                                                 |
-|----------|--|----------------|-----------------------------------------------------------|
-| **DGRW** | WisdomTree U.S. Quality Dividend Growth Fund | 7.5%           | [Nasdaq](https://www.nasdaq.com/market-activity/etf/dgrw) |
-| **DIVO** | Amplify CPW Enhanced Dividend Income ETF | 7.5%           | [Nasdaq](https://www.nasdaq.com/market-activity/etf/divo) |
-| **DLN**  | WisdomTree U.S. LargeCap Dividend Fund | 7.5%           | [Nasdaq](https://www.nasdaq.com/market-activity/etf/dln/) |
-| **JEPI** | JPMorgan Equity Premium Income ETF | 7.5%          | [Nasdaq](https://www.nasdaq.com/market-activity/etf/jepi) |
+|----------|--|--------------|-----------------------------------------------------------|
+| **DGRW** | WisdomTree U.S. Quality Dividend Growth Fund | 10%        | [Nasdaq](https://www.nasdaq.com/market-activity/etf/dgrw) |
+| **DIVO** | Amplify CPW Enhanced Dividend Income ETF | 10%        | [Nasdaq](https://www.nasdaq.com/market-activity/etf/divo) |
+| **DLN**  | WisdomTree U.S. LargeCap Dividend Fund | 10%          | [Nasdaq](https://www.nasdaq.com/market-activity/etf/dln/) |
 
 #### [10%] Bond(Sovereign) ETF
 
@@ -177,11 +176,11 @@ US.Equity(Growth) 15% + US.Equity(Dividend) 15% + KR.Equity(Growth) 15% + KR.Equ
 
 #### [15%] US.Equity(Dividend) ETF
 
-| Symbol | Name                | Holding weight | Reference                            |
-|------|---------------------|----------------|--------------------------------------|
-| **441640** | KODEX 미국배당커버드콜액티브   | 5.0%           | [K-ETF](https://www.k-etf.com/etf/441640) |
-| **0046Y0** | ACE 미국배당퀄리티         | 5.0%           | [K-ETF](https://www.k-etf.com/etf/0046Y0) |
-| **0049M0** | ACE 미국배당퀄리티+커버드콜액티브 | 5.0%           | [K-ETF](https://www.k-etf.com/etf/0049M0)  |
+| Symbol | Name     | Holding weight | Reference                           |
+|------|----------|----------------|-------------------------------------|
+| **441640** | KODEX 미국배당커버드콜액티브 | 5.0%           | [K-ETF](https://www.k-etf.com/etf/441640) |
+| **0046Y0** | ACE 미국배당퀄리티 | 5.0%           | [K-ETF](https://www.k-etf.com/etf/0046Y0) |
+| **458730** | TIGER 미국배당다우존스         | 5.0%           | [K-ETF](https://www.k-etf.com/etf/458730) |
 
 #### [15%] KR.Equity(Growth) ETF
 
