@@ -215,10 +215,10 @@ US.Equity(Growth) 15% + US.Equity(Dividend) 15% + KR.Equity(Growth) 15% + KR.Equ
 | **0022T0** | SOL 국제금커버드콜액티브 | 3.33%          | [K-ETF](https://www.k-etf.com/etf/0022T0) |
 
 #### [20%] Cash Equivalent ETF
-| Symbol | Name    | Holding weight | Reference                                                            |
-|------|---------|----------------|----------------------------------------------------------------------|
+| Symbol | Name | Holding weight | Reference                                                |
+|------|--|----------------|----------------------------------------------------------|
 | **488770** | KODEX 머니마켓액티브 | 6.66%          | [K-ETF](https://www.k-etf.com/etf/488770) |
-| **357870** | TIGER CD금리투자KIS(합성) | 6.66%          | [K-ETF](https://www.k-etf.com/etf/357870) |
-| **449170** | TIGER KOFR금리액티브(합성)        | 6.66%          | [K-ETF](https://www.k-etf.com/etf/449170) |
+| **497880** | SOL CD금리&머니마켓액티브 | 6.66%          | [K-ETF](https://www.k-etf.com/etf/497880) |
+| **423160** | KODEX KOFR금리액티브(합성) | 6.66%          | [K-ETF](https://www.k-etf.com/etf/423160) |
 
 
