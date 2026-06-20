@@ -128,7 +128,7 @@ def usEtfs = [
         "JEPQ", // (*)JPMorgan Nasdaq Equity Premium Income ETF
         "GPIQ", // (*)Goldman Sachs Nasdaq-100 Premium Income ETF
         "QDVO", // (*)Amplify ETF Trust Amplify CWP Growth & Income ETF
-        "SPTE", // SP Funds Trust SP Funds S&P Global Technology ETF
+        "SPTE", // (*)SP Funds Trust SP Funds S&P Global Technology ETF
         "QQQ",  // Invesco QQQ Trust
         "SPY",  // SPDR S&P 500 ETF Trust
         "SPYG", // SPDR Portfolio S&P 500 Growth ETF
@@ -151,9 +151,9 @@ def usEtfs = [
         "DGRW", // (*)WisdomTree U.S. Quality Dividend Growth Fund
         "DIVO", // (*)Amplify CWP Enhanced Dividend Income ETF
         "DLN",  // (*)WisdomTree U.S. LargeCap Dividend Fund
-        "JEPI", // (*)JPMorgan Equity Premium Income ETF
+        "IDVO", // (*)Amplify CWP International Enhanced Dividend Income ETF
+        "JEPI", // JPMorgan Equity Premium Income ETF
         "BALI", // iShares Advantage Large Cap Income ETF
-        "IDVO", // Amplify CWP International Enhanced Dividend Income ETF
         "DGRO", // iShares Core Dividend Growth ETF
         "SDY",  // SPDR S&P Dividend ETF
         "DVY",  // iShares Select Dividend ETF
