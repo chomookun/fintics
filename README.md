@@ -125,21 +125,22 @@ Equity(Growth) 30% + Equity(Dividend) 30% + Bond(Sovereign) 10% + Bond(Aggregate
 
 #### [30%] Equity(Growth) ETF
 
-| Symbol   | Name | Holding weight | Reference                                                 |
-|----------|--|----------------|-----------------------------------------------------------|
-| **SPUS** | SP Funds S&P 500 Sharia Industry Exclusions ETF | 7.5%           | [Nasdaq](https://www.nasdaq.com/market-activity/etf/spus) |
-| **QDVO** | Amplify CWP Growth & Income ETF | 7.5%           | [Nasdaq](https://www.nasdaq.com/market-activity/etf/gdvo) |
-| **GPIQ** | Goldman Sachs Nasdaq-100 Core Premium Income ETF | 7.5%           | [Nasdaq](https://www.nasdaq.com/market-activity/etf/gpiq) |
-| **JEPQ** | JPMorgan Nasdaq Equity Premium Income ETF | 7.5%           | [Nasdaq](https://www.nasdaq.com/market-activity/etf/jepq) |
-
+| Symbol   | Name                                                                                        | Holding weight | Reference                                                 |
+|----------|---------------------------------------------------------------------------------------------|----------------|-----------------------------------------------------------|
+| **SPUS** | SP Funds S&P 500 Sharia Industry Exclusions ETF                                             | 6%             | [Nasdaq](https://www.nasdaq.com/market-activity/etf/spus) |
+| **QDVO** | Amplify CWP Growth & Income ETF                                                             | 6%             | [Nasdaq](https://www.nasdaq.com/market-activity/etf/gdvo) |
+| **GPIQ** | Goldman Sachs Nasdaq-100 Core Premium Income ETF                                            | 6%             | [Nasdaq](https://www.nasdaq.com/market-activity/etf/gpiq) |
+| **JEPQ** | JPMorgan Nasdaq Equity Premium Income ETF                                                   | 6%             | [Nasdaq](https://www.nasdaq.com/market-activity/etf/jepq) |
+| **SPTE** | SP Funds Trust SP Funds S&P Global Technology ETF | 6%             | [Nasdaq](https://www.nasdaq.com/market-activity/etf/spte) |
 
 #### [30%] Equity(Dividend) ETF
 
-| Symbol   | Name | Holding weight | Reference                                                 |
-|----------|--|--------------|-----------------------------------------------------------|
-| **DGRW** | WisdomTree U.S. Quality Dividend Growth Fund | 10%        | [Nasdaq](https://www.nasdaq.com/market-activity/etf/dgrw) |
-| **DIVO** | Amplify CPW Enhanced Dividend Income ETF | 10%        | [Nasdaq](https://www.nasdaq.com/market-activity/etf/divo) |
-| **DLN**  | WisdomTree U.S. LargeCap Dividend Fund | 10%          | [Nasdaq](https://www.nasdaq.com/market-activity/etf/dln/) |
+| Symbol   | Name                                         | Holding weight | Reference                                                  |
+|----------|----------------------------------------------|----------------|------------------------------------------------------------|
+| **DGRW** | WisdomTree U.S. Quality Dividend Growth Fund | 7.5%           | [Nasdaq](https://www.nasdaq.com/market-activity/etf/dgrw)  |
+| **DIVO** | Amplify CPW Enhanced Dividend Income ETF     | 7.5%           | [Nasdaq](https://www.nasdaq.com/market-activity/etf/divo)  |
+| **DLN**  | WisdomTree U.S. LargeCap Dividend Fund       | 7.5%           | [Nasdaq](https://www.nasdaq.com/market-activity/etf/dln/)  |
+| **IDVO** | Amplify CWP International Enhanced Dividend Income ETF | 7.5%           | [Nasdaq](https://www.nasdaq.com/market-activity/etf/idvo/) |
 
 #### [10%] Bond(Sovereign) ETF
 
