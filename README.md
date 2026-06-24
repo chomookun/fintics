@@ -169,9 +169,8 @@ US.Equity(Growth) 15% + US.Equity(Dividend) 15% + KR.Equity(Growth) 15% + KR.Equ
 
 | Symbol     | Name | Holding weight | Reference |
 |------------|--|----------------|-------------------------------------|
-| **474220** | TIGER 미국테크TOP10타겟커버드콜 | 5.0%           | [K-ETF](https://www.k-etf.com/etf/474220) |
-| **0144L0** | KODEX 미국성장커버드콜액티브 | 5.0%           | [K-ETF](https://www.k-etf.com/etf/0144L0) |
-| **486290** | TIGER 미국나스닥100타겟데일리커버드콜 | 5.0%           | [K-ETF](https://www.k-etf.com/etf/486290) |
+| **486290** | TIGER 미국나스닥100타겟데일리커버드콜 | 7.5%           | [K-ETF](https://www.k-etf.com/etf/486290) |
+| **0144L0** | KODEX 미국성장커버드콜액티브 | 7.5%           | [K-ETF](https://www.k-etf.com/etf/0144L0) |
 
 #### [15%] US.Equity(Dividend) ETF
 
