@@ -120,6 +120,7 @@ def minHoldingWeight = variables.minHoldingWeight as BigDecimal
 def stepHoldingWeight = variables.stepHoldingWeight as BigDecimal
 def favoriteEnabled = variables.favoriteEnabled?.toString()?.toBoolean() ?: false
 def favoriteCount = variables.favoriteCount as Integer
+def proxyEnabled = variables.proxyEnabled?.toString()?.toBoolean() ?: false
 
 // US ETFs
 def usEtfs = [
@@ -250,15 +251,15 @@ def getRankEtfItems(market, etfSymbols) {
 
     // 우선주,Class 등 본주로 치환
     Map<String, String> symbolAliasMap = [
-            "GOOG": "GOOGL",    // Google Inc. Class C => Class A
-            "005935": "005930", // 삼성전자 우선주 => 삼성전자
-            "005385": "005380", // 현대자동차1우 => 현대자동차
-            "005387": "005380"  // 현대자동차2우 => 현대자동차
+             "GOOG": "GOOGL"    // Google Inc. Class C => Class A
+            ,"005935": "005930" // 삼성전자 우선주 => 삼성전자
+            ,"005385": "005380" // 현대자동차1우 => 현대자동차
+            ,"005387": "005380" // 현대자동차2우 => 현대자동차
     ]
     etfItems = etfItems.collect { item ->
         def unifiedSymbol = symbolAliasMap.get(item.symbol, item.symbol)
         item.symbol = unifiedSymbol
-        item
+        return item
     }
 
     // group by symbol
@@ -283,6 +284,7 @@ def getRankEtfItems(market, etfSymbols) {
         if (asset == null) {
             return false
         }
+
         // STOCK 이 아니면 제외
         if (asset.getType() != "STOCK") {
             return false
@@ -348,6 +350,26 @@ switch (market) {
         break
     default:
         throw new RuntimeException("Unsupported market: ${market}")
+}
+
+
+// 주당 가격이 너무 큰 경우 Proxy 종목이 존재하는 경우 본주 대신 Proxy 로 대체
+if (proxyEnabled) {
+    Map<String, String> proxySymbolMap = [
+            "005930"  : "0193W0" // 삼성전자 => KODEX 삼성전자단일종목레버리지
+            , "000660": "0193T0" // SK하이닉스 => KODEX SK하이닉스단일종목레버리지
+    ]
+    rankItems = rankItems.collect {
+        if (proxySymbolMap.containsKey(it.symbol)) {
+            def proxySymbol = proxySymbolMap.get(it.symbol)
+            def proxyAssetId = "${market}.${proxySymbol}"
+            Asset proxyAsset = assetService.getAsset(proxyAssetId).orElse(null)
+            it.symbol = proxyAsset.getSymbol()
+            it.name = "${proxyAsset.getName()} (${it.name} Proxy)"
+
+        }
+        return it
+    }
 }
 
 // Top growth items
