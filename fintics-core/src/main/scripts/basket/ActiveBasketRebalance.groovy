@@ -126,10 +126,10 @@ def proxyEnabled = variables.proxyEnabled?.toString()?.toBoolean() ?: false
 def usEtfs = [
         // growth
         "SPUS", // (*)SP Funds S&P 500 Sharia Industry Exclusions ETF
-        "JEPQ", // (*)JPMorgan Nasdaq Equity Premium Income ETF
         "GPIQ", // (*)Goldman Sachs Nasdaq-100 Premium Income ETF
+        "JEPQ", // (*)JPMorgan Nasdaq Equity Premium Income ETF
         "QDVO", // (*)Amplify ETF Trust Amplify CWP Growth & Income ETF
-        "SPTE", // (*)SP Funds Trust SP Funds S&P Global Technology ETF
+        "SPTE", // SP Funds Trust SP Funds S&P Global Technology ETF
         "QQQ",  // Invesco QQQ Trust
         "SPY",  // SPDR S&P 500 ETF Trust
         "SPYG", // SPDR Portfolio S&P 500 Growth ETF
@@ -357,7 +357,7 @@ switch (market) {
 if (proxyEnabled) {
     Map<String, String> proxySymbolMap = [
             "005930"  : "0193W0" // 삼성전자 => KODEX 삼성전자단일종목레버리지
-            , "000660": "0193T0" // SK하이닉스 => KODEX SK하이닉스단일종목레버리지
+            , "000660": "0195S0" // SK하이닉스 => TIGER SK하이닉스단일종목레버리지
     ]
     rankItems = rankItems.collect {
         if (proxySymbolMap.containsKey(it.symbol)) {
