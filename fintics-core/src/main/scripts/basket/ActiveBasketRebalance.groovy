@@ -148,11 +148,13 @@ def usEtfs = [
         "XNTK", // SPDR NYSE Technology ETF
         "BAI",  // BlackRock ETF Trust iShares A.I. Innovation and Tech Active ET
         "XT",   // iShares Exponential Technologies ETF
-        // dividend
+        // value
         "DGRW", // (*)WisdomTree U.S. Quality Dividend Growth Fund
         "DIVO", // (*)Amplify CWP Enhanced Dividend Income ETF
         "DLN",  // (*)WisdomTree U.S. LargeCap Dividend Fund
-        "IDVO", // (*)Amplify CWP International Enhanced Dividend Income ETF
+        "IWD",  // iShares Russell 1000 Value ETF
+        "VTV",  // Vanguard Value ETF
+        "IDVO", // Amplify CWP International Enhanced Dividend Income ETF
         "JEPI", // JPMorgan Equity Premium Income ETF
         "BALI", // iShares Advantage Large Cap Income ETF
         "DGRO", // iShares Core Dividend Growth ETF
@@ -189,7 +191,7 @@ def krEtfs = [
         "325010",   // KODEX 성장주
         "0074K0",   // KoAct K수출핵심기업TOP30액티브
         "444200",   // SOL 코리아메가테크액티브
-        // dividend
+        // value
         "441800",   // (*)TIMEFOLIO Korea플러스배당액티브
         "161510",   // (*)PLUS 고배당주
         "0052D0",   // (*)TIGER 코리아배당다우존스
@@ -356,8 +358,8 @@ switch (market) {
 // 주당 가격이 너무 큰 경우 Proxy 종목이 존재하는 경우 본주 대신 Proxy 로 대체
 if (proxyEnabled) {
     Map<String, String> proxySymbolMap = [
-            "005930"  : "0193W0" // 삼성전자 => KODEX 삼성전자단일종목레버리지
-            , "000660": "0195S0" // SK하이닉스 => TIGER SK하이닉스단일종목레버리지
+             "005930"  : "0193W0" // 삼성전자 => KODEX 삼성전자단일종목레버리지
+            ,"000660": "0195S0" // SK하이닉스 => TIGER SK하이닉스단일종목레버리지
     ]
     rankItems = rankItems.collect {
         if (proxySymbolMap.containsKey(it.symbol)) {

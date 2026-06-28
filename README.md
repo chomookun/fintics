@@ -121,9 +121,13 @@ ps. Technical Indicator: RSI, CCI, Stochastic Slow, Williams %R
 
 ### 1. US Market (50% of Passive EMP)
 
-Equity(Growth) 30% + Equity(Dividend) 30% + Bond(Sovereign) 10% + Bond(Aggregate) 10% + Cash Equivalent 20%
+- Equity.Growth: 30%
+- Equity.Value: 30%
+- Bond.Sovereign: 10%
+- Bond.Aggregate: 10%
+- Cash Equivalent: 20%
 
-#### [30%] Equity(Growth) ETF
+#### [30%] Equity.Growth ETF
 
 | Symbol   | Name                                                                                        | Holding weight | Reference                                                 |
 |----------|---------------------------------------------------------------------------------------------|----------------|-----------------------------------------------------------|
@@ -132,7 +136,7 @@ Equity(Growth) 30% + Equity(Dividend) 30% + Bond(Sovereign) 10% + Bond(Aggregate
 | **GPIQ** | Goldman Sachs Nasdaq-100 Core Premium Income ETF                                            | 7.5%           | [Nasdaq](https://www.nasdaq.com/market-activity/etf/gpiq) |
 | **JEPQ** | JPMorgan Nasdaq Equity Premium Income ETF                                                   | 7.5%           | [Nasdaq](https://www.nasdaq.com/market-activity/etf/jepq) |
 
-#### [30%] Equity(Dividend) ETF
+#### [30%] Equity.Value ETF
 
 | Symbol   | Name                                         | Holding weight | Reference                                                  |
 |----------|----------------------------------------------|----------------|------------------------------------------------------------|
@@ -140,14 +144,14 @@ Equity(Growth) 30% + Equity(Dividend) 30% + Bond(Sovereign) 10% + Bond(Aggregate
 | **DIVO** | Amplify CPW Enhanced Dividend Income ETF     | 10%            | [Nasdaq](https://www.nasdaq.com/market-activity/etf/divo)  |
 | **DLN**  | WisdomTree U.S. LargeCap Dividend Fund       | 10%            | [Nasdaq](https://www.nasdaq.com/market-activity/etf/dln/)  |
 
-#### [10%] Bond(Sovereign) ETF
+#### [10%] Bond.Sovereign ETF
 
 | Symbol   | Name                   | Holding weight | Reference                                                                  |
 |----------|------------------------|----------------|----------------------------------------------------------------------------|
 | **GOVI** | Invesco Equal Weight 0-30 Year Treasury ETF | 5%             | [Nasdaq](https://www.nasdaq.com/market-activity/etf/govi) |
 | **TIP**  | iShares TIPS Bond ETF | 5%             | [Nasdaq](https://www.nasdaq.com/market-activity/etf/tip)  |
 
-#### [10%] Bond(Aggregate) ETF
+#### [10%] Bond.Aggregate ETF
 | Symbol   | Name                           | Holding weight | Reference                                                                  |
 |----------|--------------------------------|----------------|----------------------------------------------------------------------------|
 | **FBND** | Fidelity Total Bond ETF | 3.33%          | [Nasdaq](https://www.nasdaq.com/market-activity/etf/fbnd) |
@@ -163,16 +167,22 @@ Equity(Growth) 30% + Equity(Dividend) 30% + Bond(Sovereign) 10% + Bond(Aggregate
 
 ### 2. KR Market (50% of Passive EMP)
 
-US.Equity(Growth) 15% + US.Equity(Dividend) 15% + KR.Equity(Growth) 15% + KR.Equity(Dividend) 15% + US.Bond(Sovereign) 10% + US.Bond(Aggregate) 10% + Cash Equivalent 20%
+- US.Equity.Growth: 15% 
+- US.Equity.Value: 15% 
+- KR.Equity.Growth: 15% 
+- KR.Equity.Value: 15% 
+- US.Bond.Sovereign: 10% 
+- US.Bond.Aggregate: 10%
+- Cash Equivalent: 20%
 
-#### [15%] US.Equity(Growth) ETF
+#### [15%] US.Equity.Growth ETF
 
 | Symbol     | Name | Holding weight | Reference |
 |------------|--|----------------|-------------------------------------|
 | **486290** | TIGER 미국나스닥100타겟데일리커버드콜 | 7.5%           | [K-ETF](https://www.k-etf.com/etf/486290) |
 | **0144L0** | KODEX 미국성장커버드콜액티브 | 7.5%           | [K-ETF](https://www.k-etf.com/etf/0144L0) |
 
-#### [15%] US.Equity(Dividend) ETF
+#### [15%] US.Equity.Value ETF
 
 | Symbol | Name     | Holding weight | Reference                           |
 |------|----------|----------------|-------------------------------------|
@@ -180,7 +190,7 @@ US.Equity(Growth) 15% + US.Equity(Dividend) 15% + KR.Equity(Growth) 15% + KR.Equ
 | **0046Y0** | ACE 미국배당퀄리티 | 5.0%           | [K-ETF](https://www.k-etf.com/etf/0046Y0) |
 | **458730** | TIGER 미국배당다우존스         | 5.0%           | [K-ETF](https://www.k-etf.com/etf/458730) |
 
-#### [15%] KR.Equity(Growth) ETF
+#### [15%] KR.Equity.Growth ETF
 
 | Symbol | Name               | Holding weight | Reference |
 |------|--------------------|----------------|-------------------------------------|
@@ -188,7 +198,7 @@ US.Equity(Growth) 15% + US.Equity(Dividend) 15% + KR.Equity(Growth) 15% + KR.Equ
 | **498400** | KODEX 200타겟위클리커버드콜 | 5.0%           | [K-ETF](https://www.k-etf.com/etf/498400) |
 | **496080** | TIGER 코리아밸류업       | 5.0%           | [K-ETF](https://www.k-etf.com/etf/496080) |
 
-#### [15%] KR.Equity(Dividend) ETF
+#### [15%] KR.Equity.Value ETF
 
 | Symbol | Name   | Holding weight | Reference |
 |------|--------|----------------|-------------------------------------|
@@ -196,7 +206,7 @@ US.Equity(Growth) 15% + US.Equity(Dividend) 15% + KR.Equity(Growth) 15% + KR.Equ
 | **161510** | PLUS 고배당주 | 5.0%           | [K-ETF](https://www.k-etf.com/etf/161510) |
 | **0052D0** | TIGER 코리아배당다우존스 | 5.0%           | [K-ETF](https://www.k-etf.com/etf/0052D0) |
 
-#### [10%] US.Bond(Sovereign) ETF
+#### [10%] US.Bond.Sovereign ETF
 
 | Symbol | Name | Holding weight | Reference                                 |
 |------|--|----------------|-------------------------------------------|
@@ -204,7 +214,7 @@ US.Equity(Growth) 15% + US.Equity(Dividend) 15% + KR.Equity(Growth) 15% + KR.Equ
 | **0085P0** | ACE 미국10년국채액티브 | 3.33%          | [K-ETF](https://www.k-etf.com/etf/0085P0)       |
 | **468370** | KODEX iShares미국인플레이션국채액티브 | 3.33%          | [K-ETF](https://www.k-etf.com/etf/468370) |
 
-#### [10%] US.Bond(Aggregate) ETF
+#### [10%] US.Bond.Aggregate ETF
 
 | Symbol | Name | Holding weight | Reference                                                            |
 |------|----|----------------|----------------------------------------------------------------------|
