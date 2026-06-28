@@ -129,7 +129,6 @@ def usEtfs = [
         "GPIQ", // (*)Goldman Sachs Nasdaq-100 Premium Income ETF
         "JEPQ", // (*)JPMorgan Nasdaq Equity Premium Income ETF
         "QDVO", // (*)Amplify ETF Trust Amplify CWP Growth & Income ETF
-        "SPTE", // SP Funds Trust SP Funds S&P Global Technology ETF
         "QQQ",  // Invesco QQQ Trust
         "SPY",  // SPDR S&P 500 ETF Trust
         "SPYG", // SPDR Portfolio S&P 500 Growth ETF
@@ -148,6 +147,8 @@ def usEtfs = [
         "XNTK", // SPDR NYSE Technology ETF
         "BAI",  // BlackRock ETF Trust iShares A.I. Innovation and Tech Active ET
         "XT",   // iShares Exponential Technologies ETF
+        "SPTE", // SP Funds Trust SP Funds S&P Global Technology ETF
+        "IXN",  // iShares Global Tech ETF
         // value
         "DGRW", // (*)WisdomTree U.S. Quality Dividend Growth Fund
         "DIVO", // (*)Amplify CWP Enhanced Dividend Income ETF
