@@ -361,6 +361,9 @@ if (proxyEnabled) {
     Map<String, String> proxySymbolMap = [
              "005930"  : "0193W0" // 삼성전자 => KODEX 삼성전자단일종목레버리지
             ,"000660": "0195S0" // SK하이닉스 => TIGER SK하이닉스단일종목레버리지
+            ,"402340": "494220" // SK스퀘어 -> UNICORN SK하이닉스밸류체인액티브 (SK스퀘어는 하이닉스 Proxy임)
+            ,"009150": "009155"  // 삼성전기 -> 삼성전기 우선주
+            ,"012450": "0080G0" // 한화에어로스페이스 -> KODEX 방산TOP10
     ]
     rankItems = rankItems.collect {
         if (proxySymbolMap.containsKey(it.symbol)) {
