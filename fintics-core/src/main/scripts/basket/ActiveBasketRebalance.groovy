@@ -359,7 +359,12 @@ switch (market) {
 // 주당 가격이 너무 큰 경우 Proxy 종목이 존재하는 경우 본주 대신 Proxy 로 대체
 if (proxyEnabled) {
     Map<String, String> proxySymbolMap = [
-             "402340": "494220" // SK스퀘어 -> UNICORN SK하이닉스밸류체인액티브 (SK스퀘어는 하이닉스 Proxy임)
+            // US
+             "LLY": "IHE"   // Eli Lilly and Company Common Stock -> iShares U.S. Pharmaceutical ETF
+            ,"ASML": "ASMH"  // ASML Holding N.V. New York Registry Shares -> Precidian ETFs Trust ASML Holding NV ADRhedged
+            ,"GS": "IAI" // Goldman Sachs Group Inc. (The) Common Stock -> iShares U.S. Broker-Dealers & Securities Exchanges ETF
+            // KR
+            ,"402340": "494220" // SK스퀘어 -> UNICORN SK하이닉스밸류체인액티브 (SK스퀘어는 하이닉스 Proxy임)
             ,"009150": "009155"  // 삼성전기 -> 삼성전기 우선주
             ,"012450": "0080G0" // 한화에어로스페이스 -> KODEX 방산TOP10
             ,"329180": "466920"  // HD현대중공업 -> SOL 조선TOP3플러스 (조선업종이 아니라 햬양SMR 테미암)
