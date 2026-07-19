@@ -350,6 +350,7 @@
                         basketItem.netChangePercentage = tradeAsset.netChangePercentage;
                         basketItem.intraDayNetChange = tradeAsset.intraDayNetChange;
                         basketItem.intraDayNetChangePercentage = tradeAsset.intraDayNetChangePercentage;
+                        basketItem.allocatedAmount = tradeAsset.allocatedAmount;
                         basketItem.message = tradeAsset.message;
                         basketItem.strategyResult = tradeAsset.strategyResult;
                         // updates chart
@@ -1046,7 +1047,7 @@
                                           }"
                                           data-duice-format="number()"
                                           class="number font-weight--bold font-size--larger">-</span>
-                                    <small>/</small>
+                                    <small>|</small>
                                     <span data-duice-bind="basketItem"
                                           data-duice-property="quantity"
                                           data-duice-execute="
@@ -1068,13 +1069,19 @@
                                                 if (!basketItem.profitAmount) {
                                                     this.innerHTML = '0';
                                                 }"></span>
-                                        <small>/</small>
+                                        <small>|</small>
                                         <span data-duice-bind="basketItem"
                                               data-duice-property="profitPercentage"
                                               data-duice-execute="
                                                 if (!basketItem.profitAmount) {
                                                     this.innerHTML = '0';
                                                 }"></span>%)
+                                    </span>
+                                    <span class="number font-size--xx-small font-style--italic">
+                                        Allocated: <span data-duice-bind="basketItem"
+                                              data-duice-property="allocatedAmount"
+                                              data-duice-format="number()"
+                                              class="number"></span>
                                     </span>
                                     <span class="cursor--pointer"
                                           data-duice-bind="basketItem"

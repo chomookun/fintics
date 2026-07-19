@@ -1,10 +1,8 @@
 package org.chomookun.fintics.core.trade.model;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.*;
 import lombok.experimental.SuperBuilder;
 import lombok.extern.slf4j.Slf4j;
-import org.chomookun.arch4j.core.common.support.ObjectMapperHolder;
 import org.chomookun.fintics.core.asset.model.Asset;
 import org.chomookun.fintics.core.strategy.runner.StrategyResult;
 import org.chomookun.fintics.core.trade.entity.TradeAssetEntity;
@@ -39,6 +37,8 @@ public class TradeAsset extends Asset {
     private List<Ohlcv> dailyOhlcvs;
 
     private List<Ohlcv> minuteOhlcvs;
+
+    private BigDecimal allocatedAmount;
 
     private String message;
 
