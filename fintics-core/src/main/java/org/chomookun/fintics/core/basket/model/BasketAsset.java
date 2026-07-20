@@ -28,6 +28,8 @@ public class BasketAsset extends Asset {
 
     private BigDecimal holdingWeight;
 
+    private BigDecimal allocatedAmount;
+
     private String variables;
 
     /**

@@ -38,8 +38,6 @@ public class TradeAsset extends Asset {
 
     private List<Ohlcv> minuteOhlcvs;
 
-    private BigDecimal allocatedAmount;
-
     private String message;
 
     private StrategyResult strategyResult;

@@ -28,6 +28,8 @@ public class BasketAssetResponse extends AssetResponse {
 
     private String variables;
 
+    private BigDecimal allocatedAmount;
+
     public static BasketAssetResponse from(BasketAsset basketAsset) {
         return BasketAssetResponse.builder()
                 .basketId(basketAsset.getBasketId())
@@ -54,6 +56,7 @@ public class BasketAssetResponse extends AssetResponse {
                 .enabled(basketAsset.isEnabled())
                 .holdingWeight(basketAsset.getHoldingWeight())
                 .variables(basketAsset.getVariables())
+                .allocatedAmount(basketAsset.getAllocatedAmount())
                 .build();
     }
 

@@ -8,8 +8,6 @@
     <th:block th:insert="common/_asset-dialog.html"/>
     <th:block th:insert="common/_submit-order-dialog.html"/>
     <script th:inline="javascript">
-        // Chart.defaults.font.size = 8;
-        // Chart.defaults.animation = false;
         const trades = new duice.ArrayProxy(/*[[${trades}]]*/[]);
         const chartRefMap = new Map();
 
@@ -238,7 +236,7 @@
                         });
                 },
                 getBasket: async function() {
-                    let url = `${_apiUrl}/v1/baskets/${this.trade.basketId}`;
+                    let url = `${_apiUrl}/v1/trades/${this.trade.tradeId}/basket`;
                     duice.ObjectProxy.clear(this.basket);
                     this.basket._status = 'loading';
                     await _fetch(url)
@@ -350,7 +348,6 @@
                         basketItem.netChangePercentage = tradeAsset.netChangePercentage;
                         basketItem.intraDayNetChange = tradeAsset.intraDayNetChange;
                         basketItem.intraDayNetChangePercentage = tradeAsset.intraDayNetChangePercentage;
-                        basketItem.allocatedAmount = tradeAsset.allocatedAmount;
                         basketItem.message = tradeAsset.message;
                         basketItem.strategyResult = tradeAsset.strategyResult;
                         // updates chart
@@ -1036,7 +1033,7 @@
                                 <!-- start: basket asset valuation -->
                                 <div class="display--flex flex-direction--column gap--d25em padding--d25em" style="line-height:normal;">
                                     <div class="display--flex align-items--center">
-                                        <span class="font-weight--bold text-decoration--underline">
+                                        <span class="font-weight--bold">
                                             [
                                             <span data-duice-bind="basketItem" data-duice-property="holdingWeight" class="number"></span>
                                             <span class="code">%</span>

@@ -7,7 +7,6 @@ import ch.qos.logback.classic.PatternLayout;
 import ch.qos.logback.classic.spi.ILoggingEvent;
 import ch.qos.logback.core.OutputStreamAppender;
 import io.swagger.v3.oas.annotations.Operation;
-import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -40,7 +39,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.stream.Collectors;
-import java.util.stream.IntStream;
 
 @Tag(name = "basket")
 @RestController
@@ -59,7 +57,7 @@ public class BasketRestController {
 
     @Operation(summary = "Gets baskets")
     @GetMapping
-    public ResponseEntity<List<BasketResponse>> getBrokers(
+    public ResponseEntity<List<BasketResponse>> getBaskets(
             @RequestParam(value = "name", required = false) String name,
             @PageableDefault Pageable pageable
     ) {

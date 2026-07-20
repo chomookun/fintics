@@ -176,11 +176,6 @@ public class TradeService {
                             .assetId(basketAsset.getAssetId())
                             .name(basketAsset.getName())
                             .build();
-                    // calculates allocated amount
-                    BigDecimal allocatedAmount = trade.getInvestAmount()
-                            .multiply(basketAsset.getHoldingWeight())
-                            .divide(BigDecimal.valueOf(100), 2, RoundingMode.HALF_UP);
-                    tradeAsset.setAllocatedAmount(allocatedAmount);
                     // populates trade asset data from entity
                     TradeAssetEntity tradeAssetEntity = tradeAssetEntities.stream()
                             .filter(it -> Objects.equals(it.getAssetId(), basketAsset.getAssetId()))

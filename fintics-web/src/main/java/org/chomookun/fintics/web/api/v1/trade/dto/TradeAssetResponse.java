@@ -37,8 +37,6 @@ public class TradeAssetResponse {
 
     private BigDecimal intraDayNetChangePercentage;
 
-    private BigDecimal allocatedAmount;
-
     private String message;
 
     private StrategyResultResponse strategyResult;
@@ -56,7 +54,6 @@ public class TradeAssetResponse {
                 .netChangePercentage(tradeAsset.getNetChangePercentage())
                 .intraDayNetChange(tradeAsset.getIntraDayNetChange())
                 .intraDayNetChangePercentage(tradeAsset.getIntraDayNetChangePercentage())
-                .allocatedAmount(tradeAsset.getAllocatedAmount())
                 .message(tradeAsset.getMessage())
                 .build();
         if (tradeAsset.getStrategyResult() != null) {
