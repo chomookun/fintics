@@ -276,8 +276,10 @@
                             .then(ohlcvs => {
                                 let chartId = `${basketAsset.tradeId}-${basketAsset.assetId}`;
                                 let chartRef = chartRefMap.get(chartId);
+                                if (chartRef.chart) {
+                                    chartRef.chart.remove();
+                                }
                                 let chart = LightweightCharts.createChart(chartRef.container);
-                                chartRef.chart = chart;
                                 const chartOptions = {
                                     layout: {
                                         background: {color: 'transparent'},
@@ -316,6 +318,7 @@
                                 }).reverse();
                                 candlestickSeries.setData(ohlcvSeries);
                                 chart.timeScale().fitContent();
+                                chartRef.chart = chart;
                                 chartRef.candlestickSeries = candlestickSeries;
                                 chartRef.lastOhlcv = ohlcvSeries.at(-1);
                             });
@@ -1168,9 +1171,12 @@
                                          data-duice-execute="
                                          if (basketItem.assetId) {
                                             let chartId = `${basketItem.tradeId}-${basketItem.assetId}`;
-                                            chartRefMap.set(chartId, {
-                                                container: this
-                                            });
+                                            let chartRef = chartRefMap.get(chartId);
+                                            if (!chartRef) {
+                                                chartRef = {};
+                                                chartRefMap.set(chartId, chartRef);
+                                            }
+                                            chartRef.container = this;
                                          }
                                      "></div>
                                 </div>
