@@ -124,7 +124,7 @@ ps. Technical Indicator: RSI, CCI, Stochastic Slow, Williams %R
 - Equity.Growth: 25%
 - Equity.Value: 25%
 - Bond.Sovereign: 12.5%
-- Bond.Credit: 12.5%
+- Bond.Aggregate: 12.5%
 - Cash Equivalent: 25%
 
 #### [25%] Equity.Growth ETF
@@ -150,7 +150,7 @@ ps. Technical Indicator: RSI, CCI, Stochastic Slow, Williams %R
 | **GOVI** | Invesco Equal Weight 0-30 Year Treasury ETF | 6.25%          | [Nasdaq](https://www.nasdaq.com/market-activity/etf/govi) |
 | **GOVT** | iShares U.S. Treasury Bond ETF | 6.25%          | [Nasdaq](https://www.nasdaq.com/market-activity/etf/govi) |
 
-#### [12.5%] Bond.Credit ETF
+#### [12.5%] Bond.Aggregate ETF
 | Symbol   | Name                           | Holding weight | Reference                                                                  |
 |----------|--------------------------------|----------------|----------------------------------------------------------------------------|
 | **TIP**  | iShares TIPS Bond ETF | 3.12%          | [Nasdaq](https://www.nasdaq.com/market-activity/etf/tip)  |
@@ -172,7 +172,7 @@ ps. Technical Indicator: RSI, CCI, Stochastic Slow, Williams %R
 - KR.Equity.Growth: 12.5% 
 - KR.Equity.Value: 12.5% 
 - US.Bond.Sovereign: 12.5% 
-- US.Bond.Credit: 12.5%
+- US.Bond.Aggregate: 12.5%
 - Cash Equivalent: 25%
 
 #### [12.5%] US.Equity.Growth ETF
@@ -215,7 +215,7 @@ ps. Technical Indicator: RSI, CCI, Stochastic Slow, Williams %R
 | **0085P0** | ACE 미국10년국채액티브 | 4.16%          | [K-ETF](https://www.k-etf.com/etf/0085P0) |
 | **0046A0** | TIGER 미국초단기(3개월이하)국채 | 4.16%          | [K-ETF](https://www.k-etf.com/etf/0046A0)       |
 
-#### [12.5%] US.Bond.Credit ETF
+#### [12.5%] US.Bond.Aggregate ETF
 
 | Symbol | Name | Holding weight | Reference                                                            |
 |------|----|----------------|----------------------------------------------------------------------|
