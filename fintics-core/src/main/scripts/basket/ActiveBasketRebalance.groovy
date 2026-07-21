@@ -361,9 +361,12 @@ if (proxyEnabled) {
     Map<String, String> proxySymbolMap = [
             // US
              "LLY": "IHE"   // Eli Lilly and Company Common Stock -> iShares U.S. Pharmaceutical ETF
+            ,"META": "XLC" // Meta Platforms Inc -> State Street Communication Services Select Sector SPDR ETF
             ,"ASML": "ASMH"  // ASML Holding N.V. New York Registry Shares -> Precidian ETFs Trust ASML Holding NV ADRhedged
             ,"GS": "IAI" // Goldman Sachs Group Inc. (The) Common Stock -> iShares U.S. Broker-Dealers & Securities Exchanges ETF
-            ,"MU": "DRAM" // Micron Technology Inc. Common Stock => Roundhill Memory ETF
+            ,"MU": "DRAM" // Micron Technology Inc. Common Stock -> Roundhill Memory ETF
+            ,"TSM": "EWT" // Taiwan Semiconductor Manufacturing ADR -> iShares MSCI Taiwan ETF
+            ,"CAT": "IFRA" // Caterpillar Inc -> iShares U.S. Infrastructure ETF
             // KR
             ,"000660": "0167A0" // SK하이닉스 -> SOL AI반도체TOP2플러스
             ,"402340": "395160" // SK스퀘어 -> KODEX AI반도체TOP2플러스 (SK스퀘어는 하이닉스 Proxy임)
