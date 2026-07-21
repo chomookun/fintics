@@ -363,8 +363,10 @@ if (proxyEnabled) {
              "LLY": "IHE"   // Eli Lilly and Company Common Stock -> iShares U.S. Pharmaceutical ETF
             ,"ASML": "ASMH"  // ASML Holding N.V. New York Registry Shares -> Precidian ETFs Trust ASML Holding NV ADRhedged
             ,"GS": "IAI" // Goldman Sachs Group Inc. (The) Common Stock -> iShares U.S. Broker-Dealers & Securities Exchanges ETF
+            ,"MU": "DRAM" // Micron Technology Inc. Common Stock => Roundhill Memory ETF
             // KR
-            ,"402340": "494220" // SK스퀘어 -> UNICORN SK하이닉스밸류체인액티브 (SK스퀘어는 하이닉스 Proxy임)
+            ,"000660": "0167A0" // SK하이닉스 -> SOL AI반도체TOP2플러스
+            ,"402340": "395160" // SK스퀘어 -> KODEX AI반도체TOP2플러스 (SK스퀘어는 하이닉스 Proxy임)
             ,"009150": "009155"  // 삼성전기 -> 삼성전기 우선주
             ,"012450": "0080G0" // 한화에어로스페이스 -> KODEX 방산TOP10
             ,"329180": "466920"  // HD현대중공업 -> SOL 조선TOP3플러스 (조선업종이 아니라 햬양SMR 테미암)
