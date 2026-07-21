@@ -132,15 +132,6 @@ public class TradeExecutor {
                 tradeAsset.setDailyOhlcvs(dailyOhlcvs);
                 tradeAsset.setMinuteOhlcvs(minuteOhlcvs);
 
-//                // check enabled
-//                if (!basketAsset.isEnabled()) {
-//                    tradeAsset.setMessage(null);
-//                    if (tradeAssetStore != null) {
-//                        tradeAssetStore.save(tradeAsset);
-//                    }
-//                    continue;
-//                }
-
                 // logging
                 log.info("[{} - {}] dailyOhlcvs({}):{}", tradeAsset.getAssetId(), tradeAsset.getName(), tradeAsset.getDailyOhlcvs().size(), tradeAsset.getDailyOhlcvs().isEmpty() ? null : tradeAsset.getDailyOhlcvs().get(0));
                 log.info("[{} - {}] minuteOhlcvs({}):{}", tradeAsset.getAssetId(), tradeAsset.getName(), tradeAsset.getMinuteOhlcvs().size(), tradeAsset.getMinuteOhlcvs().isEmpty() ? null : tradeAsset.getMinuteOhlcvs().get(0));
