@@ -132,14 +132,14 @@ public class TradeExecutor {
                 tradeAsset.setDailyOhlcvs(dailyOhlcvs);
                 tradeAsset.setMinuteOhlcvs(minuteOhlcvs);
 
-                // check enabled
-                if (!basketAsset.isEnabled()) {
-                    tradeAsset.setMessage(null);
-                    if (tradeAssetStore != null) {
-                        tradeAssetStore.save(tradeAsset);
-                    }
-                    continue;
-                }
+//                // check enabled
+//                if (!basketAsset.isEnabled()) {
+//                    tradeAsset.setMessage(null);
+//                    if (tradeAssetStore != null) {
+//                        tradeAssetStore.save(tradeAsset);
+//                    }
+//                    continue;
+//                }
 
                 // logging
                 log.info("[{} - {}] dailyOhlcvs({}):{}", tradeAsset.getAssetId(), tradeAsset.getName(), tradeAsset.getDailyOhlcvs().size(), tradeAsset.getDailyOhlcvs().isEmpty() ? null : tradeAsset.getDailyOhlcvs().get(0));
@@ -178,6 +178,11 @@ public class TradeExecutor {
                 // save trade asset to store
                 if (tradeAssetStore != null) {
                     tradeAssetStore.save(tradeAsset);
+                }
+
+                // check basket asset is enabled
+                if (!basketAsset.isEnabled()) {
+                    continue;
                 }
 
                 // check strategy result and count
