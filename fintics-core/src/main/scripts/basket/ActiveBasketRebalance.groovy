@@ -367,6 +367,7 @@ if (proxyEnabled) {
             ,"MU": "DRAM" // Micron Technology Inc. Common Stock -> Roundhill Memory ETF
             ,"TSM": "EWT" // Taiwan Semiconductor Manufacturing ADR -> iShares MSCI Taiwan ETF
             ,"CAT": "IFRA" // Caterpillar Inc -> iShares U.S. Infrastructure ETF
+            ,"UNH": "IHF" // Unitedhealth Group Inc -> iShares U.S. Healthcare Providers ETF
             // KR
             ,"000660": "0167A0" // SK하이닉스 -> SOL AI반도체TOP2플러스
             ,"402340": "395160" // SK스퀘어 -> KODEX AI반도체TOP2플러스 (SK스퀘어는 하이닉스 Proxy임)
@@ -384,7 +385,6 @@ if (proxyEnabled) {
             Asset proxyAsset = assetService.getAsset(proxyAssetId).orElse(null)
             it.symbol = proxyAsset.getSymbol()
             it.name = "${proxyAsset.getName()} (${it.name} Proxy)"
-
         }
         return it
     }
