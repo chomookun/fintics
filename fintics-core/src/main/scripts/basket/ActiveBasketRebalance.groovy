@@ -127,7 +127,6 @@ def usEtfs = [
         // growth
         "SPUS", // (*)SP Funds S&P 500 Sharia Industry Exclusions ETF
         "GPIQ", // (*)Goldman Sachs Nasdaq-100 Premium Income ETF
-        "JEPQ", // (*)JPMorgan Nasdaq Equity Premium Income ETF
         "QDVO", // (*)Amplify ETF Trust Amplify CWP Growth & Income ETF
         "QQQ",  // Invesco QQQ Trust
         "SPY",  // SPDR S&P 500 ETF Trust
@@ -149,16 +148,18 @@ def usEtfs = [
         "XT",   // iShares Exponential Technologies ETF
         "SPTE", // SP Funds Trust SP Funds S&P Global Technology ETF
         "IXN",  // iShares Global Tech ETF
+        "SCHG", // Schwab U.S. Large-Cap Growth ETF
         // value
         "DGRW", // (*)WisdomTree U.S. Quality Dividend Growth Fund
         "DIVO", // (*)Amplify CWP Enhanced Dividend Income ETF
         "DLN",  // (*)WisdomTree U.S. LargeCap Dividend Fund
+        "SCHD", // Schwab U.S. Dividend Equity ETF
+        "DGRO", // iShares Core Dividend Growth ETF
+        "VIG",  // Vanguard Dividend Appreciation ETF
         "IWD",  // iShares Russell 1000 Value ETF
         "VTV",  // Vanguard Value ETF
         "IDVO", // Amplify CWP International Enhanced Dividend Income ETF
         "JEPI", // JPMorgan Equity Premium Income ETF
-        "BALI", // iShares Advantage Large Cap Income ETF
-        "DGRO", // iShares Core Dividend Growth ETF
         "SDY",  // SPDR S&P Dividend ETF
         "DVY",  // iShares Select Dividend ETF
         "RDVY", // First Trust Rising Dividend Achievers ETF
@@ -167,7 +168,6 @@ def usEtfs = [
         "SPYD", // State Street SPDR Portfolio S&P 500 High Dividend ETF
         "HDV",  // iShares Core High Dividend ETF
         "DHS",  // WisdomTree U.S. High Dividend Fund
-        "SCHD", // Schwab U.S. Dividend Equity ETF
         "FDRR", // Fidelity Dividend ETF for Rising Rates
         "DTD",  // WisdomTree U.S. Total Dividend Fund
         "MOAT", // VanEck Morningstar Wide Moat ETF
@@ -197,6 +197,7 @@ def krEtfs = [
         "161510",   // (*)PLUS 고배당주
         "0052D0",   // (*)TIGER 코리아배당다우존스
         "279530",   // KODEX 고배당주
+        "0105E0",   // SOL 코리아고배당
         "315960",   // RISE 대형고배당10TR
         "104530",   // KIWOOM 고배당
         "266160",   // RISE 고배당
