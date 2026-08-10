@@ -443,27 +443,43 @@ def sellProfitPercentageThreshold = variables['sellProfitPercentageThreshold'] a
 StrategyResult strategyResult = null
 List<Ohlcv> ohlcvs = tradeAsset.getOhlcvs(Ohlcv.Type.MINUTE, 1)
 def ohlcv = ohlcvs.first()
+
+def splitType = Ohlcv.Type.DAILY
 def splitPeriod = 200
 def splitSize = 10
 def splitIndex = -1
-if (variables['splitSize']) {
-    splitSize = variables['splitSize'] as Integer
+if (variables['split.type']) {
+    splitType = variables['split.type'] as Ohlcv.Type
 }
-if (variables['splitIndex']) {
-    splitIndex = variables['splitIndex'] as Integer
+if (variables['split.period']) {
+    splitPeriod = variables['split.period'] as Integer
+}
+if (variables['split.size']) {
+    splitSize = variables['split.size'] as Integer
+}
+if (variables['split.index']) {
+    splitIndex = variables['split.index'] as Integer
 }
 
 //===============================
 // basket asset variable
 //===============================
 // basket asset variables 에 개별 설정 시 해당 split size, index 적용
-if (basketAsset.getVariable('splitSize')) {
-    log.info('override splitSize by basket asset variable')
-    splitSize = basketAsset.getVariable('splitSize') as Integer
+if (basketAsset.getVariable('split.type')) {
+    log.info('override splitType by basket asset variable')
+    splitSize = basketAsset.getVariable('split.type') as Ohlcv.Type
 }
-if (basketAsset.getVariable('splitIndex')) {
+if (basketAsset.getVariable('split.period')) {
+    log.info('override splitPeriod by basket asset variable')
+    splitSize = basketAsset.getVariable('split.period') as Integer
+}
+if (basketAsset.getVariable('split.size')) {
+    log.info('override splitSize by basket asset variable')
+    splitSize = basketAsset.getVariable('split.size') as Integer
+}
+if (basketAsset.getVariable('split.index')) {
     log.info('override splitIndex by basket asset variable')
-    splitIndex = basketAsset.getVariable('splitIndex') as Integer
+    splitIndex = basketAsset.getVariable('split.index') as Integer
 }
 
 //===============================
@@ -506,7 +522,7 @@ def macroTripleScreenStrategy = TripleScreenStrategy.builder()
 //===============================
 // split limit
 //===============================
-def channel =  calculateChannel(tradeAsset.getOhlcvs(Ohlcv.Type.DAILY, 1), splitPeriod)
+def channel =  calculateChannel(tradeAsset.getOhlcvs(splitType, 1), splitPeriod)
 def splitMaxPrice = channel.upper
 def splitMinPrice = channel.lower
 def splitInterval = ((splitMaxPrice - splitMinPrice)/splitSize as BigDecimal).setScale(4, RoundingMode.HALF_UP)
@@ -544,7 +560,7 @@ def macroEffectivePosition = macroPosition
 // message
 //===============================
 def message = """
-splitSize:${splitSize}, splitIndex:${splitIndex}
+splitType:${splitType}, splitPeriod:${splitPeriod}, splitSize:${splitSize}, splitIndex:${splitIndex}
 splitLimits:${splitLimitPrices}
 splitLimitPrice:${splitLimitPrice}, splitBuyLimited:${splitBuyLimited}
 sellProfitPercentageThreshold:${sellProfitPercentageThreshold}
