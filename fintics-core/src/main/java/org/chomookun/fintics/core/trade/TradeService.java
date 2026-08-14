@@ -4,9 +4,20 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.chomookun.arch4j.core.common.data.IdGenerator;
 import org.chomookun.arch4j.core.common.pbe.PbePropertiesUtil;
+import org.chomookun.fintics.core.asset.AssetService;
+import org.chomookun.fintics.core.asset.model.Asset;
+import org.chomookun.fintics.core.broker.model.Balance;
 import org.chomookun.fintics.core.basket.model.Basket;
 import org.chomookun.fintics.core.basket.model.BasketAsset;
 import org.chomookun.fintics.core.basket.BasketService;
+import org.chomookun.fintics.core.broker.BrokerService;
+import org.chomookun.fintics.core.broker.client.BrokerClient;
+import org.chomookun.fintics.core.broker.client.BrokerClientFactory;
+import org.chomookun.fintics.core.broker.model.Broker;
+import org.chomookun.fintics.core.broker.model.OrderBook;
+import org.chomookun.fintics.core.order.OrderService;
+import org.chomookun.fintics.core.order.model.Order;
+import org.chomookun.fintics.core.order.model.OrderSearch;
 import org.chomookun.fintics.core.trade.entity.TradeAssetEntity;
 import org.chomookun.fintics.core.trade.entity.TradeEntity;
 import org.chomookun.fintics.core.trade.model.Trade;
@@ -22,7 +33,6 @@ import jakarta.persistence.EntityManager;
 import jakarta.persistence.PersistenceContext;
 
 import java.math.BigDecimal;
-import java.math.MathContext;
 import java.math.RoundingMode;
 import java.util.*;
 import java.util.stream.Collectors;
@@ -36,7 +46,15 @@ public class TradeService {
 
     private final TradeAssetRepository tradeAssetRepository;
 
+    private final AssetService assetService;
+
     private final BasketService basketService;
+
+    private final BrokerService brokerService;
+
+    private final BrokerClientFactory brokerClientFactory;
+
+    private final OrderService orderService;
 
     @PersistenceContext
     private final EntityManager entityManager;
@@ -193,6 +211,89 @@ public class TradeService {
                     return tradeAsset;
                 })
                 .collect(Collectors.toList());
+    }
+
+    /**
+     * Returns trade basket
+     * @param tradeId trade id
+     * @return basket
+     */
+    public Optional<Basket> getBasket(String tradeId) {
+        Trade trade = getTrade(tradeId).orElseThrow();
+        Basket basket = basketService.getBasket(trade.getBasketId())
+                .orElseThrow();
+        // populates allocated amount
+        basket.getBasketAssets().forEach(basketAsset -> {
+            // calculates allocated amount
+            BigDecimal allocatedAmount = trade.getInvestAmount()
+                    .multiply(basketAsset.getHoldingWeight())
+                    .divide(BigDecimal.valueOf(100), 2, RoundingMode.HALF_UP);
+            basketAsset.setAllocatedAmount(allocatedAmount);
+        });
+        return Optional.of(basket);
+    }
+
+    /**
+     * Returns trade balance
+     * @param tradeId trade id
+     * @return balance
+     */
+    public Optional<Balance> getBalance(String tradeId) {
+        Trade trade = getTrade(tradeId).orElseThrow();
+        return brokerService.getBalance(trade.getBrokerId());
+    }
+
+    /**
+     * Returns trade orders
+     * @param tradeId trade id
+     * @param orderSearch order search
+     * @param pageable pageable
+     * @return page of orders
+     */
+    public Page<Order> getOrders(String tradeId, OrderSearch orderSearch, Pageable pageable) {
+        Trade trade = getTrade(tradeId).orElseThrow();
+        orderSearch.setTradeId(trade.getTradeId());
+        return orderService.getOrders(orderSearch, pageable);
+    }
+
+    /**
+     * Submits trade order
+     * @param tradeId trade id
+     * @param order order
+     * @return submitted order
+     */
+    public Order submitOrder(String tradeId, Order order) {
+        try {
+            order.setTradeId(tradeId);
+            Trade trade = getTrade(order.getTradeId()).orElseThrow();
+            Broker broker = brokerService.getBroker(trade.getBrokerId()).orElseThrow();
+            BrokerClient brokerClient = brokerClientFactory.getObject(broker);
+            Asset asset = assetService.getAsset(order.getAssetId()).orElseThrow();
+
+            // price
+            OrderBook orderBook = brokerClient.getOrderBook(asset);
+            BigDecimal tickPrice = orderBook.getTickPrice();
+            BigDecimal price = switch (order.getType()) {
+                case BUY -> orderBook.getBidPrice().add(tickPrice);
+                case SELL -> orderBook.getAskPrice().subtract(tickPrice);
+            };
+            order.setPrice(price);
+            // cancels previous orders
+            List<Order> previousOrders = brokerClient.getWaitingOrders();
+            for (Order previousOrder : previousOrders) {
+                previousOrder.setQuantity(BigDecimal.ZERO);
+                brokerClient.amendOrder(asset, previousOrder);
+            }
+            // submit new order
+            brokerClient.submitOrder(asset, order);
+            order.setResult(Order.Result.COMPLETED);
+        } catch (Throwable e) {
+            order.setResult(Order.Result.FAILED);
+            throw new RuntimeException(e);
+        } finally {
+            orderService.saveOrder(order);
+        }
+        return order;
     }
 
 }

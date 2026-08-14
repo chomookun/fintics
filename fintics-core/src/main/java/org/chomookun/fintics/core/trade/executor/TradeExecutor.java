@@ -6,15 +6,14 @@ import lombok.Setter;
 import org.apache.commons.lang3.exception.ExceptionUtils;
 import org.chomookun.arch4j.core.notification.NotificationService;
 import org.chomookun.fintics.core.asset.model.Asset;
-import org.chomookun.fintics.core.balance.model.Balance;
-import org.chomookun.fintics.core.balance.model.BalanceAsset;
+import org.chomookun.fintics.core.broker.model.Balance;
+import org.chomookun.fintics.core.broker.model.BalanceAsset;
 import org.chomookun.fintics.core.basket.model.Basket;
 import org.chomookun.fintics.core.basket.model.BasketAsset;
 import org.chomookun.fintics.core.broker.client.BrokerClient;
 import org.chomookun.fintics.core.asset.AssetService;
 import org.chomookun.fintics.core.basket.BasketService;
-import org.chomookun.fintics.core.ohlcv.model.Ohlcv;
-import org.chomookun.fintics.core.ohlcv.OhlcvService;
+import org.chomookun.fintics.core.asset.model.Ohlcv;
 import org.chomookun.fintics.core.order.model.Order;
 import org.chomookun.fintics.core.broker.model.OrderBook;
 import org.chomookun.fintics.core.order.OrderService;
@@ -44,8 +43,6 @@ public class TradeExecutor {
     private final BasketService basketService;
 
     private final AssetService assetService;
-
-    private final OhlcvService ohlcvService;
 
     private final OrderService orderService;
 

@@ -1,7 +1,7 @@
 package org.chomookun.fintics.core.trade.executor;
 
 import lombok.extern.slf4j.Slf4j;
-import org.chomookun.fintics.core.ohlcv.model.Ohlcv;
+import org.chomookun.fintics.core.asset.model.Ohlcv;
 import org.chomookun.fintics.core.broker.model.OrderBook;
 
 import java.math.BigDecimal;

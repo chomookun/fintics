@@ -1,0 +1,46 @@
+package org.chomookun.fintics.core.broker.repository;
+
+import org.chomookun.fintics.core.broker.entity.RealizedProfitEntity;
+import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Modifying;
+import org.springframework.data.jpa.repository.Query;
+import org.springframework.data.repository.query.Param;
+import org.springframework.stereotype.Repository;
+
+import java.time.LocalDate;
+import java.util.List;
+import java.util.Optional;
+
+@Repository
+public interface RealizedProfitRepository extends JpaRepository<RealizedProfitEntity, RealizedProfitEntity.Pk> {
+
+    @Query("""
+        select max(a.date)
+        from RealizedProfitEntity a
+        where a.brokerId = :brokerId
+        """)
+    Optional<LocalDate> findLastDateByBrokerId(@Param("brokerId") String brokerId);
+
+    @Query("""
+        select a from RealizedProfitEntity a
+        where a.brokerId = :brokerId
+        and (:dateFrom is null or a.date >= :dateFrom)
+        and (:dateTo is null or a.date <= :dateTo)
+        order by a.date desc
+        """)
+    List<RealizedProfitEntity> findAllByBrokerId(
+            @Param("brokerId") String brokerId,
+            @Param("dateFrom") LocalDate dateFrom,
+            @Param("dateTo") LocalDate dateTo
+    );
+
+    @Modifying
+    @Query("""
+    DELETE FROM RealizedProfitEntity a
+    WHERE a.brokerId = :brokerId
+    AND a.date >= :startDate
+    AND a.date <= :endDate
+    """)
+    void deleteRealizedProfitsByBrokerId(@Param("brokerId") String brokerId, @Param("startDate") LocalDate startDate, @Param("endDate") LocalDate endDate);
+
+}

@@ -6,7 +6,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.chomookun.fintics.core.asset.model.Asset;
 import org.chomookun.fintics.core.strategy.runner.StrategyResult;
 import org.chomookun.fintics.core.trade.entity.TradeAssetEntity;
-import org.chomookun.fintics.core.ohlcv.model.Ohlcv;
+import org.chomookun.fintics.core.asset.model.Ohlcv;
 
 import java.math.BigDecimal;
 import java.math.RoundingMode;

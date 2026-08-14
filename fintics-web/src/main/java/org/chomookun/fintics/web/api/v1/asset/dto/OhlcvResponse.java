@@ -1,7 +1,7 @@
 package org.chomookun.fintics.web.api.v1.asset.dto;
 
 import lombok.*;
-import org.chomookun.fintics.core.ohlcv.model.Ohlcv;
+import org.chomookun.fintics.core.asset.model.Ohlcv;
 
 import java.math.BigDecimal;
 import java.time.LocalDateTime;

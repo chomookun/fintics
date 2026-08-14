@@ -56,8 +56,7 @@
                                 method: 'POST',
                                 headers: {'Content-Type': 'application/json'},
                                 body: JSON.stringify(order)
-                            }).then(response => response.json())
-                                .then(data => {
+                            }).then(response => response.json()).then(data => {
                                     _alert(/*[[#{web.global.requestItemComplete(#{fintics.core.order.Order})}]]*/'')
                                         .then(() => {
                                             dialog.close();

@@ -4,7 +4,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.chomookun.arch4j.core.common.test.CoreTestSupport;
 import org.chomookun.fintics.core.FinticsCoreConfiguration;
-import org.chomookun.fintics.core.ohlcv.model.Ohlcv;
+import org.chomookun.fintics.core.asset.model.Ohlcv;
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.SpringBootTest;
 

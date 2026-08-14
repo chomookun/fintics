@@ -7,7 +7,6 @@ import org.chomookun.arch4j.core.common.test.CoreTestUtil;
 import org.chomookun.fintics.core.FinticsCoreConfiguration;
 import org.chomookun.fintics.core.asset.AssetService;
 import org.chomookun.fintics.core.basket.model.Basket;
-import org.chomookun.fintics.core.ohlcv.OhlcvService;
 import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -21,8 +20,6 @@ class GroovyBasketScriptRunnerTest extends CoreTestSupport {
 
     private final AssetService assetService;
 
-    private final OhlcvService ohlcvService;
-
     @Test
     void run() {
         // given
@@ -34,7 +31,6 @@ class GroovyBasketScriptRunnerTest extends CoreTestSupport {
         GroovyBasketScriptRunner groovyBasketScriptRunner = GroovyBasketScriptRunner.builder()
                 .basket(basket)
                 .assetService(assetService)
-                .ohlcvService(ohlcvService)
                 .build();
         List<BasketRebalanceAsset> basketRebalanceAssets = groovyBasketScriptRunner.run();
         // then
@@ -65,7 +61,6 @@ class GroovyBasketScriptRunnerTest extends CoreTestSupport {
         GroovyBasketScriptRunner groovyBasketScriptRunner = GroovyBasketScriptRunner.builder()
                 .basket(basket)
                 .assetService(assetService)
-                .ohlcvService(ohlcvService)
                 .build();
         List<BasketRebalanceAsset> basketRebalanceAssets = groovyBasketScriptRunner.run();
         // then
@@ -96,7 +91,6 @@ class GroovyBasketScriptRunnerTest extends CoreTestSupport {
         GroovyBasketScriptRunner groovyBasketScriptRunner = GroovyBasketScriptRunner.builder()
                 .basket(basket)
                 .assetService(assetService)
-                .ohlcvService(ohlcvService)
                 .build();
         List<BasketRebalanceAsset> basketRebalanceAssets = groovyBasketScriptRunner.run();
         // then

@@ -157,7 +157,7 @@
                         });
                     }
 
-                    let url = new URL(`${_apiUrl}/v1/trades/${this.trade.tradeId}/profit-summary`, location.origin);
+                    let url = new URL(`${_apiUrl}/v1/brokers/${this.trade.brokerId}/profit-summary`, location.origin);
                     let dateFrom = new Date();
                     let dateTo = new Date();
                     switch (this.profitSummarySearch.period) {
@@ -431,7 +431,7 @@
                 rebalanceTradeAsset: function(assetId) {
                     _confirm(/*[[#{fintics.web.trade.rebalanceConfirm}]]*/'').then(result =>{
                         if (result === true) {
-                            let url = new URL(`${_apiUrl}/v1/trades/${this.trade.tradeId}/rebalance`, document.location.origin);
+                            let url = new URL(`${_apiUrl}/v1/trades/${this.trade.tradeId}/rebalance-asset`, document.location.origin);
                             _fetch(url, {
                                 method: 'POST',
                                 headers: {'Content-Type': 'application/json'},
@@ -591,14 +591,14 @@
                 <div class="display--flex gap--1rem">
                     <h3>
                         <img class="icon" data-th-src="@{/static/image/icon-balance.svg}" alt="balance"/>
-                        <span data-th-text="#{fintics.core.balance.Balance}"></span>
+                        <span data-th-text="#{fintics.core.broker.Balance}"></span>
                     </h3>
                 </div>
                 <div class="s__width--100 display--flex s__flex-direction--column" style="line-height:2.0rem;">
                     <div>
                         <small>|</small>
                         <span class="font-weight--bold">
-                            <span data-th-text="#{fintics.core.balance.Balance.totalAmount}"></span>:
+                            <span data-th-text="#{fintics.core.broker.Balance.totalAmount}"></span>:
                             <span th:data-duice-bind="|monitorMap.get('${trade.tradeId}').balance|"
                                   th:data-duice-property="totalAmount" data-duice-format="number()" class="number">
                             </span>
@@ -606,7 +606,7 @@
                     </div>
                     <div>
                         <small>|</small>
-                        <span data-th-text="#{fintics.core.balance.Balance.profitAmount}"></span>:
+                        <span data-th-text="#{fintics.core.broker.Balance.profitAmount}"></span>:
                         <span th:data-duice-bind="|monitorMap.get('${trade.tradeId}').balance|"
                               th:data-duice-property="profitAmount"
                               th:data-duice-execute="|
@@ -619,7 +619,7 @@
                     </div>
                     <div>
                         <small>|</small>
-                        <span data-th-text="#{fintics.core.balance.Balance.realizedProfitAmount}"></span>:
+                        <span data-th-text="#{fintics.core.broker.Balance.realizedProfitAmount}"></span>:
                         <span th:data-duice-bind="|monitorMap.get('${trade.tradeId}').balance|"
                               th:data-duice-property="realizedProfitAmount"
                               th:data-duice-execute="|
@@ -632,19 +632,19 @@
                     </div>
                     <div>
                         <small>|</small>
-                        <span data-th-text="#{fintics.core.balance.Balance.purchaseAmount}"></span>:
+                        <span data-th-text="#{fintics.core.broker.Balance.purchaseAmount}"></span>:
                         <span th:data-duice-bind="|monitorMap.get('${trade.tradeId}').balance|"
                               th:data-duice-property="purchaseAmount" data-duice-format="number()" class="number"></span>
                     </div>
                     <div>
                         <small>|</small>
-                        <span data-th-text="#{fintics.core.balance.Balance.valuationAmount}"></span>:
+                        <span data-th-text="#{fintics.core.broker.Balance.valuationAmount}"></span>:
                         <span th:data-duice-bind="|monitorMap.get('${trade.tradeId}').balance|"
                               th:data-duice-property="valuationAmount" data-duice-format="number()" class="number"></span>
                     </div>
                     <div>
                         <small>|</small>
-                        <span data-th-text="#{fintics.core.balance.Balance.cashAmount}"></span>:
+                        <span data-th-text="#{fintics.core.broker.Balance.cashAmount}"></span>:
                         <span th:data-duice-bind="|monitorMap.get('${trade.tradeId}').balance|"
                               th:data-duice-property="cashAmount" data-duice-format="number()" class="number"></span>
                     </div>
@@ -665,7 +665,7 @@
                 <div class="display--flex gap--1rem">
                     <h3>
                         <img class="icon" data-th-src="@{/static/image/icon-profit.svg}" alt="balance"/>
-                        <span data-th-text="#{fintics.core.balance.ProfitSummary}"></span>
+                        <span data-th-text="#{fintics.core.broker.ProfitSummary}"></span>
                     </h3>
                     <div class="display--flex align-items--center font-size--xx-small gap--1px">
                         <button type="button" class="button"
@@ -718,7 +718,7 @@
                 <div>
                     <div>
                         <small>|</small>
-                        <span class="font-weight--bold" data-th-text="#{fintics.core.balance.ProfitSummary.balanceProfitAmount}"></span>:
+                        <span class="font-weight--bold" data-th-text="#{fintics.core.broker.ProfitSummary.balanceProfitAmount}"></span>:
                         <span class="font-weight--bold"
                               th:data-duice-bind="|monitorMap.get('${trade.tradeId}').profitSummary|"
                               th:data-duice-execute="|
@@ -744,7 +744,7 @@
                         <div class="s__width--100 display--flex s__flex-direction--column">
                             <div>
                                 <small>|</small>
-                                <span class="font-weight--bold" data-th-text="#{fintics.core.balance.ProfitSummary.realizedProfitAmount}"></span>:
+                                <span class="font-weight--bold" data-th-text="#{fintics.core.broker.ProfitSummary.realizedProfitAmount}"></span>:
                                 <span class="font-weight--bold"
                                       th:data-duice-bind="|monitorMap.get('${trade.tradeId}').profitSummary|"
                                       th:data-duice-execute="|
@@ -763,7 +763,7 @@
                             </div>
                             <div>
                                 <small>|</small>
-                                <span class="font-weight--bold" data-th-text="#{fintics.core.balance.ProfitSummary.realizedProfitTaxableAmount}"></span>:
+                                <span class="font-weight--bold" data-th-text="#{fintics.core.broker.ProfitSummary.realizedProfitTaxableAmount}"></span>:
                                 <span th:data-duice-bind="|monitorMap.get('${trade.tradeId}').profitSummary|"
                                       th:data-duice-property="realizedProfitTaxableAmount" data-duice-format="number()" class="number"></span>
                             </div>
@@ -772,16 +772,16 @@
                             <table class="table border--none font-size--smaller" style="min-width:100%;">
                                 <thead>
                                 <tr>
-                                    <th data-th-text="#{fintics.core.balance.RealizedProfit.date}"></th>
-                                    <th data-th-text="#{fintics.core.balance.RealizedProfit.name}"></th>
-                                    <th data-th-text="#{fintics.core.balance.RealizedProfit.balanceAmount}"></th>
-                                    <th data-th-text="#{fintics.core.balance.RealizedProfit.balancePercentage}"></th>
-                                    <th data-th-text="#{fintics.core.balance.RealizedProfit.quantity}"></th>
-                                    <th data-th-text="#{fintics.core.balance.RealizedProfit.purchasePrice}"></th>
-                                    <th data-th-text="#{fintics.core.balance.RealizedProfit.purchaseAmount}"></th>
-                                    <th data-th-text="#{fintics.core.balance.RealizedProfit.disposePrice}"></th>
-                                    <th data-th-text="#{fintics.core.balance.RealizedProfit.disposeAmount}"></th>
-                                    <th data-th-text="#{fintics.core.balance.RealizedProfit.feeAmount}"></th>
+                                    <th data-th-text="#{fintics.core.broker.RealizedProfit.date}"></th>
+                                    <th data-th-text="#{fintics.core.broker.RealizedProfit.name}"></th>
+                                    <th data-th-text="#{fintics.core.broker.RealizedProfit.balanceAmount}"></th>
+                                    <th data-th-text="#{fintics.core.broker.RealizedProfit.balancePercentage}"></th>
+                                    <th data-th-text="#{fintics.core.broker.RealizedProfit.quantity}"></th>
+                                    <th data-th-text="#{fintics.core.broker.RealizedProfit.purchasePrice}"></th>
+                                    <th data-th-text="#{fintics.core.broker.RealizedProfit.purchaseAmount}"></th>
+                                    <th data-th-text="#{fintics.core.broker.RealizedProfit.disposePrice}"></th>
+                                    <th data-th-text="#{fintics.core.broker.RealizedProfit.disposeAmount}"></th>
+                                    <th data-th-text="#{fintics.core.broker.RealizedProfit.feeAmount}"></th>
                                 </tr>
                                 </thead>
                                 <tbody>
@@ -831,7 +831,7 @@
                                 <tr th:data-duice-bind="|monitorMap.get('${trade.tradeId}').profitSummary.realizedProfits|"
                                     th:data-duice-if="|return monitorMap.get('${trade.tradeId}').profitSummary.realizedProfits.length < 1;|" hidden>
                                     <td colspan="100%" class="text-align--center padding--1rem">
-                                        <span data-th-text="#{web.global.itemNotFound(#{fintics.core.balance.RealizedProfit})}"></span>
+                                        <span data-th-text="#{web.global.itemNotFound(#{fintics.core.broker.RealizedProfit})}"></span>
                                     </td>
                                 </tr>
                                 </tbody>
@@ -842,7 +842,7 @@
                         <div class="s__width--100 display--flex s__flex-direction--column">
                             <div>
                                 <small>|</small>
-                                <span class="font-weight--bold" data-th-text="#{fintics.core.balance.ProfitSummary.dividendProfitAmount}"></span>:
+                                <span class="font-weight--bold" data-th-text="#{fintics.core.broker.ProfitSummary.dividendProfitAmount}"></span>:
                                 <span class="font-weight--bold"
                                       th:data-duice-bind="|monitorMap.get('${trade.tradeId}').profitSummary|"
                                       th:data-duice-execute="|
@@ -861,19 +861,19 @@
                             </div>
                             <div>
                                 <small>|</small>
-                                <span class="font-weight--bold" data-th-text="#{fintics.core.balance.ProfitSummary.dividendProfitTaxAmount}"></span>:
+                                <span class="font-weight--bold" data-th-text="#{fintics.core.broker.ProfitSummary.dividendProfitTaxAmount}"></span>:
                                 <span th:data-duice-bind="|monitorMap.get('${trade.tradeId}').profitSummary|"
                                       th:data-duice-property="dividendProfitTaxAmount" data-duice-format="number()" class="number"></span>
                             </div>
                             <div>
                                 <small>|</small>
-                                <span class="font-weight--bold" data-th-text="#{fintics.core.balance.ProfitSummary.dividendProfitTaxableAmount}"></span>:
+                                <span class="font-weight--bold" data-th-text="#{fintics.core.broker.ProfitSummary.dividendProfitTaxableAmount}"></span>:
                                 <span th:data-duice-bind="|monitorMap.get('${trade.tradeId}').profitSummary|"
                                       th:data-duice-property="dividendProfitTaxableAmount" data-duice-format="number()" class="number"></span>
                             </div>
                             <div>
                                 <small>|</small>
-                                <span class="font-weight--bold" data-th-text="#{fintics.core.balance.ProfitSummary.dividendProfitNetAmount}"></span>:
+                                <span class="font-weight--bold" data-th-text="#{fintics.core.broker.ProfitSummary.dividendProfitNetAmount}"></span>:
                                 <span th:data-duice-bind="|monitorMap.get('${trade.tradeId}').profitSummary|"
                                       th:data-duice-property="dividendProfitNetAmount" data-duice-format="number()" class="number"></span>
                             </div>
@@ -882,13 +882,13 @@
                             <table class="table border--none font-size--smaller" style="min-width:100%;">
                                 <thead>
                                 <tr>
-                                    <th data-th-text="#{fintics.core.balance.DividendProfit.date}"></th>
-                                    <th data-th-text="#{fintics.core.balance.DividendProfit.name}"></th>
-                                    <th data-th-text="#{fintics.core.balance.DividendProfit.holdingQuantity}"></th>
-                                    <th data-th-text="#{fintics.core.balance.DividendProfit.dividendAmount}"></th>
-                                    <th data-th-text="#{fintics.core.balance.DividendProfit.taxAmount}"></th>
-                                    <th data-th-text="#{fintics.core.balance.DividendProfit.netAmount}"></th>
-                                    <th data-th-text="#{fintics.core.balance.DividendProfit.baseDate}"></th>
+                                    <th data-th-text="#{fintics.core.broker.DividendProfit.date}"></th>
+                                    <th data-th-text="#{fintics.core.broker.DividendProfit.name}"></th>
+                                    <th data-th-text="#{fintics.core.broker.DividendProfit.holdingQuantity}"></th>
+                                    <th data-th-text="#{fintics.core.broker.DividendProfit.dividendAmount}"></th>
+                                    <th data-th-text="#{fintics.core.broker.DividendProfit.taxAmount}"></th>
+                                    <th data-th-text="#{fintics.core.broker.DividendProfit.netAmount}"></th>
+                                    <th data-th-text="#{fintics.core.broker.DividendProfit.baseDate}"></th>
                                 </tr>
                                 </thead>
                                 <tbody>
@@ -935,7 +935,7 @@
                                 <tr th:data-duice-bind="|monitorMap.get('${trade.tradeId}').profitSummary.dividendProfits|"
                                     th:data-duice-if="|return monitorMap.get('${trade.tradeId}').profitSummary.dividendProfits.length < 1;|" hidden>
                                     <td colspan="100%" class="text-align--center padding--1rem">
-                                        <span data-th-text="#{web.global.itemNotFound(#{fintics.core.balance.DividendProfit})}"></span>
+                                        <span data-th-text="#{web.global.itemNotFound(#{fintics.core.broker.DividendProfit})}"></span>
                                     </td>
                                 </tr>
                                 </tbody>

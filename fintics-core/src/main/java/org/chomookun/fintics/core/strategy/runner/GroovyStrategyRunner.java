@@ -6,11 +6,12 @@ import groovy.lang.GroovyShell;
 import lombok.Builder;
 import org.chomookun.fintics.core.asset.model.Asset;
 import org.chomookun.fintics.core.basket.model.Basket;
-import org.chomookun.fintics.core.balance.model.BalanceAsset;
+import org.chomookun.fintics.core.broker.model.BalanceAsset;
 import org.chomookun.fintics.core.basket.model.BasketAsset;
 import org.chomookun.fintics.core.broker.model.OrderBook;
-import org.chomookun.fintics.core.ohlcv.indicator.*;
-import org.chomookun.fintics.core.ohlcv.model.Ohlcv;
+import org.chomookun.fintics.core.strategy.indicator.*;
+import org.chomookun.fintics.core.asset.model.Ohlcv;
+import org.chomookun.fintics.core.strategy.indicator.*;
 import org.chomookun.fintics.core.strategy.model.Strategy;
 import org.chomookun.fintics.core.trade.model.TradeAsset;
 

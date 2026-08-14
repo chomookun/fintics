@@ -3,7 +3,7 @@ package org.chomookun.fintics.daemon.asset;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.chomookun.arch4j.core.execution.model.Execution;
-import org.chomookun.fintics.core.asset.client.AssetClient;
+import org.chomookun.fintics.core.asset.client.asset.AssetClient;
 import org.chomookun.fintics.core.asset.entity.AssetEntity;
 import org.chomookun.fintics.core.asset.repository.AssetRepository;
 import org.chomookun.fintics.core.basket.entity.BasketAssetEntity;

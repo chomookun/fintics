@@ -1,9 +1,9 @@
 package org.chomookun.fintics.core.basket.rebalance;
 
 import lombok.RequiredArgsConstructor;
-import org.chomookun.fintics.core.balance.BalanceService;
 import org.chomookun.fintics.core.basket.model.Basket;
 import org.chomookun.fintics.core.basket.BasketService;
+import org.chomookun.fintics.core.broker.BrokerService;
 import org.chomookun.fintics.core.trade.TradeService;
 import org.springframework.stereotype.Component;
 
@@ -15,7 +15,7 @@ public class BasketRebalanceTaskFactory {
 
     private final TradeService tradeService;
 
-    private final BalanceService balanceService;
+    private final BrokerService brokerService;
 
     private final BasketScriptRunnerFactory basketScriptRunnerFactory;
 
@@ -29,7 +29,7 @@ public class BasketRebalanceTaskFactory {
                 .basket(basket)
                 .basketService(basketService)
                 .tradeService(tradeService)
-                .balanceService(balanceService)
+                .brokerService(brokerService)
                 .basketScriptRunnerFactory(basketScriptRunnerFactory)
                 .build();
 

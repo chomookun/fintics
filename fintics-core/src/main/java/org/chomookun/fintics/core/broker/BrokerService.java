@@ -3,8 +3,12 @@ package org.chomookun.fintics.core.broker;
 import lombok.RequiredArgsConstructor;
 import org.chomookun.arch4j.core.common.data.IdGenerator;
 import org.chomookun.arch4j.core.common.pbe.PbePropertiesUtil;
+import org.chomookun.fintics.core.asset.repository.AssetRepository;
+import org.chomookun.fintics.core.broker.client.BrokerClient;
 import org.chomookun.fintics.core.broker.client.BrokerClientDefinitionRegistry;
+import org.chomookun.fintics.core.broker.client.BrokerClientFactory;
 import org.chomookun.fintics.core.broker.entity.BrokerEntity;
+import org.chomookun.fintics.core.broker.model.Balance;
 import org.chomookun.fintics.core.broker.repository.BrokerRepository;
 import org.chomookun.fintics.core.trade.repository.TradeRepository;
 import org.chomookun.fintics.core.broker.model.Broker;
@@ -30,6 +34,10 @@ public class BrokerService {
     private final BrokerClientDefinitionRegistry brokerClientDefinitionRegistry;
 
     private final TradeRepository tradeRepository;
+
+    private final BrokerClientFactory brokerClientFactory;
+
+    private final AssetRepository assetRepository;
 
     /**
      * Gets brokers page
@@ -142,6 +150,29 @@ public class BrokerService {
         // updates
         for (int i = 0; i < sortedBrokerIds.size(); i++) {
             brokerRepository.updateSort(sortedBrokerIds.get(i), i);
+        }
+    }
+
+    /**
+     * Returns balance
+     * @param brokerId broker id
+     * @return balance
+     */
+    public Optional<Balance> getBalance(String brokerId) {
+        try {
+            Broker broker = getBroker(brokerId).orElseThrow();
+            BrokerClient brokerClient = brokerClientFactory.getObject(broker);
+            Balance balance = brokerClient.getBalance();
+            balance.getBalanceAssets().forEach(balanceAsset -> {
+                assetRepository.findById(balanceAsset.getAssetId()).ifPresent(assetEntity -> {
+                    balanceAsset.setMarket(assetEntity.getMarket());
+                    balanceAsset.setType(assetEntity.getType());
+                    balanceAsset.setExchange(assetEntity.getExchange());
+                });
+            });
+            return Optional.of(balance);
+        } catch (Exception e) {
+            throw new RuntimeException(e);
         }
     }
 

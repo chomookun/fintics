@@ -1,8 +1,8 @@
 package org.chomookun.fintics.core.trade.executor;
 
 import lombok.*;
-import org.chomookun.fintics.core.ohlcv.model.Ohlcv;
-import org.chomookun.fintics.core.ohlcv.OhlcvService;
+import org.chomookun.fintics.core.asset.AssetService;
+import org.chomookun.fintics.core.asset.model.Ohlcv;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
@@ -21,7 +21,7 @@ public class OhlcvCacheManager {
 
     private final static int MINUTE_OHLCVS_CACHE_EXPIRE_MINUTES = 10;
 
-    private final OhlcvService ohlcvService;
+    private final AssetService assetService;
 
     private final Object dailyOhlcvsLock = new Object();
 
@@ -49,7 +49,7 @@ public class OhlcvCacheManager {
             // load cache
             cachedDailyOhlcvs = dailyOhlcvsCache.get(assetId);
             if (cachedDailyOhlcvs == null || cachedDailyOhlcvs.size() < 250) {
-                cachedDailyOhlcvs = ohlcvService.getOhlcvs(assetId, Ohlcv.Type.DAILY, LocalDateTime.now().minusYears(3), LocalDateTime.now(), PageRequest.of(0, 500));
+                cachedDailyOhlcvs = assetService.getOhlcvs(assetId, Ohlcv.Type.DAILY, LocalDateTime.now().minusYears(3), LocalDateTime.now(), PageRequest.of(0, 500));
                 cachedDailyOhlcvs.forEach(it -> it.setCached(true));
                 dailyOhlcvsCache.put(assetId, cachedDailyOhlcvs);
             }
@@ -77,7 +77,7 @@ public class OhlcvCacheManager {
             // load cache
             cachedMinuteOhlcvs = minuteOhlcvsCache.get(assetId);
             if (cachedMinuteOhlcvs == null || cachedMinuteOhlcvs.size() < 3_000) {
-                cachedMinuteOhlcvs = ohlcvService.getOhlcvs(assetId, Ohlcv.Type.MINUTE, LocalDateTime.now().minusMonths(1), LocalDateTime.now(), PageRequest.of(0, 6_000));
+                cachedMinuteOhlcvs = assetService.getOhlcvs(assetId, Ohlcv.Type.MINUTE, LocalDateTime.now().minusMonths(1), LocalDateTime.now(), PageRequest.of(0, 6_000));
                 cachedMinuteOhlcvs.forEach(it -> it.setCached(true));
                 minuteOhlcvsCache.put(assetId, cachedMinuteOhlcvs);
             }

@@ -1,7 +1,7 @@
 package org.chomookun.fintics.core.strategy.runner;
 
 import lombok.extern.slf4j.Slf4j;
-import org.chomookun.fintics.core.ohlcv.model.Ohlcv;
+import org.chomookun.fintics.core.asset.model.Ohlcv;
 import org.chomookun.fintics.core.broker.model.OrderBook;
 import org.chomookun.fintics.core.strategy.model.Strategy;
 import org.chomookun.fintics.core.trade.model.Trade;

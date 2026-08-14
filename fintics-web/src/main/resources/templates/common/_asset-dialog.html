@@ -310,7 +310,7 @@
             <div class="display--flex justify-content--space-between align-items--center">
                 <div>
                     <img class="icon" th:src="@{/static/image/icon-ohlcv.svg}" alt="ohlcv"/>
-                    <span data-th-text="#{fintics.core.ohlcv.Ohlcv}" class="font-weight--bold"></span>
+                    <span data-th-text="#{fintics.core.asset.Ohlcv}" class="font-weight--bold"></span>
                 </div>
                 <div class="text-align--right code font-size--smaller">
                     <div class="display--flex gap--1em code">
@@ -350,17 +350,17 @@
         <div>
             <div>
                 <img class="icon" th:src="@{/static/image/icon-dividend.svg}" alt="detail"/>
-                <span data-th-text="#{fintics.core.dividend.Dividend}" class="font-weight--bold"></span>
+                <span data-th-text="#{fintics.core.asset.Dividend}" class="font-weight--bold"></span>
             </div>
             <div class="width-100 box overflow--auto" style="max-height:15rem;">
                 <table class="table width--100 border--none">
                     <thead>
                     <tr>
                         <th>
-                            <span th:text="#{fintics.core.dividend.Dividend.date}"></span>
+                            <span th:text="#{fintics.core.asset.Dividend.date}"></span>
                         </th>
                         <th>
-                            <span th:text="#{fintics.core.dividend.Dividend.dividendPerShare}"></span>
+                            <span th:text="#{fintics.core.asset.Dividend.dividendPerShare}"></span>
                         </th>
                     </tr>
                     </thead>
@@ -376,13 +376,13 @@
                     <tr data-duice-bind="_assetDialog.dividends"
                         data-duice-if="return _assetDialog.dividends._status === 'loading';">
                         <td colspan="100%" class="text-align--center padding--1rem">
-                            <span class="blink" data-th-text="#{web.global.itemLoading(#{fintics.core.dividend.Dividend})}"></span>
+                            <span class="blink" data-th-text="#{web.global.itemLoading(#{fintics.core.asset.Dividend})}"></span>
                         </td>
                     </tr>
                     <tr data-duice-bind="_assetDialog.dividends"
                         data-duice-if="return _assetDialog.dividends._status === 'completed' && _assetDialog.dividends.length < 1;" hidden>
                         <td colspan="100%" class="text-align--center padding--1rem">
-                            <span data-th-text="#{web.global.itemNotFound(#{fintics.core.dividend.Dividend})}"></span>
+                            <span data-th-text="#{web.global.itemNotFound(#{fintics.core.asset.Dividend})}"></span>
                         </td>
                     </tr>
                     </tbody>

@@ -12,10 +12,6 @@ import org.chomookun.fintics.web.api.v1.order.dto.OrderResponse;
 @AllArgsConstructor(access = AccessLevel.PRIVATE)
 public class RebalanceResponse {
 
-    private String tradeId;
-
-    private BasketAssetResponse basketAsset;
-
     private OrderResponse order;
 
 }

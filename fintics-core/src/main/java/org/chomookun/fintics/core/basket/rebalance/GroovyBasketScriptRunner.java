@@ -8,8 +8,9 @@ import org.chomookun.fintics.core.asset.model.Asset;
 import org.chomookun.fintics.core.asset.model.AssetSearch;
 import org.chomookun.fintics.core.basket.model.Basket;
 import org.chomookun.fintics.core.basket.model.BasketAsset;
-import org.chomookun.fintics.core.ohlcv.indicator.*;
-import org.chomookun.fintics.core.ohlcv.model.Ohlcv;
+import org.chomookun.fintics.core.strategy.indicator.*;
+import org.chomookun.fintics.core.asset.model.Ohlcv;
+import org.chomookun.fintics.core.strategy.indicator.*;
 
 import java.awt.print.Pageable;
 import java.util.HashSet;
@@ -34,7 +35,6 @@ public class GroovyBasketScriptRunner extends BasketScriptRunner {
         binding.setVariable("variables", loadRuleConfigAsProperties(basket.getVariables()));
         binding.setVariable("basket", basket);
         binding.setVariable("assetService", getAssetService());
-        binding.setVariable("ohlcvService", getOhlcvService());
         binding.setVariable("log", log);
         String scriptText = getDefaultImportClause() + "\n" + basket.getScript();
         GroovyShell groovyShell = new GroovyShell(groovyClassLoader, binding);

@@ -25,7 +25,6 @@ public class PythonBasketScriptRunner extends BasketScriptRunner {
             Value bindings = context.getBindings("python");
             bindings.putMember("basket", basket);
             bindings.putMember("asset_service", getAssetService());
-            bindings.putMember("ohlcv_service", getOhlcvService());
             bindings.putMember("basket_rebalance_assets", basketRebalanceAssets);
             bindings.putMember("log", log);
             context.eval("python",

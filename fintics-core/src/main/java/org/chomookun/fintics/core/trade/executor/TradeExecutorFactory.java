@@ -4,7 +4,6 @@ import lombok.RequiredArgsConstructor;
 import org.chomookun.arch4j.core.notification.NotificationService;
 import org.chomookun.fintics.core.asset.AssetService;
 import org.chomookun.fintics.core.basket.BasketService;
-import org.chomookun.fintics.core.ohlcv.OhlcvService;
 import org.chomookun.fintics.core.order.OrderService;
 import org.chomookun.fintics.core.strategy.runner.StrategyRunnerFactory;
 import org.springframework.stereotype.Component;
@@ -20,8 +19,6 @@ public class TradeExecutorFactory {
 
     private final BasketService basketService;
 
-    private final OhlcvService ohlcvService;
-
     private final OrderService orderService;
 
     private final NotificationService notificationService;
@@ -35,7 +32,6 @@ public class TradeExecutorFactory {
                 .transactionManager(transactionManager)
                 .assetService(assetService)
                 .basketService(basketService)
-                .ohlcvService(ohlcvService)
                 .orderService(orderService)
                 .notificationService(notificationService)
                 .strategyRunnerFactory(strategyRunnerFactory)

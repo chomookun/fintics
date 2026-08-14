@@ -2,6 +2,7 @@ package org.chomookun.fintics.core.order.model;
 
 import lombok.Builder;
 import lombok.Getter;
+import lombok.Setter;
 
 import java.time.Instant;
 
@@ -13,6 +14,7 @@ public class OrderSearch {
 
     private Instant orderAtTo;
 
+    @Setter
     private String tradeId;
 
     private String assetId;

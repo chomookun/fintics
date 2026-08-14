@@ -7,7 +7,6 @@ import lombok.experimental.SuperBuilder;
 import org.chomookun.arch4j.core.common.pbe.PbePropertiesUtil;
 import org.chomookun.fintics.core.basket.model.Basket;
 import org.chomookun.fintics.core.asset.AssetService;
-import org.chomookun.fintics.core.ohlcv.OhlcvService;
 import org.chomookun.fintics.core.strategy.runner.StrategyRunner;
 import org.slf4j.LoggerFactory;
 
@@ -21,8 +20,6 @@ public abstract class BasketScriptRunner {
     private final Basket basket;
 
     private final AssetService assetService;
-
-    private final OhlcvService ohlcvService;
 
     @Builder.Default
     protected Logger log = (Logger) LoggerFactory.getLogger(StrategyRunner.class);

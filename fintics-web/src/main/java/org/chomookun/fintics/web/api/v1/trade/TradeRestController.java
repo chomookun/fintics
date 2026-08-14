@@ -7,9 +7,17 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.chomookun.arch4j.core.common.data.PageableUtils;
 import org.chomookun.arch4j.web.common.doc.PageableAsQueryParam;
+import org.chomookun.fintics.core.basket.model.Basket;
+import org.chomookun.fintics.core.order.model.Order;
+import org.chomookun.fintics.core.order.model.OrderSearch;
 import org.chomookun.fintics.core.trade.model.Trade;
 import org.chomookun.fintics.core.trade.model.TradeSearch;
 import org.chomookun.fintics.core.trade.TradeService;
+import org.chomookun.fintics.web.api.v1.basket.dto.BasketResponse;
+import org.chomookun.fintics.web.api.v1.order.dto.OrderRequest;
+import org.chomookun.fintics.web.api.v1.order.dto.OrderResponse;
+import org.chomookun.fintics.web.api.v1.broker.dto.BalanceResponse;
+import org.chomookun.fintics.web.api.v1.trade.dto.TradeAssetResponse;
 import org.chomookun.fintics.web.api.v1.trade.dto.TradeRequest;
 import org.chomookun.fintics.web.api.v1.trade.dto.TradeResponse;
 import org.springframework.data.domain.Page;
@@ -22,6 +30,7 @@ import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.*;
 
+import java.time.Instant;
 import java.util.List;
 
 @Tag(name = "trade")
@@ -143,6 +152,80 @@ public class TradeRestController {
     public ResponseEntity<Void> changeTradeSort(@PathVariable("tradeId") String tradeId, @RequestParam("sort") Integer sort) {
         tradeService.changeTradeSort(tradeId, sort);
         return ResponseEntity.ok().build();
+    }
+
+    @Operation(summary = "Returns list of trade asset")
+    @GetMapping("{tradeId}/assets")
+    public ResponseEntity<List<TradeAssetResponse>> getTradeAssets(@PathVariable("tradeId") String tradeId) {
+        List<TradeAssetResponse> tradeAssetResponses = tradeService.getTradeAssets(tradeId).stream()
+                .map(TradeAssetResponse::from)
+                .toList();
+        return ResponseEntity.ok(tradeAssetResponses);
+    }
+
+    @Operation(summary = "Returns the specified trade basket")
+    @GetMapping("{tradeId}/basket")
+    public ResponseEntity<BasketResponse> getBasket(@PathVariable("tradeId") String tradeId) throws InterruptedException {
+        Basket basket = tradeService.getBasket(tradeId).orElseThrow();
+        BasketResponse basketResponse = BasketResponse.from(basket);
+        return ResponseEntity.ok(basketResponse);
+    }
+
+    @Operation(summary = "Returns the specified trade balance")
+    @GetMapping("{tradeId}/balance")
+    public ResponseEntity<BalanceResponse> getBalance(@PathVariable("tradeId") String tradeId) throws InterruptedException {
+        BalanceResponse balanceResponse = tradeService.getBalance(tradeId)
+                .map(BalanceResponse::from)
+                .orElseThrow();
+        return ResponseEntity.ok(balanceResponse);
+    }
+
+
+    @Operation(summary = "Returns trade orders")
+    @PageableAsQueryParam
+    @GetMapping("{tradeId}/orders")
+    public ResponseEntity<List<OrderResponse>> getOrders(
+            @PathVariable("tradeId") String tradeId,
+            @RequestParam(value = "orderAtFrom", required = false) Instant orderAtFrom,
+            @RequestParam(value = "orderAtTo", required = false) Instant orderAtTo,
+            @RequestParam(value = "assetId", required = false) String assetId,
+            @RequestParam(value = "type", required = false) Order.Type type,
+            @RequestParam(value = "result", required = false) Order.Result result,
+            @PageableDefault Pageable pageable
+    ) {
+        OrderSearch orderSearch = OrderSearch.builder()
+                .tradeId(tradeId)
+                .orderAtFrom(orderAtFrom)
+                .orderAtTo(orderAtTo)
+                .assetId(assetId)
+                .type(type)
+                .result(result)
+                .build();
+        Page<Order> orderPage = tradeService.getOrders(tradeId, orderSearch, pageable);
+        List<OrderResponse> orderResponses = orderPage.getContent().stream()
+                .map(OrderResponse::from)
+                .toList();
+        long count = orderPage.getTotalElements();
+        return ResponseEntity.ok()
+                .header(HttpHeaders.CONTENT_RANGE, PageableUtils.toContentRange("orders", pageable, count))
+                .body(orderResponses);
+    }
+
+    @Operation(summary = "Submits trade order")
+    @PostMapping("{tradeId}/orders")
+    @Transactional
+    public ResponseEntity<OrderResponse> submitTradeOrder(@PathVariable("tradeId") String tradeId, @RequestBody OrderRequest orderRequest) {
+        Order order = Order.builder()
+                .orderAt(Instant.now())
+                .type(orderRequest.getType())
+                .kind(orderRequest.getKind())
+                .tradeId(tradeId)
+                .assetId(orderRequest.getAssetId())
+                .quantity(orderRequest.getQuantity())
+                .build();
+        order = tradeService.submitOrder(tradeId, order);
+        OrderResponse savedOrderResponse = OrderResponse.from(order);
+        return ResponseEntity.ok(savedOrderResponse);
     }
 
 }

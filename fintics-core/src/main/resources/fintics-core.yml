@@ -13,16 +13,14 @@ fintics:
     data-retention-months: 3
     asset:
       asset-client:
-        class-name: org.chomookun.fintics.core.asset.client.DefaultAssetClient
+        class-name: org.chomookun.fintics.core.asset.client.asset.DefaultAssetClient
         properties:
           name: value
-    ohlcv:
       ohlcv-client:
-        class-name: org.chomookun.fintics.core.ohlcv.client.DefaultOhlcvClient
+        class-name: org.chomookun.fintics.core.asset.client.ohlcv.DefaultOhlcvClient
         properties:
           name: value
-    dividend:
       dividend-client:
-        class-name: org.chomookun.fintics.core.dividend.client.DefaultDividendClient
+        class-name: org.chomookun.fintics.core.asset.client.dividend.DefaultDividendClient
         properties:
           name: value
