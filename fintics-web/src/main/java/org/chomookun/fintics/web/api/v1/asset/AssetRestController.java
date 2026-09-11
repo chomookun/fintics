@@ -15,7 +15,6 @@ import org.chomookun.fintics.core.asset.model.AssetSearch;
 import org.chomookun.fintics.core.asset.AssetService;
 import org.chomookun.fintics.web.api.v1.asset.dto.DividendResponse;
 import org.chomookun.fintics.web.api.v1.asset.dto.OhlcvResponse;
-import org.springframework.cache.annotation.Cacheable;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.web.PageableDefault;
@@ -86,7 +85,6 @@ public class AssetRestController {
     @Parameter(name = "pageable", hidden = true)
     @PageableAsQueryParam
     @GetMapping("{assetId}/ohlcvs")
-    @Cacheable(cacheNames = "ohlcvs", keyGenerator = "simpleKeyGenerator")
     public ResponseEntity<List<OhlcvResponse>> getOhlcvs(
             @PathVariable("assetId") String assetId,
             @RequestParam(value = "type", required = false) Ohlcv.Type type,
