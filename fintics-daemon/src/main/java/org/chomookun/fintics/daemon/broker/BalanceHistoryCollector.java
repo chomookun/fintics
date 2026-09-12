@@ -5,11 +5,13 @@ import lombok.extern.slf4j.Slf4j;
 import org.chomookun.fintics.core.broker.client.BrokerClient;
 import org.chomookun.fintics.core.broker.client.BrokerClientFactory;
 import org.chomookun.fintics.core.broker.entity.BalanceHistoryEntity;
+import org.chomookun.fintics.core.broker.entity.BrokerEntity_;
 import org.chomookun.fintics.core.broker.repository.BalanceHistoryRepository;
 import org.chomookun.fintics.core.broker.repository.BrokerRepository;
 import org.chomookun.fintics.core.broker.model.Balance;
 import org.chomookun.fintics.core.broker.model.Broker;
 import org.chomookun.fintics.daemon.common.AbstractTask;
+import org.springframework.data.domain.Sort;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.PlatformTransactionManager;
@@ -37,7 +39,7 @@ public class BalanceHistoryCollector extends AbstractTask {
     public void collect() {
         log.info("BalanceHistoryCollector - Start collect balance history.");
         try {
-            List<Broker> brokers = brokerRepository.findAll().stream()
+            List<Broker> brokers = brokerRepository.findAll(Sort.by(BrokerEntity_.SORT)).stream()
                     .map(Broker::from)
                     .toList();
             for (Broker broker : brokers) {

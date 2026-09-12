@@ -3,6 +3,8 @@ package org.chomookun.fintics.daemon.broker;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.chomookun.arch4j.core.common.data.IdGenerator;
+import org.chomookun.fintics.core.broker.entity.BrokerEntity;
+import org.chomookun.fintics.core.broker.entity.BrokerEntity_;
 import org.chomookun.fintics.core.broker.entity.DividendProfitEntity;
 import org.chomookun.fintics.core.broker.model.DividendProfit;
 import org.chomookun.fintics.core.broker.repository.DividendProfitRepository;
@@ -11,6 +13,7 @@ import org.chomookun.fintics.core.broker.client.BrokerClientFactory;
 import org.chomookun.fintics.core.broker.model.Broker;
 import org.chomookun.fintics.core.broker.repository.BrokerRepository;
 import org.chomookun.fintics.daemon.common.AbstractTask;
+import org.springframework.data.domain.Sort;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.PlatformTransactionManager;
@@ -36,7 +39,7 @@ public class DividendProfitCollector extends AbstractTask {
 
     @Scheduled(initialDelay = 10_000, fixedDelay = 1_000 * 60 * 60)
     public void collect() {
-        List<Broker> brokers = brokerRepository.findAll().stream()
+        List<Broker> brokers = brokerRepository.findAll(Sort.by(BrokerEntity_.SORT)).stream()
                 .map(Broker::from)
                 .toList();
         for (Broker broker : brokers) {
