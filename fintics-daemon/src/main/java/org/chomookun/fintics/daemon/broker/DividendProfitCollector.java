@@ -57,8 +57,8 @@ public class DividendProfitCollector extends AbstractTask {
 
     void collectDividendProfits(Broker broker) throws Exception {
         BrokerClient brokerClient = brokerClientFactory.getObject(broker);
-        // 결제일 관련해서 증권사에서 넘어오는 일자가 변경되는 경우가 있음으로 1주일간 데이터는 초기화 후 갱신
-        dividendProfitRepository.deleteDividendProfitsByBrokerId(broker.getBrokerId(), LocalDate.now().minusDays(7), LocalDate.now());
+        // 결제일 관련해서 증권사에서 넘어오는 일자가 변경되는 경우가 있음으로 1달간 데이터는 초기화 후 갱신
+        dividendProfitRepository.deleteDividendProfitsByBrokerId(broker.getBrokerId(), LocalDate.now().minusMonths(1), LocalDate.now());
         LocalDate dateFrom = dividendProfitRepository.findLastDateByBrokerId(broker.getBrokerId())
                 .orElse(LocalDate.now().minusYears(1));
         LocalDate dateTo = LocalDate.now();

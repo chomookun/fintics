@@ -868,6 +868,10 @@ public class KisBrokerClient extends BrokerClient {
             headers.set("tr_cont", "N");
             ctxAreaFk100 = ctxAreaNk100;
         }
+
+        // sort by date
+        realizedProfits.sort(Comparator.comparing(RealizedProfit::getDate).reversed());
+
         // return
         return realizedProfits;
     }
@@ -877,7 +881,7 @@ public class KisBrokerClient extends BrokerClient {
      * @param dateFrom date from
      * @param dateTo date to
      * @return 배당 내역
-     * @see <a href="https://apiportal.koreainvestment.com/apiservice/apiservice-domestic-stock-order#L_04275bfe-007a-45f6-8d4d-0682320a0741">
+     * @see <a href="https://apiportal.koreainvestment.com/apiservice-apiservice?/uapi/domestic-stock/v1/trading/period-rights">
      *     기간별계좌권리현황조회 [국내주식-211]
      *     </a>
      */
@@ -993,6 +997,10 @@ public class KisBrokerClient extends BrokerClient {
             ctxAreaNk100 = objectMapper.convertValue(rootNode.path("ctx_area_nk100"), String.class);
             headers.set("tr_cont", "N");
         }
+
+        // sort by date
+        dividendProfits.sort(Comparator.comparing(DividendProfit::getDate).reversed());
+
         // return
         return dividendProfits;
     }

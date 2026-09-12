@@ -852,6 +852,9 @@ public class KisUsBrokerClient extends BrokerClient {
             ctxAreaFk200 = ctxAreaNk200;
         }
 
+        // sort by date
+        realizedProfits.sort(Comparator.comparing(RealizedProfit::getDate).reversed());
+
         // return
         return realizedProfits;
     }
@@ -927,8 +930,9 @@ public class KisUsBrokerClient extends BrokerClient {
                 }
             }
         }
-        // sort
-        dividendProfits.sort((o1, o2) -> o2.getDate().compareTo(o1.getDate()));
+
+        // sort by date
+        dividendProfits.sort(Comparator.comparing(DividendProfit::getDate).reversed());
 
         // returns
         return dividendProfits;
