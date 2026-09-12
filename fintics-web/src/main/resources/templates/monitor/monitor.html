@@ -21,7 +21,7 @@
                 }),
                 balance: {},
                 profitSummarySearch: new duice.ObjectProxy({
-                    period: '1W'
+                    period: '1M'
                 }),
                 profitSummary: {
                     balanceHistories: [],
@@ -161,9 +161,6 @@
                     let dateFrom = new Date();
                     let dateTo = new Date();
                     switch (this.profitSummarySearch.period) {
-                        case '1W':
-                            dateFrom = dateFns.subWeeks(dateTo, 1);
-                            break;
                         case '1M':
                             dateFrom = dateFns.subMonths(dateTo, 1);
                             break;
@@ -668,15 +665,6 @@
                         <span data-th-text="#{fintics.core.broker.ProfitSummary}"></span>
                     </h3>
                     <div class="display--flex align-items--center font-size--xx-small gap--1px">
-                        <button type="button" class="button"
-                                th:data-duice-bind="|monitorMap.get('${trade.tradeId}').profitSummarySearch|"
-                                th:data-duice-execute="|
-                                this.classList.toggle('font-weight--bold', monitorMap.get('${trade.tradeId}').profitSummarySearch.period === '1W');
-                                |"
-                                th:data-trade-id="${trade.tradeId}"
-                                onclick="monitorMap.get(this.dataset.tradeId).profitSummarySearch.period = '1W'; monitorMap.get(this.dataset.tradeId).getProfitSummary();">
-                            1W
-                        </button>
                         <button type="button" class="button"
                                 th:data-duice-bind="|monitorMap.get('${trade.tradeId}').profitSummarySearch|"
                                 th:data-duice-execute="|
