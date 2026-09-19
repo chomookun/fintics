@@ -22,6 +22,23 @@ public class LinkResponseFactory {
         String exchange = Optional.ofNullable(asset.getExchange()).orElse("");
         // alphasquare
         links.add(LinkResponse.of("Alphasquare", String.format("https://alphasquare.co.kr/home/market-summary?code=%s", asset.getSymbol())));
+        // naver
+        String naverTicker = switch(exchange) {
+            case "XNAS" -> String.format("%s.O", symbol);
+            default -> {
+                if (symbol.length() > 3) {
+                    yield String.format("%s.K", symbol);
+                } else {
+                    yield symbol;
+                }
+            }
+        };
+        String naverLinkUrl = switch (type) {
+            case "STOCK" -> String.format("https://stock.naver.com/worldstock/stock/%s/price", naverTicker);
+            case "ETF" -> String.format("https://stock.naver.com/worldstock/etf/%s/price", naverTicker);
+            default -> "";
+        };
+        links.add(LinkResponse.of("Naver", naverLinkUrl));
         // nasdaq
         switch (type) {
             case "STOCK" -> links.add(LinkResponse.of("Nasdaq", String.format("https://www.nasdaq.com/market-activity/stocks/%s", symbol)));
