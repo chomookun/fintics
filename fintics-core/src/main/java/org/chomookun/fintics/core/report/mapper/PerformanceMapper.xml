@@ -1,0 +1,109 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="org.chomookun.fintics.core.report.mapper.PerformanceMapper">
+
+    <resultMap id="performanceVo" type="org.chomookun.fintics.core.report.vo.PerformanceVo">
+        <result property="brokerId" column="broker_id"/>
+        <result property="name" column="name"/>
+        <result property="startTotalAmount" column="start_total_amount"/>
+        <result property="endTotalAmount" column="end_total_amount"/>
+        <result property="realizedProfitAmount" column="realized_profit_amount"/>
+        <result property="dividendProfitAmount" column="dividend_profit_amount"/>
+        <result property="valuationProfitAmount" column="valuation_profit_amount"/>
+        <result property="totalProfitAmount" column="total_profit_amount"/>
+    </resultMap>
+
+    <select id="selectPerformances" resultMap="performanceVo">
+        <![CDATA[
+        select
+            fb.broker_id,
+            -- 1. 합계 행(NULL)이 생성되면 이름을 '총 합계'로 변
+            COALESCE(fb.name, 'Total') AS "name",
+            -- 2. 숫자 컬럼들에 모두 SUM() (★이게 없으면 합계 행이 계산 안 됨)
+            SUM(COALESCE(fbhf.total_amount, 0)) AS start_total_amount,
+            SUM(COALESCE(fbhl.total_amount, 0)) AS end_total_amount,
+            SUM(COALESCE(frp.realized_profit_amount, 0)) AS realized_profit_amount,
+            SUM(COALESCE(fdp.dividend_profit_amount, 0)) AS dividend_profit_amount,
+            SUM(COALESCE(fbh.balance_profit_amount, 0)) AS valuation_profit_amount,
+            -- 3. 총손익도 전체를 SUM()
+            SUM(
+                    COALESCE(frp.realized_profit_amount, 0) +
+                    COALESCE(fdp.dividend_profit_amount, 0) +
+                    COALESCE(fbh.balance_profit_amount, 0)
+            ) AS total_profit_amount
+        from
+            (
+                select
+                    broker_id,
+                    name
+                from fintics_broker
+        ]]>
+        <if test="brokerIds != null and brokerIds.size() > 0">
+                <![CDATA[
+                where broker_id in
+                ]]>
+            <foreach collection="brokerIds" item="brokerId" open="(" separator="," close=")">
+                <![CDATA[
+                #{brokerId}
+                ]]>
+            </foreach>
+        </if>
+            <![CDATA[
+            ) as fb
+            -- 실현손익
+                left outer join (
+                select distinct broker_id, sum(profit_amount) as realized_profit_amount
+                from fintics_realized_profit
+                where 1 = 1
+                and date between '2026-01-01 00:00:00' and '2026-12-31 23:59:59'
+                group by broker_id
+            ) as frp
+            on frp.broker_id = fb.broker_id
+            -- 배당수익
+            left outer join (
+            select distinct broker_id , sum(dividend_amount)  as dividend_profit_amount
+            from fintics_dividend_profit
+            where 1 = 1
+              and date between '2026-01-01 00:00:00' and '2026-12-31 23:59:59'
+            group by broker_id
+            ) as fdp
+            on fdp.broker_id = fb.broker_id
+            -- 평가손익
+            left outer join (
+            select broker_id, (valuation_amount - purchase_amount) as balance_profit_amount
+            from fintics_balance_history fbh
+            where 1 = 1
+            and date = (select max(date) from fintics_balance_history
+                        where broker_id = fbh.broker_id
+                        and date between '2026-01-01 00:00:00' and '2026-12-31 23:59:59')
+            ) as fbh
+            on fbh.broker_id = fb.broker_id
+            -- 시작시점 평가손익
+                left outer join (
+                select broker_id, total_amount
+                from fintics_balance_history fbh
+                where 1 = 1
+                  and date = (select min(date) from fintics_balance_history
+                    where broker_id = fbh.broker_id
+                  and date between '2026-01-01 00:00:00' and '2026-12-31 23:59:59')
+            ) as fbhf
+            on fbhf.broker_id = fb.broker_id
+            -- 종료시점 평가손익
+            left outer join (
+            select broker_id, total_amount
+            from fintics_balance_history fbh
+            where 1 = 1
+            and date = (select max(date) from fintics_balance_history
+                        where broker_id = fbh.broker_id
+                        and date between '2026-01-01 00:00:00' and '2026-12-31 23:59:59')
+            ) as fbhl
+            on fbhl.broker_id = fb.broker_id
+        -- 계좌 이름별로 정렬 및 합산 롤업 그룹화
+        GROUP BY fb.name WITH ROLLUP
+        ]]>
+    </select>
+
+</mapper>

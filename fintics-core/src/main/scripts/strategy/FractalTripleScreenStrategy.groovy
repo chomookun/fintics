@@ -463,11 +463,11 @@ if (variables['split.index']) {
 // basket asset variables 에 개별 설정 시 해당 split size, index 적용
 if (basketAsset.getVariable('split.type')) {
     log.info('override splitType by basket asset variable')
-    splitSize = basketAsset.getVariable('split.type') as Ohlcv.Type
+    splitType = basketAsset.getVariable('split.type') as Ohlcv.Type
 }
 if (basketAsset.getVariable('split.period')) {
     log.info('override splitPeriod by basket asset variable')
-    splitSize = basketAsset.getVariable('split.period') as Integer
+    splitPeriod = basketAsset.getVariable('split.period') as Integer
 }
 if (basketAsset.getVariable('split.size')) {
     log.info('override splitSize by basket asset variable')
